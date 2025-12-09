@@ -720,6 +720,89 @@ class VirtualMachine3D {
     }
     
     /**
+     * Update gemstone mesh from detected camera contour (edge detection)
+     * Creates/updates a 3D representation based on edge-detected contour points
+     * @param {Array} points3D - Array of {x, y, z} points from edge detection
+     */
+    updateGemContour(points3D) {
+        if (!points3D || points3D.length < 10) return;
+        
+        try {
+            // Create or update contour visualization mesh
+            if (this.detectedContourMesh) {
+                this.detectedContourMesh.dispose();
+            }
+            
+            // Create material for detected gem outline
+            if (!this.contourMaterial) {
+                this.contourMaterial = new BABYLON.StandardMaterial('contourMat', this.scene);
+                this.contourMaterial.diffuseColor = new BABYLON.Color3(0.3, 1, 0.7);
+                this.contourMaterial.specularColor = new BABYLON.Color3(0.5, 1, 0.8);
+                this.contourMaterial.alpha = 0.7;
+                this.contourMaterial.emissiveColor = new BABYLON.Color3(0.1, 0.4, 0.3);
+            }
+            
+            // Build ribbon mesh from contour points for 3D visualization
+            const paths = [];
+            const topPath = [];
+            const bottomPath = [];
+            
+            for (let i = 0; i < points3D.length; i++) {
+                const p = points3D[i];
+                // Top surface (positive z)
+                topPath.push(new BABYLON.Vector3(p.x, p.y, p.z + 5));
+                // Bottom surface (negative z)
+                bottomPath.push(new BABYLON.Vector3(p.x, p.y, -p.z - 5));
+            }
+            
+            // Close the paths by connecting back to start
+            if (topPath.length > 0) {
+                topPath.push(topPath[0].clone());
+                bottomPath.push(bottomPath[0].clone());
+            }
+            
+            paths.push(bottomPath);
+            paths.push(topPath);
+            
+            // Create ribbon mesh
+            this.detectedContourMesh = BABYLON.MeshBuilder.CreateRibbon('detectedGem', {
+                pathArray: paths,
+                closePath: false,
+                closeArray: false,
+                sideOrientation: BABYLON.Mesh.DOUBLESIDE
+            }, this.scene);
+            
+            this.detectedContourMesh.material = this.contourMaterial;
+            
+            // Position near the gemstone on the dop stick
+            this.detectedContourMesh.position.set(85, 105, 0);
+            this.detectedContourMesh.scaling.set(0.3, 0.3, 0.3);
+            
+            // Optionally parent to dop stick so it rotates with the index motor
+            if (this.dopStick) {
+                this.detectedContourMesh.parent = this.dopStick;
+                this.detectedContourMesh.position.set(30, 0, 0);
+            }
+            
+            console.log(`🔷 Updated 3D gem contour with ${points3D.length} points`);
+            
+        } catch (error) {
+            console.warn('Error updating gem contour:', error.message);
+        }
+    }
+    
+    /**
+     * Clear detected contour mesh
+     */
+    clearDetectedContour() {
+        if (this.detectedContourMesh) {
+            this.detectedContourMesh.dispose();
+            this.detectedContourMesh = null;
+            console.log('🔷 Cleared detected gem contour');
+        }
+    }
+    
+    /**
      * Dispose and cleanup
      */
     dispose() {

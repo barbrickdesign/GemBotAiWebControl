@@ -1966,6 +1966,26 @@
                     </div>
                 </div>
                 <div class="ml-status"><div id="mlStatus">ML Model Ready • Waiting for camera...</div></div>
+                
+                <!-- Edge Detection Controls -->
+                <div style="background: #1a1f3a; border: 1px solid #667eea; border-radius: 8px; padding: 10px; margin-top: 10px;">
+                    <div style="font-size: 12px; color: #aaa; font-weight: 600; margin-bottom: 8px;">
+                        🔍 Edge Detection → 3D
+                        <span id="edgeDetectionStatus" style="float: right; padding: 2px 8px; border-radius: 4px; font-size: 10px; background: #333; color: #999;">OFF</span>
+                    </div>
+                    <div style="display: flex; gap: 6px; margin-bottom: 8px;">
+                        <button id="btnStartEdgeDetection" style="flex: 1; background: #2e7c4a; color: white; border: none; padding: 8px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 600;">▶ START</button>
+                        <button id="btnStopEdgeDetection" style="flex: 1; background: #7c2e2e; color: white; border: none; padding: 8px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 600;">⏹ STOP</button>
+                    </div>
+                    <div style="display: grid; grid-template-columns: auto 1fr auto; gap: 6px; align-items: center; font-size: 11px;">
+                        <label for="edgeSensitivitySlider" style="color: #aaa;">Sensitivity:</label>
+                        <input type="range" id="edgeSensitivitySlider" min="10" max="200" value="50" style="cursor: pointer;">
+                        <span id="edgeSensitivityValue" style="color: #4affff; font-weight: 600; min-width: 30px;">50</span>
+                    </div>
+                    <div style="font-size: 10px; color: #888; margin-top: 6px; text-align: center;">
+                        Detects gem edges and maps to 3D model
+                    </div>
+                </div>
             </div>
 
             <!-- RIGHT: AI ASSISTANT & STATUS -->
@@ -3881,6 +3901,242 @@
                 return suggestions.length > 0 ? suggestions[Math.floor(Math.random() * suggestions.length)] : '🤖 Monitoring in progress...';
             }
         }
+
+        // ==================== EDGE DETECTION & 3D CONTOUR MAPPING ====================
+        /**
+         * Real-time edge detection from camera feed to 3D visualization
+         * Uses Sobel operator for edge detection and maps to Babylon.js scene
+         */
+        class EdgeDetection3D {
+            constructor() {
+                this.isActive = false;
+                this.detectionInterval = null;
+                this.edgeCanvas = null;
+                this.edgeCtx = null;
+                this.contourPoints = [];
+                this.lastContour = null;
+                this.sensitivity = 50; // Edge detection threshold
+                this.updateRate = 100; // ms between updates
+            }
+
+            /**
+             * Initialize edge detection canvas
+             */
+            init() {
+                // Create offscreen canvas for edge processing
+                this.edgeCanvas = document.createElement('canvas');
+                this.edgeCanvas.width = 320;
+                this.edgeCanvas.height = 240;
+                this.edgeCtx = this.edgeCanvas.getContext('2d', { willReadFrequently: true });
+                console.log('✅ Edge Detection 3D initialized');
+            }
+
+            /**
+             * Start real-time edge detection from video feed
+             */
+            start(videoElement) {
+                if (this.isActive) return;
+                
+                this.isActive = true;
+                console.log('🔍 Starting edge detection...');
+                
+                this.detectionInterval = setInterval(() => {
+                    this.processFrame(videoElement);
+                }, this.updateRate);
+                
+                addMessage('🔍 Edge detection active - mapping to 3D', 'system');
+            }
+
+            /**
+             * Stop edge detection
+             */
+            stop() {
+                if (this.detectionInterval) {
+                    clearInterval(this.detectionInterval);
+                    this.detectionInterval = null;
+                }
+                this.isActive = false;
+                console.log('⏹️ Edge detection stopped');
+            }
+
+            /**
+             * Process a single frame for edge detection
+             */
+            processFrame(videoElement) {
+                if (!videoElement || videoElement.readyState < 2) return;
+                
+                try {
+                    // Draw video frame to canvas
+                    this.edgeCtx.drawImage(videoElement, 0, 0, this.edgeCanvas.width, this.edgeCanvas.height);
+                    
+                    // Get image data
+                    const imageData = this.edgeCtx.getImageData(0, 0, this.edgeCanvas.width, this.edgeCanvas.height);
+                    
+                    // Apply Sobel edge detection
+                    const edges = this.sobelEdgeDetection(imageData);
+                    
+                    // Extract contour points from edges
+                    const contour = this.extractContour(edges);
+                    
+                    // Update 3D visualization if we have a contour
+                    if (contour.length > 10) {
+                        this.lastContour = contour;
+                        this.update3DVisualization(contour);
+                    }
+                    
+                    // Draw edges on ML overlay canvas for visual feedback
+                    this.drawEdgesOnOverlay(edges);
+                    
+                } catch (error) {
+                    console.warn('Edge detection frame error:', error.message);
+                }
+            }
+
+            /**
+             * Sobel edge detection algorithm
+             */
+            sobelEdgeDetection(imageData) {
+                const width = imageData.width;
+                const height = imageData.height;
+                const data = imageData.data;
+                const edges = new Uint8ClampedArray(width * height);
+                
+                // Sobel kernels
+                const sobelX = [-1, 0, 1, -2, 0, 2, -1, 0, 1];
+                const sobelY = [-1, -2, -1, 0, 0, 0, 1, 2, 1];
+                
+                // Convert to grayscale and apply Sobel
+                for (let y = 1; y < height - 1; y++) {
+                    for (let x = 1; x < width - 1; x++) {
+                        let gx = 0, gy = 0;
+                        
+                        // Apply kernels
+                        for (let ky = -1; ky <= 1; ky++) {
+                            for (let kx = -1; kx <= 1; kx++) {
+                                const idx = ((y + ky) * width + (x + kx)) * 4;
+                                const gray = (data[idx] + data[idx + 1] + data[idx + 2]) / 3;
+                                const kernelIdx = (ky + 1) * 3 + (kx + 1);
+                                gx += gray * sobelX[kernelIdx];
+                                gy += gray * sobelY[kernelIdx];
+                            }
+                        }
+                        
+                        // Calculate gradient magnitude
+                        const magnitude = Math.sqrt(gx * gx + gy * gy);
+                        edges[y * width + x] = magnitude > this.sensitivity ? 255 : 0;
+                    }
+                }
+                
+                return { data: edges, width, height };
+            }
+
+            /**
+             * Extract contour points from edge data
+             * Uses simple boundary tracing
+             */
+            extractContour(edges) {
+                const { data, width, height } = edges;
+                const contour = [];
+                const visited = new Set();
+                
+                // Find edge points and group them
+                for (let y = 0; y < height; y += 2) { // Sample every 2 pixels for performance
+                    for (let x = 0; x < width; x += 2) {
+                        const idx = y * width + x;
+                        if (data[idx] > 200 && !visited.has(idx)) {
+                            visited.add(idx);
+                            // Normalize coordinates to -1 to 1 range
+                            contour.push({
+                                x: (x / width) * 2 - 1,
+                                y: (y / height) * 2 - 1,
+                                intensity: data[idx] / 255
+                            });
+                        }
+                    }
+                }
+                
+                // Sort points to form a continuous contour (simple approach)
+                // In production, use proper contour tracing algorithm
+                contour.sort((a, b) => {
+                    const angleA = Math.atan2(a.y, a.x);
+                    const angleB = Math.atan2(b.y, b.x);
+                    return angleA - angleB;
+                });
+                
+                return contour;
+            }
+
+            /**
+             * Update 3D visualization with detected contour
+             */
+            update3DVisualization(contour) {
+                if (!virtualMachine || typeof virtualMachine.updateGemContour !== 'function') {
+                    return;
+                }
+                
+                try {
+                    // Convert 2D contour to 3D points (assuming gem is roughly spherical)
+                    const points3D = contour.map(p => ({
+                        x: p.x * 50, // Scale to 3D space
+                        y: p.y * 50,
+                        z: Math.sqrt(Math.max(0, 1 - p.x * p.x - p.y * p.y)) * 30 * p.intensity
+                    }));
+                    
+                    virtualMachine.updateGemContour(points3D);
+                } catch (error) {
+                    console.warn('3D update error:', error.message);
+                }
+            }
+
+            /**
+             * Draw detected edges on the ML overlay canvas
+             */
+            drawEdgesOnOverlay(edges) {
+                const mlCanvas = document.getElementById('mlCanvas');
+                if (!mlCanvas) return;
+                
+                const ctx = mlCanvas.getContext('2d');
+                const { data, width, height } = edges;
+                
+                // Scale to match canvas size
+                const scaleX = mlCanvas.width / width;
+                const scaleY = mlCanvas.height / height;
+                
+                // Draw edge points with cyan color
+                ctx.fillStyle = 'rgba(74, 255, 255, 0.6)';
+                
+                for (let y = 0; y < height; y += 3) {
+                    for (let x = 0; x < width; x += 3) {
+                        if (data[y * width + x] > 200) {
+                            ctx.fillRect(x * scaleX, y * scaleY, 2, 2);
+                        }
+                    }
+                }
+            }
+
+            /**
+             * Get current contour data for external use
+             */
+            getContourData() {
+                return {
+                    points: this.lastContour,
+                    timestamp: Date.now(),
+                    pointCount: this.lastContour ? this.lastContour.length : 0
+                };
+            }
+
+            /**
+             * Set edge detection sensitivity
+             */
+            setSensitivity(value) {
+                this.sensitivity = Math.max(10, Math.min(200, value));
+                console.log(`🔍 Edge sensitivity set to: ${this.sensitivity}`);
+            }
+        }
+
+        // Initialize edge detection system
+        const edgeDetection3D = new EdgeDetection3D();
+        edgeDetection3D.init();
 
         // ==================== SESSION RECORDING ====================
         class SessionRecorder {
@@ -10685,6 +10941,38 @@
                     btn.style.background = '#2e4a7c';
                     btn.textContent = '⚫ RECORD';
                 }
+            });
+
+            // ==================== EDGE DETECTION CONTROLS ====================
+            document.getElementById('btnStartEdgeDetection')?.addEventListener('click', () => {
+                const video = document.getElementById('cameraFeed');
+                if (!cameraActive || !video) {
+                    addMessage('⚠️ Please start camera first before enabling edge detection', 'warning');
+                    return;
+                }
+                
+                edgeDetection3D.start(video);
+                document.getElementById('edgeDetectionStatus').textContent = 'ACTIVE';
+                document.getElementById('edgeDetectionStatus').style.background = '#2e7c4a';
+                document.getElementById('edgeDetectionStatus').style.color = '#fff';
+                addMessage('🔍 Edge detection started - mapping camera view to 3D model', 'system');
+            });
+            
+            document.getElementById('btnStopEdgeDetection')?.addEventListener('click', () => {
+                edgeDetection3D.stop();
+                if (typeof virtualMachine !== 'undefined' && virtualMachine.clearDetectedContour) {
+                    virtualMachine.clearDetectedContour();
+                }
+                document.getElementById('edgeDetectionStatus').textContent = 'OFF';
+                document.getElementById('edgeDetectionStatus').style.background = '#333';
+                document.getElementById('edgeDetectionStatus').style.color = '#999';
+                addMessage('⏹ Edge detection stopped', 'system');
+            });
+            
+            document.getElementById('edgeSensitivitySlider')?.addEventListener('input', (e) => {
+                const value = parseInt(e.target.value);
+                document.getElementById('edgeSensitivityValue').textContent = value;
+                edgeDetection3D.setSensitivity(value);
             });
 
             document.getElementById('speedSlider')?.addEventListener('input', (e) => {
