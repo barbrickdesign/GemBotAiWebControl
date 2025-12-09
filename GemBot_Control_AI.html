@@ -774,30 +774,44 @@
 
             .header-panel {
                 flex: 0 0 auto;
-                padding: 10px;
+                padding: 8px 10px;
                 border-bottom: 2px solid #4a9eff;
-                overflow-x: auto;
+                max-height: 70px;
+                overflow-y: auto;
                 -webkit-overflow-scrolling: touch;
             }
 
             .header-title {
-                font-size: 16px;
-                margin-bottom: 8px;
+                font-size: 14px;
+                margin-bottom: 6px;
+                margin-top: 0;
             }
 
             .connection-panel {
                 display: flex;
                 flex-wrap: wrap;
-                gap: 6px;
+                gap: 4px;
                 overflow-x: auto;
                 -webkit-overflow-scrolling: touch;
             }
 
             .btn-primary, .btn-scan, .btn-danger {
-                padding: 6px 10px;
-                font-size: 12px;
+                padding: 5px 8px;
+                font-size: 10px;
                 white-space: nowrap;
                 flex-shrink: 0;
+                height: 28px;
+            }
+
+            .status-badge {
+                font-size: 10px;
+                padding: 2px 6px;
+                gap: 4px;
+            }
+
+            .status-indicator {
+                width: 6px;
+                height: 6px;
             }
 
             .main-content {
@@ -888,12 +902,61 @@
                 margin-left: 6px;
             }
 
+            #mobileInViewControls {
+                display: block !important;
+                background: linear-gradient(to top, rgba(26,31,58,0.97), rgba(26,31,58,0.85)) !important;
+            }
+
+            #desktop3DControls {
+                display: none !important;
+            }
+
+            .mobile-joy-btn {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                border: 2px solid #4affff;
+                border-radius: 8px;
+                padding: 12px;
+                font-size: 14px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.2s;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                min-height: 44px;
+            }
+
+            .mobile-joy-btn:active {
+                background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+                box-shadow: 0 0 15px rgba(74, 255, 255, 0.6) inset;
+                transform: scale(0.95);
+            }
+
+            #mobileSpeedSlider {
+                accent-color: #4affff;
+                width: 100% !important;
+            }
+
             #mobileConnectionPanel {
                 display: none !important;
             }
 
             #networkDevicesPanel {
                 display: none !important;
+            }
+
+            .left-panel {
+                display: none !important;
+            }
+
+            .right-panel {
+                display: none !important;
+            }
+
+            #machineViewContainer {
+                height: 50vh !important;
+                margin-bottom: 0 !important;
             }
         }
 
@@ -934,27 +997,30 @@
 </head>
 <body>
     <div class="app-container">
-        <!-- HEADER -->
+        <!-- HEADER - Mobile-first camera connection -->
         <div class="header-panel">
-            <div class="header-title">💎 GEMBOT AI CONTROL</div>
+            <div class="header-title">💎 GEMBOT</div>
             
-            <!-- GEMFORGE STATUS BADGE -->
-            <div style="display: flex; align-items: center; gap: 15px; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); padding: 8px 15px; border-radius: 8px; border: 1px solid #4a9eff;">
-                <div id="gemBalanceDisplay" style="color: #ffd700; font-weight: bold; font-size: 14px;">💎 100</div>
-                <div id="tierDisplay" style="color: #9f7aea; font-size: 12px;">🏆 Apprentice</div>
-                <div id="streakDisplay" style="color: #ff6b6b; font-size: 12px;">🔥 0</div>
+            <!-- Compact Status & Camera Controls -->
+            <div style="display: flex; align-items: center; gap: 8px; width: 100%; flex-wrap: wrap;">
+                <!-- Status Badge (compact) -->
+                <div class="status-badge" style="min-width: 120px;">
+                    <div class="status-indicator" id="statusIndicator"></div>
+                    <span id="connectionStatus" style="font-size: 12px;">OFFLINE</span>
+                </div>
+                
+                <!-- Game Stats (mobile hidden) -->
+                <div id="gameStatsCompact" style="display: flex; align-items: center; gap: 12px; background: rgba(102, 126, 234, 0.2); padding: 4px 12px; border-radius: 6px; border: 1px solid rgba(74, 255, 255, 0.2); margin-left: auto;">
+                    <div id="gemBalanceDisplay" style="color: #ffd700; font-weight: bold; font-size: 11px;">💎 100</div>
+                    <div id="tierDisplay" style="color: #9f7aea; font-size: 10px;">🏆 Apprentice</div>
+                </div>
             </div>
             
-            <div class="status-badge">
-                <div class="status-indicator" id="statusIndicator"></div>
-                <span id="connectionStatus">DISCONNECTED</span>
-            </div>
-            <div class="connection-panel">
-                <button class="btn-scan" id="scanBtn">🔍 SCAN</button>
-                <select class="port-select" id="portSelect" aria-label="Select serial port" title="Serial port selector"><option value="">Select Port...</option></select>
-                <button class="btn-primary" id="connectBtn">CONNECT</button>
-                <button class="btn-danger hidden" id="disconnectBtn">DISCONNECT</button>
-                <button style="background: #4a5a8e; color: white; margin-left: 10px;" id="btnDiagnostic">🔧 DIAGNOSTIC</button>
+            <!-- Camera/Mobile Connection Controls -->
+            <div class="connection-panel" style="margin-top: 8px;">
+                <button class="btn-primary" id="cameraConnectBtn" style="flex: 1;">📱 Connect Mobile</button>
+                <button class="btn-danger hidden" id="cameraDisconnectBtn" style="flex: 1;">📵 Disconnect</button>
+                <button style="background: #4a5a8e; color: white; padding: 6px 10px; border: 1px solid #667eea; border-radius: 6px; font-size: 12px; cursor: pointer;" id="btnDiagnostic">⚙️</button>
             </div>
         </div>
 
@@ -962,7 +1028,7 @@
         <div id="mobileConnectionPanel" style="grid-column: 1 / -1; background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); padding: 16px; border-radius: 12px; border: 2px solid #4a9eff; display: none;">
             <div style="display: grid; grid-template-columns: 1fr auto auto; gap: 20px; align-items: center;">
                 <div>
-                    <div style="font-size: 14px; font-weight: 600; color: #4affff; margin-bottom: 8px;">📱 Mobile Device Access Ready</div>
+                    <div style="font-size: 14px; font-weight: 600; color: #4affff; margin-bottom: 8px;">📱 Mobile Device Connected</div>
                     <div style="display: flex; gap: 20px; flex-wrap: wrap;">
                         <div>
                             <div style="font-size: 11px; color: #aaa; margin-bottom: 4px;">Network URL:</div>
@@ -1083,8 +1149,27 @@
                     <div id="machineLoadingStatus" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.8); padding: 16px; border-radius: 8px; color: #4affff; font-size: 14px; text-align: center; z-index: 10;">
                         ⏳ Initializing 3D Virtual Machine...
                     </div>
-                    <!-- 3D Scene Controls -->
-                    <div style="position: absolute; bottom: 12px; left: 12px; display: flex; gap: 8px; z-index: 5;">
+                    
+                    <!-- MOBILE IN-VIEW CONTROLS (hidden on desktop) -->
+                    <div id="mobileInViewControls" style="position: absolute; bottom: 0; left: 0; right: 0; display: none; background: linear-gradient(to top, rgba(26,31,58,0.95), rgba(26,31,58,0.8)); padding: 12px; border-top: 2px solid #667eea; z-index: 6;">
+                        <!-- Speed Control -->
+                        <div style="display: grid; grid-template-columns: 1fr 3fr 1fr; gap: 8px; align-items: center; margin-bottom: 10px;">
+                            <label style="font-size: 11px; color: #aaa;">SPEED</label>
+                            <input type="range" id="mobileSpeedSlider" style="width: 100%; cursor: pointer;" min="1" max="5" value="1">
+                            <span id="mobileSpeedValue" style="color: #4affff; font-weight: bold; text-align: center; font-size: 11px;">1/5</span>
+                        </div>
+                        <!-- Movement Joystick -->
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;">
+                            <button class="mobile-joy-btn" data-cmd="w" style="grid-column: 2;">▲</button>
+                            <button class="mobile-joy-btn" data-cmd="a" style="grid-column: 1;">◄</button>
+                            <button class="mobile-joy-btn" data-cmd="d" style="grid-column: 3;">►</button>
+                            <button class="mobile-joy-btn" data-cmd="z" style="grid-column: 2;">▼</button>
+                            <button class="mobile-joy-btn" data-cmd="u" style="grid-column: 1 / -1; background: #7c2e2e;">⏹ STOP</button>
+                        </div>
+                    </div>
+                    
+                    <!-- 3D Scene Controls (desktop) -->
+                    <div style="position: absolute; bottom: 12px; left: 12px; display: flex; gap: 8px; z-index: 5;" id="desktop3DControls">
                         <button id="btn3DZoomIn" style="background: #667eea; color: white; border: 1px solid #4affff; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;">🔍+</button>
                         <button id="btn3DZoomOut" style="background: #667eea; color: white; border: 1px solid #4affff; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;">🔍−</button>
                         <button id="btn3DReset" style="background: #764ba2; color: white; border: 1px solid #9f7aea; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;">⟲ Reset</button>
@@ -1317,6 +1402,35 @@
                         virtualMachine.camera.radius = 80;
                         virtualMachine.camera.alpha = Math.PI;
                         virtualMachine.camera.beta = Math.PI / 2.5;
+                    }
+                });
+            }
+            
+            // MOBILE IN-VIEW CONTROLS
+            const mobileJoyBtns = document.querySelectorAll('.mobile-joy-btn');
+            mobileJoyBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const cmd = btn.getAttribute('data-cmd');
+                    sendCommand(cmd);
+                });
+            });
+            
+            const mobileSpeedSlider = document.getElementById('mobileSpeedSlider');
+            const mobileSpeedValue = document.getElementById('mobileSpeedValue');
+            if (mobileSpeedSlider) {
+                mobileSpeedSlider.addEventListener('input', (e) => {
+                    const speed = e.target.value;
+                    if (mobileSpeedValue) {
+                        mobileSpeedValue.textContent = speed + '/5';
+                    }
+                    // Update global speed
+                    const speedDisplay = document.getElementById('speedDisplay');
+                    if (speedDisplay) {
+                        speedDisplay.textContent = speed;
+                    }
+                    const speedSlider = document.getElementById('speedSlider');
+                    if (speedSlider) {
+                        speedSlider.value = speed;
                     }
                 });
             }
@@ -8282,6 +8396,57 @@
                 console.log('✅ Copy URL button ready');
             } else {
                 console.warn('⚠️ Copy URL button not found');
+            }
+            
+            // CAMERA CONNECT/DISCONNECT BUTTONS (Mobile)
+            const cameraConnectBtn = document.getElementById('cameraConnectBtn');
+            const cameraDisconnectBtn = document.getElementById('cameraDisconnectBtn');
+            
+            if (cameraConnectBtn) {
+                cameraConnectBtn.addEventListener('click', () => {
+                    console.log('📱 Connecting mobile device for camera...');
+                    registerMobileDevice();
+                    
+                    // Show the mobile panel
+                    const mobilePanel = document.getElementById('mobileConnectionPanel');
+                    if (mobilePanel && window.innerWidth >= 768) {
+                        mobilePanel.style.display = 'grid';
+                    }
+                    
+                    // Toggle button visibility
+                    cameraConnectBtn.classList.add('hidden');
+                    if (cameraDisconnectBtn) {
+                        cameraDisconnectBtn.classList.remove('hidden');
+                    }
+                    
+                    addMessage('✅ Mobile device connected!', 'system');
+                });
+                console.log('✅ Camera connect button ready');
+            }
+            
+            if (cameraDisconnectBtn) {
+                cameraDisconnectBtn.addEventListener('click', () => {
+                    console.log('📵 Disconnecting mobile device...');
+                    
+                    // Clear mobile devices
+                    mobileDevices.clear();
+                    updateMobileDevicesList();
+                    
+                    // Hide the mobile panel
+                    const mobilePanel = document.getElementById('mobileConnectionPanel');
+                    if (mobilePanel) {
+                        mobilePanel.style.display = 'none';
+                    }
+                    
+                    // Toggle button visibility
+                    cameraDisconnectBtn.classList.add('hidden');
+                    if (cameraConnectBtn) {
+                        cameraConnectBtn.classList.remove('hidden');
+                    }
+                    
+                    addMessage('📵 Mobile device disconnected', 'system');
+                });
+                console.log('✅ Camera disconnect button ready');
             }
         }
         
