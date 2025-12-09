@@ -2174,6 +2174,129 @@
         .bonus-text { color: #00ff88; font-weight: bold; }
         .bonus-value { color: #ffd700; font-size: 12px; }
         
+        /* Game Modal Overlays (Shop, Inventory, Maintenance) */
+        .game-modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.85);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+        
+        .game-modal {
+            background: linear-gradient(135deg, #0a0015 0%, #1a0a2e 100%);
+            border: 2px solid #00ffff;
+            border-radius: 16px;
+            padding: 20px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 0 40px rgba(0,255,255,0.3);
+        }
+        
+        .game-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .game-modal-header h2 {
+            margin: 0;
+            color: #00ffff;
+            font-size: 18px;
+        }
+        
+        .shop-tab, .inv-tab {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #ccc;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 11px;
+            transition: all 0.2s;
+        }
+        
+        .shop-tab:hover, .inv-tab:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .shop-tab.active, .inv-tab.active {
+            background: linear-gradient(135deg, #ff0080, #7928ca);
+            border-color: #ff0080;
+            color: white;
+        }
+        
+        .shop-item, .inv-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 8px;
+            transition: all 0.2s;
+        }
+        
+        .shop-item:hover, .inv-item:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(255,255,255,0.2);
+        }
+        
+        .shop-item-info, .inv-item-info {
+            flex: 1;
+        }
+        
+        .shop-item-name, .inv-item-name {
+            font-weight: bold;
+            color: #fff;
+            font-size: 12px;
+        }
+        
+        .shop-item-desc, .inv-item-desc {
+            font-size: 10px;
+            color: #888;
+            margin-top: 2px;
+        }
+        
+        .shop-item-price {
+            color: #ffd700;
+            font-size: 12px;
+            margin-right: 10px;
+        }
+        
+        .inv-item-value {
+            color: #00ff88;
+            font-size: 11px;
+        }
+        
+        .lap-condition-bar {
+            width: 60px;
+            height: 8px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 4px;
+        }
+        
+        .lap-condition-fill {
+            height: 100%;
+            transition: width 0.3s;
+        }
+        
+        .rarity-common { color: #ffffff; }
+        .rarity-uncommon { color: #00ff88; }
+        .rarity-rare { color: #0088ff; }
+        .rarity-legendary { color: #ff8800; }
+        
         .game-footer {
             display: flex;
             align-items: center;
@@ -2798,6 +2921,27 @@
                         <div id="upgradesList" class="upgrades-list">
                             <!-- Upgrades populated by JS -->
                         </div>
+                        
+                        <!-- Quick Shop Access -->
+                        <h3 style="margin-top: 12px;">🛒 Quick Buy</h3>
+                        <div class="quick-shop" style="font-size: 10px;">
+                            <button class="game-btn" style="padding: 4px 8px; margin: 2px; font-size: 9px;" onclick="openShopPanel()">
+                                🏪 Open Shop
+                            </button>
+                            <button class="game-btn" style="padding: 4px 8px; margin: 2px; font-size: 9px;" onclick="openInventoryPanel()">
+                                📦 Inventory
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Resource Status Panel (New!) -->
+                    <div class="game-panel game-resources-panel" style="position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 300px; background: rgba(0,0,0,0.9); padding: 8px; font-size: 10px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span>💧 Water: <span id="waterLevel">100</span>%</span>
+                            <span>🕯️ Wax: <span id="waxLevel">100</span></span>
+                            <span>🛢️ Lube: <span id="lubeLevel">100</span>%</span>
+                        </div>
+                        <div id="resourceWarnings" style="color: #ff6666; margin-top: 4px;"></div>
                     </div>
                     
                     <!-- Bottom - Activity Feed -->
@@ -2814,11 +2958,81 @@
                     <span class="bonus-text">Real GemBot Connected!</span>
                     <span class="bonus-value">+50% Bonus Active</span>
                 </div>
+                
+                <!-- Shop Panel Overlay -->
+                <div id="shopPanelOverlay" class="game-modal-overlay" style="display: none;">
+                    <div class="game-modal" style="max-width: 700px; max-height: 80vh; overflow-y: auto;">
+                        <div class="game-modal-header">
+                            <h2>🏪 GemBot Shop</h2>
+                            <button onclick="closeShopPanel()" style="background: none; border: none; color: #fff; font-size: 24px; cursor: pointer;">✕</button>
+                        </div>
+                        
+                        <!-- Shop Tabs -->
+                        <div class="shop-tabs" style="display: flex; gap: 5px; margin-bottom: 15px;">
+                            <button class="shop-tab active" onclick="showShopTab('rough')">💎 Rough Stones</button>
+                            <button class="shop-tab" onclick="showShopTab('laps')">🔧 Laps</button>
+                            <button class="shop-tab" onclick="showShopTab('paste')">✨ Polish Paste</button>
+                            <button class="shop-tab" onclick="showShopTab('consumables')">🧴 Consumables</button>
+                        </div>
+                        
+                        <!-- Shop Content -->
+                        <div id="shopContent">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Inventory Panel Overlay -->
+                <div id="inventoryPanelOverlay" class="game-modal-overlay" style="display: none;">
+                    <div class="game-modal" style="max-width: 600px; max-height: 80vh; overflow-y: auto;">
+                        <div class="game-modal-header">
+                            <h2>📦 Inventory</h2>
+                            <button onclick="closeInventoryPanel()" style="background: none; border: none; color: #fff; font-size: 24px; cursor: pointer;">✕</button>
+                        </div>
+                        
+                        <!-- Inventory Tabs -->
+                        <div class="inv-tabs" style="display: flex; gap: 5px; margin-bottom: 15px;">
+                            <button class="inv-tab active" onclick="showInvTab('rough')">💎 Rough</button>
+                            <button class="inv-tab" onclick="showInvTab('cut')">🌟 Cut Stones</button>
+                            <button class="inv-tab" onclick="showInvTab('laps')">🔧 Laps</button>
+                            <button class="inv-tab" onclick="showInvTab('supplies')">🧴 Supplies</button>
+                        </div>
+                        
+                        <!-- Inventory Content -->
+                        <div id="inventoryContent">
+                            <!-- Populated by JS -->
+                        </div>
+                        
+                        <!-- Sell All Button -->
+                        <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #333;">
+                            <button class="game-btn game-btn-primary" onclick="sellAllStones()" style="width: 100%;">
+                                💰 Sell All Cut Stones
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Maintenance Panel Overlay -->
+                <div id="maintenancePanelOverlay" class="game-modal-overlay" style="display: none;">
+                    <div class="game-modal" style="max-width: 500px;">
+                        <div class="game-modal-header">
+                            <h2>🔧 Machine Maintenance</h2>
+                            <button onclick="closeMaintenancePanel()" style="background: none; border: none; color: #fff; font-size: 24px; cursor: pointer;">✕</button>
+                        </div>
+                        
+                        <div id="maintenanceContent">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                </div>
             </div>
             
             <!-- Game Footer -->
             <div class="game-footer">
                 <button class="game-btn" onclick="leaderboardUI.open()">🏆 Leaderboard</button>
+                <button class="game-btn" onclick="openShop()">🛒 Shop</button>
+                <button class="game-btn" onclick="openInventory()">📦 Inventory</button>
+                <button class="game-btn" onclick="openMaintenance()">🔧 Maintenance</button>
                 <button class="game-btn" onclick="gameFarm.save()">💾 Save</button>
                 <div class="production-rate">
                     <span>⚡ Production: </span>
@@ -14894,6 +15108,566 @@
             if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
             return Math.floor(num).toString();
         }
+        
+        // ==================== SHOP PANEL FUNCTIONS ====================
+        let currentShopTab = 'rough';
+        
+        function openShopPanel() {
+            document.getElementById('shopPanelOverlay').style.display = 'flex';
+            showShopTab('rough');
+        }
+        
+        function closeShopPanel() {
+            document.getElementById('shopPanelOverlay').style.display = 'none';
+        }
+        
+        function showShopTab(tab) {
+            currentShopTab = tab;
+            document.querySelectorAll('.shop-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            renderShopContent();
+        }
+        
+        function renderShopContent() {
+            if (!gameFarm) return;
+            const container = document.getElementById('shopContent');
+            const shop = gameFarm.getShopInventory();
+            let html = '';
+            
+            switch(currentShopTab) {
+                case 'rough':
+                    html = '<div class="shop-section">';
+                    shop.rough.forEach(item => {
+                        const rarityClass = `rarity-${item.rarity}`;
+                        const canBuy = item.canBuy && gameFarm.state.player.gems >= item.price;
+                        html += `
+                            <div class="shop-item" style="${!item.canBuy ? 'opacity: 0.5;' : ''}">
+                                <div class="shop-item-info">
+                                    <div class="shop-item-name ${rarityClass}">${item.name}</div>
+                                    <div class="shop-item-desc">
+                                        ${item.canBuy ? `Level ${item.levelRequired}+ • In Stock` : `Requires Level ${item.levelRequired}`}
+                                    </div>
+                                </div>
+                                <span class="shop-item-price">💎 ${item.price}</span>
+                                <button class="game-btn" style="padding: 4px 10px; font-size: 10px;" 
+                                    onclick="buyRoughStone('${item.name}')"
+                                    ${!canBuy ? 'disabled style="opacity:0.5;"' : ''}>
+                                    Buy
+                                </button>
+                            </div>
+                        `;
+                    });
+                    html += '</div>';
+                    break;
+                    
+                case 'laps':
+                    html = '<div class="shop-section">';
+                    shop.laps.forEach(item => {
+                        const conditionColor = item.currentCondition > 50 ? '#00ff88' : 
+                                               item.currentCondition > 20 ? '#ffcc00' : '#ff4444';
+                        html += `
+                            <div class="shop-item">
+                                <div class="shop-item-info">
+                                    <div class="shop-item-name">${item.type} Lap</div>
+                                    <div class="shop-item-desc">
+                                        Current: ${Math.round(item.currentCondition)}%
+                                        <div class="lap-condition-bar">
+                                            <div class="lap-condition-fill" style="width: ${item.currentCondition}%; background: ${conditionColor};"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <span class="shop-item-price">💎 ${item.price}</span>
+                                <button class="game-btn" style="padding: 4px 10px; font-size: 10px;" 
+                                    onclick="buyNewLap('${item.type}')"
+                                    ${gameFarm.state.player.gems < item.price ? 'disabled style="opacity:0.5;"' : ''}>
+                                    Replace
+                                </button>
+                            </div>
+                        `;
+                    });
+                    html += '</div>';
+                    break;
+                    
+                case 'paste':
+                    html = '<div class="shop-section">';
+                    shop.paste.forEach(item => {
+                        html += `
+                            <div class="shop-item">
+                                <div class="shop-item-info">
+                                    <div class="shop-item-name">${item.grit} Diamond Paste</div>
+                                    <div class="shop-item-desc">In Stock: ${item.currentStock} units</div>
+                                </div>
+                                <span class="shop-item-price">💎 ${item.pricePerUnit}/unit</span>
+                                <button class="game-btn" style="padding: 4px 10px; font-size: 10px;" 
+                                    onclick="buyPaste('${item.grit}')"
+                                    ${gameFarm.state.player.gems < item.pricePerUnit ? 'disabled style="opacity:0.5;"' : ''}>
+                                    Buy 10
+                                </button>
+                            </div>
+                        `;
+                    });
+                    
+                    // Charge copper lap section
+                    html += `
+                        <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #333;">
+                            <h4 style="color: #00ffff; margin: 0 0 10px 0; font-size: 12px;">⚡ Charge Copper Lap</h4>
+                            <div style="font-size: 10px; color: #888; margin-bottom: 10px;">
+                                Current paste: ${gameFarm.state.laps.copper?.currentPaste || 'None'}
+                            </div>
+                            <div style="display: flex; gap: 5px; flex-wrap: wrap;">
+                    `;
+                    ['8k', '14k', '50k', '100k', '200k'].forEach(grit => {
+                        const hasEnough = (gameFarm.state.paste[grit] || 0) >= gameFarm.consumptionRates.pastePerCharge;
+                        html += `
+                            <button class="game-btn" style="padding: 4px 8px; font-size: 9px;" 
+                                onclick="chargeLap('${grit}')"
+                                ${!hasEnough ? 'disabled style="opacity:0.5;"' : ''}>
+                                ${grit}
+                            </button>
+                        `;
+                    });
+                    html += '</div></div>';
+                    html += '</div>';
+                    break;
+                    
+                case 'consumables':
+                    const cons = shop.consumables;
+                    html = `
+                        <div class="shop-section">
+                            <div class="shop-item">
+                                <div class="shop-item-info">
+                                    <div class="shop-item-name">🕯️ Dop Wax</div>
+                                    <div class="shop-item-desc">Current: ${cons.dopWax.current} units</div>
+                                </div>
+                                <span class="shop-item-price">💎 ${cons.dopWax.price}/10</span>
+                                <button class="game-btn" style="padding: 4px 10px; font-size: 10px;" 
+                                    onclick="buyConsumable('dopWax')">Buy 10</button>
+                            </div>
+                            <div class="shop-item">
+                                <div class="shop-item-info">
+                                    <div class="shop-item-name">💧 Water</div>
+                                    <div class="shop-item-desc">Tank Level: ${Math.round(cons.water.current)}%</div>
+                                </div>
+                                <span class="shop-item-price">💎 ${cons.water.price}/25%</span>
+                                <button class="game-btn" style="padding: 4px 10px; font-size: 10px;" 
+                                    onclick="buyConsumable('water')"
+                                    ${cons.water.current >= 100 ? 'disabled style="opacity:0.5;"' : ''}>Refill</button>
+                            </div>
+                            <div class="shop-item">
+                                <div class="shop-item-info">
+                                    <div class="shop-item-name">🛢️ Machine Lubricant</div>
+                                    <div class="shop-item-desc">Level: ${Math.round(cons.lubricant.current)}%</div>
+                                </div>
+                                <span class="shop-item-price">💎 ${cons.lubricant.price}/25%</span>
+                                <button class="game-btn" style="padding: 4px 10px; font-size: 10px;" 
+                                    onclick="buyConsumable('lubricant')"
+                                    ${cons.lubricant.current >= 100 ? 'disabled style="opacity:0.5;"' : ''}>Refill</button>
+                            </div>
+                        </div>
+                    `;
+                    break;
+            }
+            
+            container.innerHTML = html;
+        }
+        
+        function buyRoughStone(gemName) {
+            if (!gameFarm) return;
+            const result = gameFarm.buyRough(gemName, 1);
+            if (result.success) {
+                addGameActivity(`🛒 Bought 1x ${gemName} rough`);
+                updateGameUI();
+                renderShopContent();
+            } else {
+                alert(result.message);
+            }
+        }
+        
+        function buyNewLap(lapType) {
+            if (!gameFarm) return;
+            const result = gameFarm.buyLap(lapType);
+            if (result.success) {
+                addGameActivity(`🔧 Replaced ${lapType} lap`);
+                updateGameUI();
+                renderShopContent();
+            } else {
+                alert(result.message);
+            }
+        }
+        
+        function buyPaste(grit) {
+            if (!gameFarm) return;
+            const result = gameFarm.buyPaste(grit, 1);
+            if (result.success) {
+                addGameActivity(`✨ Bought ${grit} paste`);
+                updateGameUI();
+                renderShopContent();
+            } else {
+                alert(result.message);
+            }
+        }
+        
+        function chargeLap(grit) {
+            if (!gameFarm) return;
+            const result = gameFarm.chargeCopperLap(grit);
+            if (result.success) {
+                addGameActivity(`⚡ Charged lap with ${grit} paste`);
+                renderShopContent();
+            } else {
+                alert(result.message);
+            }
+        }
+        
+        function buyConsumable(type) {
+            if (!gameFarm) return;
+            const result = gameFarm.buyConsumable(type, 1);
+            if (result.success) {
+                addGameActivity(`🧴 Restocked ${type}`);
+                updateGameUI();
+                renderShopContent();
+            } else {
+                alert(result.message);
+            }
+        }
+        
+        // ==================== INVENTORY PANEL FUNCTIONS ====================
+        let currentInvTab = 'rough';
+        
+        function openInventoryPanel() {
+            document.getElementById('inventoryPanelOverlay').style.display = 'flex';
+            showInvTab('rough');
+        }
+        
+        function closeInventoryPanel() {
+            document.getElementById('inventoryPanelOverlay').style.display = 'none';
+        }
+        
+        function showInvTab(tab) {
+            currentInvTab = tab;
+            document.querySelectorAll('.inv-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            renderInventoryContent();
+        }
+        
+        function renderInventoryContent() {
+            if (!gameFarm) return;
+            const container = document.getElementById('inventoryContent');
+            const resources = gameFarm.getResourceStatus();
+            let html = '';
+            
+            switch(currentInvTab) {
+                case 'rough':
+                    html = '<div class="inv-section">';
+                    let hasRough = false;
+                    Object.entries(resources.inventory.rough).forEach(([name, count]) => {
+                        if (count > 0) {
+                            hasRough = true;
+                            const gem = gameFarm.gemTypes.find(g => g.name === name);
+                            html += `
+                                <div class="inv-item">
+                                    <div class="inv-item-info">
+                                        <div class="inv-item-name" style="color: ${gem?.color || '#fff'}">${name}</div>
+                                        <div class="inv-item-desc">Hardness: ${gem?.hardness || '?'} | ${gem?.rarity || 'common'}</div>
+                                    </div>
+                                    <span style="color: #ffd700; font-size: 14px;">×${count}</span>
+                                </div>
+                            `;
+                        }
+                    });
+                    if (!hasRough) {
+                        html += '<div style="color: #888; text-align: center; padding: 20px;">No rough stones. Visit the shop!</div>';
+                    }
+                    html += '</div>';
+                    break;
+                    
+                case 'cut':
+                    html = '<div class="inv-section">';
+                    if (gameFarm.state.inventory.cutStones.length === 0) {
+                        html += '<div style="color: #888; text-align: center; padding: 20px;">No cut stones yet. Start cutting!</div>';
+                    } else {
+                        gameFarm.state.inventory.cutStones.forEach((stone, index) => {
+                            const qualityColor = stone.quality >= 95 ? '#ffd700' : 
+                                                 stone.quality >= 80 ? '#00ff88' : 
+                                                 stone.quality >= 60 ? '#ffcc00' : '#ff6666';
+                            html += `
+                                <div class="inv-item">
+                                    <div class="inv-item-info">
+                                        <div class="inv-item-name" style="color: ${stone.gemColor}">${stone.gemName}</div>
+                                        <div class="inv-item-desc">
+                                            Quality: <span style="color: ${qualityColor}">${stone.quality}%</span>
+                                            ${stone.isPerfect ? ' ⭐ PERFECT' : ''}
+                                        </div>
+                                    </div>
+                                    <div style="text-align: right;">
+                                        <div class="inv-item-value">💎 ${stone.saleValue}</div>
+                                        <button class="game-btn" style="padding: 2px 8px; font-size: 9px; margin-top: 4px;" 
+                                            onclick="sellStone(${index})">Sell</button>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        
+                        html += `
+                            <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #333; text-align: center;">
+                                <strong style="color: #00ff88;">Total Value: 💎 ${resources.inventory.cutStonesValue}</strong>
+                            </div>
+                        `;
+                    }
+                    html += '</div>';
+                    break;
+                    
+                case 'laps':
+                    html = '<div class="inv-section">';
+                    resources.laps.forEach(lap => {
+                        const conditionColor = lap.condition > 50 ? '#00ff88' : 
+                                               lap.condition > 20 ? '#ffcc00' : '#ff4444';
+                        html += `
+                            <div class="inv-item">
+                                <div class="inv-item-info">
+                                    <div class="inv-item-name">${lap.type} Lap</div>
+                                    <div class="inv-item-desc">
+                                        ${lap.type === 'copper' && lap.currentPaste ? `Charged: ${lap.currentPaste}` : ''}
+                                    </div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="color: ${conditionColor}; font-size: 12px;">${Math.round(lap.condition)}%</div>
+                                    <div class="lap-condition-bar" style="width: 80px;">
+                                        <div class="lap-condition-fill" style="width: ${lap.condition}%; background: ${conditionColor};"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    html += '</div>';
+                    break;
+                    
+                case 'supplies':
+                    const cons = resources.consumables;
+                    const paste = resources.paste;
+                    html = `
+                        <div class="inv-section">
+                            <h4 style="color: #00ffff; margin: 0 0 10px 0; font-size: 12px;">Consumables</h4>
+                            <div class="inv-item">
+                                <div class="inv-item-info">
+                                    <div class="inv-item-name">🕯️ Dop Wax</div>
+                                </div>
+                                <span style="color: #ffd700;">${cons.dopWax} units</span>
+                            </div>
+                            <div class="inv-item">
+                                <div class="inv-item-info">
+                                    <div class="inv-item-name">💧 Water Tank</div>
+                                </div>
+                                <span style="color: ${cons.water < 20 ? '#ff4444' : '#00ff88'};">${Math.round(cons.water)}%</span>
+                            </div>
+                            <div class="inv-item">
+                                <div class="inv-item-info">
+                                    <div class="inv-item-name">🛢️ Lubricant</div>
+                                </div>
+                                <span style="color: ${cons.lubricant < 20 ? '#ff4444' : '#00ff88'};">${Math.round(cons.lubricant)}%</span>
+                            </div>
+                            
+                            <h4 style="color: #00ffff; margin: 15px 0 10px 0; font-size: 12px;">Diamond Paste</h4>
+                    `;
+                    Object.entries(paste).forEach(([grit, amount]) => {
+                        html += `
+                            <div class="inv-item">
+                                <div class="inv-item-info">
+                                    <div class="inv-item-name">✨ ${grit} Paste</div>
+                                </div>
+                                <span style="color: ${amount < 10 ? '#ffcc00' : '#00ff88'};">${amount} units</span>
+                            </div>
+                        `;
+                    });
+                    html += '</div>';
+                    break;
+            }
+            
+            container.innerHTML = html;
+        }
+        
+        function sellStone(index) {
+            if (!gameFarm) return;
+            const result = gameFarm.sellCutStone(index);
+            if (result.success) {
+                addGameActivity(`💰 Sold stone for ${result.value} gems!`);
+                updateGameUI();
+                renderInventoryContent();
+            } else {
+                alert(result.message);
+            }
+        }
+        
+        function sellAllStones() {
+            if (!gameFarm) return;
+            const result = gameFarm.sellAllCutStones();
+            if (result.success) {
+                addGameActivity(`💰 Bulk sale: ${result.count} stones for ${result.totalValue} gems!`);
+                updateGameUI();
+                renderInventoryContent();
+            } else {
+                alert(result.message);
+            }
+        }
+        
+        // ==================== MAINTENANCE PANEL FUNCTIONS ====================
+        function openMaintenancePanel() {
+            document.getElementById('maintenancePanelOverlay').style.display = 'flex';
+            renderMaintenanceContent();
+        }
+        
+        function closeMaintenancePanel() {
+            document.getElementById('maintenancePanelOverlay').style.display = 'none';
+        }
+        
+        function renderMaintenanceContent() {
+            if (!gameFarm) return;
+            const container = document.getElementById('maintenanceContent');
+            let html = '';
+            
+            gameFarm.state.machines.forEach(machine => {
+                const status = gameFarm.getMachineStatus(machine);
+                const machineType = gameFarm.machineTypes[machine.type];
+                const conditionColor = status.condition > 70 ? '#00ff88' : 
+                                       status.condition > 30 ? '#ffcc00' : '#ff4444';
+                
+                html += `
+                    <div class="inv-item" style="flex-direction: column; align-items: stretch;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <div>
+                                <div style="font-weight: bold; color: #fff;">${machineType.name}</div>
+                                <div style="font-size: 10px; color: #888;">ID: ${machine.id.slice(0, 15)}...</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="color: ${conditionColor}; font-size: 14px; font-weight: bold;">${Math.round(status.condition)}%</div>
+                                <div class="lap-condition-bar" style="width: 80px;">
+                                    <div class="lap-condition-fill" style="width: ${status.condition}%; background: ${conditionColor};"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        ${status.isDown ? `
+                            <div style="background: rgba(255,0,0,0.2); border: 1px solid #ff4444; border-radius: 6px; padding: 8px; margin-bottom: 10px;">
+                                <strong style="color: #ff4444;">⚠️ ${status.hardwareIssue?.name || 'Machine Down'}</strong>
+                                <div style="font-size: 10px; color: #888; margin-top: 4px;">${status.hardwareIssue?.description || 'Needs repair'}</div>
+                                <button class="game-btn game-btn-primary" style="margin-top: 8px; padding: 6px 12px; font-size: 11px;" 
+                                    onclick="fixMachine('${machine.id}')">
+                                    🔧 Repair (💎 ${status.hardwareIssue?.repairCost || 30})
+                                </button>
+                            </div>
+                        ` : ''}
+                        
+                        ${status.currentStone ? `
+                            <div style="font-size: 10px; color: #888; margin-bottom: 10px;">
+                                Currently cutting: <span style="color: #00ffff;">${status.currentStone.gem}</span> 
+                                (${status.currentStone.quality}% quality)
+                            </div>
+                        ` : ''}
+                        
+                        <div style="display: flex; gap: 5px; flex-wrap: wrap;">
+                            <button class="game-btn" style="padding: 4px 10px; font-size: 10px;" 
+                                onclick="cleanMachine('${machine.id}')"
+                                ${status.isDown ? 'disabled style="opacity:0.5;"' : ''}>
+                                🧹 Clean (Free)
+                            </button>
+                            <button class="game-btn" style="padding: 4px 10px; font-size: 10px;" 
+                                onclick="lubricateMachine('${machine.id}')"
+                                ${status.isDown || gameFarm.state.inventory.consumables.lubricant < 5 ? 'disabled style="opacity:0.5;"' : ''}>
+                                🛢️ Lubricate
+                            </button>
+                            <button class="game-btn" style="padding: 4px 10px; font-size: 10px;" 
+                                onclick="repairMachine('${machine.id}')"
+                                ${gameFarm.state.player.gems < 30 ? 'disabled style="opacity:0.5;"' : ''}>
+                                🔧 Repair (💎 30)
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            if (gameFarm.state.machines.length === 0) {
+                html = '<div style="color: #888; text-align: center; padding: 20px;">No machines to maintain</div>';
+            }
+            
+            container.innerHTML = html;
+        }
+        
+        function cleanMachine(machineId) {
+            if (!gameFarm) return;
+            const result = gameFarm.performMaintenance(machineId, 'clean');
+            if (result.success) {
+                addGameActivity('🧹 Machine cleaned!');
+                renderMaintenanceContent();
+                updateGameUI();
+            } else {
+                alert(result.message);
+            }
+        }
+        
+        function lubricateMachine(machineId) {
+            if (!gameFarm) return;
+            const result = gameFarm.performMaintenance(machineId, 'lubricate');
+            if (result.success) {
+                addGameActivity('🛢️ Machine lubricated!');
+                renderMaintenanceContent();
+                updateGameUI();
+            } else {
+                alert(result.message);
+            }
+        }
+        
+        function repairMachine(machineId) {
+            if (!gameFarm) return;
+            const result = gameFarm.performMaintenance(machineId, 'repair');
+            if (result.success) {
+                addGameActivity('🔧 Machine repaired!');
+                renderMaintenanceContent();
+                updateGameUI();
+            } else {
+                alert(result.message);
+            }
+        }
+        
+        function fixMachine(machineId) {
+            if (!gameFarm) return;
+            const result = gameFarm.fixHardwareIssue(machineId);
+            if (result.success) {
+                addGameActivity(`🔧 Fixed hardware issue for ${result.cost} gems`);
+                renderMaintenanceContent();
+                updateGameUI();
+            } else {
+                alert(result.message);
+            }
+        }
+        
+        // ==================== UPDATE UI WITH RESOURCE STATUS ====================
+        // Extend updateGameUI to show resource warnings
+        const originalUpdateGameUI = updateGameUI;
+        updateGameUI = function() {
+            originalUpdateGameUI();
+            
+            if (!gameFarm) return;
+            
+            // Update resource display
+            const waterEl = document.getElementById('waterLevel');
+            const waxEl = document.getElementById('waxLevel');
+            const lubeEl = document.getElementById('lubeLevel');
+            const warningsEl = document.getElementById('resourceWarnings');
+            
+            if (waterEl) waterEl.textContent = Math.round(gameFarm.state.inventory?.consumables?.water || 100);
+            if (waxEl) waxEl.textContent = gameFarm.state.inventory?.consumables?.dopWax || 100;
+            if (lubeEl) lubeEl.textContent = Math.round(gameFarm.state.inventory?.consumables?.lubricant || 100);
+            
+            // Show warnings
+            if (warningsEl && gameFarm.getResourceWarnings) {
+                const warnings = gameFarm.getResourceWarnings();
+                if (warnings.length > 0) {
+                    const criticalWarnings = warnings.filter(w => w.severity === 'critical' || w.severity === 'high');
+                    warningsEl.innerHTML = criticalWarnings.slice(0, 2).map(w => `⚠️ ${w.message}`).join(' | ');
+                } else {
+                    warningsEl.innerHTML = '';
+                }
+            }
+        };
         
         // Listen for real machine connection changes
         if (typeof serial !== 'undefined') {

@@ -42,12 +42,101 @@ class GemBotFarmGame {
                 level: 1,
                 xp: 0,
                 xpToNext: 100,
-                gems: 0,
-                tokens: 0,
+                gems: 50,          // Starting currency (earned from selling cut stones)
+                tokens: 0,         // Premium currency (convertible to crypto!)
                 totalGemsEver: 0,
                 stonesLost: 0,        // Stones lost to accidents
-                stonesCompleted: 0    // Successfully completed stones
+                stonesCompleted: 0,   // Successfully completed stones
+                totalCaratsCut: 0,    // Lifetime carats of finished stones
+                totalCaratsLost: 0,   // Carats lost to failures
+                cryptoEarned: 0,      // Total crypto rewards earned (in smallest unit)
+                lastPlayTime: Date.now(),  // For offline progress calculation
+                isSearching: false    // True when out of resources, searching for more
             },
+            // ==================== PER-GEM BALANCE (Cut Stone Inventory) ====================
+            // Each gem type has its own inventory of finished stones
+            gemBalance: {
+                'Quartz (Amethyst)': [],    // Array of { caratWeight, quality, value, cutDate, design }
+                'Quartz (Citrine)': [],
+                'Garnet': [],
+                'Topaz': [],
+                'Emerald': [],
+                'Ruby': [],
+                'Sapphire': [],
+                'Opal': [],
+                'Diamond': [],
+                'Alexandrite': []
+            },
+            // ==================== INVENTORY SYSTEM ====================
+            inventory: {
+                // Rough stones inventory (by gem type name)
+                // Each entry is an array of rough pieces with carat weights
+                rough: {
+                    'Quartz (Amethyst)': [
+                        { carats: 2.5, quality: 'good' },
+                        { carats: 3.2, quality: 'good' },
+                        { carats: 1.8, quality: 'fair' },
+                        { carats: 4.1, quality: 'excellent' },
+                        { carats: 2.0, quality: 'good' }
+                    ],
+                    'Quartz (Citrine)': [
+                        { carats: 2.8, quality: 'good' },
+                        { carats: 1.5, quality: 'fair' },
+                        { carats: 3.5, quality: 'good' }
+                    ],
+                    'Garnet': [],
+                    'Topaz': [],
+                    'Emerald': [],
+                    'Ruby': [],
+                    'Sapphire': [],
+                    'Opal': [],
+                    'Diamond': [],
+                    'Alexandrite': []
+                },
+                // Cut stones ready for sale (array of cut stone objects)
+                cutStones: [],
+                // Consumables
+                consumables: {
+                    dopWax: 100,              // Units of dop wax (1 per stone)
+                    water: 100,               // Water tank % (0-100)
+                    lubricant: 100            // Machine lubricant % (0-100)
+                }
+            },
+            // ==================== LAPS INVENTORY ====================
+            laps: {
+                // Cutting laps (condition 0-100%)
+                coarse: { condition: 100, owned: true },
+                '600_grit': { condition: 100, owned: true },
+                '800_grit': { condition: 100, owned: true },
+                '1200_grit': { condition: 100, owned: true },
+                // Polishing laps - copper lap with charged paste
+                copper: { 
+                    condition: 100, 
+                    owned: true,
+                    currentPaste: null  // Currently charged paste grit
+                }
+            },
+            // ==================== POLISHING PASTE INVENTORY ====================
+            paste: {
+                '8k': 50,    // Units of paste (charges copper lap ~5 times each)
+                '14k': 50,
+                '50k': 30,
+                '100k': 20,
+                '200k': 10
+            },
+            // ==================== UNLOCKED SHAPES & DESIGNS ====================
+            unlockedShapes: ['round'],  // Start with round only
+            unlockedDesigns: ['simple_round', 'standard_round_brilliant'],  // Start with basic designs
+            // ==================== INVENTORY UPGRADES ====================
+            upgradelevels: {
+                water_tank: 0,
+                lap_storage: 0,
+                paste_cabinet: 0,
+                rough_storage: 0
+            },
+            // ==================== PENDING INTERACTIONS ====================
+            // Tracks what machines need human interaction clicks
+            pendingInteractions: [],  // Array of { machineId, interactionType, description }
             machines: [],
             rooms: ['starter_workshop'],
             upgrades: {},
@@ -61,7 +150,12 @@ class GemBotFarmGame {
                 lessonsCompleted: 0,
                 dopFailures: 0,       // Stones flew off dop
                 transferFailures: 0,  // Alignment failures during transfer
-                totalTimeSpentCutting: 0 // Real accumulated cutting time (seconds)
+                totalTimeSpentCutting: 0, // Real accumulated cutting time (seconds)
+                lapsReplaced: 0,
+                waterRefills: 0,
+                maintenancePerformed: 0,
+                stonesSold: 0,
+                totalSalesValue: 0
             },
             merlinInteractions: {
                 tipsGiven: 0,
@@ -82,7 +176,421 @@ class GemBotFarmGame {
             autoSaveInterval: 30000, // 30 seconds
             merlinTipInterval: 45000, // Merlin speaks every 45 seconds
             // Realistic timing factors (in game-seconds, accelerated from real hours)
-            timeAcceleration: 60 // 1 real second = 60 game seconds (1 min = 1 hr of cutting)
+            timeAcceleration: 60, // 1 real second = 60 game seconds (1 min = 1 hr of cutting)
+            // Save key for localStorage
+            saveKey: 'gembot_farm_save_v2',
+            // Crypto conversion rates
+            cryptoConversion: {
+                tokensPerCrypto: 1000,     // 1000 tokens = 1 crypto unit
+                minTokensToConvert: 100,   // Minimum tokens to convert
+                conversionFee: 0.05        // 5% fee on conversion
+            }
+        };
+        
+        // ==================== CARAT WEIGHT & YIELD SYSTEM ====================
+        // Realistic yield percentages based on design complexity
+        this.caratYield = {
+            // Design-based yield: finished weight / rough weight
+            'simple_round': 0.45,           // 45% yield - simple cuts lose less
+            'standard_round_brilliant': 0.40, // 40% yield - standard brilliant
+            'portuguese_round': 0.30,       // 30% yield - complex designs lose more
+            'emerald_step': 0.55,           // 55% yield - step cuts preserve weight
+            'trillion_brilliant': 0.38,     // 38% yield
+            'default': 0.40                 // Default 40% yield
+        };
+        
+        // Carat-based pricing multipliers
+        this.caratPricing = {
+            // Under 1ct: lower value per carat
+            'tiny': { maxCarats: 0.5, multiplier: 0.5 },
+            'small': { maxCarats: 1.0, multiplier: 0.8 },
+            // 1-2ct: standard pricing
+            'medium': { maxCarats: 2.0, multiplier: 1.0 },
+            // 2-5ct: premium
+            'large': { maxCarats: 5.0, multiplier: 1.5 },
+            // 5ct+: exceptional
+            'exceptional': { maxCarats: Infinity, multiplier: 2.5 }
+        };
+        
+        // Rough quality affects yield
+        this.roughQuality = {
+            'poor': { yieldMod: 0.8, failureMod: 1.5 },
+            'fair': { yieldMod: 0.9, failureMod: 1.2 },
+            'good': { yieldMod: 1.0, failureMod: 1.0 },
+            'excellent': { yieldMod: 1.1, failureMod: 0.8 },
+            'exceptional': { yieldMod: 1.15, failureMod: 0.6 }
+        };
+        
+        // ==================== SHOP PRICES ====================
+        // All prices in gems (game currency)
+        // Rough prices are PER CARAT
+        this.shopPrices = {
+            // Rough stone costs PER CARAT (by gem name)
+            roughPerCarat: {
+                'Quartz (Amethyst)': 3,
+                'Quartz (Citrine)': 2,
+                'Garnet': 5,
+                'Topaz': 15,
+                'Emerald': 40,
+                'Ruby': 75,
+                'Sapphire': 90,
+                'Opal': 50,
+                'Diamond': 250,
+                'Alexandrite': 500
+            },
+            // Lap costs (new replacement)
+            laps: {
+                coarse: 25,
+                '600_grit': 30,
+                '800_grit': 35,
+                '1200_grit': 40,
+                copper: 50
+            },
+            // Polishing paste (per unit, ~5 lap charges each)
+            paste: {
+                '8k': 5,
+                '14k': 8,
+                '50k': 15,
+                '100k': 25,
+                '200k': 40
+            },
+            // Consumables
+            consumables: {
+                dopWax: 2,        // Per 10 units
+                water: 1,         // Per 25% tank refill
+                lubricant: 5      // Per 25% refill
+            },
+            // Machine repairs
+            repairs: {
+                minor: 20,        // Quick fix (restores 25% condition)
+                major: 50,        // Full service (restores 50% condition)
+                overhaul: 150     // Complete rebuild (restores 100%)
+            }
+        };
+        
+        // ==================== CUT GEM VALUES (per carat finished weight) ====================
+        this.gemValues = {
+            'Quartz (Amethyst)': { base: 10, perfectBonus: 1.5 },
+            'Quartz (Citrine)': { base: 8, perfectBonus: 1.5 },
+            'Garnet': { base: 15, perfectBonus: 1.6 },
+            'Topaz': { base: 35, perfectBonus: 1.7 },
+            'Emerald': { base: 100, perfectBonus: 2.0 },
+            'Ruby': { base: 200, perfectBonus: 2.2 },
+            'Sapphire': { base: 250, perfectBonus: 2.2 },
+            'Opal': { base: 150, perfectBonus: 1.8 },
+            'Diamond': { base: 800, perfectBonus: 3.0 },
+            'Alexandrite': { base: 1500, perfectBonus: 3.5 }
+        };
+        
+        // ==================== RESOURCE CONSUMPTION RATES ====================
+        this.consumptionRates = {
+            dopWaxPerStone: 1,            // 1 unit per stone mounted
+            waterPerMinute: 0.5,          // % of tank per game minute of cutting
+            lubricantPerHour: 1,          // % per hour of machine runtime
+            lapWearPerStage: {
+                coarse: 0.5,              // 0.5% wear per use
+                '600_grit': 0.3,
+                '800_grit': 0.25,
+                '1200_grit': 0.2,
+                copper: 0.1               // Polish laps last longer
+            },
+            pastePerCharge: 10            // Units of paste to charge copper lap
+        };
+        
+        // ==================== MACHINE MAINTENANCE ====================
+        this.maintenanceConfig = {
+            conditionDecayRate: 0.05,     // % condition loss per game hour
+            cleaningThreshold: 70,         // Warn when below this
+            criticalThreshold: 30,         // Machine slows when below this
+            breakdownThreshold: 10,        // Machine can break when below this
+            breakdownChance: 0.1,          // 10% per tick when critical
+            // Maintenance actions
+            cleaning: {
+                cost: 0,                   // Free, just takes time
+                timeMinutes: 5,            // Game minutes
+                conditionBoost: 10         // % restored
+            },
+            lubrication: {
+                costLubricant: 5,          // % lubricant used
+                conditionBoost: 15
+            },
+            repair: {
+                cost: 30,                  // Gems cost
+                conditionBoost: 50
+            }
+        };
+        
+        // ==================== HARDWARE FAILURE TYPES ====================
+        this.hardwareFailures = {
+            motor_issue: {
+                name: 'Motor Issue',
+                description: 'Motor not responding properly - needs service',
+                severity: 'medium',
+                repairCost: 40,
+                downtimeMinutes: 30
+            },
+            limit_switch: {
+                name: 'Limit Switch Fault',
+                description: 'Limit switch triggered unexpectedly - needs calibration',
+                severity: 'low',
+                repairCost: 15,
+                downtimeMinutes: 10
+            },
+            belt_wear: {
+                name: 'Belt Wear',
+                description: 'Drive belt showing wear - replace soon',
+                severity: 'medium',
+                repairCost: 35,
+                downtimeMinutes: 20
+            },
+            bearing_noise: {
+                name: 'Bearing Noise',
+                description: 'Unusual noise from bearings - needs lubrication',
+                severity: 'low',
+                repairCost: 20,
+                downtimeMinutes: 15
+            },
+            spindle_runout: {
+                name: 'Spindle Runout',
+                description: 'Spindle alignment off - affects cut quality',
+                severity: 'high',
+                repairCost: 75,
+                downtimeMinutes: 60
+            },
+            coolant_leak: {
+                name: 'Coolant Leak',
+                description: 'Water system leaking - needs seal replacement',
+                severity: 'medium',
+                repairCost: 25,
+                downtimeMinutes: 25
+            }
+        };
+        
+        // ==================== SHAPE & DESIGN LIBRARY ====================
+        // Each design has specific facet tiers with angles and index positions
+        // Based on 96-tooth index gear (3.75° per step)
+        
+        this.shapes = {
+            'round': {
+                name: 'Round',
+                description: 'Classic circular shape',
+                levelRequired: 1,
+                baseDifficulty: 1.0
+            },
+            'oval': {
+                name: 'Oval',
+                description: 'Elongated round shape',
+                levelRequired: 3,
+                baseDifficulty: 1.2
+            },
+            'pear': {
+                name: 'Pear',
+                description: 'Teardrop shape',
+                levelRequired: 5,
+                baseDifficulty: 1.3
+            },
+            'marquise': {
+                name: 'Marquise',
+                description: 'Football/boat shape with pointed ends',
+                levelRequired: 7,
+                baseDifficulty: 1.5
+            },
+            'square': {
+                name: 'Square',
+                description: 'Square outline',
+                levelRequired: 4,
+                baseDifficulty: 1.1
+            },
+            'emerald_cut': {
+                name: 'Emerald Cut',
+                description: 'Rectangular step cut',
+                levelRequired: 8,
+                baseDifficulty: 1.4
+            },
+            'trillion': {
+                name: 'Trillion',
+                description: 'Triangular brilliant',
+                levelRequired: 6,
+                baseDifficulty: 1.3
+            },
+            'cushion': {
+                name: 'Cushion',
+                description: 'Square with rounded corners',
+                levelRequired: 5,
+                baseDifficulty: 1.25
+            },
+            'heart': {
+                name: 'Heart',
+                description: 'Romantic heart shape',
+                levelRequired: 10,
+                baseDifficulty: 1.8
+            }
+        };
+        
+        // Faceting designs with actual facet data
+        // Each tier: { angle, indexPositions[], facetsPerTier }
+        this.designs = {
+            'standard_round_brilliant': {
+                name: 'Standard Round Brilliant',
+                shape: 'round',
+                levelRequired: 1,
+                description: '57-facet classic brilliant cut',
+                totalFacets: 57,
+                valueMultiplier: 1.0,
+                // Pavilion facets (cut first)
+                pavilion: {
+                    girdle: { angle: 90, indices: [0,6,12,18,24,30,36,42,48,54,60,66,72,78,84,90], facetCount: 16 },
+                    mains: { angle: 42, indices: [6,18,30,42,54,66,78,90], facetCount: 8 },
+                    breaks: { angle: 41, indices: [3,9,15,21,27,33,39,45,51,57,63,69,75,81,87,93], facetCount: 16 }
+                },
+                // Crown facets (after transfer)
+                crown: {
+                    girdle: { angle: 90, indices: [0,6,12,18,24,30,36,42,48,54,60,66,72,78,84,90], facetCount: 16 },
+                    mains: { angle: 42, indices: [6,18,30,42,54,66,78,90], facetCount: 8 },
+                    stars: { angle: 20, indices: [6,18,30,42,54,66,78,90], facetCount: 8 },
+                    breaks: { angle: 32, indices: [3,9,15,21,27,33,39,45,51,57,63,69,75,81,87,93], facetCount: 16 },
+                    table: { angle: 0, indices: [0], facetCount: 1 }
+                }
+            },
+            'simple_round': {
+                name: 'Simple Round',
+                shape: 'round',
+                levelRequired: 1,
+                description: '33-facet beginner cut',
+                totalFacets: 33,
+                valueMultiplier: 0.7,
+                pavilion: {
+                    girdle: { angle: 90, indices: [0,12,24,36,48,60,72,84], facetCount: 8 },
+                    mains: { angle: 43, indices: [6,18,30,42,54,66,78,90], facetCount: 8 }
+                },
+                crown: {
+                    girdle: { angle: 90, indices: [0,12,24,36,48,60,72,84], facetCount: 8 },
+                    mains: { angle: 40, indices: [6,18,30,42,54,66,78,90], facetCount: 8 },
+                    table: { angle: 0, indices: [0], facetCount: 1 }
+                }
+            },
+            'portuguese_round': {
+                name: 'Portuguese Round',
+                shape: 'round',
+                levelRequired: 8,
+                description: '161-facet complex brilliant',
+                totalFacets: 161,
+                valueMultiplier: 2.5,
+                pavilion: {
+                    girdle: { angle: 90, indices: [0,3,6,9,12,15,18,21,24,27,30,33,36,39,42,45,48,51,54,57,60,63,66,69,72,75,78,81,84,87,90,93], facetCount: 32 },
+                    tier1: { angle: 45, indices: [6,18,30,42,54,66,78,90], facetCount: 8 },
+                    tier2: { angle: 50, indices: [3,9,15,21,27,33,39,45,51,57,63,69,75,81,87,93], facetCount: 16 },
+                    tier3: { angle: 55, indices: [6,18,30,42,54,66,78,90], facetCount: 8 },
+                    tier4: { angle: 58, indices: [3,9,15,21,27,33,39,45,51,57,63,69,75,81,87,93], facetCount: 16 }
+                },
+                crown: {
+                    girdle: { angle: 90, indices: [0,3,6,9,12,15,18,21,24,27,30,33,36,39,42,45,48,51,54,57,60,63,66,69,72,75,78,81,84,87,90,93], facetCount: 32 },
+                    tier1: { angle: 45, indices: [6,18,30,42,54,66,78,90], facetCount: 8 },
+                    tier2: { angle: 35, indices: [3,9,15,21,27,33,39,45,51,57,63,69,75,81,87,93], facetCount: 16 },
+                    tier3: { angle: 25, indices: [6,18,30,42,54,66,78,90], facetCount: 8 },
+                    tier4: { angle: 15, indices: [3,9,15,21,27,33,39,45,51,57,63,69,75,81,87,93], facetCount: 16 },
+                    table: { angle: 0, indices: [0], facetCount: 1 }
+                }
+            },
+            'emerald_step': {
+                name: 'Emerald Step Cut',
+                shape: 'emerald_cut',
+                levelRequired: 8,
+                description: 'Classic step cut with hall-of-mirrors effect',
+                totalFacets: 58,
+                valueMultiplier: 1.8,
+                pavilion: {
+                    girdle: { angle: 90, indices: [0,24,48,72], facetCount: 4 },
+                    step1: { angle: 49, indices: [12,36,60,84], facetCount: 4 },
+                    step2: { angle: 57, indices: [0,24,48,72], facetCount: 4 },
+                    step3: { angle: 65, indices: [12,36,60,84], facetCount: 4 },
+                    corners: { angle: 45, indices: [6,18,30,42,54,66,78,90], facetCount: 8 }
+                },
+                crown: {
+                    girdle: { angle: 90, indices: [0,24,48,72], facetCount: 4 },
+                    step1: { angle: 34, indices: [12,36,60,84], facetCount: 4 },
+                    step2: { angle: 25, indices: [0,24,48,72], facetCount: 4 },
+                    step3: { angle: 15, indices: [12,36,60,84], facetCount: 4 },
+                    corners: { angle: 30, indices: [6,18,30,42,54,66,78,90], facetCount: 8 },
+                    table: { angle: 0, indices: [0], facetCount: 1 }
+                }
+            },
+            'trillion_brilliant': {
+                name: 'Trillion Brilliant',
+                shape: 'trillion',
+                levelRequired: 6,
+                description: 'Triangular with brilliant facets',
+                totalFacets: 43,
+                valueMultiplier: 1.5,
+                pavilion: {
+                    girdle: { angle: 90, indices: [0,32,64], facetCount: 3 },
+                    mains: { angle: 41, indices: [16,48,80], facetCount: 3 },
+                    breaks: { angle: 40, indices: [8,24,40,56,72,88], facetCount: 6 }
+                },
+                crown: {
+                    girdle: { angle: 90, indices: [0,32,64], facetCount: 3 },
+                    mains: { angle: 35, indices: [16,48,80], facetCount: 3 },
+                    stars: { angle: 20, indices: [0,32,64], facetCount: 3 },
+                    breaks: { angle: 30, indices: [8,24,40,56,72,88], facetCount: 6 },
+                    table: { angle: 0, indices: [0], facetCount: 1 }
+                }
+            }
+        };
+        
+        // ==================== REALISTIC TIMING CONSTANTS ====================
+        // Based on actual GemBot machine operation
+        this.machineTimings = {
+            homeTime: 5,              // Seconds to run home function
+            angleChangeTime: 3,       // Seconds to change mast angle
+            indexChangeTime: 2,       // Seconds to rotate to new index position
+            approachTime: 2,          // Seconds to move stone close to wheel
+            cutTimePerFacet: 15,      // Base seconds per facet on cutting lap
+            polishTimePerFacet: 20,   // Base seconds per facet on polish lap
+            retractTime: 1,           // Seconds to retract after each facet
+            // Lap changes require human interaction
+            lapChangeTime: 60,        // How long to simulate lap change
+            pasteChargeTime: 30       // Time to charge copper lap with paste
+        };
+        
+        // ==================== INVENTORY UPGRADES ====================
+        this.inventoryUpgrades = {
+            water_tank: {
+                name: 'Larger Water Tank',
+                levels: [
+                    { capacity: 100, cost: 0 },      // Base
+                    { capacity: 150, cost: 50 },
+                    { capacity: 200, cost: 100 },
+                    { capacity: 300, cost: 200 },
+                    { capacity: 500, cost: 500 }
+                ]
+            },
+            lap_storage: {
+                name: 'Lap Storage Rack',
+                levels: [
+                    { spareSlots: 0, cost: 0 },      // Base - no spares
+                    { spareSlots: 2, cost: 75 },
+                    { spareSlots: 4, cost: 150 },
+                    { spareSlots: 6, cost: 300 }
+                ]
+            },
+            paste_cabinet: {
+                name: 'Paste Storage Cabinet',
+                levels: [
+                    { maxPaste: 50, cost: 0 },       // Base
+                    { maxPaste: 100, cost: 60 },
+                    { maxPaste: 200, cost: 120 },
+                    { maxPaste: 400, cost: 250 }
+                ]
+            },
+            rough_storage: {
+                name: 'Rough Stone Storage',
+                levels: [
+                    { maxRough: 20, cost: 0 },       // Base
+                    { maxRough: 50, cost: 80 },
+                    { maxRough: 100, cost: 160 },
+                    { maxRough: 250, cost: 400 }
+                ]
+            }
         };
         
         // Machine types - affects cutting speed and precision
@@ -1095,6 +1603,16 @@ class GemBotFarmGame {
     processRealisticCutting(machine, gameTimePassed) {
         const machineType = this.machineTypes[machine.type];
         
+        // ===== CHECK MACHINE CONDITION =====
+        const machineStatus = this.checkMachineCondition(machine);
+        if (!machineStatus.operational) {
+            // Machine is down - can't cut
+            return;
+        }
+        
+        // Apply condition decay
+        this.applyConditionDecay(machine, gameTimePassed);
+        
         // If machine has no current stone, start a new one
         if (!machine.currentStone) {
             this.startNewStone(machine);
@@ -1109,14 +1627,121 @@ class GemBotFarmGame {
             return;
         }
         
-        // Calculate time for this stage based on gem properties
+        // ===== CHECK FOR AWAITING INTERACTION - FULL STOP =====
+        if (stone.awaitingInteraction) {
+            // Machine is paused waiting for human click
+            // DO NOT PROGRESS - show visual indicator
+            console.log(`⏸️ ${machine.id} waiting for: ${stone.interactionType}`);
+            return;
+        }
+        
+        // ===== CHECK WATER LEVEL =====
+        const waterCheck = this.checkWaterLevel();
+        if (waterCheck.level <= 10) {
+            // Low water - require interaction to refill
+            stone.awaitingInteraction = true;
+            stone.interactionType = 'refill_water';
+            this.addPendingInteraction(machine.id, 'refill_water', 
+                `Water tank low (${waterCheck.level}%)! Click to refill.`);
+            
+            if (this.merlin) {
+                this.merlinSpeak('STOP! Water tank nearly empty! Click to refill before continuing.');
+            }
+            return;
+        }
+        
+        // Consume water while cutting
+        this.consumeWater(gameTimePassed);
+        
+        // ===== CHECK LAP CONDITION =====
+        if (stage.lapType) {
+            const lapKey = stage.lapType.replace('copper_', 'copper');
+            const lapType = lapKey === 'coarse' ? 'coarse' : 
+                           lapKey.includes('grit') ? lapKey : 'copper';
+            const lapStatus = this.isLapUsable(lapType);
+            
+            if (!lapStatus.usable) {
+                // Lap needs replaced - require interaction
+                stone.awaitingInteraction = true;
+                stone.interactionType = 'change_lap';
+                this.addPendingInteraction(machine.id, 'change_lap', 
+                    `${lapStatus.reason} Click to change lap.`);
+                
+                if (this.merlin) {
+                    this.merlinSpeak(`Lap issue: ${lapStatus.reason} Click machine to change lap.`);
+                }
+                return;
+            }
+            
+            // Check if paste is needed for polish stages
+            if (stage.name.includes('Polish') && lapType === 'copper') {
+                const requiredPaste = this.getRequiredPaste(stone.currentStage);
+                if (requiredPaste) {
+                    const pasteLevel = this.state.inventory.paste[requiredPaste] || 0;
+                    const copperCharges = this.state.inventory.laps.copper.charges || 0;
+                    
+                    if (copperCharges <= 0) {
+                        stone.awaitingInteraction = true;
+                        stone.interactionType = 'charge_paste';
+                        this.addPendingInteraction(machine.id, 'charge_paste', 
+                            `Copper lap needs ${requiredPaste} paste charge. Click to apply.`);
+                        return;
+                    }
+                }
+            }
+            
+            // Apply lap wear periodically
+            if (stone.stageProgress % 60 < gameTimePassed) {
+                this.applyLapWear(lapType);
+            }
+        }
+        
+        // ===== CHECK FOR HUMAN REQUIRED STAGES =====
+        if (stage.humanRequired && stone.stageProgress === 0) {
+            // Human stage just started - wait for click
+            stone.awaitingInteraction = true;
+            
+            // Determine interaction type based on stage
+            if (stage.name.includes('Prep')) {
+                stone.interactionType = 'start_prep';
+            } else if (stage.name.includes('Dop')) {
+                stone.interactionType = 'complete_dop';
+            } else if (stage.name.includes('Mount')) {
+                stone.interactionType = 'mount_chuck';
+            } else if (stage.name.includes('Transfer')) {
+                stone.interactionType = 'transfer';
+            } else if (stage.name.includes('Final') || stage.name.includes('Remove')) {
+                stone.interactionType = 'final_remove';
+            } else {
+                stone.interactionType = 'human_task';
+            }
+            
+            this.addPendingInteraction(machine.id, stone.interactionType, 
+                `${stage.name} - ${stage.description}. Click when ready.`);
+            
+            console.log(`👤 Human stage: ${stage.name} - awaiting click`);
+            return;
+        }
+        
+        // ===== PROCESS CUTTING/POLISHING =====
+        stone.isPaused = false;
+        
+        // Calculate time for this stage based on gem properties AND design
         const stageTime = this.calculateStageTime(stone, stage, machineType);
         
+        // Apply machine condition speed modifier
+        const effectiveSpeed = machineType.speed * (machineStatus.speedMultiplier || 1);
+        
         // Progress the stage
-        stone.stageProgress += gameTimePassed * machineType.speed;
+        stone.stageProgress += gameTimePassed * effectiveSpeed;
         
         // Update accumulated cutting time
         this.state.stats.totalTimeSpentCutting += gameTimePassed / this.config.timeAcceleration;
+        
+        // ===== FACET-BY-FACET PROGRESS TRACKING =====
+        if (stage.name.includes('Cut') || stage.name.includes('Polish')) {
+            this.updateFacetProgress(stone, stage, stageTime);
+        }
         
         // Check for stage completion
         if (stone.stageProgress >= stageTime) {
@@ -1138,46 +1763,355 @@ class GemBotFarmGame {
     }
     
     /**
+     * Update facet-by-facet progress for cutting/polishing stages
+     */
+    updateFacetProgress(stone, stage, stageTime) {
+        if (!stone.facetSequence || stone.facetSequence.length === 0) return;
+        
+        const currentPhase = stone.cuttingPhase || 'pavilion';
+        
+        // Filter sequence by current phase
+        const phaseFacets = stone.facetSequence.filter(f => f.phase === currentPhase);
+        if (phaseFacets.length === 0) return;
+        
+        // Calculate which facet we're on based on progress
+        const progressPercent = stone.stageProgress / stageTime;
+        const facetIndex = Math.min(
+            Math.floor(progressPercent * phaseFacets.length),
+            phaseFacets.length - 1
+        );
+        
+        const currentFacet = phaseFacets[facetIndex];
+        if (currentFacet) {
+            stone.currentFacetIndex = facetIndex;
+            stone.currentAngle = currentFacet.angle;
+            stone.currentIndex = currentFacet.index;
+            stone.currentTier = currentFacet.tier;
+        }
+    }
+    
+    /**
+     * Check water level in tank
+     */
+    checkWaterLevel() {
+        return {
+            level: this.state.inventory.consumables.water || 0,
+            maxLevel: 100 + (this.state.upgradelevels.water_tank * 50)
+        };
+    }
+    
+    /**
      * Start cutting a new stone on a machine
+     * Now includes design selection and per-facet timing
      */
     startNewStone(machine) {
-        // Select gem type based on player level
-        const availableGems = this.gemTypes.filter(gem => {
+        // ===== CHECK FOR AVAILABLE ROUGH IN INVENTORY =====
+        // Now rough is an array of pieces with carat weights
+        const availableRough = [];
+        Object.entries(this.state.inventory.rough).forEach(([name, pieces]) => {
+            if (Array.isArray(pieces) && pieces.length > 0) {
+                const gem = this.gemTypes.find(g => g.name === name);
+                if (gem) {
+                    pieces.forEach((piece, index) => {
+                        availableRough.push({
+                            ...gem,
+                            pieceIndex: index,
+                            roughCarats: piece.carats,
+                            roughQuality: piece.quality || 'good'
+                        });
+                    });
+                }
+            }
+        });
+        
+        // Filter by player level
+        const levelFilteredGems = availableRough.filter(gem => {
             if (gem.rarity === 'legendary') return this.state.player.level >= 15;
             if (gem.rarity === 'rare') return this.state.player.level >= 8;
             if (gem.rarity === 'uncommon') return this.state.player.level >= 3;
             return true;
         });
         
-        const gem = availableGems[Math.floor(Math.random() * availableGems.length)];
+        if (levelFilteredGems.length === 0) {
+            // No rough available - enter searching mode
+            this.state.player.isSearching = true;
+            if (this.merlin && Math.random() < 0.1) {
+                this.merlinSpeak('No rough stones available! Visit the shop to buy more material, or go searching for rough!');
+            }
+            return; // Can't start a new stone
+        }
         
-        // Create stone cutting record
+        this.state.player.isSearching = false;
+        
+        // Select a random rough piece from available inventory
+        const selectedRough = levelFilteredGems[Math.floor(Math.random() * levelFilteredGems.length)];
+        const gem = this.gemTypes.find(g => g.name === selectedRough.name);
+        
+        // ===== SELECT DESIGN =====
+        // Pick best available design for this player's level
+        const availableDesigns = Object.entries(this.designs)
+            .filter(([id, design]) => {
+                return this.state.unlockedDesigns.includes(id) && 
+                       design.levelRequired <= this.state.player.level;
+            })
+            .map(([id, design]) => ({ id, ...design }));
+        
+        // Prefer designs with more facets for better value (if player level allows)
+        const sortedDesigns = availableDesigns.sort((a, b) => b.totalFacets - a.totalFacets);
+        const selectedDesign = sortedDesigns[0] || { 
+            id: 'simple_round', 
+            ...this.designs['simple_round'] 
+        };
+        
+        // ===== CALCULATE EXPECTED FINISHED WEIGHT =====
+        const baseYield = this.caratYield[selectedDesign.id] || this.caratYield['default'];
+        const qualityMod = this.roughQuality[selectedRough.roughQuality]?.yieldMod || 1.0;
+        const expectedYield = baseYield * qualityMod;
+        const expectedFinishedCarats = selectedRough.roughCarats * expectedYield;
+        
+        // ===== CALCULATE CUTTING TIME BASED ON CARATS =====
+        // Larger stones take longer (not linear - use square root for realistic scaling)
+        const caratTimeFactor = Math.sqrt(selectedRough.roughCarats);
+        
+        // ===== CHECK DOP WAX =====
+        const dopResult = this.consumeDopWax();
+        if (!dopResult.success) {
+            if (this.merlin && Math.random() < 0.2) {
+                this.merlinSpeak(dopResult.message);
+            }
+            return; // Can't start without dop wax
+        }
+        
+        // ===== REMOVE FROM INVENTORY =====
+        const roughArray = this.state.inventory.rough[selectedRough.name];
+        roughArray.splice(selectedRough.pieceIndex, 1);
+        
+        // ===== BUILD FACET CUTTING SEQUENCE =====
+        const facetSequence = this.buildFacetSequence(selectedDesign);
+        
+        // Create stone cutting record with full facet data and carat tracking
         machine.currentStone = {
             id: 'stone_' + Date.now(),
             gem: gem,
+            design: selectedDesign,
+            designId: selectedDesign.id,
+            // ===== CARAT TRACKING =====
+            roughCarats: selectedRough.roughCarats,
+            roughQuality: selectedRough.roughQuality,
+            expectedYield: expectedYield,
+            expectedFinishedCarats: expectedFinishedCarats,
+            caratTimeFactor: caratTimeFactor,
+            // Stage tracking
             currentStage: this.stageOrder[0], // Start with prep
             stageIndex: 0,
             stageProgress: 0,
+            // Facet tracking (for cutting/polishing stages)
+            facetSequence: facetSequence,
+            currentFacetIndex: 0,
+            currentAngle: 0,
+            currentIndex: 0,
+            cuttingPhase: 'pavilion', // pavilion or crown
+            currentTier: null,
+            // Timing
             startTime: Date.now(),
+            // Quality tracking
             perfectBonus: 1, // Increases with good execution
             qualityScore: 100, // Decreases with issues
-            isPaused: false,  // For human interaction stages
+            // Interaction tracking
+            awaitingInteraction: false,  // TRUE when waiting for human click
+            interactionType: null,       // What kind of interaction needed
+            isPaused: false,
             failureLog: []
         };
         
-        // Notify of new stone
+        // ===== REQUIRE HUMAN INTERACTION TO START =====
+        // First stage is always prep - needs human click
+        machine.currentStone.awaitingInteraction = true;
+        machine.currentStone.interactionType = 'start_prep';
+        
+        this.addPendingInteraction(machine.id, 'start_prep', 
+            `Click to start preparing ${selectedRough.roughCarats.toFixed(2)}ct ${gem.name} (${selectedRough.roughQuality}) with ${selectedDesign.name}`);
+        
+        // Notify of new stone with carat info
         if (this.merlin) {
-            this.merlinSpeak(`Starting a ${gem.name} - ${gem.description}`);
+            this.merlinSpeak(`${selectedRough.roughCarats.toFixed(2)}ct ${gem.name} (${selectedRough.roughQuality} quality) ready! Expected ${expectedFinishedCarats.toFixed(2)}ct finished. ${selectedDesign.totalFacets} facets. Click to begin!`);
         }
         
-        console.log(`💎 Started cutting: ${gem.name} (Hardness: ${gem.hardness}, Facets: ${gem.facetCount})`);
+        console.log(`💎 Started cutting: ${selectedRough.roughCarats.toFixed(2)}ct ${gem.name} (${selectedRough.roughQuality}) → Expected ${expectedFinishedCarats.toFixed(2)}ct with ${selectedDesign.name}`);
     }
     
     /**
-     * Calculate time required for a stage based on gem properties
+     * Build the complete facet cutting sequence for a design
+     * Returns array of { tier, angle, index, phase } for each facet
+     */
+    buildFacetSequence(design) {
+        const sequence = [];
+        
+        // Pavilion facets first
+        if (design.pavilion) {
+            Object.entries(design.pavilion).forEach(([tierName, tier]) => {
+                tier.indices.forEach((indexPos, i) => {
+                    sequence.push({
+                        phase: 'pavilion',
+                        tier: tierName,
+                        angle: tier.angle,
+                        index: indexPos,
+                        facetNumber: sequence.length + 1
+                    });
+                });
+            });
+        }
+        
+        // Crown facets after transfer
+        if (design.crown) {
+            Object.entries(design.crown).forEach(([tierName, tier]) => {
+                tier.indices.forEach((indexPos, i) => {
+                    sequence.push({
+                        phase: 'crown',
+                        tier: tierName,
+                        angle: tier.angle,
+                        index: indexPos,
+                        facetNumber: sequence.length + 1
+                    });
+                });
+            });
+        }
+        
+        return sequence;
+    }
+    
+    /**
+     * Add a pending interaction that requires user click
+     */
+    addPendingInteraction(machineId, interactionType, description) {
+        // Remove any existing interaction for this machine
+        this.state.pendingInteractions = this.state.pendingInteractions.filter(
+            i => i.machineId !== machineId
+        );
+        
+        this.state.pendingInteractions.push({
+            machineId,
+            interactionType,
+            description,
+            addedAt: Date.now()
+        });
+        
+        console.log(`⏸️ Awaiting interaction on ${machineId}: ${interactionType}`);
+    }
+    
+    /**
+     * Handle user click on a machine to complete interaction
+     */
+    handleMachineInteraction(machineId) {
+        const machine = this.state.machines.find(m => m.id === machineId);
+        if (!machine || !machine.currentStone) {
+            return { success: false, message: 'No stone on this machine' };
+        }
+        
+        const stone = machine.currentStone;
+        if (!stone.awaitingInteraction) {
+            return { success: false, message: 'No interaction needed' };
+        }
+        
+        const interactionType = stone.interactionType;
+        
+        // Clear the interaction state
+        stone.awaitingInteraction = false;
+        stone.interactionType = null;
+        stone.isPaused = false;
+        
+        // Remove from pending list
+        this.state.pendingInteractions = this.state.pendingInteractions.filter(
+            i => i.machineId !== machineId
+        );
+        
+        // Handle specific interaction types
+        switch(interactionType) {
+            case 'start_prep':
+                if (this.merlin) {
+                    this.merlinSpeak('Examining the rough... looking for inclusions and best orientation.');
+                }
+                break;
+                
+            case 'complete_dop':
+                if (this.merlin) {
+                    this.merlinSpeak('Stone dopped successfully! The wax bond looks solid.');
+                }
+                break;
+                
+            case 'mount_chuck':
+                if (this.merlin) {
+                    this.merlinSpeak('Dop mounted in chuck. Alignment verified. Ready to cut!');
+                }
+                break;
+                
+            case 'change_lap':
+                const stage = this.cuttingStages[stone.currentStage];
+                if (this.merlin) {
+                    this.merlinSpeak(`Lap changed to ${stage?.lapType || 'new lap'}. Continuing the cut...`);
+                }
+                break;
+                
+            case 'refill_water':
+                this.state.inventory.consumables.water = 100;
+                this.state.stats.waterRefills++;
+                if (this.merlin) {
+                    this.merlinSpeak('Water tank refilled! Cooling system ready.');
+                }
+                break;
+                
+            case 'charge_paste':
+                // Need to determine which paste to charge
+                const requiredPaste = this.getRequiredPaste(stone.currentStage);
+                if (requiredPaste) {
+                    const chargeResult = this.chargeCopperLap(requiredPaste);
+                    if (!chargeResult.success) {
+                        // Put interaction back
+                        stone.awaitingInteraction = true;
+                        stone.interactionType = 'charge_paste';
+                        this.addPendingInteraction(machineId, 'charge_paste', chargeResult.message);
+                        return chargeResult;
+                    }
+                }
+                break;
+                
+            case 'transfer':
+                if (this.merlin) {
+                    this.merlinSpeak('Transfer complete! Crown dop aligned with pavilion. Continuing to crown...');
+                }
+                stone.cuttingPhase = 'crown';
+                break;
+                
+            case 'final_remove':
+                if (this.merlin) {
+                    this.merlinSpeak('Stone carefully removed from dop. Time to inspect!');
+                }
+                break;
+        }
+        
+        console.log(`✅ Interaction completed: ${interactionType} on ${machineId}`);
+        
+        return { success: true, message: `Completed: ${interactionType}` };
+    }
+    
+    /**
+     * Get required paste grit for current stage
+     */
+    getRequiredPaste(stageName) {
+        if (stageName.includes('8k')) return '8k';
+        if (stageName.includes('14k')) return '14k';
+        if (stageName.includes('50k')) return '50k';
+        if (stageName.includes('100k')) return '100k';
+        if (stageName.includes('200k')) return '200k';
+        return null;
+    }
+    
+    /**
+     * Calculate time required for a stage based on gem properties AND design facets
      */
     calculateStageTime(stone, stage, machineType) {
         const gem = stone.gem;
+        const design = stone.design;
         let time = stage.baseTime;
         
         // Hardness multiplier: harder stones take longer to cut
@@ -1185,10 +2119,50 @@ class GemBotFarmGame {
         const hardnessMultiplier = Math.pow(gem.hardness / 7, 1.5);
         time *= hardnessMultiplier;
         
-        // Complexity multiplier: more facets = more time
-        const facetMultiplier = gem.facetCount > 0 ? (gem.facetCount / 32) : 1;
-        if (stage.name.includes('Cut') || stage.name.includes('Polish')) {
-            time *= facetMultiplier;
+        // ===== CARAT-BASED TIMING =====
+        // Larger stones take longer (not linear - square root for realistic scaling)
+        const caratFactor = stone.caratTimeFactor || Math.sqrt(stone.roughCarats || 2);
+        time *= caratFactor;
+        
+        // ===== Design-based timing =====
+        if (design && (stage.name.includes('Cut') || stage.name.includes('Polish'))) {
+            // Calculate based on actual facets in this phase
+            const phase = stone.cuttingPhase || 'pavilion';
+            const phaseData = design[phase];
+            
+            if (phaseData) {
+                // Count total facets in this phase
+                let phaseFacets = 0;
+                Object.values(phaseData).forEach(tier => {
+                    phaseFacets += tier.facetCount || tier.indices?.length || 0;
+                });
+                
+                // Base time per facet based on stage type
+                const isPolish = stage.name.includes('Polish');
+                const baseTimePerFacet = isPolish ? 
+                    this.machineTimings.polishTimePerFacet : 
+                    this.machineTimings.cutTimePerFacet;
+                
+                // Time = (home + angle change + index change + approach + cut + retract) * facets
+                const timePerFacet = 
+                    this.machineTimings.homeTime / phaseFacets +  // Amortized home time
+                    this.machineTimings.angleChangeTime / 4 +     // Angle changes per tier
+                    this.machineTimings.indexChangeTime +
+                    this.machineTimings.approachTime +
+                    baseTimePerFacet +
+                    this.machineTimings.retractTime;
+                
+                time = phaseFacets * timePerFacet * this.config.timeAcceleration;
+                
+                // Apply hardness AND carat factor to per-facet time
+                time *= hardnessMultiplier * caratFactor;
+            }
+        } else {
+            // Legacy: Complexity multiplier for non-design stages
+            const facetMultiplier = gem.facetCount > 0 ? (gem.facetCount / 32) : 1;
+            if (stage.name.includes('Cut') || stage.name.includes('Polish')) {
+                time *= facetMultiplier;
+            }
         }
         
         // Special handling for soft stones (opal)
@@ -1340,6 +2314,38 @@ class GemBotFarmGame {
         // Log stage transition
         console.log(`🔧 ${stone.gem.name}: ${prevStage} → ${stone.currentStage}`);
         
+        // ===== CHECK IF ENTERING A HUMAN REQUIRED STAGE =====
+        if (newStage.humanRequired) {
+            // This stage needs human interaction - will be caught in processRealisticCutting
+            console.log(`👤 Entering human stage: ${newStage.name}`);
+        }
+        
+        // ===== CHECK FOR PHASE TRANSITION (pavilion → crown) =====
+        if (stone.currentStage === 'transfer') {
+            // Transfer stage - switching from pavilion to crown
+            stone.cuttingPhase = 'crown';
+            stone.currentFacetIndex = 0;
+            console.log(`🔄 Phase transition: pavilion → crown`);
+        }
+        
+        // ===== CHECK IF LAP CHANGE NEEDED FOR NEW STAGE =====
+        if (newStage.lapType && newStage.lapType !== this.cuttingStages[prevStage]?.lapType) {
+            // Different lap type needed
+            const lapKey = newStage.lapType.replace('copper_', 'copper');
+            const lapType = lapKey === 'coarse' ? 'coarse' : 
+                           lapKey.includes('grit') ? lapKey : 'copper';
+            
+            // Require interaction to change lap
+            stone.awaitingInteraction = true;
+            stone.interactionType = 'change_lap';
+            this.addPendingInteraction(machine.id, 'change_lap', 
+                `Stage ${newStage.name} requires ${newStage.lapType} lap. Click to install.`);
+            
+            if (this.merlin && Math.random() < 0.5) {
+                this.merlinSpeak(`Time to change to ${newStage.lapType} lap for ${newStage.name}`);
+            }
+        }
+        
         // Merlin commentary on important stages
         if (this.merlin && Math.random() < 0.3) { // 30% chance to comment
             this.giveStageTip(stone, newStage);
@@ -1347,91 +2353,172 @@ class GemBotFarmGame {
     }
     
     /**
-     * Complete a stone - calculate final value
+     * Complete a stone - calculate final value and add to per-gem balance
+     * Uses carat weight system for realistic valuation
      */
     completeStone(machine, stone) {
         const gem = stone.gem;
         const machineType = this.machineTypes[machine.type];
         
-        // Base value
-        let value = gem.value;
+        // ===== CALCULATE FINISHED CARAT WEIGHT =====
+        // Start with expected yield, adjust for quality score
+        const qualityYieldMod = 0.8 + (stone.qualityScore / 100) * 0.4; // 80-120%
+        let finishedCarats = stone.expectedFinishedCarats * qualityYieldMod;
+        
+        // Random variance (±5%)
+        finishedCarats *= 0.95 + (Math.random() * 0.1);
+        finishedCarats = Math.max(0.01, finishedCarats); // Minimum 0.01ct
+        
+        // ===== CALCULATE VALUE BASED ON CARATS =====
+        const gemValue = this.gemValues[gem.name] || { base: 10, perfectBonus: 1.5 };
+        let valuePerCarat = gemValue.base;
+        
+        // Apply carat size multiplier
+        let caratMultiplier = 1.0;
+        for (const [size, data] of Object.entries(this.caratPricing)) {
+            if (finishedCarats <= data.maxCarats) {
+                caratMultiplier = data.multiplier;
+                break;
+            }
+        }
+        valuePerCarat *= caratMultiplier;
         
         // Quality modifier (0-100 becomes 0.5-1.5)
         const qualityMod = 0.5 + (stone.qualityScore / 100);
-        value *= qualityMod;
+        valuePerCarat *= qualityMod;
         
-        // Perfect bonus
-        value *= stone.perfectBonus;
+        // Design complexity bonus
+        const design = stone.design;
+        if (design && design.valueMultiplier) {
+            valuePerCarat *= design.valueMultiplier;
+        }
         
         // Machine production bonus
-        value *= machineType.production;
+        valuePerCarat *= machineType.production;
         
         // Room bonus
         const room = this.roomTypes[machine.room];
         if (room) {
-            value *= room.bonus;
+            valuePerCarat *= room.bonus;
         }
         
         // Real machine connection bonus
         if (this.realMachineConnected) {
-            value *= this.config.realMachineBonus;
+            valuePerCarat *= this.config.realMachineBonus;
         }
         
         // Determine if perfect cut
         const isPerfect = stone.qualityScore >= 95 && stone.perfectBonus >= 1;
         if (isPerfect) {
-            value *= 1.5;
+            valuePerCarat *= gemValue.perfectBonus;
             this.state.stats.perfectCuts++;
         }
         
-        value = Math.floor(value);
+        // Final value calculation
+        const totalValue = Math.floor(valuePerCarat * finishedCarats);
         
         // Calculate cutting time in real minutes
         const cuttingTime = (Date.now() - stone.startTime) / 1000 / 60;
         
-        // Award rewards
-        this.state.player.gems += value;
-        this.state.player.totalGemsEver += value;
-        this.state.player.xp += Math.floor(value / 2) + Math.floor(cuttingTime * 10);
+        // ===== ADD TO PER-GEM BALANCE =====
+        const finishedStone = {
+            id: stone.id,
+            caratWeight: parseFloat(finishedCarats.toFixed(2)),
+            roughCarats: stone.roughCarats,
+            yieldPercent: Math.round((finishedCarats / stone.roughCarats) * 100),
+            quality: stone.qualityScore,
+            isPerfect: isPerfect,
+            design: design?.name || 'Standard',
+            designId: stone.designId,
+            value: totalValue,
+            valuePerCarat: Math.round(valuePerCarat),
+            cutDate: Date.now(),
+            cuttingTime: cuttingTime,
+            machineUsed: machine.type
+        };
+        
+        // Initialize gem balance array if needed
+        if (!this.state.gemBalance[gem.name]) {
+            this.state.gemBalance[gem.name] = [];
+        }
+        this.state.gemBalance[gem.name].push(finishedStone);
+        
+        // Track total carats cut
+        this.state.player.totalCaratsCut += finishedCarats;
+        
+        // Award XP for completing the cut
+        const xpEarned = Math.floor(totalValue / 4) + Math.floor(cuttingTime * 5) + Math.floor(finishedCarats * 10);
+        this.state.player.xp += xpEarned;
         this.state.stats.totalCuts++;
         this.state.player.stonesCompleted++;
         machine.totalCuts++;
         
+        // Award tokens based on quality and rarity (for crypto conversion!)
+        let tokensEarned = 0;
+        if (isPerfect) tokensEarned += 5;
+        if (gem.rarity === 'rare') tokensEarned += 3;
+        if (gem.rarity === 'legendary') tokensEarned += 10;
+        if (finishedCarats >= 2) tokensEarned += 2;
+        if (finishedCarats >= 5) tokensEarned += 5;
+        this.state.player.tokens += tokensEarned;
+        
         // Visual effect
         this.showCutEffect(machine, gem, isPerfect);
         
-        // Merlin celebration
+        // Merlin celebration with detailed info
         if (this.merlin) {
             if (isPerfect) {
-                this.merlinCelebrate('perfect_cut', { gemName: gem.name });
+                this.merlinCelebrate('perfect_cut', { 
+                    gemName: gem.name, 
+                    carats: finishedCarats.toFixed(2),
+                    value: totalValue 
+                });
             } else if (gem.rarity === 'legendary' || gem.rarity === 'rare') {
-                this.merlinCelebrate('rare_gem', { gemName: gem.name });
+                this.merlinCelebrate('rare_gem', { 
+                    gemName: gem.name,
+                    carats: finishedCarats.toFixed(2)
+                });
             } else {
                 const messages = [
-                    `The ${gem.name} is complete! ${value} gems earned. Quality: ${stone.qualityScore}%`,
-                    `Excellent! Finished a ${gem.name} worth ${value} gems in ${cuttingTime.toFixed(1)} minutes.`,
-                    `Another ${gem.name} joins your collection! That's ${this.state.player.stonesCompleted} stones cut.`
+                    `${finishedCarats.toFixed(2)}ct ${gem.name} complete! Worth ${totalValue} gems (${Math.round(valuePerCarat)}/ct). Quality: ${stone.qualityScore}%`,
+                    `Finished ${finishedCarats.toFixed(2)}ct ${gem.name} in ${cuttingTime.toFixed(1)} min. ${stone.yieldPercent || Math.round((finishedCarats/stone.roughCarats)*100)}% yield from ${stone.roughCarats.toFixed(2)}ct rough.`,
+                    `+${tokensEarned} tokens earned! Your ${gem.name} collection: ${this.state.gemBalance[gem.name].length} stones`
                 ];
                 this.merlinSpeak(messages[Math.floor(Math.random() * messages.length)]);
             }
+            
+            // Occasionally remind about crypto conversion
+            if (this.state.player.tokens >= 100 && Math.random() < 0.1) {
+                setTimeout(() => {
+                    this.merlinSpeak(`💎 You have ${this.state.player.tokens} tokens! Remember, these can be converted to real crypto rewards for your time invested!`);
+                }, 3000);
+            }
         }
         
-        console.log(`✅ COMPLETED: ${gem.name} | Value: ${value} | Quality: ${stone.qualityScore}% | Time: ${cuttingTime.toFixed(1)}m | Perfect: ${isPerfect}`);
+        console.log(`✅ COMPLETED: ${finishedCarats.toFixed(2)}ct ${gem.name} | Value: ${totalValue} (${Math.round(valuePerCarat)}/ct) | Quality: ${stone.qualityScore}% | Yield: ${Math.round((finishedCarats/stone.roughCarats)*100)}% | Perfect: ${isPerfect} | +${tokensEarned} tokens`);
         
         // Callback
         if (this.onGemCut) {
             this.onGemCut({
                 machine,
                 gem,
-                value,
+                finishedCarats,
+                roughCarats: stone.roughCarats,
+                value: totalValue,
+                valuePerCarat: Math.round(valuePerCarat),
                 perfect: isPerfect,
                 quality: stone.qualityScore,
-                cuttingTime
+                cuttingTime,
+                tokensEarned,
+                designName: design?.name
             });
         }
         
         // Clear current stone
         machine.currentStone = null;
+        
+        // Auto-save after completing a stone
+        this.saveState();
     }
     
     /**
@@ -1634,6 +2721,1228 @@ class GemBotFarmGame {
         }
     }
     
+    // ==================== SHOP & INVENTORY SYSTEM ====================
+    
+    /**
+     * Buy rough stones from the shop
+     */
+    buyRough(gemName, quantity = 1) {
+        const price = this.shopPrices.rough[gemName];
+        if (!price) {
+            console.error(`Unknown gem type: ${gemName}`);
+            return { success: false, message: 'Unknown gem type' };
+        }
+        
+        const totalCost = price * quantity;
+        if (this.state.player.gems < totalCost) {
+            return { success: false, message: `Not enough gems! Need ${totalCost}, have ${this.state.player.gems}` };
+        }
+        
+        // Check if player level allows this gem
+        const gem = this.gemTypes.find(g => g.name === gemName);
+        if (gem) {
+            if (gem.rarity === 'legendary' && this.state.player.level < 15) {
+                return { success: false, message: 'Need level 15 to buy legendary stones!' };
+            }
+            if (gem.rarity === 'rare' && this.state.player.level < 8) {
+                return { success: false, message: 'Need level 8 to buy rare stones!' };
+            }
+            if (gem.rarity === 'uncommon' && this.state.player.level < 3) {
+                return { success: false, message: 'Need level 3 to buy uncommon stones!' };
+            }
+        }
+        
+        // Deduct cost and add to inventory
+        this.state.player.gems -= totalCost;
+        this.state.inventory.rough[gemName] = (this.state.inventory.rough[gemName] || 0) + quantity;
+        
+        console.log(`🛒 Bought ${quantity}x ${gemName} rough for ${totalCost} gems`);
+        if (this.merlin) {
+            this.merlinSpeak(`Excellent purchase! ${quantity} ${gemName} rough added to your inventory.`);
+        }
+        
+        return { success: true, message: `Purchased ${quantity}x ${gemName}`, cost: totalCost };
+    }
+    
+    /**
+     * Sell a cut stone from gem balance
+     * @param {string} gemName - Name of the gem type
+     * @param {number} stoneIndex - Index in that gem's array
+     */
+    sellCutStone(gemName, stoneIndex) {
+        if (!this.state.gemBalance[gemName] || stoneIndex < 0 || stoneIndex >= this.state.gemBalance[gemName].length) {
+            return { success: false, message: 'Invalid stone' };
+        }
+        
+        const stone = this.state.gemBalance[gemName][stoneIndex];
+        const salePrice = stone.value;
+        
+        // Add to player gems
+        this.state.player.gems += salePrice;
+        this.state.player.totalGemsEver += salePrice;
+        this.state.stats.stonesSold++;
+        this.state.stats.totalSalesValue += salePrice;
+        
+        // Remove from gem balance
+        this.state.gemBalance[gemName].splice(stoneIndex, 1);
+        
+        console.log(`💰 Sold ${stone.caratWeight}ct ${gemName} (${stone.quality}% quality) for ${salePrice} gems`);
+        if (this.merlin) {
+            if (stone.isPerfect) {
+                this.merlinSpeak(`A masterpiece sold! ${salePrice} gems for that perfect ${stone.caratWeight}ct ${gemName}!`);
+            } else {
+                this.merlinSpeak(`${stone.caratWeight}ct ${gemName} sold for ${salePrice} gems. Your balance: ${this.state.player.gems}`);
+            }
+        }
+        
+        // Auto-save after sale
+        this.saveState();
+        
+        return { success: true, message: `Sold for ${salePrice} gems`, value: salePrice, stone };
+    }
+    
+    /**
+     * Sell all stones of a specific gem type
+     */
+    sellAllOfGem(gemName) {
+        const stones = this.state.gemBalance[gemName];
+        if (!stones || stones.length === 0) {
+            return { success: false, message: `No ${gemName} stones to sell!` };
+        }
+        
+        let totalValue = stones.reduce((sum, s) => sum + s.value, 0);
+        let totalCarats = stones.reduce((sum, s) => sum + s.caratWeight, 0);
+        let count = stones.length;
+        
+        this.state.player.gems += totalValue;
+        this.state.player.totalGemsEver += totalValue;
+        this.state.stats.stonesSold += count;
+        this.state.stats.totalSalesValue += totalValue;
+        this.state.gemBalance[gemName] = [];
+        
+        console.log(`💰 Sold all ${gemName}: ${count} stones (${totalCarats.toFixed(2)}ct) for ${totalValue} gems!`);
+        if (this.merlin) {
+            this.merlinSpeak(`${count} ${gemName} stones (${totalCarats.toFixed(2)} total carats) sold for ${totalValue} gems!`);
+        }
+        
+        this.saveState();
+        return { success: true, count, totalCarats, totalValue };
+    }
+    
+    /**
+     * Sell ALL cut stones across all gem types
+     */
+    sellAllCutStones() {
+        let totalValue = 0;
+        let totalCount = 0;
+        let totalCarats = 0;
+        
+        Object.entries(this.state.gemBalance).forEach(([gemName, stones]) => {
+            if (stones.length > 0) {
+                const gemValue = stones.reduce((sum, s) => sum + s.value, 0);
+                const gemCarats = stones.reduce((sum, s) => sum + s.caratWeight, 0);
+                totalValue += gemValue;
+                totalCarats += gemCarats;
+                totalCount += stones.length;
+            }
+        });
+        
+        if (totalCount === 0) {
+            return { success: false, message: 'No stones to sell!' };
+        }
+        
+        this.state.player.gems += totalValue;
+        this.state.player.totalGemsEver += totalValue;
+        this.state.stats.stonesSold += totalCount;
+        this.state.stats.totalSalesValue += totalValue;
+        
+        // Clear all gem balances
+        Object.keys(this.state.gemBalance).forEach(gemName => {
+            this.state.gemBalance[gemName] = [];
+        });
+        
+        console.log(`💰 MEGA SALE: ${totalCount} stones (${totalCarats.toFixed(2)}ct) for ${totalValue} gems!`);
+        if (this.merlin) {
+            this.merlinSpeak(`💎 MASSIVE SALE! ${totalCount} gems totaling ${totalCarats.toFixed(2)} carats sold for ${totalValue} gems! You're building wealth!`);
+        }
+        
+        this.saveState();
+        return { success: true, count: totalCount, totalCarats, totalValue };
+    }
+    
+    /**
+     * Buy rough stone with specific carat weight
+     */
+    buyRough(gemName, carats = null, quality = 'good') {
+        const pricePerCarat = this.shopPrices.roughPerCarat[gemName];
+        if (!pricePerCarat) {
+            return { success: false, message: 'Unknown gem type' };
+        }
+        
+        // Check level requirements
+        const gem = this.gemTypes.find(g => g.name === gemName);
+        if (gem) {
+            if (gem.rarity === 'legendary' && this.state.player.level < 15) {
+                return { success: false, message: 'Requires level 15!' };
+            }
+            if (gem.rarity === 'rare' && this.state.player.level < 8) {
+                return { success: false, message: 'Requires level 8!' };
+            }
+            if (gem.rarity === 'uncommon' && this.state.player.level < 3) {
+                return { success: false, message: 'Requires level 3!' };
+            }
+        }
+        
+        // Random carat weight if not specified (1-5ct range)
+        if (!carats) {
+            carats = 1 + Math.random() * 4;
+        }
+        carats = Math.round(carats * 100) / 100; // Round to 2 decimal places
+        
+        const totalPrice = Math.ceil(pricePerCarat * carats);
+        
+        if (this.state.player.gems < totalPrice) {
+            return { success: false, message: `Not enough gems! Need ${totalPrice} for ${carats}ct ${gemName}` };
+        }
+        
+        // Check storage capacity
+        const currentRoughCount = Object.values(this.state.inventory.rough)
+            .reduce((sum, arr) => sum + (Array.isArray(arr) ? arr.length : 0), 0);
+        const maxRough = this.inventoryUpgrades.rough_storage.levels[this.state.upgradelevels?.rough_storage || 0]?.maxRough || 20;
+        
+        if (currentRoughCount >= maxRough) {
+            return { success: false, message: `Rough storage full! Upgrade or use some stones. (${currentRoughCount}/${maxRough})` };
+        }
+        
+        this.state.player.gems -= totalPrice;
+        
+        // Ensure array exists
+        if (!Array.isArray(this.state.inventory.rough[gemName])) {
+            this.state.inventory.rough[gemName] = [];
+        }
+        
+        // Add rough piece
+        this.state.inventory.rough[gemName].push({
+            carats: carats,
+            quality: quality,
+            purchasedAt: Date.now(),
+            purchasePrice: totalPrice
+        });
+        
+        console.log(`💎 Purchased ${carats}ct ${gemName} rough (${quality}) for ${totalPrice} gems`);
+        if (this.merlin && Math.random() < 0.3) {
+            const messages = [
+                `${carats}ct of ${gemName} rough acquired! ${quality} quality should yield nicely.`,
+                `New rough in inventory! This ${carats}ct ${gemName} should cut beautifully.`,
+                `Good choice! ${gemName} is ${gem?.description || 'a fine material to work with'}.`
+            ];
+            this.merlinSpeak(messages[Math.floor(Math.random() * messages.length)]);
+        }
+        
+        this.state.player.isSearching = false;
+        this.saveState();
+        
+        return { success: true, carats, quality, price: totalPrice };
+    }
+    
+    /**
+     * Convert tokens to crypto rewards
+     */
+    convertTokensToCrypto(tokenAmount) {
+        const { tokensPerCrypto, minTokensToConvert, conversionFee } = this.config.cryptoConversion;
+        
+        if (tokenAmount < minTokensToConvert) {
+            return { success: false, message: `Minimum ${minTokensToConvert} tokens required for conversion` };
+        }
+        
+        if (this.state.player.tokens < tokenAmount) {
+            return { success: false, message: `Not enough tokens! You have ${this.state.player.tokens}` };
+        }
+        
+        // Calculate crypto amount (after fee)
+        const grossCrypto = tokenAmount / tokensPerCrypto;
+        const fee = grossCrypto * conversionFee;
+        const netCrypto = grossCrypto - fee;
+        
+        // Deduct tokens
+        this.state.player.tokens -= tokenAmount;
+        this.state.player.cryptoEarned += netCrypto;
+        
+        console.log(`🪙 Converted ${tokenAmount} tokens → ${netCrypto.toFixed(4)} crypto (${(conversionFee * 100)}% fee)`);
+        
+        if (this.merlin) {
+            this.merlinSpeak(`💰 Tokens converted to crypto! ${tokenAmount} tokens = ${netCrypto.toFixed(4)} crypto. Your time in the gem workshop has real value!`);
+        }
+        
+        this.saveState();
+        
+        return { 
+            success: true, 
+            tokensSpent: tokenAmount, 
+            cryptoEarned: netCrypto,
+            fee: fee,
+            totalCryptoEarned: this.state.player.cryptoEarned
+        };
+    }
+    
+    /**
+     * Get gem balance summary for UI
+     */
+    getGemBalanceSummary() {
+        const summary = {};
+        let totalStones = 0;
+        let totalCarats = 0;
+        let totalValue = 0;
+        
+        Object.entries(this.state.gemBalance).forEach(([gemName, stones]) => {
+            if (stones.length > 0) {
+                const gemCarats = stones.reduce((sum, s) => sum + s.caratWeight, 0);
+                const gemValue = stones.reduce((sum, s) => sum + s.value, 0);
+                const gem = this.gemTypes.find(g => g.name === gemName);
+                
+                summary[gemName] = {
+                    count: stones.length,
+                    totalCarats: gemCarats,
+                    totalValue: gemValue,
+                    avgQuality: Math.round(stones.reduce((sum, s) => sum + s.quality, 0) / stones.length),
+                    perfectCount: stones.filter(s => s.isPerfect).length,
+                    color: gem?.color || '#888888',
+                    stones: stones
+                };
+                
+                totalStones += stones.length;
+                totalCarats += gemCarats;
+                totalValue += gemValue;
+            }
+        });
+        
+        return {
+            byGem: summary,
+            totals: {
+                stones: totalStones,
+                carats: totalCarats.toFixed(2),
+                value: totalValue
+            }
+        };
+    }
+    
+    /**
+     * Get rough inventory summary for UI
+     */
+    getRoughInventorySummary() {
+        const summary = {};
+        let totalPieces = 0;
+        let totalCarats = 0;
+        
+        Object.entries(this.state.inventory.rough).forEach(([gemName, pieces]) => {
+            if (Array.isArray(pieces) && pieces.length > 0) {
+                const gemCarats = pieces.reduce((sum, p) => sum + p.carats, 0);
+                const gem = this.gemTypes.find(g => g.name === gemName);
+                
+                summary[gemName] = {
+                    count: pieces.length,
+                    totalCarats: gemCarats,
+                    avgCarats: (gemCarats / pieces.length).toFixed(2),
+                    color: gem?.color || '#888888',
+                    pieces: pieces
+                };
+                
+                totalPieces += pieces.length;
+                totalCarats += gemCarats;
+            }
+        });
+        
+        const maxRough = this.inventoryUpgrades.rough_storage.levels[this.state.upgradelevels?.rough_storage || 0]?.maxRough || 20;
+        
+        return {
+            byGem: summary,
+            totals: {
+                pieces: totalPieces,
+                carats: totalCarats.toFixed(2),
+                capacity: maxRough,
+                capacityUsed: `${totalPieces}/${maxRough}`
+            }
+        };
+    }
+    
+    // ==================== SEARCHING FOR ROUGH ====================
+    
+    /**
+     * Go searching for rough when out of money and materials
+     * This is a "grinding" mechanic - takes time but yields free rough
+     */
+    goSearching() {
+        this.state.player.isSearching = true;
+        
+        if (this.merlin) {
+            this.merlinSpeak('Time to go rockhounding! This might take a while, but you might find some nice rough...');
+        }
+        
+        console.log('🔍 Started searching for rough...');
+        
+        return { 
+            success: true, 
+            message: 'Searching started! Check back in a minute for results.',
+            searchStartTime: Date.now()
+        };
+    }
+    
+    /**
+     * Complete a search attempt - called by game loop or manually
+     * Chance to find various rough based on player level
+     */
+    completeSearch() {
+        if (!this.state.player.isSearching) {
+            return { success: false, message: 'Not currently searching' };
+        }
+        
+        const finds = [];
+        const playerLevel = this.state.player.level;
+        
+        // Base chance to find something (improves with level)
+        const findChance = 0.3 + (playerLevel * 0.02); // 30-50% base chance
+        
+        // Common finds
+        const commonGems = ['Quartz (Amethyst)', 'Quartz (Citrine)', 'Garnet'];
+        const uncommonGems = ['Topaz', 'Emerald'];
+        const rareGems = ['Ruby', 'Sapphire', 'Opal'];
+        const legendaryGems = ['Diamond', 'Alexandrite'];
+        
+        // Roll for finds (1-3 pieces possible)
+        const numRolls = 1 + Math.floor(Math.random() * 3);
+        
+        for (let i = 0; i < numRolls; i++) {
+            if (Math.random() < findChance) {
+                let gemName;
+                let quality;
+                const roll = Math.random();
+                
+                // What did we find?
+                if (roll < 0.6) {
+                    // Common (60%)
+                    gemName = commonGems[Math.floor(Math.random() * commonGems.length)];
+                    quality = ['poor', 'fair', 'good'][Math.floor(Math.random() * 3)];
+                } else if (roll < 0.85 && playerLevel >= 3) {
+                    // Uncommon (25%)
+                    gemName = uncommonGems[Math.floor(Math.random() * uncommonGems.length)];
+                    quality = ['poor', 'fair', 'fair'][Math.floor(Math.random() * 3)];
+                } else if (roll < 0.97 && playerLevel >= 8) {
+                    // Rare (12%)
+                    gemName = rareGems[Math.floor(Math.random() * rareGems.length)];
+                    quality = ['poor', 'fair'][Math.floor(Math.random() * 2)];
+                } else if (playerLevel >= 15) {
+                    // Legendary (3%)
+                    gemName = legendaryGems[Math.floor(Math.random() * legendaryGems.length)];
+                    quality = 'poor'; // Always poor quality finds for legendary
+                } else {
+                    // Nothing on this roll
+                    continue;
+                }
+                
+                // Random small size (found rough is usually small)
+                const carats = 0.5 + Math.random() * 2; // 0.5-2.5ct
+                
+                // Ensure array exists
+                if (!Array.isArray(this.state.inventory.rough[gemName])) {
+                    this.state.inventory.rough[gemName] = [];
+                }
+                
+                // Add to inventory
+                this.state.inventory.rough[gemName].push({
+                    carats: Math.round(carats * 100) / 100,
+                    quality: quality,
+                    foundWhileSearching: true,
+                    foundAt: Date.now()
+                });
+                
+                finds.push({ gemName, carats: Math.round(carats * 100) / 100, quality });
+            }
+        }
+        
+        this.state.player.isSearching = false;
+        
+        // Award XP for searching
+        const searchXP = 5 + finds.length * 3;
+        this.state.player.xp += searchXP;
+        
+        // Report findings
+        if (finds.length > 0) {
+            console.log(`🔍 Search complete! Found:`, finds);
+            if (this.merlin) {
+                const findList = finds.map(f => `${f.carats}ct ${f.gemName} (${f.quality})`).join(', ');
+                this.merlinSpeak(`Great finds! You discovered: ${findList}. Time to get cutting!`);
+            }
+        } else {
+            console.log('🔍 Search complete - nothing found this time');
+            if (this.merlin) {
+                this.merlinSpeak('No luck this time. Keep searching or buy some rough from the shop!');
+            }
+        }
+        
+        this.saveState();
+        
+        return { 
+            success: true, 
+            found: finds,
+            totalFinds: finds.length,
+            xpEarned: searchXP
+        };
+    }
+    
+    /**
+     * Check if player is broke (no money AND no rough)
+     */
+    isBroke() {
+        const totalRough = Object.values(this.state.inventory.rough)
+            .reduce((sum, arr) => sum + (Array.isArray(arr) ? arr.length : 0), 0);
+        
+        const totalCutValue = Object.values(this.state.gemBalance)
+            .reduce((sum, arr) => sum + arr.reduce((s, stone) => s + (stone.value || 0), 0), 0);
+        
+        return this.state.player.gems < 5 && totalRough === 0 && totalCutValue === 0;
+    }
+    
+    /**
+     * Buy a new lap or replace worn one
+     */
+    buyLap(lapType) {
+        const price = this.shopPrices.laps[lapType];
+        if (!price) {
+            return { success: false, message: 'Unknown lap type' };
+        }
+        
+        if (this.state.player.gems < price) {
+            return { success: false, message: `Not enough gems! Need ${price}` };
+        }
+        
+        this.state.player.gems -= price;
+        this.state.laps[lapType] = { condition: 100, owned: true };
+        if (lapType === 'copper') {
+            this.state.laps[lapType].currentPaste = null;
+        }
+        this.state.stats.lapsReplaced++;
+        
+        console.log(`🔧 Purchased new ${lapType} lap for ${price} gems`);
+        if (this.merlin) {
+            this.merlinSpeak(`Fresh ${lapType} lap installed! 100% cutting efficiency restored.`);
+        }
+        
+        return { success: true, message: `New ${lapType} lap ready!` };
+    }
+    
+    /**
+     * Buy polishing paste
+     */
+    buyPaste(grit, quantity = 1) {
+        const price = this.shopPrices.paste[grit];
+        if (!price) {
+            return { success: false, message: 'Unknown paste grit' };
+        }
+        
+        const totalCost = price * quantity;
+        if (this.state.player.gems < totalCost) {
+            return { success: false, message: `Not enough gems! Need ${totalCost}` };
+        }
+        
+        this.state.player.gems -= totalCost;
+        this.state.paste[grit] = (this.state.paste[grit] || 0) + (quantity * 10); // Buy in units of 10
+        
+        console.log(`🧴 Bought ${quantity * 10} units of ${grit} paste for ${totalCost} gems`);
+        
+        return { success: true, message: `Purchased ${grit} diamond paste` };
+    }
+    
+    /**
+     * Charge copper lap with paste
+     */
+    chargeCopperLap(grit) {
+        const pasteUnits = this.state.paste[grit] || 0;
+        const required = this.consumptionRates.pastePerCharge;
+        
+        if (pasteUnits < required) {
+            return { success: false, message: `Not enough ${grit} paste! Need ${required}, have ${pasteUnits}` };
+        }
+        
+        if (!this.state.laps.copper.owned) {
+            return { success: false, message: 'No copper lap owned!' };
+        }
+        
+        this.state.paste[grit] -= required;
+        this.state.laps.copper.currentPaste = grit;
+        
+        console.log(`✨ Copper lap charged with ${grit} diamond paste`);
+        if (this.merlin) {
+            this.merlinSpeak(`Copper lap charged with ${grit} paste. Ready for polishing!`);
+        }
+        
+        return { success: true, message: `Lap charged with ${grit} paste` };
+    }
+    
+    /**
+     * Buy consumables (dop wax, water, lubricant)
+     */
+    buyConsumable(type, quantity = 1) {
+        const prices = this.shopPrices.consumables;
+        let price, amount;
+        
+        switch(type) {
+            case 'dopWax':
+                price = prices.dopWax * quantity;
+                amount = 10 * quantity; // Buy in units of 10
+                break;
+            case 'water':
+                price = prices.water * quantity;
+                amount = 25 * quantity; // Refill 25% per purchase
+                break;
+            case 'lubricant':
+                price = prices.lubricant * quantity;
+                amount = 25 * quantity;
+                break;
+            default:
+                return { success: false, message: 'Unknown consumable type' };
+        }
+        
+        if (this.state.player.gems < price) {
+            return { success: false, message: `Not enough gems! Need ${price}` };
+        }
+        
+        this.state.player.gems -= price;
+        
+        if (type === 'dopWax') {
+            this.state.inventory.consumables.dopWax += amount;
+        } else if (type === 'water') {
+            this.state.inventory.consumables.water = Math.min(100, this.state.inventory.consumables.water + amount);
+            this.state.stats.waterRefills++;
+        } else if (type === 'lubricant') {
+            this.state.inventory.consumables.lubricant = Math.min(100, this.state.inventory.consumables.lubricant + amount);
+        }
+        
+        console.log(`🛒 Purchased ${type}: +${amount}`);
+        
+        return { success: true, message: `Purchased ${type}` };
+    }
+    
+    /**
+     * Get shop inventory with prices
+     */
+    getShopInventory() {
+        return {
+            rough: Object.entries(this.shopPrices.roughPerCarat).map(([name, pricePerCarat]) => {
+                const gem = this.gemTypes.find(g => g.name === name);
+                const currentStock = this.state.inventory.rough[name];
+                const stockCount = Array.isArray(currentStock) ? currentStock.length : 0;
+                return {
+                    name,
+                    pricePerCarat,
+                    examplePrice: Math.ceil(pricePerCarat * 2.5), // For a 2.5ct stone
+                    rarity: gem?.rarity || 'common',
+                    color: gem?.color,
+                    levelRequired: gem?.rarity === 'legendary' ? 15 : 
+                                   gem?.rarity === 'rare' ? 8 : 
+                                   gem?.rarity === 'uncommon' ? 3 : 1,
+                    canBuy: this.canBuyGem(name),
+                    currentStock: stockCount
+                };
+            }),
+            cutGems: this.getGemBalanceSummary(),
+            laps: Object.entries(this.shopPrices.laps).map(([type, price]) => ({
+                type,
+                price,
+                currentCondition: this.state.laps[type]?.condition || 0
+            })),
+            paste: Object.entries(this.shopPrices.paste).map(([grit, price]) => ({
+                grit,
+                pricePerUnit: price,
+                currentStock: this.state.paste[grit] || 0
+            })),
+            consumables: {
+                dopWax: { price: this.shopPrices.consumables.dopWax, per: 10, current: this.state.inventory.consumables.dopWax },
+                water: { price: this.shopPrices.consumables.water, per: '25%', current: this.state.inventory.consumables.water },
+                lubricant: { price: this.shopPrices.consumables.lubricant, per: '25%', current: this.state.inventory.consumables.lubricant }
+            },
+            cryptoInfo: {
+                tokensAvailable: this.state.player.tokens,
+                conversionRate: `${this.config.cryptoConversion.tokensPerCrypto} tokens = 1 crypto`,
+                minToConvert: this.config.cryptoConversion.minTokensToConvert,
+                fee: `${this.config.cryptoConversion.conversionFee * 100}%`,
+                totalCryptoEarned: this.state.player.cryptoEarned
+            }
+        };
+    }
+    
+    /**
+     * Check if player can buy a specific gem
+     */
+    canBuyGem(gemName) {
+        const gem = this.gemTypes.find(g => g.name === gemName);
+        if (!gem) return false;
+        
+        if (gem.rarity === 'legendary') return this.state.player.level >= 15;
+        if (gem.rarity === 'rare') return this.state.player.level >= 8;
+        if (gem.rarity === 'uncommon') return this.state.player.level >= 3;
+        return true;
+    }
+    
+    // ==================== DESIGNS AND UPGRADES ====================
+    
+    /**
+     * Unlock a new gem shape
+     */
+    unlockShape(shapeId) {
+        const shape = this.shapes[shapeId];
+        if (!shape) {
+            return { success: false, message: 'Unknown shape' };
+        }
+        
+        if (this.state.unlockedShapes.includes(shapeId)) {
+            return { success: false, message: 'Shape already unlocked' };
+        }
+        
+        if (this.state.player.level < shape.levelRequired) {
+            return { success: false, message: `Requires level ${shape.levelRequired}` };
+        }
+        
+        // Shape unlock costs scale with difficulty
+        const unlockCost = Math.floor(100 * shape.baseDifficulty);
+        if (this.state.player.gems < unlockCost) {
+            return { success: false, message: `Not enough gems! Need ${unlockCost}` };
+        }
+        
+        this.state.player.gems -= unlockCost;
+        this.state.unlockedShapes.push(shapeId);
+        
+        if (this.merlin) {
+            this.merlinSpeak(`New shape unlocked: ${shapeId}! More cutting possibilities available.`);
+        }
+        
+        return { success: true, message: `Unlocked ${shapeId} shape` };
+    }
+    
+    /**
+     * Unlock a new faceting design
+     */
+    unlockDesign(designId) {
+        const design = this.designs[designId];
+        if (!design) {
+            return { success: false, message: 'Unknown design' };
+        }
+        
+        if (this.state.unlockedDesigns.includes(designId)) {
+            return { success: false, message: 'Design already unlocked' };
+        }
+        
+        if (this.state.player.level < design.levelRequired) {
+            return { success: false, message: `Requires level ${design.levelRequired}` };
+        }
+        
+        // Design unlock costs based on facet count and value multiplier
+        const unlockCost = Math.floor(design.totalFacets * 10 * design.valueMultiplier);
+        if (this.state.player.gems < unlockCost) {
+            return { success: false, message: `Not enough gems! Need ${unlockCost}` };
+        }
+        
+        this.state.player.gems -= unlockCost;
+        this.state.unlockedDesigns.push(designId);
+        
+        if (this.merlin) {
+            this.merlinSpeak(`New design learned: ${design.name}! ${design.totalFacets} facets - ${design.description || ''}`);
+        }
+        
+        return { success: true, message: `Unlocked ${design.name}` };
+    }
+    
+    /**
+     * Purchase inventory upgrade
+     */
+    purchaseUpgrade(upgradeType) {
+        const upgrade = this.inventoryUpgrades[upgradeType];
+        if (!upgrade) {
+            return { success: false, message: 'Unknown upgrade type' };
+        }
+        
+        const currentLevel = this.state.upgradelevels[upgradeType] || 0;
+        if (currentLevel >= upgrade.maxLevel) {
+            return { success: false, message: 'Already at max level' };
+        }
+        
+        const levelData = upgrade.levels[currentLevel];
+        if (this.state.player.gems < levelData.cost) {
+            return { success: false, message: `Not enough gems! Need ${levelData.cost}` };
+        }
+        
+        this.state.player.gems -= levelData.cost;
+        this.state.upgradelevels[upgradeType] = currentLevel + 1;
+        
+        // Apply upgrade effects
+        this.applyUpgradeEffect(upgradeType, currentLevel + 1);
+        
+        if (this.merlin) {
+            this.merlinSpeak(`${upgrade.name} upgraded to level ${currentLevel + 1}! ${levelData.description || ''}`);
+        }
+        
+        return { success: true, message: `Upgraded ${upgrade.name}` };
+    }
+    
+    /**
+     * Apply upgrade effect
+     */
+    applyUpgradeEffect(upgradeType, level) {
+        const upgrade = this.inventoryUpgrades[upgradeType];
+        const levelData = upgrade.levels[level - 1];
+        
+        switch(upgradeType) {
+            case 'water_tank':
+                // Water capacity increased - will be checked in checkWaterLevel()
+                break;
+            case 'lap_storage':
+                // More backup laps - reduces lap change time
+                break;
+            case 'paste_cabinet':
+                // Paste doesn't expire - better storage
+                break;
+            case 'rough_storage':
+                // Can hold more rough in inventory
+                break;
+        }
+    }
+    
+    /**
+     * Get available designs for shop display
+     */
+    getAvailableDesigns() {
+        return Object.entries(this.designs).map(([id, design]) => ({
+            id,
+            name: design.name,
+            totalFacets: design.totalFacets,
+            valueMultiplier: design.valueMultiplier,
+            levelRequired: design.levelRequired,
+            unlocked: this.state.unlockedDesigns.includes(id),
+            canUnlock: this.state.player.level >= design.levelRequired,
+            unlockCost: Math.floor(design.totalFacets * 10 * design.valueMultiplier)
+        }));
+    }
+    
+    /**
+     * Get available shapes for shop display
+     */
+    getAvailableShapes() {
+        return Object.entries(this.shapes).map(([id, shape]) => ({
+            id,
+            levelRequired: shape.levelRequired,
+            baseDifficulty: shape.baseDifficulty,
+            unlocked: this.state.unlockedShapes.includes(id),
+            canUnlock: this.state.player.level >= shape.levelRequired,
+            unlockCost: Math.floor(100 * shape.baseDifficulty)
+        }));
+    }
+    
+    /**
+     * Get available upgrades for shop display
+     */
+    getAvailableUpgrades() {
+        return Object.entries(this.inventoryUpgrades).map(([type, upgrade]) => {
+            const currentLevel = this.state.upgradelevels[type] || 0;
+            const nextLevel = upgrade.levels[currentLevel];
+            return {
+                type,
+                name: upgrade.name,
+                description: upgrade.description,
+                currentLevel,
+                maxLevel: upgrade.maxLevel,
+                atMax: currentLevel >= upgrade.maxLevel,
+                nextLevelCost: nextLevel ? nextLevel.cost : null,
+                nextLevelBonus: nextLevel ? nextLevel.bonus : null,
+                nextLevelDescription: nextLevel ? nextLevel.description : null
+            };
+        });
+    }
+    
+    // ==================== RESOURCE CONSUMPTION ====================
+    
+    /**
+     * Consume water during cutting
+     */
+    consumeWater(gameTimePassed) {
+        const minutesPassed = gameTimePassed / 60;
+        const consumption = minutesPassed * this.consumptionRates.waterPerMinute;
+        
+        this.state.inventory.consumables.water = Math.max(0, this.state.inventory.consumables.water - consumption);
+        
+        // Warn if low
+        if (this.state.inventory.consumables.water < 20 && this.state.inventory.consumables.water > 15) {
+            if (this.merlin && Math.random() < 0.1) {
+                this.merlinSpeak('Water tank running low! Refill soon to avoid overheating stones.');
+            }
+        }
+        
+        return this.state.inventory.consumables.water > 0;
+    }
+    
+    /**
+     * Consume dop wax when mounting a stone
+     */
+    consumeDopWax() {
+        if (this.state.inventory.consumables.dopWax < this.consumptionRates.dopWaxPerStone) {
+            return { success: false, message: 'Out of dop wax! Buy more from the shop.' };
+        }
+        
+        this.state.inventory.consumables.dopWax -= this.consumptionRates.dopWaxPerStone;
+        return { success: true };
+    }
+    
+    /**
+     * Apply lap wear from cutting
+     */
+    applyLapWear(lapType) {
+        const wear = this.consumptionRates.lapWearPerStage[lapType];
+        if (!wear) return;
+        
+        if (this.state.laps[lapType]) {
+            this.state.laps[lapType].condition = Math.max(0, this.state.laps[lapType].condition - wear);
+            
+            // Warn if lap getting worn
+            if (this.state.laps[lapType].condition < 30 && this.state.laps[lapType].condition > 25) {
+                if (this.merlin) {
+                    this.merlinSpeak(`Your ${lapType} lap is getting worn. Consider replacing it soon.`);
+                }
+            }
+        }
+    }
+    
+    /**
+     * Check if lap is usable
+     */
+    isLapUsable(lapType) {
+        const lap = this.state.laps[lapType];
+        if (!lap || !lap.owned) return { usable: false, reason: 'Lap not owned' };
+        if (lap.condition <= 0) return { usable: false, reason: 'Lap completely worn out' };
+        if (lapType === 'copper' && !lap.currentPaste) return { usable: false, reason: 'Copper lap needs paste charge' };
+        
+        // Reduced efficiency if worn
+        const efficiency = lap.condition / 100;
+        return { usable: true, efficiency };
+    }
+    
+    // ==================== MACHINE MAINTENANCE SYSTEM ====================
+    
+    /**
+     * Check machine condition and apply maintenance effects
+     */
+    checkMachineCondition(machine) {
+        if (!machine.condition) machine.condition = 100;
+        if (!machine.needsCleaning) machine.needsCleaning = false;
+        if (!machine.needsLubrication) machine.needsLubrication = false;
+        if (!machine.hardwareIssue) machine.hardwareIssue = null;
+        if (!machine.isDown) machine.isDown = false;
+        if (!machine.downUntil) machine.downUntil = null;
+        
+        // If machine is down, check if repair time is complete
+        if (machine.isDown && machine.downUntil) {
+            if (Date.now() >= machine.downUntil) {
+                machine.isDown = false;
+                machine.downUntil = null;
+                machine.hardwareIssue = null;
+                console.log(`🔧 Machine ${machine.id} is back online!`);
+                if (this.merlin) {
+                    this.merlinSpeak('Machine repairs complete! Back to cutting gems.');
+                }
+            }
+            return { operational: false, reason: 'Under repair' };
+        }
+        
+        // Check for hardware issues
+        if (machine.hardwareIssue) {
+            return { operational: false, reason: machine.hardwareIssue.name };
+        }
+        
+        // Check condition thresholds
+        if (machine.condition < this.maintenanceConfig.breakdownThreshold) {
+            // Risk of breakdown
+            if (Math.random() < this.maintenanceConfig.breakdownChance) {
+                this.triggerHardwareFailure(machine);
+                return { operational: false, reason: 'Hardware failure!' };
+            }
+        }
+        
+        // Calculate speed penalty for poor condition
+        let speedMultiplier = 1;
+        if (machine.condition < this.maintenanceConfig.criticalThreshold) {
+            speedMultiplier = 0.5; // Half speed when critical
+        } else if (machine.condition < this.maintenanceConfig.cleaningThreshold) {
+            speedMultiplier = 0.8; // 80% speed when needs cleaning
+        }
+        
+        return { 
+            operational: true, 
+            speedMultiplier,
+            needsMaintenance: machine.condition < this.maintenanceConfig.cleaningThreshold
+        };
+    }
+    
+    /**
+     * Apply condition decay over time
+     */
+    applyConditionDecay(machine, gameTimePassed) {
+        const hoursPassed = gameTimePassed / 3600;
+        const decay = hoursPassed * this.maintenanceConfig.conditionDecayRate;
+        
+        machine.condition = Math.max(0, (machine.condition || 100) - decay);
+        
+        // Also consume lubricant
+        const lubricantUse = hoursPassed * this.consumptionRates.lubricantPerHour;
+        this.state.inventory.consumables.lubricant = Math.max(0, this.state.inventory.consumables.lubricant - lubricantUse);
+        
+        // Mark as needing maintenance
+        if (machine.condition < this.maintenanceConfig.cleaningThreshold) {
+            machine.needsCleaning = true;
+        }
+        if (this.state.inventory.consumables.lubricant < 20) {
+            machine.needsLubrication = true;
+        }
+    }
+    
+    /**
+     * Trigger a random hardware failure
+     */
+    triggerHardwareFailure(machine) {
+        const failures = Object.entries(this.hardwareFailures);
+        const [failureId, failure] = failures[Math.floor(Math.random() * failures.length)];
+        
+        machine.hardwareIssue = { id: failureId, ...failure };
+        machine.isDown = true;
+        machine.downUntil = Date.now() + (failure.downtimeMinutes * 60000 / this.config.timeAcceleration);
+        
+        console.log(`⚠️ HARDWARE FAILURE on ${machine.id}: ${failure.name}`);
+        if (this.merlin) {
+            this.merlinSpeak(`Oh no! ${failure.name} on the machine! ${failure.description}`);
+        }
+    }
+    
+    /**
+     * Perform maintenance on a machine
+     */
+    performMaintenance(machineId, maintenanceType) {
+        const machine = this.state.machines.find(m => m.id === machineId);
+        if (!machine) {
+            return { success: false, message: 'Machine not found' };
+        }
+        
+        switch(maintenanceType) {
+            case 'clean':
+                machine.needsCleaning = false;
+                machine.condition = Math.min(100, machine.condition + this.maintenanceConfig.cleaning.conditionBoost);
+                this.state.stats.maintenancePerformed++;
+                console.log(`🧹 Cleaned machine ${machineId}`);
+                if (this.merlin) {
+                    this.merlinSpeak('Machine cleaned! Smooth operation restored.');
+                }
+                return { success: true, message: 'Machine cleaned!' };
+                
+            case 'lubricate':
+                const lubCost = this.maintenanceConfig.lubrication.costLubricant;
+                if (this.state.inventory.consumables.lubricant < lubCost) {
+                    return { success: false, message: 'Not enough lubricant!' };
+                }
+                this.state.inventory.consumables.lubricant -= lubCost;
+                machine.needsLubrication = false;
+                machine.condition = Math.min(100, machine.condition + this.maintenanceConfig.lubrication.conditionBoost);
+                this.state.stats.maintenancePerformed++;
+                console.log(`🛢️ Lubricated machine ${machineId}`);
+                return { success: true, message: 'Machine lubricated!' };
+                
+            case 'repair':
+                const repairCost = this.maintenanceConfig.repair.cost;
+                if (this.state.player.gems < repairCost) {
+                    return { success: false, message: `Not enough gems! Need ${repairCost}` };
+                }
+                this.state.player.gems -= repairCost;
+                machine.condition = Math.min(100, machine.condition + this.maintenanceConfig.repair.conditionBoost);
+                machine.hardwareIssue = null;
+                machine.isDown = false;
+                machine.downUntil = null;
+                this.state.stats.maintenancePerformed++;
+                console.log(`🔧 Repaired machine ${machineId}`);
+                if (this.merlin) {
+                    this.merlinSpeak('Full repair complete! Machine is good as new.');
+                }
+                return { success: true, message: 'Machine repaired!' };
+                
+            default:
+                return { success: false, message: 'Unknown maintenance type' };
+        }
+    }
+    
+    /**
+     * Fix a specific hardware issue
+     */
+    fixHardwareIssue(machineId) {
+        const machine = this.state.machines.find(m => m.id === machineId);
+        if (!machine || !machine.hardwareIssue) {
+            return { success: false, message: 'No hardware issue to fix' };
+        }
+        
+        const repairCost = machine.hardwareIssue.repairCost;
+        if (this.state.player.gems < repairCost) {
+            return { success: false, message: `Not enough gems! Need ${repairCost}` };
+        }
+        
+        this.state.player.gems -= repairCost;
+        const issueName = machine.hardwareIssue.name;
+        machine.hardwareIssue = null;
+        machine.isDown = false;
+        machine.downUntil = null;
+        machine.condition = Math.min(100, machine.condition + 25);
+        
+        console.log(`🔧 Fixed ${issueName} on ${machineId} for ${repairCost} gems`);
+        if (this.merlin) {
+            this.merlinSpeak(`${issueName} fixed! The machine hums with renewed vigor.`);
+        }
+        
+        return { success: true, message: `Fixed ${issueName}`, cost: repairCost };
+    }
+    
+    /**
+     * Get machine status summary
+     */
+    getMachineStatus(machine) {
+        const stone = machine.currentStone;
+        return {
+            id: machine.id,
+            type: machine.type,
+            condition: machine.condition || 100,
+            needsCleaning: machine.needsCleaning || false,
+            needsLubrication: machine.needsLubrication || false,
+            isDown: machine.isDown || false,
+            hardwareIssue: machine.hardwareIssue,
+            downUntil: machine.downUntil,
+            // NEW: Interaction status
+            awaitingInteraction: stone ? (stone.awaitingInteraction || false) : false,
+            interactionType: stone ? (stone.interactionType || null) : null,
+            pendingInteraction: this.state.pendingInteractions.find(i => i.machineId === machine.id) || null,
+            // Current stone info
+            currentStone: stone ? {
+                gem: stone.gem.name,
+                stage: stone.currentStage,
+                quality: stone.qualityScore,
+                design: stone.design ? stone.design.name : null,
+                totalFacets: stone.design ? stone.design.totalFacets : null,
+                cuttingPhase: stone.cuttingPhase || 'pavilion',
+                currentFacetIndex: stone.currentFacetIndex || 0,
+                currentAngle: stone.currentAngle || 0,
+                currentIndex: stone.currentIndex || 0,
+                currentTier: stone.currentTier || null,
+                awaitingInteraction: stone.awaitingInteraction || false,
+                interactionType: stone.interactionType || null
+            } : null
+        };
+    }
+    
+    /**
+     * Get all pending interactions across all machines
+     */
+    getPendingInteractions() {
+        return this.state.pendingInteractions.map(interaction => {
+            const machine = this.state.machines.find(m => m.id === interaction.machineId);
+            return {
+                ...interaction,
+                machineName: machine ? this.machineTypes[machine.type]?.name : interaction.machineId,
+                stoneInfo: machine?.currentStone ? {
+                    gem: machine.currentStone.gem.name,
+                    stage: machine.currentStone.currentStage
+                } : null
+            };
+        });
+    }
+    
+    /**
+     * Check if any machine is awaiting interaction
+     */
+    hasAwaitingInteractions() {
+        return this.state.pendingInteractions.length > 0;
+    }
+    
+    /**
+     * Get all resources status
+     */
+    getResourceStatus() {
+        return {
+            inventory: {
+                rough: { ...this.state.inventory.rough },
+                cutStones: this.state.inventory.cutStones.length,
+                cutStonesValue: this.state.inventory.cutStones.reduce((sum, s) => sum + s.saleValue, 0)
+            },
+            consumables: { ...this.state.inventory.consumables },
+            laps: Object.entries(this.state.laps).map(([type, data]) => ({
+                type,
+                condition: data.condition,
+                owned: data.owned,
+                currentPaste: data.currentPaste
+            })),
+            paste: { ...this.state.paste },
+            warnings: this.getResourceWarnings()
+        };
+    }
+    
+    /**
+     * Get warnings for low resources
+     */
+    getResourceWarnings() {
+        const warnings = [];
+        
+        // Check consumables
+        if (this.state.inventory.consumables.water < 20) {
+            warnings.push({ type: 'water', message: 'Water tank low!', severity: 'high' });
+        } else if (this.state.inventory.consumables.water < 40) {
+            warnings.push({ type: 'water', message: 'Water tank getting low', severity: 'medium' });
+        }
+        
+        if (this.state.inventory.consumables.dopWax < 5) {
+            warnings.push({ type: 'dopWax', message: 'Almost out of dop wax!', severity: 'high' });
+        } else if (this.state.inventory.consumables.dopWax < 15) {
+            warnings.push({ type: 'dopWax', message: 'Dop wax running low', severity: 'medium' });
+        }
+        
+        if (this.state.inventory.consumables.lubricant < 20) {
+            warnings.push({ type: 'lubricant', message: 'Machine lubricant low!', severity: 'high' });
+        }
+        
+        // Check laps
+        Object.entries(this.state.laps).forEach(([type, data]) => {
+            if (data.owned && data.condition < 20) {
+                warnings.push({ type: 'lap', lapType: type, message: `${type} lap nearly worn out!`, severity: 'high' });
+            } else if (data.owned && data.condition < 40) {
+                warnings.push({ type: 'lap', lapType: type, message: `${type} lap getting worn`, severity: 'medium' });
+            }
+        });
+        
+        // Check paste
+        Object.entries(this.state.paste).forEach(([grit, amount]) => {
+            if (amount < 10) {
+                warnings.push({ type: 'paste', grit, message: `${grit} paste running low`, severity: 'medium' });
+            }
+        });
+        
+        // Check rough inventory (now array-based)
+        const totalRough = Object.values(this.state.inventory.rough)
+            .reduce((sum, arr) => sum + (Array.isArray(arr) ? arr.length : 0), 0);
+        if (totalRough === 0) {
+            warnings.push({ type: 'rough', message: 'OUT OF ROUGH! Buy more or go searching!', severity: 'critical' });
+        } else if (totalRough < 3) {
+            warnings.push({ type: 'rough', message: 'Low on rough stones!', severity: 'medium' });
+        }
+        
+        // Check machines
+        this.state.machines.forEach(machine => {
+            if (machine.isDown) {
+                warnings.push({ type: 'machine', machineId: machine.id, message: `${machine.id} is down!`, severity: 'critical' });
+            } else if ((machine.condition || 100) < 30) {
+                warnings.push({ type: 'machine', machineId: machine.id, message: `${machine.id} needs maintenance`, severity: 'high' });
+            }
+        });
+        
+        return warnings;
+    }
+    
     /**
      * Called when real machine connects
      */
@@ -1680,11 +3989,14 @@ class GemBotFarmGame {
     }
     
     /**
-     * Save state to localStorage
+     * Save state to localStorage - COMPREHENSIVE
      */
     saveState() {
         try {
-            // Clean up non-serializable properties
+            // Record last play time for offline calculations
+            this.state.player.lastPlayTime = Date.now();
+            
+            // Clean up non-serializable properties from machines
             const saveData = JSON.parse(JSON.stringify(this.state));
             saveData.machines.forEach(m => {
                 delete m.mesh;
@@ -1693,30 +4005,252 @@ class GemBotFarmGame {
                 delete m.statusMat;
             });
             
-            localStorage.setItem('gembot_farm_save', JSON.stringify(saveData));
-            console.log('💾 Game saved');
+            // Add save metadata
+            saveData._saveVersion = 2;
+            saveData._savedAt = Date.now();
+            saveData._totalPlayTime = this.state.stats.playTime;
+            
+            // Save to localStorage
+            localStorage.setItem(this.config.saveKey, JSON.stringify(saveData));
+            
+            // Also save a backup with timestamp
+            const backupKey = `gembot_backup_${new Date().toISOString().split('T')[0]}`;
+            localStorage.setItem(backupKey, JSON.stringify(saveData));
+            
+            console.log('💾 Game saved successfully!', {
+                gems: this.state.player.gems,
+                tokens: this.state.player.tokens,
+                level: this.state.player.level,
+                totalCarats: this.state.player.totalCaratsCut?.toFixed(2)
+            });
+            
+            return { success: true, savedAt: Date.now() };
         } catch (e) {
             console.error('Failed to save game:', e);
+            return { success: false, error: e.message };
         }
     }
     
     /**
-     * Load state from localStorage
+     * Load state from localStorage - COMPREHENSIVE with migration
      */
     loadState() {
         try {
-            const saved = localStorage.getItem('gembot_farm_save');
+            // Try new save key first, then old
+            let saved = localStorage.getItem(this.config.saveKey);
+            let needsMigration = false;
+            
+            if (!saved) {
+                saved = localStorage.getItem('gembot_farm_save');
+                needsMigration = true;
+            }
+            
             if (saved) {
                 const data = JSON.parse(saved);
+                
+                // Calculate offline progress
+                const offlineTime = Date.now() - (data.player?.lastPlayTime || Date.now());
+                const offlineMinutes = Math.floor(offlineTime / 60000);
+                
                 // Merge with default state to handle new properties
-                this.state = { ...this.state, ...data };
-                this.state.player = { ...this.state.player, ...data.player };
-                this.state.stats = { ...this.state.stats, ...data.stats };
-                console.log('📂 Game loaded');
+                this.state = this.deepMerge(this.state, data);
+                
+                // Ensure all gem balance arrays exist
+                this.gemTypes.forEach(gem => {
+                    if (!this.state.gemBalance[gem.name]) {
+                        this.state.gemBalance[gem.name] = [];
+                    }
+                });
+                
+                // Ensure all rough arrays exist and migrate from old format
+                if (needsMigration || !Array.isArray(Object.values(this.state.inventory.rough)[0])) {
+                    this.migrateRoughInventory();
+                }
+                
+                // Ensure player has all required fields
+                this.state.player = {
+                    level: 1,
+                    xp: 0,
+                    xpToNext: 100,
+                    gems: 50,
+                    tokens: 0,
+                    totalGemsEver: 0,
+                    stonesLost: 0,
+                    stonesCompleted: 0,
+                    totalCaratsCut: 0,
+                    totalCaratsLost: 0,
+                    cryptoEarned: 0,
+                    lastPlayTime: Date.now(),
+                    isSearching: false,
+                    ...this.state.player
+                };
+                
+                // Report offline progress
+                if (offlineMinutes > 1) {
+                    console.log(`📂 Game loaded! You were away for ${offlineMinutes} minutes.`);
+                    
+                    // Show welcome back message
+                    if (this.merlin) {
+                        setTimeout(() => {
+                            this.merlinSpeak(`Welcome back! You were away for ${offlineMinutes > 60 ? Math.floor(offlineMinutes/60) + ' hours' : offlineMinutes + ' minutes'}. Your gems: ${this.state.player.gems}, Tokens: ${this.state.player.tokens}`);
+                        }, 2000);
+                    }
+                }
+                
+                console.log('📂 Game loaded successfully!', {
+                    gems: this.state.player.gems,
+                    tokens: this.state.player.tokens,
+                    level: this.state.player.level,
+                    totalCarats: this.state.player.totalCaratsCut?.toFixed(2),
+                    gemBalance: Object.entries(this.state.gemBalance)
+                        .filter(([k, v]) => v.length > 0)
+                        .map(([k, v]) => `${k}: ${v.length} stones`)
+                });
+                
+                return { success: true, offlineMinutes };
             }
+            
+            return { success: false, message: 'No save found - starting fresh!' };
         } catch (e) {
             console.error('Failed to load game:', e);
+            return { success: false, error: e.message };
         }
+    }
+    
+    /**
+     * Deep merge objects recursively
+     */
+    deepMerge(target, source) {
+        const result = { ...target };
+        
+        for (const key in source) {
+            if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
+                result[key] = this.deepMerge(target[key] || {}, source[key]);
+            } else {
+                result[key] = source[key];
+            }
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Migrate old rough inventory (counts) to new format (array of pieces with carats)
+     */
+    migrateRoughInventory() {
+        console.log('🔄 Migrating rough inventory to carat-based system...');
+        
+        const oldRough = this.state.inventory.rough;
+        const newRough = {};
+        
+        Object.entries(oldRough).forEach(([gemName, value]) => {
+            if (typeof value === 'number') {
+                // Old format: convert count to array of pieces
+                newRough[gemName] = [];
+                for (let i = 0; i < value; i++) {
+                    newRough[gemName].push({
+                        carats: 1.5 + Math.random() * 3, // Random 1.5-4.5ct pieces
+                        quality: ['fair', 'good', 'good', 'excellent'][Math.floor(Math.random() * 4)]
+                    });
+                }
+            } else if (Array.isArray(value)) {
+                // Already new format
+                newRough[gemName] = value;
+            } else {
+                newRough[gemName] = [];
+            }
+        });
+        
+        this.state.inventory.rough = newRough;
+        console.log('✅ Rough inventory migrated:', Object.entries(newRough).filter(([k,v]) => v.length > 0).map(([k,v]) => `${k}: ${v.length} pieces`));
+    }
+    
+    /**
+     * Export save data for backup/sharing
+     */
+    exportSave() {
+        const saveData = JSON.parse(JSON.stringify(this.state));
+        saveData._exportedAt = Date.now();
+        saveData._version = 2;
+        
+        const exportString = btoa(JSON.stringify(saveData));
+        console.log('📤 Save exported! Length:', exportString.length);
+        
+        return exportString;
+    }
+    
+    /**
+     * Import save data from backup
+     */
+    importSave(exportString) {
+        try {
+            const saveData = JSON.parse(atob(exportString));
+            
+            if (!saveData._version) {
+                return { success: false, message: 'Invalid save format' };
+            }
+            
+            localStorage.setItem(this.config.saveKey, JSON.stringify(saveData));
+            this.loadState();
+            
+            return { success: true, message: 'Save imported successfully!' };
+        } catch (e) {
+            return { success: false, message: 'Failed to import: ' + e.message };
+        }
+    }
+    
+    /**
+     * Reset game to initial state (with confirmation)
+     */
+    resetGame(confirm = false) {
+        if (!confirm) {
+            return { success: false, message: 'Call resetGame(true) to confirm reset' };
+        }
+        
+        localStorage.removeItem(this.config.saveKey);
+        localStorage.removeItem('gembot_farm_save');
+        
+        console.log('🔄 Game reset! Refresh to start fresh.');
+        return { success: true, message: 'Game reset. Refresh the page.' };
+    }
+    
+    /**
+     * Get save statistics
+     */
+    getSaveStats() {
+        const totalRough = Object.values(this.state.inventory.rough)
+            .reduce((sum, arr) => sum + (Array.isArray(arr) ? arr.length : 0), 0);
+        
+        const totalCutStones = Object.values(this.state.gemBalance)
+            .reduce((sum, arr) => sum + arr.length, 0);
+        
+        const totalCutCarats = Object.values(this.state.gemBalance)
+            .reduce((sum, arr) => sum + arr.reduce((s, stone) => s + (stone.caratWeight || 0), 0), 0);
+        
+        const totalCutValue = Object.values(this.state.gemBalance)
+            .reduce((sum, arr) => sum + arr.reduce((s, stone) => s + (stone.value || 0), 0), 0);
+        
+        return {
+            player: {
+                level: this.state.player.level,
+                gems: this.state.player.gems,
+                tokens: this.state.player.tokens,
+                totalCaratsCut: this.state.player.totalCaratsCut,
+                cryptoEarned: this.state.player.cryptoEarned
+            },
+            inventory: {
+                roughPieces: totalRough,
+                cutStones: totalCutStones,
+                cutCarats: totalCutCarats.toFixed(2),
+                cutValue: totalCutValue
+            },
+            stats: {
+                totalCuts: this.state.stats.totalCuts,
+                perfectCuts: this.state.stats.perfectCuts,
+                stonesLost: this.state.player.stonesLost,
+                playTime: this.state.stats.playTime
+            }
+        };
     }
     
     /**
