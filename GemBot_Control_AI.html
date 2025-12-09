@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://cdn.babylonjs.com https://www.babylonjs-playground.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline'; media-src 'self' blob:; connect-src 'self' blob: indexeddb: https://cdn.jsdelivr.net https://api.qrserver.com https://gembotaiwebcontrol.onrender.com:8000 https://cdn.babylonjs.com; object-src 'none'; img-src 'self' data: blob: https://api.qrserver.com;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https: blob:; style-src 'self' 'unsafe-inline'; media-src 'self' blob:; connect-src 'self' blob: indexeddb: https:; object-src 'none'; img-src 'self' data: blob: https:;">
     <title>GemBot AI Control System</title>
     
     <!-- Babylon.js for 3D Virtual Machine -->
@@ -8342,37 +8342,9 @@
         }
         
         function tryQRCodeJSFallback() {
-            const canvas = document.getElementById('qrCodeCanvas');
-            const container = document.getElementById('qrCodeContainer');
-            if (!container) return;
-            
-            try {
-                // Try using QRCode.js if available
-                if (typeof QRCode !== 'undefined' && canvas) {
-                    console.log('📦 Using QRCode.js (cdnjs) library');
-                    
-                    // Clear canvas
-                    canvas.innerHTML = '';
-                    
-                    // Create a new QR code that renders to the canvas
-                    new QRCode(canvas, {
-                        text: networkURL,
-                        width: 200,
-                        height: 200,
-                        colorDark: '#000000',
-                        colorLight: '#FFFFFF',
-                        correctLevel: QRCode.CorrectLevel.H
-                    });
-                    
-                    console.log('✅ QR Code generated (QRCode.js)');
-                } else {
-                    console.warn('⚠️ QRCode.js library not available');
-                    tryURLFallback();
-                }
-            } catch (error) {
-                console.warn('⚠️ QRCode.js fallback also failed:', error);
-                tryURLFallback();
-            }
+            // QRCode.js fallback disabled - using npm qrcode library instead
+            console.log('⚠️ QRCode.js fallback skipped - using primary qrcode library');
+            tryURLFallback();
         }
         
         function tryURLFallback() {

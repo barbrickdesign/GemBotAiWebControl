@@ -119,8 +119,15 @@ class VirtualMachine3D {
             console.log('✅ Lighting setup');
             
             // Create machine geometry
-            this.createMachineGeometry();
-            console.log('✅ Machine geometry created');
+            try {
+                this.createMachineGeometry();
+                console.log('✅ Machine geometry created');
+            } catch (e) {
+                console.warn('⚠️ Machine geometry creation failed, creating minimal scene:', e);
+                // Create a simple cube instead if geometry fails
+                const simpleMesh = BABYLON.MeshBuilder.CreateBox('machineBox', { size: 20 }, this.scene);
+                simpleMesh.position.y = 10;
+            }
             
             // Skip physics for now - not needed for visualization
             // this.setupPhysics();
@@ -202,6 +209,7 @@ class VirtualMachine3D {
      * Create 3D geometry for the machine
      */
     createMachineGeometry() {
+        try {
         // Base platform
         const baseSize = 150;
         const baseMaterial = new BABYLON.StandardMaterial('baseMaterial', this.scene);
@@ -317,6 +325,12 @@ class VirtualMachine3D {
         );
         ground.material = groundMaterial;
         ground.position.y = -5;
+        } catch (error) {
+            console.error('Error creating machine geometry:', error);
+            // Create fallback simple box
+            const box = BABYLON.MeshBuilder.CreateBox('simpleMachine', { size: 10 }, this.scene);
+            box.position.y = 5;
+        }
     }
     
     /**
