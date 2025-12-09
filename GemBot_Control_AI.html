@@ -1878,6 +1878,435 @@
             letter-spacing: 4px;
             margin-bottom: 12px;
         }
+
+        /* ==================== GLOBAL LEADERBOARD & ACTIVITY LOG ==================== */
+        .leaderboard-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 14, 39, 0.95);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .leaderboard-overlay.show {
+            display: flex;
+        }
+
+        .leaderboard-modal {
+            background: linear-gradient(135deg, #0f1629 0%, #1a2347 100%);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 1200px;
+            max-height: 90vh;
+            overflow: hidden;
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(102, 126, 234, 0.2);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .leaderboard-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid rgba(74, 255, 255, 0.3);
+        }
+
+        .leaderboard-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .leaderboard-title h2 {
+            font-size: 24px;
+            color: white;
+            margin: 0;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .leaderboard-close {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            font-size: 24px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .leaderboard-close:hover {
+            background: rgba(255, 107, 107, 0.5);
+            transform: scale(1.1);
+        }
+
+        .leaderboard-tabs {
+            display: flex;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 8px 16px;
+            gap: 8px;
+            border-bottom: 1px solid rgba(102, 126, 234, 0.2);
+            overflow-x: auto;
+        }
+
+        .leaderboard-tab {
+            padding: 10px 20px;
+            background: transparent;
+            border: 1px solid transparent;
+            color: #888;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .leaderboard-tab:hover {
+            color: #4affff;
+            background: rgba(74, 255, 255, 0.1);
+        }
+
+        .leaderboard-tab.active {
+            background: rgba(102, 126, 234, 0.3);
+            border-color: #667eea;
+            color: white;
+        }
+
+        .leaderboard-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .leaderboard-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .leaderboard-content::-webkit-scrollbar-thumb {
+            background: rgba(102, 126, 234, 0.4);
+            border-radius: 4px;
+        }
+
+        /* Stats Summary Cards */
+        .stats-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .stat-card-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .stat-card-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #4affff;
+            margin-bottom: 4px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .stat-card-label {
+            font-size: 12px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Leaderboard Table */
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .leaderboard-table th {
+            text-align: left;
+            padding: 12px 16px;
+            background: rgba(102, 126, 234, 0.2);
+            color: #4affff;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 2px solid rgba(102, 126, 234, 0.3);
+            position: sticky;
+            top: 0;
+        }
+
+        .leaderboard-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            color: #e0e6ed;
+            font-size: 13px;
+        }
+
+        .leaderboard-table tr:hover {
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .leaderboard-table tr.current-user {
+            background: rgba(74, 255, 255, 0.15);
+            border-left: 3px solid #4affff;
+        }
+
+        .rank-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .rank-1 { background: linear-gradient(135deg, #ffd700, #ffaa00); color: #000; }
+        .rank-2 { background: linear-gradient(135deg, #c0c0c0, #a0a0a0); color: #000; }
+        .rank-3 { background: linear-gradient(135deg, #cd7f32, #a05a20); color: #fff; }
+        .rank-other { background: rgba(102, 126, 234, 0.3); color: #fff; }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar-lb {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .user-tier {
+            font-size: 11px;
+            color: #9f7aea;
+        }
+
+        .tier-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .tier-apprentice { background: rgba(74, 158, 255, 0.2); color: #4a9eff; }
+        .tier-journeyman { background: rgba(0, 255, 136, 0.2); color: #00ff88; }
+        .tier-artisan { background: rgba(159, 122, 234, 0.2); color: #9f7aea; }
+        .tier-master { background: rgba(255, 215, 0, 0.2); color: #ffd700; }
+        .tier-grandmaster { background: linear-gradient(135deg, rgba(255, 215, 0, 0.3), rgba(255, 107, 107, 0.3)); color: #fff; }
+
+        /* Inventory Section */
+        .inventory-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 12px;
+        }
+
+        .inventory-item {
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .inventory-item:hover {
+            border-color: #4affff;
+            transform: translateY(-2px);
+        }
+
+        .inventory-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .inventory-name {
+            font-size: 12px;
+            color: #4affff;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .inventory-count {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ffd700;
+        }
+
+        /* Activity Log */
+        .activity-log {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .activity-entry {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .activity-entry:hover {
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .activity-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: rgba(102, 126, 234, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .activity-details {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .activity-description {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .activity-time {
+            font-size: 11px;
+            color: #667eea;
+        }
+
+        /* Marketplace Link */
+        .marketplace-banner {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .marketplace-info h3 {
+            color: white;
+            margin: 0 0 8px 0;
+            font-size: 18px;
+        }
+
+        .marketplace-info p {
+            color: rgba(255, 255, 255, 0.8);
+            margin: 0;
+            font-size: 13px;
+        }
+
+        .marketplace-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid white;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .marketplace-btn:hover {
+            background: white;
+            color: #667eea;
+        }
+
+        /* Responsive Leaderboard */
+        @media (max-width: 768px) {
+            .leaderboard-modal {
+                max-height: 100vh;
+                border-radius: 0;
+            }
+
+            .leaderboard-header {
+                padding: 16px;
+            }
+
+            .leaderboard-title h2 {
+                font-size: 18px;
+            }
+
+            .leaderboard-tabs {
+                padding: 8px;
+            }
+
+            .leaderboard-tab {
+                padding: 8px 12px;
+                font-size: 11px;
+            }
+
+            .stats-summary {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .stat-card {
+                padding: 12px;
+            }
+
+            .stat-card-value {
+                font-size: 20px;
+            }
+
+            .leaderboard-table th,
+            .leaderboard-table td {
+                padding: 8px;
+                font-size: 11px;
+            }
+
+            .marketplace-banner {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1983,6 +2412,32 @@
         </div>
     </div>
 
+    <!-- ==================== GLOBAL LEADERBOARD OVERLAY ==================== -->
+    <div id="leaderboardOverlay" class="leaderboard-overlay">
+        <div class="leaderboard-modal">
+            <div class="leaderboard-header">
+                <div class="leaderboard-title">
+                    <span style="font-size: 32px;">🏆</span>
+                    <h2>GemForge Global Leaderboard</h2>
+                </div>
+                <button class="leaderboard-close" onclick="leaderboardUI.close()">&times;</button>
+            </div>
+
+            <div class="leaderboard-tabs">
+                <button class="leaderboard-tab active" onclick="leaderboardUI.switchTab('rankings')">🏆 Rankings</button>
+                <button class="leaderboard-tab" onclick="leaderboardUI.switchTab('mystats')">📊 My Stats</button>
+                <button class="leaderboard-tab" onclick="leaderboardUI.switchTab('inventory')">💎 Inventory</button>
+                <button class="leaderboard-tab" onclick="leaderboardUI.switchTab('achievements')">🎖️ Achievements</button>
+                <button class="leaderboard-tab" onclick="leaderboardUI.switchTab('activity')">📜 Activity Log</button>
+                <button class="leaderboard-tab" onclick="leaderboardUI.switchTab('marketplace')">🏪 Marketplace</button>
+            </div>
+
+            <div class="leaderboard-content" id="leaderboardContent">
+                <!-- Dynamic content loaded here -->
+            </div>
+        </div>
+    </div>
+
     <div class="app-container">
         <!-- HEADER - Mobile-first camera connection -->
         <div class="header-panel">
@@ -2005,6 +2460,7 @@
                     </div>
                     <div class="user-menu" id="userMenu">
                         <div class="user-menu-item" onclick="authUI.showProfile()">👤 My Profile</div>
+                        <div class="user-menu-item" onclick="leaderboardUI.open()">🏆 Leaderboard</div>
                         <div class="user-menu-item" onclick="authUI.showShareAccess()">🔗 Share Access</div>
                         <div class="user-menu-item" onclick="authUI.showMachineSettings()">⚙️ Machine Settings</div>
                         <div class="user-menu-item" id="connectedGuestsItem" style="display: none;">👥 Connected Guests (0)</div>
@@ -2016,6 +2472,7 @@
                 <div id="gameStatsCompact" style="display: flex; align-items: center; gap: 12px; background: rgba(102, 126, 234, 0.2); padding: 4px 12px; border-radius: 6px; border: 1px solid rgba(74, 255, 255, 0.2); margin-left: auto;">
                     <div id="gemBalanceDisplay" style="color: #ffd700; font-weight: bold; font-size: 11px;">💎 100</div>
                     <div id="tierDisplay" style="color: #9f7aea; font-size: 10px;">🏆 Apprentice</div>
+                    <button id="leaderboardBtn" onclick="leaderboardUI.open()" style="background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%); border: none; color: #1a1a2e; padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;" title="View Leaderboard">🏆</button>
                 </div>
                 
                 <!-- Fullscreen Toggle (Mobile) -->
@@ -2771,6 +3228,14 @@
                 // Broadcast login to sync with other tabs/devices
                 this.broadcastAuth('session_active', this.currentUser);
                 
+                // Initialize leaderboard and record login activity
+                if (typeof leaderboardUI !== 'undefined') {
+                    setTimeout(() => {
+                        leaderboardUI.updateUserStats();
+                        leaderboardUI.recordActivity('login', { device: this.deviceId });
+                    }, 100);
+                }
+                
                 console.log('✅ Logged in as:', user.username, '| Device:', this.deviceId);
                 this.hideAuthOverlay();
                 this.updateUserUI();
@@ -3128,6 +3593,616 @@
                 this.toggleUserMenu();
                 authSystem.logout();
                 addMessage('👋 Signed out successfully', 'system');
+            }
+        };
+
+        // ==================== GLOBAL LEADERBOARD SYSTEM ====================
+        const leaderboardUI = {
+            currentTab: 'rankings',
+            globalPlayers: [],
+            activityLog: [],
+            
+            // Open the leaderboard overlay
+            open() {
+                const overlay = document.getElementById('leaderboardOverlay');
+                if (overlay) {
+                    overlay.classList.add('show');
+                    this.loadData();
+                    this.switchTab('rankings');
+                }
+            },
+            
+            // Close the leaderboard overlay
+            close() {
+                const overlay = document.getElementById('leaderboardOverlay');
+                if (overlay) {
+                    overlay.classList.remove('show');
+                }
+            },
+            
+            // Switch between tabs
+            switchTab(tab) {
+                this.currentTab = tab;
+                
+                // Update tab buttons
+                document.querySelectorAll('.leaderboard-tab').forEach(btn => {
+                    btn.classList.remove('active');
+                    if (btn.textContent.toLowerCase().includes(tab.toLowerCase()) || 
+                        (tab === 'mystats' && btn.textContent.includes('My Stats')) ||
+                        (tab === 'rankings' && btn.textContent.includes('Rankings'))) {
+                        btn.classList.add('active');
+                    }
+                });
+                
+                // Render content
+                const content = document.getElementById('leaderboardContent');
+                if (content) {
+                    switch(tab) {
+                        case 'rankings': content.innerHTML = this.renderRankings(); break;
+                        case 'mystats': content.innerHTML = this.renderMyStats(); break;
+                        case 'inventory': content.innerHTML = this.renderInventory(); break;
+                        case 'achievements': content.innerHTML = this.renderAchievements(); break;
+                        case 'activity': content.innerHTML = this.renderActivityLog(); break;
+                        case 'marketplace': content.innerHTML = this.renderMarketplace(); break;
+                    }
+                }
+            },
+            
+            // Load leaderboard data
+            loadData() {
+                // Load from localStorage and generate simulated global players
+                this.globalPlayers = this.generateGlobalLeaderboard();
+                this.activityLog = this.loadActivityLog();
+            },
+            
+            // Generate global leaderboard (mix of real user + simulated players)
+            generateGlobalLeaderboard() {
+                const players = [];
+                
+                // Add current user if logged in
+                if (authSystem.currentUser && merlin?.userProfile?.gemForge) {
+                    const gf = merlin.userProfile.gemForge;
+                    players.push({
+                        id: authSystem.currentUser.id,
+                        username: authSystem.currentUser.username,
+                        isCurrentUser: true,
+                        tier: gf.certification.currentTier,
+                        level: this.calculateLevel(gf),
+                        totalGems: gf.wallet.lifetimeEarned,
+                        stonesCut: gf.stoneAccess.stonesCompleted,
+                        timeSpent: Math.round((gf.machineAccess.machineTimeMinutes || 0) / 60 * 10) / 10,
+                        perfectCuts: this.countPerfectCuts(gf),
+                        streakDays: gf.certification.streakDays,
+                        achievements: gf.achievements.unlocked.length,
+                        joinDate: merlin.userProfile.createdDate
+                    });
+                }
+                
+                // Add simulated global players for demo
+                const simulatedPlayers = [
+                    { username: 'GemMaster_Sarah', tier: 'grandmaster', level: 87, totalGems: 125000, stonesCut: 342, timeSpent: 156.5, perfectCuts: 298, streakDays: 45, achievements: 28 },
+                    { username: 'CrystalKing', tier: 'master', level: 72, totalGems: 89500, stonesCut: 256, timeSpent: 98.3, perfectCuts: 201, streakDays: 32, achievements: 24 },
+                    { username: 'DiamondCutter99', tier: 'master', level: 68, totalGems: 76000, stonesCut: 198, timeSpent: 87.2, perfectCuts: 156, streakDays: 28, achievements: 21 },
+                    { username: 'SapphireQueen', tier: 'artisan', level: 54, totalGems: 52000, stonesCut: 145, timeSpent: 62.8, perfectCuts: 112, streakDays: 21, achievements: 18 },
+                    { username: 'RubyRider', tier: 'artisan', level: 48, totalGems: 41000, stonesCut: 118, timeSpent: 48.5, perfectCuts: 89, streakDays: 14, achievements: 15 },
+                    { username: 'EmeraldExpert', tier: 'journeyman', level: 35, totalGems: 28500, stonesCut: 82, timeSpent: 35.2, perfectCuts: 58, streakDays: 12, achievements: 12 },
+                    { username: 'QuartzNewbie', tier: 'journeyman', level: 28, totalGems: 18000, stonesCut: 54, timeSpent: 24.1, perfectCuts: 35, streakDays: 8, achievements: 9 },
+                    { username: 'TopazTrainer', tier: 'apprentice', level: 18, totalGems: 9500, stonesCut: 28, timeSpent: 12.5, perfectCuts: 18, streakDays: 5, achievements: 6 },
+                    { username: 'AmethystAce', tier: 'apprentice', level: 12, totalGems: 4200, stonesCut: 15, timeSpent: 6.8, perfectCuts: 8, streakDays: 3, achievements: 4 },
+                    { username: 'GemStudent2025', tier: 'apprentice', level: 5, totalGems: 1500, stonesCut: 5, timeSpent: 2.3, perfectCuts: 2, streakDays: 1, achievements: 2 }
+                ];
+                
+                simulatedPlayers.forEach((p, i) => {
+                    players.push({
+                        id: 'sim_' + i,
+                        ...p,
+                        isCurrentUser: false,
+                        joinDate: new Date(Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000).toISOString()
+                    });
+                });
+                
+                // Sort by total gems (primary ranking)
+                return players.sort((a, b) => b.totalGems - a.totalGems);
+            },
+            
+            // Calculate user level from GemForge data
+            calculateLevel(gf) {
+                const points = (gf.wallet.lifetimeEarned || 0) / 100 +
+                              (gf.stoneAccess.stonesCompleted || 0) * 10 +
+                              (gf.achievements.points || 0);
+                return Math.floor(Math.sqrt(points / 10)) + 1;
+            },
+            
+            // Count perfect cuts across all stones
+            countPerfectCuts(gf) {
+                let total = 0;
+                Object.values(gf.stoneAccess.stoneMastery).forEach(stone => {
+                    total += stone.perfectCuts || 0;
+                });
+                return total;
+            },
+            
+            // Load activity log
+            loadActivityLog() {
+                const log = [];
+                
+                if (merlin?.userProfile?.gemForge) {
+                    const gf = merlin.userProfile.gemForge;
+                    
+                    // Add transaction history
+                    (gf.wallet.transactionHistory || []).slice(-20).forEach(t => {
+                        log.push({
+                            type: t.type === 'earned' ? 'gem_earned' : 'gem_spent',
+                            icon: t.type === 'earned' ? '💎' : '🛒',
+                            title: t.type === 'earned' ? 'Gems Earned' : 'Gems Spent',
+                            description: t.reason || 'Transaction',
+                            amount: t.amount,
+                            timestamp: t.timestamp
+                        });
+                    });
+                    
+                    // Add achievements
+                    (gf.achievements.unlocked || []).forEach(a => {
+                        log.push({
+                            type: 'achievement',
+                            icon: '🎖️',
+                            title: 'Achievement Unlocked',
+                            description: this.getAchievementName(a),
+                            timestamp: Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000
+                        });
+                    });
+                }
+                
+                // Sort by timestamp (newest first)
+                return log.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+            },
+            
+            // Render rankings tab
+            renderRankings() {
+                const currentUserId = authSystem.currentUser?.id;
+                
+                let html = `
+                    <div class="stats-summary">
+                        <div class="stat-card">
+                            <div class="stat-card-icon">👥</div>
+                            <div class="stat-card-value">${this.globalPlayers.length}</div>
+                            <div class="stat-card-label">Total Players</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-icon">💎</div>
+                            <div class="stat-card-value">${this.formatNumber(this.globalPlayers.reduce((s, p) => s + p.totalGems, 0))}</div>
+                            <div class="stat-card-label">Total Gems Mined</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-icon">✂️</div>
+                            <div class="stat-card-value">${this.formatNumber(this.globalPlayers.reduce((s, p) => s + p.stonesCut, 0))}</div>
+                            <div class="stat-card-label">Stones Cut</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-icon">⏱️</div>
+                            <div class="stat-card-value">${this.formatNumber(this.globalPlayers.reduce((s, p) => s + p.timeSpent, 0))}h</div>
+                            <div class="stat-card-label">Machine Hours</div>
+                        </div>
+                    </div>
+                    
+                    <table class="leaderboard-table">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Player</th>
+                                <th>Tier</th>
+                                <th>Level</th>
+                                <th>Gems 💎</th>
+                                <th>Stones Cut</th>
+                                <th>Perfect Cuts</th>
+                                <th>Time (hrs)</th>
+                                <th>Streak 🔥</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                
+                this.globalPlayers.forEach((player, index) => {
+                    const rank = index + 1;
+                    const rankClass = rank <= 3 ? `rank-${rank}` : 'rank-other';
+                    const rowClass = player.isCurrentUser ? 'current-user' : '';
+                    
+                    html += `
+                        <tr class="${rowClass}">
+                            <td><span class="rank-badge ${rankClass}">${rank}</span></td>
+                            <td>
+                                <div class="user-info">
+                                    <div class="user-avatar-lb">${player.username.charAt(0).toUpperCase()}</div>
+                                    <div>
+                                        <div class="user-name">${player.username}${player.isCurrentUser ? ' (You)' : ''}</div>
+                                        <div class="user-tier">${player.achievements} achievements</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><span class="tier-badge tier-${player.tier}">${this.formatTier(player.tier)}</span></td>
+                            <td style="color: #4affff; font-weight: bold;">${player.level}</td>
+                            <td style="color: #ffd700; font-weight: bold;">${this.formatNumber(player.totalGems)}</td>
+                            <td>${player.stonesCut}</td>
+                            <td style="color: #00ff88;">${player.perfectCuts}</td>
+                            <td>${player.timeSpent}h</td>
+                            <td style="color: #ff6b6b;">${player.streakDays}d</td>
+                        </tr>
+                    `;
+                });
+                
+                html += '</tbody></table>';
+                return html;
+            },
+            
+            // Render my stats tab
+            renderMyStats() {
+                if (!merlin?.userProfile?.gemForge) {
+                    return '<div style="text-align: center; padding: 40px; color: #888;">Please log in to view your stats</div>';
+                }
+                
+                const gf = merlin.userProfile.gemForge;
+                const profile = merlin.userProfile;
+                const myRank = this.globalPlayers.findIndex(p => p.isCurrentUser) + 1;
+                
+                return `
+                    <div class="stats-summary">
+                        <div class="stat-card">
+                            <div class="stat-card-icon">🏆</div>
+                            <div class="stat-card-value">#${myRank || '—'}</div>
+                            <div class="stat-card-label">Global Rank</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-icon">💎</div>
+                            <div class="stat-card-value">${this.formatNumber(gf.wallet.balance)}</div>
+                            <div class="stat-card-label">Current Balance</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-icon">📈</div>
+                            <div class="stat-card-value">${this.formatNumber(gf.wallet.lifetimeEarned)}</div>
+                            <div class="stat-card-label">Lifetime Earned</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-icon">🔥</div>
+                            <div class="stat-card-value">${gf.certification.streakDays}d</div>
+                            <div class="stat-card-label">Current Streak</div>
+                        </div>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                        <!-- Certification Progress -->
+                        <div style="background: rgba(102, 126, 234, 0.1); border-radius: 12px; padding: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+                            <h3 style="color: #4affff; margin: 0 0 16px 0; font-size: 16px;">🏆 Certification Progress</h3>
+                            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                                <span class="tier-badge tier-${gf.certification.currentTier}" style="font-size: 14px; padding: 6px 12px;">${this.formatTier(gf.certification.currentTier)}</span>
+                                <span style="color: #888;">→</span>
+                                <span style="color: #ffd700;">${this.getNextTier(gf.certification.currentTier)}</span>
+                            </div>
+                            <div style="background: rgba(0,0,0,0.3); border-radius: 8px; height: 12px; overflow: hidden;">
+                                <div style="background: linear-gradient(90deg, #667eea, #764ba2); height: 100%; width: ${gf.certification.tierProgress}%; transition: width 0.5s;"></div>
+                            </div>
+                            <div style="text-align: center; margin-top: 8px; font-size: 12px; color: #888;">${gf.certification.tierProgress}% to next tier</div>
+                        </div>
+                        
+                        <!-- Machine Stats -->
+                        <div style="background: rgba(102, 126, 234, 0.1); border-radius: 12px; padding: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+                            <h3 style="color: #4affff; margin: 0 0 16px 0; font-size: 16px;">⚙️ Machine Stats</h3>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                                <div><span style="color: #888;">Commands:</span> <strong style="color: #fff;">${gf.machineAccess.commandsExecuted}</strong></div>
+                                <div><span style="color: #888;">Machine Time:</span> <strong style="color: #fff;">${Math.round(gf.machineAccess.machineTimeMinutes)}m</strong></div>
+                                <div><span style="color: #888;">Sessions:</span> <strong style="color: #fff;">${profile.sessionCount}</strong></div>
+                                <div><span style="color: #888;">Interactions:</span> <strong style="color: #fff;">${profile.totalInteractions}</strong></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Learning Progress -->
+                        <div style="background: rgba(102, 126, 234, 0.1); border-radius: 12px; padding: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+                            <h3 style="color: #4affff; margin: 0 0 16px 0; font-size: 16px;">📚 Learning Progress</h3>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                                <div><span style="color: #888;">Skill Level:</span> <strong style="color: #00ff88;">${profile.skillLevel}</strong></div>
+                                <div><span style="color: #888;">Topics Learned:</span> <strong style="color: #fff;">${profile.topicsLearned?.length || 0}</strong></div>
+                                <div><span style="color: #888;">Questions Asked:</span> <strong style="color: #fff;">${profile.questionsAsked?.length || 0}</strong></div>
+                                <div><span style="color: #888;">Merlin Score:</span> <strong style="color: #9f7aea;">${profile.merlinRelationshipScore}</strong></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Training -->
+                        <div style="background: rgba(102, 126, 234, 0.1); border-radius: 12px; padding: 20px; border: 1px solid rgba(102, 126, 234, 0.2);">
+                            <h3 style="color: #4affff; margin: 0 0 16px 0; font-size: 16px;">🎮 Training</h3>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                                <div><span style="color: #888;">Modules:</span> <strong style="color: #fff;">${gf.training.modulesCompleted?.length || 0}</strong></div>
+                                <div><span style="color: #888;">Sim Hours:</span> <strong style="color: #fff;">${gf.training.simulationHours}h</strong></div>
+                                <div><span style="color: #888;">Virtual Cuts:</span> <strong style="color: #fff;">${gf.training.virtualCutsCompleted}</strong></div>
+                                <div><span style="color: #888;">Practice Score:</span> <strong style="color: #00ff88;">${gf.training.practiceScore}</strong></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            },
+            
+            // Render inventory tab
+            renderInventory() {
+                if (!merlin?.userProfile?.gemForge) {
+                    return '<div style="text-align: center; padding: 40px; color: #888;">Please log in to view your inventory</div>';
+                }
+                
+                const gf = merlin.userProfile.gemForge;
+                const stoneEmojis = {
+                    quartz: '🔮', amethyst: '💜', citrine: '🟡', topaz: '🟠', garnet: '🔴',
+                    tourmaline: '💚', aquamarine: '💎', sapphire: '💙', ruby: '❤️', emerald: '💚', diamond: '💠'
+                };
+                
+                let html = `
+                    <h3 style="color: #4affff; margin: 0 0 16px 0;">💎 Gem Coins</h3>
+                    <div class="stats-summary" style="margin-bottom: 24px;">
+                        <div class="stat-card">
+                            <div class="stat-card-icon">💰</div>
+                            <div class="stat-card-value">${this.formatNumber(gf.wallet.balance)}</div>
+                            <div class="stat-card-label">Current Balance</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-icon">📈</div>
+                            <div class="stat-card-value">${this.formatNumber(gf.wallet.lifetimeEarned)}</div>
+                            <div class="stat-card-label">Total Earned</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-icon">🛒</div>
+                            <div class="stat-card-value">${this.formatNumber(gf.wallet.lifetimeSpent)}</div>
+                            <div class="stat-card-label">Total Spent</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-icon">⏳</div>
+                            <div class="stat-card-value">${this.formatNumber(gf.wallet.pendingRewards)}</div>
+                            <div class="stat-card-label">Pending Rewards</div>
+                        </div>
+                    </div>
+                    
+                    <h3 style="color: #4affff; margin: 0 0 16px 0;">💎 Stone Collection</h3>
+                    <div class="inventory-grid">
+                `;
+                
+                // Stone mastery inventory
+                Object.entries(gf.stoneAccess.stoneMastery).forEach(([stone, data]) => {
+                    const isUnlocked = gf.stoneAccess.unlockedStones.includes(stone);
+                    const emoji = stoneEmojis[stone] || '💎';
+                    const mastery = data.mastery || 0;
+                    
+                    html += `
+                        <div class="inventory-item" style="${!isUnlocked ? 'opacity: 0.4;' : ''}">
+                            <div class="inventory-icon">${emoji}</div>
+                            <div class="inventory-name">${stone.charAt(0).toUpperCase() + stone.slice(1)}</div>
+                            <div style="font-size: 11px; color: #888; margin: 4px 0;">
+                                ${isUnlocked ? `${data.cuts} cuts • ${data.perfectCuts} perfect` : '🔒 Locked'}
+                            </div>
+                            <div style="background: rgba(0,0,0,0.3); border-radius: 4px; height: 6px; margin-top: 8px;">
+                                <div style="background: ${isUnlocked ? '#00ff88' : '#444'}; height: 100%; width: ${mastery}%; border-radius: 4px;"></div>
+                            </div>
+                            <div style="font-size: 10px; color: #667eea; margin-top: 4px;">${mastery}% mastery</div>
+                        </div>
+                    `;
+                });
+                
+                html += `
+                    </div>
+                    
+                    <h3 style="color: #4affff; margin: 24px 0 16px 0;">🎖️ Badges & Certifications</h3>
+                    <div class="inventory-grid">
+                `;
+                
+                // Badges
+                const badgeNames = {
+                    welcome_badge: { name: 'Welcome', icon: '👋' },
+                    first_cut: { name: 'First Cut', icon: '✂️' },
+                    streak_7: { name: '7 Day Streak', icon: '🔥' },
+                    perfect_10: { name: '10 Perfect Cuts', icon: '⭐' },
+                    master_quartz: { name: 'Quartz Master', icon: '🔮' }
+                };
+                
+                (gf.certification.badges || []).forEach(badge => {
+                    const info = badgeNames[badge] || { name: badge, icon: '🎖️' };
+                    html += `
+                        <div class="inventory-item">
+                            <div class="inventory-icon">${info.icon}</div>
+                            <div class="inventory-name">${info.name}</div>
+                        </div>
+                    `;
+                });
+                
+                html += '</div>';
+                return html;
+            },
+            
+            // Render achievements tab
+            renderAchievements() {
+                if (!merlin?.userProfile?.gemForge) {
+                    return '<div style="text-align: center; padding: 40px; color: #888;">Please log in to view achievements</div>';
+                }
+                
+                const gf = merlin.userProfile.gemForge;
+                const allAchievements = [
+                    { id: 'first_login', name: 'Welcome to GemForge', desc: 'Log in for the first time', icon: '👋', points: 10 },
+                    { id: 'first_connection', name: 'Machine Whisperer', desc: 'Connect to a machine for the first time', icon: '🔌', points: 25 },
+                    { id: 'first_cut', name: 'First Cut', desc: 'Complete your first stone cut', icon: '✂️', points: 50 },
+                    { id: 'streak_7', name: 'Dedicated Learner', desc: 'Maintain a 7-day streak', icon: '🔥', points: 100 },
+                    { id: 'streak_30', name: 'Committed Artisan', desc: 'Maintain a 30-day streak', icon: '🔥', points: 500 },
+                    { id: 'perfect_10', name: 'Precision Artist', desc: 'Achieve 10 perfect cuts', icon: '⭐', points: 200 },
+                    { id: 'perfect_100', name: 'Master Craftsman', desc: 'Achieve 100 perfect cuts', icon: '🌟', points: 1000 },
+                    { id: 'master_quartz', name: 'Quartz Master', desc: 'Reach 100% mastery in Quartz', icon: '🔮', points: 300 },
+                    { id: 'gem_1000', name: 'Gem Collector', desc: 'Earn 1,000 gems', icon: '💎', points: 150 },
+                    { id: 'gem_10000', name: 'Gem Hoarder', desc: 'Earn 10,000 gems', icon: '💰', points: 500 },
+                    { id: 'time_10h', name: 'Time Investor', desc: 'Spend 10 hours on machines', icon: '⏱️', points: 250 },
+                    { id: 'merlin_friend', name: 'Merlin\'s Apprentice', desc: 'Reach relationship score 50', icon: '🧙', points: 200 }
+                ];
+                
+                const unlocked = gf.achievements.unlocked || [];
+                
+                let html = `
+                    <div class="stats-summary" style="margin-bottom: 24px;">
+                        <div class="stat-card">
+                            <div class="stat-card-icon">🎖️</div>
+                            <div class="stat-card-value">${unlocked.length}/${allAchievements.length}</div>
+                            <div class="stat-card-label">Achievements</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-icon">⭐</div>
+                            <div class="stat-card-value">${gf.achievements.points}</div>
+                            <div class="stat-card-label">Achievement Points</div>
+                        </div>
+                    </div>
+                    
+                    <div class="inventory-grid">
+                `;
+                
+                allAchievements.forEach(ach => {
+                    const isUnlocked = unlocked.includes(ach.id);
+                    html += `
+                        <div class="inventory-item" style="${!isUnlocked ? 'opacity: 0.4; filter: grayscale(1);' : ''}">
+                            <div class="inventory-icon">${ach.icon}</div>
+                            <div class="inventory-name">${ach.name}</div>
+                            <div style="font-size: 11px; color: #888; margin: 4px 0;">${ach.desc}</div>
+                            <div style="font-size: 12px; color: ${isUnlocked ? '#ffd700' : '#555'}; font-weight: bold;">
+                                ${isUnlocked ? '✅ Unlocked' : `🔒 ${ach.points} pts`}
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += '</div>';
+                return html;
+            },
+            
+            // Render activity log tab
+            renderActivityLog() {
+                let html = `<h3 style="color: #4affff; margin: 0 0 16px 0;">📜 Recent Activity</h3>`;
+                
+                if (this.activityLog.length === 0) {
+                    html += '<div style="text-align: center; padding: 40px; color: #888;">No recent activity</div>';
+                } else {
+                    html += '<div class="activity-log">';
+                    this.activityLog.slice(0, 50).forEach(entry => {
+                        html += `
+                            <div class="activity-entry">
+                                <div class="activity-icon">${entry.icon}</div>
+                                <div class="activity-details">
+                                    <div class="activity-title">${entry.title}</div>
+                                    <div class="activity-description">${entry.description}${entry.amount ? ` (${entry.amount > 0 ? '+' : ''}${entry.amount} 💎)` : ''}</div>
+                                </div>
+                                <div class="activity-time">${this.formatTime(entry.timestamp)}</div>
+                            </div>
+                        `;
+                    });
+                    html += '</div>';
+                }
+                
+                return html;
+            },
+            
+            // Render marketplace tab
+            renderMarketplace() {
+                const gf = merlin?.userProfile?.gemForge;
+                
+                return `
+                    <div class="stats-summary" style="margin-bottom: 24px;">
+                        <div class="stat-card">
+                            <div class="stat-card-icon">⭐</div>
+                            <div class="stat-card-value">${gf?.marketplace?.sellerRating || 0}/5</div>
+                            <div class="stat-card-label">Seller Rating</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-icon">📦</div>
+                            <div class="stat-card-value">${gf?.marketplace?.itemsSold?.length || 0}</div>
+                            <div class="stat-card-label">Items Sold</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-icon">💵</div>
+                            <div class="stat-card-value">${this.formatNumber(gf?.marketplace?.totalRevenue || 0)}</div>
+                            <div class="stat-card-label">Total Revenue</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-icon">📋</div>
+                            <div class="stat-card-value">${gf?.marketplace?.activeListings || 0}</div>
+                            <div class="stat-card-label">Active Listings</div>
+                        </div>
+                    </div>
+                    
+                    <div class="marketplace-banner">
+                        <div class="marketplace-info">
+                            <h3>🏪 GemForge Marketplace</h3>
+                            <p>Buy and sell cut gemstones, rough materials, machine time, and more!</p>
+                        </div>
+                        <button class="marketplace-btn" onclick="leaderboardUI.openMarketplace()">
+                            🛒 Open Marketplace
+                        </button>
+                    </div>
+                    
+                    <div style="margin-top: 24px;">
+                        <h3 style="color: #4affff; margin: 0 0 16px 0;">📊 Market Categories</h3>
+                        <div class="inventory-grid">
+                            <div class="inventory-item" onclick="leaderboardUI.openMarketplace('rough')">
+                                <div class="inventory-icon">🪨</div>
+                                <div class="inventory-name">Rough Materials</div>
+                                <div style="font-size: 11px; color: #888;">Uncut gemstones</div>
+                            </div>
+                            <div class="inventory-item" onclick="leaderboardUI.openMarketplace('cut')">
+                                <div class="inventory-icon">💎</div>
+                                <div class="inventory-name">Cut Stones</div>
+                                <div style="font-size: 11px; color: #888;">Finished gems</div>
+                            </div>
+                            <div class="inventory-item" onclick="leaderboardUI.openMarketplace('time')">
+                                <div class="inventory-icon">⏱️</div>
+                                <div class="inventory-name">Machine Time</div>
+                                <div style="font-size: 11px; color: #888;">Rent cutting time</div>
+                            </div>
+                            <div class="inventory-item" onclick="leaderboardUI.openMarketplace('services')">
+                                <div class="inventory-icon">🛠️</div>
+                                <div class="inventory-name">Services</div>
+                                <div style="font-size: 11px; color: #888;">Expert cutting services</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            },
+            
+            // Open marketplace (placeholder)
+            openMarketplace(category) {
+                addMessage(`🏪 Marketplace ${category ? '(' + category + ')' : ''} coming soon! This will be a full trading platform for gemstones and services.`, 'system');
+                this.close();
+            },
+            
+            // Helper functions
+            formatNumber(num) {
+                if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+                if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+                return num.toString();
+            },
+            
+            formatTier(tier) {
+                const emojis = { apprentice: '🔰', journeyman: '⚔️', artisan: '🎨', master: '👑', grandmaster: '🌟' };
+                return (emojis[tier] || '') + ' ' + (tier.charAt(0).toUpperCase() + tier.slice(1));
+            },
+            
+            getNextTier(current) {
+                const tiers = ['apprentice', 'journeyman', 'artisan', 'master', 'grandmaster'];
+                const idx = tiers.indexOf(current);
+                return idx < tiers.length - 1 ? this.formatTier(tiers[idx + 1]) : '🏆 Max Tier';
+            },
+            
+            getAchievementName(id) {
+                const names = {
+                    first_login: 'Welcome to GemForge',
+                    first_connection: 'Machine Whisperer',
+                    first_cut: 'First Cut',
+                    welcome_badge: 'Welcome Badge'
+                };
+                return names[id] || id;
+            },
+            
+            formatTime(timestamp) {
+                if (!timestamp) return '';
+                const diff = Date.now() - timestamp;
+                if (diff < 60000) return 'Just now';
+                if (diff < 3600000) return Math.floor(diff / 60000) + 'm ago';
+                if (diff < 86400000) return Math.floor(diff / 3600000) + 'h ago';
+                return Math.floor(diff / 86400000) + 'd ago';
             }
         };
 
@@ -4487,6 +5562,11 @@
                             });
                         }
                         merlin.saveUserProfile();
+                        
+                        // Track activity in leaderboard
+                        if (typeof leaderboardUI !== 'undefined' && leaderboardUI.updateUserStats) {
+                            leaderboardUI.updateUserStats();
+                        }
                     }
                     // ===== END GEMFORGE TRACKING =====
                     
@@ -9548,6 +10628,15 @@
                 this.saveUserProfile();
                 this.checkAchievements('earn', amount);
                 
+                // Record activity in leaderboard
+                if (typeof leaderboardUI !== 'undefined' && leaderboardUI.recordActivity) {
+                    leaderboardUI.recordActivity('earn', {
+                        amount: amount,
+                        reason: reason,
+                        newBalance: wallet.balance
+                    });
+                }
+                
                 return {
                     success: true,
                     newBalance: wallet.balance,
@@ -9920,6 +11009,16 @@
                 
                 // Check tier advancement
                 this.checkTierAdvancement();
+                
+                // Record activity in leaderboard
+                if (typeof leaderboardUI !== 'undefined' && leaderboardUI.recordActivity) {
+                    leaderboardUI.recordActivity('cut', {
+                        stone: stoneName,
+                        quality: quality,
+                        reward: totalReward,
+                        totalCuts: mastery.cuts
+                    });
+                }
                 
                 this.saveUserProfile();
                 
