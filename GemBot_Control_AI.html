@@ -1329,9 +1329,346 @@
                 font-size: 14px;
             }
         }
+
+        /* ==================== AUTHENTICATION SYSTEM ====================*/
+        .auth-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 14, 39, 0.95);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            backdrop-filter: blur(8px);
+        }
+
+        .auth-modal {
+            background: linear-gradient(135deg, #1a1f3a 0%, #2d3561 100%);
+            border-radius: 16px;
+            padding: 32px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(102, 126, 234, 0.2);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .auth-header h2 {
+            font-size: 24px;
+            color: #4affff;
+            margin-bottom: 8px;
+        }
+
+        .auth-header p {
+            color: #aaa;
+            font-size: 13px;
+        }
+
+        .auth-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 12px;
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 8px;
+            color: #aaa;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .auth-tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: transparent;
+        }
+
+        .auth-tab:hover:not(.active) {
+            background: rgba(102, 126, 234, 0.2);
+            color: #fff;
+        }
+
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .auth-input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .auth-input-group label {
+            font-size: 12px;
+            color: #aaa;
+            font-weight: 600;
+        }
+
+        .auth-input {
+            padding: 12px 16px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .auth-input:focus {
+            outline: none;
+            border-color: #4affff;
+            box-shadow: 0 0 10px rgba(74, 255, 255, 0.2);
+        }
+
+        .auth-btn {
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .auth-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .auth-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .auth-error {
+            color: #ff6b6b;
+            font-size: 12px;
+            text-align: center;
+            padding: 8px;
+            background: rgba(255, 107, 107, 0.1);
+            border-radius: 6px;
+            display: none;
+        }
+
+        .auth-error.show {
+            display: block;
+        }
+
+        .auth-divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 16px 0;
+            color: #666;
+            font-size: 12px;
+        }
+
+        .auth-divider::before,
+        .auth-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(102, 126, 234, 0.2);
+        }
+
+        .guest-btn {
+            padding: 12px;
+            background: transparent;
+            border: 1px solid rgba(102, 126, 234, 0.5);
+            border-radius: 8px;
+            color: #aaa;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .guest-btn:hover {
+            background: rgba(102, 126, 234, 0.1);
+            color: #fff;
+            border-color: #667eea;
+        }
+
+        .user-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            background: rgba(74, 255, 255, 0.1);
+            border: 1px solid rgba(74, 255, 255, 0.3);
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .user-badge:hover {
+            background: rgba(74, 255, 255, 0.2);
+        }
+
+        .user-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .user-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 8px;
+            background: #1a1f3a;
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 8px;
+            padding: 8px 0;
+            min-width: 180px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            display: none;
+            z-index: 1000;
+        }
+
+        .user-menu.show {
+            display: block;
+        }
+
+        .user-menu-item {
+            padding: 10px 16px;
+            color: #ccc;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-menu-item:hover {
+            background: rgba(102, 126, 234, 0.2);
+            color: #fff;
+        }
+
+        .user-menu-item.danger {
+            color: #ff6b6b;
+        }
+
+        .user-menu-item.danger:hover {
+            background: rgba(255, 107, 107, 0.2);
+        }
+
+        .share-access-panel {
+            padding: 16px;
+            background: rgba(74, 255, 255, 0.05);
+            border: 1px solid rgba(74, 255, 255, 0.2);
+            border-radius: 8px;
+            margin-top: 16px;
+        }
+
+        .share-access-panel h4 {
+            color: #4affff;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .access-code {
+            font-family: monospace;
+            font-size: 18px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 12px;
+            border-radius: 6px;
+            text-align: center;
+            color: #ffd700;
+            letter-spacing: 4px;
+            margin-bottom: 12px;
+        }
     </style>
 </head>
 <body>
+    <!-- ==================== AUTHENTICATION OVERLAY ==================== -->
+    <div id="authOverlay" class="auth-overlay">
+        <div class="auth-modal">
+            <div class="auth-header">
+                <h2>💎 GemBot Control</h2>
+                <p>Sign in to control your machine securely</p>
+            </div>
+
+            <div class="auth-tabs">
+                <button class="auth-tab active" id="loginTab" onclick="authUI.switchTab('login')">Sign In</button>
+                <button class="auth-tab" id="registerTab" onclick="authUI.switchTab('register')">Register</button>
+            </div>
+
+            <div id="authError" class="auth-error"></div>
+
+            <!-- Login Form -->
+            <form id="loginForm" class="auth-form" onsubmit="authUI.login(event)">
+                <div class="auth-input-group">
+                    <label for="loginEmail">Email or Username</label>
+                    <input type="text" id="loginEmail" class="auth-input" placeholder="your@email.com" required>
+                </div>
+                <div class="auth-input-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" class="auth-input" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="auth-btn" id="loginBtn">🔐 Sign In</button>
+            </form>
+
+            <!-- Register Form (hidden by default) -->
+            <form id="registerForm" class="auth-form" style="display: none;" onsubmit="authUI.register(event)">
+                <div class="auth-input-group">
+                    <label for="registerUsername">Username</label>
+                    <input type="text" id="registerUsername" class="auth-input" placeholder="Choose a username" required minlength="3">
+                </div>
+                <div class="auth-input-group">
+                    <label for="registerEmail">Email</label>
+                    <input type="email" id="registerEmail" class="auth-input" placeholder="your@email.com" required>
+                </div>
+                <div class="auth-input-group">
+                    <label for="registerPassword">Password</label>
+                    <input type="password" id="registerPassword" class="auth-input" placeholder="Min. 6 characters" required minlength="6">
+                </div>
+                <div class="auth-input-group">
+                    <label for="registerConfirm">Confirm Password</label>
+                    <input type="password" id="registerConfirm" class="auth-input" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="auth-btn" id="registerBtn">📝 Create Account</button>
+            </form>
+
+            <div class="auth-divider">or</div>
+
+            <!-- Guest Access with Code -->
+            <div class="auth-input-group">
+                <label for="guestCode">Have an Access Code?</label>
+                <div style="display: flex; gap: 8px;">
+                    <input type="text" id="guestCode" class="auth-input" placeholder="Enter 6-digit code" maxlength="6" style="flex: 1; text-transform: uppercase; letter-spacing: 2px; text-align: center;">
+                    <button type="button" class="guest-btn" onclick="authUI.joinWithCode()">Join</button>
+                </div>
+            </div>
+
+            <button type="button" class="guest-btn" style="margin-top: 12px; width: 100%;" onclick="authUI.continueAsGuest()">
+                👤 Continue as Guest (View Only)
+            </button>
+        </div>
+    </div>
+
     <div class="app-container">
         <!-- HEADER - Mobile-first camera connection -->
         <div class="header-panel">
@@ -1343,6 +1680,22 @@
                 <div class="status-badge" style="min-width: 120px;">
                     <div class="status-indicator" id="statusIndicator"></div>
                     <span id="connectionStatus" style="font-size: 12px;">OFFLINE</span>
+                </div>
+
+                <!-- User Badge (after login) -->
+                <div id="userBadgeContainer" style="position: relative; margin-left: 8px; display: none;">
+                    <div class="user-badge" id="userBadge" onclick="authUI.toggleUserMenu()">
+                        <div class="user-avatar" id="userAvatar">?</div>
+                        <span id="userName" style="font-size: 12px; color: #4affff;">Guest</span>
+                        <span style="font-size: 10px; color: #888;">▼</span>
+                    </div>
+                    <div class="user-menu" id="userMenu">
+                        <div class="user-menu-item" onclick="authUI.showProfile()">👤 My Profile</div>
+                        <div class="user-menu-item" onclick="authUI.showShareAccess()">🔗 Share Access</div>
+                        <div class="user-menu-item" onclick="authUI.showMachineSettings()">⚙️ Machine Settings</div>
+                        <div class="user-menu-item" id="connectedGuestsItem" style="display: none;">👥 Connected Guests (0)</div>
+                        <div class="user-menu-item danger" onclick="authUI.logout()">🚪 Sign Out</div>
+                    </div>
                 </div>
                 
                 <!-- Game Stats (mobile hidden) -->
@@ -1682,6 +2035,448 @@
     </div>
 
     <script>
+        // ==================== AUTHENTICATION SYSTEM ====================
+        const authSystem = {
+            currentUser: null,
+            sessionToken: null,
+            isGuest: false,
+            guestPermissions: {
+                canView: true,
+                canControl: false,
+                canChangeSettings: false
+            },
+            connectedGuests: [],
+            
+            // Initialize auth system
+            init() {
+                // Check for existing session
+                const savedSession = localStorage.getItem('gembot_session');
+                if (savedSession) {
+                    try {
+                        const session = JSON.parse(savedSession);
+                        if (session.expires > Date.now()) {
+                            this.currentUser = session.user;
+                            this.sessionToken = session.token;
+                            this.isGuest = session.isGuest || false;
+                            this.hideAuthOverlay();
+                            this.updateUserUI();
+                            console.log('✅ Session restored for:', this.currentUser.username);
+                            return true;
+                        }
+                    } catch (e) {
+                        console.warn('Invalid session, clearing');
+                        localStorage.removeItem('gembot_session');
+                    }
+                }
+                // Show auth overlay if no valid session
+                this.showAuthOverlay();
+                return false;
+            },
+            
+            // Register new user
+            async register(username, email, password) {
+                // In production, this would call your backend API
+                // For now, we'll use localStorage-based auth
+                const users = JSON.parse(localStorage.getItem('gembot_users') || '{}');
+                
+                if (users[email]) {
+                    throw new Error('Email already registered');
+                }
+                
+                if (Object.values(users).some(u => u.username === username)) {
+                    throw new Error('Username already taken');
+                }
+                
+                // Create user (in production, hash password on server)
+                const userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                const user = {
+                    id: userId,
+                    username: username,
+                    email: email,
+                    passwordHash: await this.hashPassword(password),
+                    createdAt: Date.now(),
+                    machineAccessCode: this.generateAccessCode(),
+                    allowedGuests: [],
+                    settings: {
+                        autoShare: false,
+                        requireApproval: true,
+                        maxGuests: 3
+                    }
+                };
+                
+                users[email] = user;
+                localStorage.setItem('gembot_users', JSON.stringify(users));
+                
+                // Auto-login after registration
+                return this.login(email, password);
+            },
+            
+            // Login user
+            async login(emailOrUsername, password) {
+                const users = JSON.parse(localStorage.getItem('gembot_users') || '{}');
+                
+                // Find user by email or username
+                let user = users[emailOrUsername];
+                if (!user) {
+                    user = Object.values(users).find(u => u.username === emailOrUsername);
+                }
+                
+                if (!user) {
+                    throw new Error('User not found');
+                }
+                
+                // Verify password
+                const passwordHash = await this.hashPassword(password);
+                if (passwordHash !== user.passwordHash) {
+                    throw new Error('Invalid password');
+                }
+                
+                // Create session
+                this.currentUser = {
+                    id: user.id,
+                    username: user.username,
+                    email: user.email,
+                    machineAccessCode: user.machineAccessCode,
+                    settings: user.settings
+                };
+                this.sessionToken = this.generateSessionToken();
+                this.isGuest = false;
+                
+                // Save session (24 hour expiry)
+                localStorage.setItem('gembot_session', JSON.stringify({
+                    user: this.currentUser,
+                    token: this.sessionToken,
+                    isGuest: false,
+                    expires: Date.now() + (24 * 60 * 60 * 1000)
+                }));
+                
+                console.log('✅ Logged in as:', user.username);
+                this.hideAuthOverlay();
+                this.updateUserUI();
+                return this.currentUser;
+            },
+            
+            // Join with access code (guest)
+            async joinWithCode(code) {
+                const users = JSON.parse(localStorage.getItem('gembot_users') || '{}');
+                
+                // Find user with this access code
+                const owner = Object.values(users).find(u => u.machineAccessCode === code.toUpperCase());
+                
+                if (!owner) {
+                    throw new Error('Invalid access code');
+                }
+                
+                // Create guest session
+                this.currentUser = {
+                    id: 'guest_' + Date.now(),
+                    username: 'Guest_' + Math.random().toString(36).substr(2, 4).toUpperCase(),
+                    isGuestOf: owner.id,
+                    ownerUsername: owner.username
+                };
+                this.sessionToken = this.generateSessionToken();
+                this.isGuest = true;
+                this.guestPermissions = {
+                    canView: true,
+                    canControl: owner.settings?.allowGuestControl || false,
+                    canChangeSettings: false
+                };
+                
+                // Save guest session (4 hour expiry)
+                localStorage.setItem('gembot_session', JSON.stringify({
+                    user: this.currentUser,
+                    token: this.sessionToken,
+                    isGuest: true,
+                    permissions: this.guestPermissions,
+                    expires: Date.now() + (4 * 60 * 60 * 1000)
+                }));
+                
+                console.log('✅ Joined as guest of:', owner.username);
+                this.hideAuthOverlay();
+                this.updateUserUI();
+                return this.currentUser;
+            },
+            
+            // Continue as view-only guest
+            continueAsGuest() {
+                this.currentUser = {
+                    id: 'guest_' + Date.now(),
+                    username: 'Viewer_' + Math.random().toString(36).substr(2, 4).toUpperCase()
+                };
+                this.sessionToken = null;
+                this.isGuest = true;
+                this.guestPermissions = {
+                    canView: true,
+                    canControl: false,
+                    canChangeSettings: false
+                };
+                
+                // Short session (1 hour)
+                localStorage.setItem('gembot_session', JSON.stringify({
+                    user: this.currentUser,
+                    token: null,
+                    isGuest: true,
+                    permissions: this.guestPermissions,
+                    expires: Date.now() + (1 * 60 * 60 * 1000)
+                }));
+                
+                console.log('✅ Continuing as view-only guest');
+                this.hideAuthOverlay();
+                this.updateUserUI();
+                return this.currentUser;
+            },
+            
+            // Logout
+            logout() {
+                this.currentUser = null;
+                this.sessionToken = null;
+                this.isGuest = false;
+                localStorage.removeItem('gembot_session');
+                this.showAuthOverlay();
+                this.updateUserUI();
+                console.log('✅ Logged out');
+            },
+            
+            // Check if user can perform action
+            canPerformAction(action) {
+                if (!this.currentUser) return false;
+                if (!this.isGuest) return true; // Full access for logged-in users
+                
+                switch(action) {
+                    case 'view': return this.guestPermissions.canView;
+                    case 'control': return this.guestPermissions.canControl;
+                    case 'settings': return this.guestPermissions.canChangeSettings;
+                    default: return false;
+                }
+            },
+            
+            // Generate 6-character access code
+            generateAccessCode() {
+                const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+                let code = '';
+                for (let i = 0; i < 6; i++) {
+                    code += chars.charAt(Math.floor(Math.random() * chars.length));
+                }
+                return code;
+            },
+            
+            // Regenerate access code
+            regenerateAccessCode() {
+                if (!this.currentUser || this.isGuest) return null;
+                
+                const newCode = this.generateAccessCode();
+                this.currentUser.machineAccessCode = newCode;
+                
+                // Update stored user
+                const users = JSON.parse(localStorage.getItem('gembot_users') || '{}');
+                if (users[this.currentUser.email]) {
+                    users[this.currentUser.email].machineAccessCode = newCode;
+                    localStorage.setItem('gembot_users', JSON.stringify(users));
+                }
+                
+                // Update session
+                const session = JSON.parse(localStorage.getItem('gembot_session'));
+                session.user.machineAccessCode = newCode;
+                localStorage.setItem('gembot_session', JSON.stringify(session));
+                
+                return newCode;
+            },
+            
+            // Generate session token
+            generateSessionToken() {
+                return 'sess_' + Date.now() + '_' + Math.random().toString(36).substr(2, 16);
+            },
+            
+            // Simple hash function (in production, use proper bcrypt on server)
+            async hashPassword(password) {
+                const encoder = new TextEncoder();
+                const data = encoder.encode(password + 'gembot_salt_2025');
+                const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            },
+            
+            // UI Methods
+            showAuthOverlay() {
+                const overlay = document.getElementById('authOverlay');
+                if (overlay) overlay.style.display = 'flex';
+            },
+            
+            hideAuthOverlay() {
+                const overlay = document.getElementById('authOverlay');
+                if (overlay) overlay.style.display = 'none';
+            },
+            
+            updateUserUI() {
+                const badge = document.getElementById('userBadgeContainer');
+                const avatar = document.getElementById('userAvatar');
+                const name = document.getElementById('userName');
+                
+                if (this.currentUser) {
+                    if (badge) badge.style.display = 'block';
+                    if (avatar) avatar.textContent = this.currentUser.username.charAt(0).toUpperCase();
+                    if (name) {
+                        name.textContent = this.currentUser.username;
+                        if (this.isGuest) {
+                            name.textContent += ' (Guest)';
+                            name.style.color = '#ffd700';
+                        } else {
+                            name.style.color = '#4affff';
+                        }
+                    }
+                } else {
+                    if (badge) badge.style.display = 'none';
+                }
+            }
+        };
+        
+        // Auth UI Controller
+        const authUI = {
+            switchTab(tab) {
+                const loginTab = document.getElementById('loginTab');
+                const registerTab = document.getElementById('registerTab');
+                const loginForm = document.getElementById('loginForm');
+                const registerForm = document.getElementById('registerForm');
+                
+                if (tab === 'login') {
+                    loginTab.classList.add('active');
+                    registerTab.classList.remove('active');
+                    loginForm.style.display = 'flex';
+                    registerForm.style.display = 'none';
+                } else {
+                    loginTab.classList.remove('active');
+                    registerTab.classList.add('active');
+                    loginForm.style.display = 'none';
+                    registerForm.style.display = 'flex';
+                }
+                this.clearError();
+            },
+            
+            showError(message) {
+                const error = document.getElementById('authError');
+                if (error) {
+                    error.textContent = message;
+                    error.classList.add('show');
+                }
+            },
+            
+            clearError() {
+                const error = document.getElementById('authError');
+                if (error) error.classList.remove('show');
+            },
+            
+            async login(event) {
+                event.preventDefault();
+                this.clearError();
+                
+                const email = document.getElementById('loginEmail').value;
+                const password = document.getElementById('loginPassword').value;
+                const btn = document.getElementById('loginBtn');
+                
+                btn.disabled = true;
+                btn.textContent = '⏳ Signing in...';
+                
+                try {
+                    await authSystem.login(email, password);
+                    addMessage('✅ Welcome back, ' + authSystem.currentUser.username + '!', 'success');
+                } catch (error) {
+                    this.showError(error.message);
+                    btn.disabled = false;
+                    btn.textContent = '🔐 Sign In';
+                }
+            },
+            
+            async register(event) {
+                event.preventDefault();
+                this.clearError();
+                
+                const username = document.getElementById('registerUsername').value;
+                const email = document.getElementById('registerEmail').value;
+                const password = document.getElementById('registerPassword').value;
+                const confirm = document.getElementById('registerConfirm').value;
+                const btn = document.getElementById('registerBtn');
+                
+                if (password !== confirm) {
+                    this.showError('Passwords do not match');
+                    return;
+                }
+                
+                btn.disabled = true;
+                btn.textContent = '⏳ Creating account...';
+                
+                try {
+                    await authSystem.register(username, email, password);
+                    addMessage('✅ Welcome to GemBot, ' + authSystem.currentUser.username + '! Your machine access code is: ' + authSystem.currentUser.machineAccessCode, 'success');
+                } catch (error) {
+                    this.showError(error.message);
+                    btn.disabled = false;
+                    btn.textContent = '📝 Create Account';
+                }
+            },
+            
+            async joinWithCode() {
+                this.clearError();
+                const code = document.getElementById('guestCode').value.toUpperCase();
+                
+                if (code.length !== 6) {
+                    this.showError('Please enter a valid 6-character code');
+                    return;
+                }
+                
+                try {
+                    await authSystem.joinWithCode(code);
+                    addMessage('✅ Joined as guest of ' + authSystem.currentUser.ownerUsername, 'success');
+                } catch (error) {
+                    this.showError(error.message);
+                }
+            },
+            
+            continueAsGuest() {
+                authSystem.continueAsGuest();
+                addMessage('👁️ Viewing as guest. Machine control is disabled.', 'system');
+            },
+            
+            toggleUserMenu() {
+                const menu = document.getElementById('userMenu');
+                if (menu) menu.classList.toggle('show');
+            },
+            
+            showProfile() {
+                this.toggleUserMenu();
+                if (authSystem.currentUser && !authSystem.isGuest) {
+                    addMessage(`👤 Profile: ${authSystem.currentUser.username}\n📧 Email: ${authSystem.currentUser.email}\n🔗 Access Code: ${authSystem.currentUser.machineAccessCode}`, 'system');
+                }
+            },
+            
+            showShareAccess() {
+                this.toggleUserMenu();
+                if (authSystem.currentUser && !authSystem.isGuest) {
+                    const code = authSystem.currentUser.machineAccessCode;
+                    addMessage(`🔗 Share this code to allow others to view/control your machine:\n\n📋 ${code}\n\nThey can enter this code on the login screen.`, 'system');
+                }
+            },
+            
+            showMachineSettings() {
+                this.toggleUserMenu();
+                addMessage('⚙️ Machine settings panel coming soon!', 'system');
+            },
+            
+            logout() {
+                this.toggleUserMenu();
+                authSystem.logout();
+                addMessage('👋 Signed out successfully', 'system');
+            }
+        };
+
+        // Close user menu when clicking outside
+        document.addEventListener('click', (e) => {
+            const badge = document.getElementById('userBadge');
+            const menu = document.getElementById('userMenu');
+            if (menu && badge && !badge.contains(e.target) && !menu.contains(e.target)) {
+                menu.classList.remove('show');
+            }
+        });
+
         // ==================== GLOBAL STATE ====================
         let port = null;
         let isConnected = false;
@@ -2889,6 +3684,16 @@
             sendCommand(cmd) {
                 try {
                     if (!this.isConnected) return;
+                    
+                    // ===== ACCESS CONTROL CHECK =====
+                    if (typeof authSystem !== 'undefined' && !authSystem.canPerformAction('control')) {
+                        console.warn('🔒 Access denied: Guest users cannot control the machine');
+                        if (typeof addMessage === 'function') {
+                            addMessage('🔒 Control access denied. You are viewing as a guest.', 'warning');
+                        }
+                        return;
+                    }
+                    // ===== END ACCESS CONTROL =====
                     
                     // ===== REAL-TIME POSITION POLLING =====
                     // Start/extend polling for motor movement commands
@@ -10449,10 +11254,23 @@
         
         // Start power-up sequence and initialize Merlin personality
         window.addEventListener('load', () => {
+            // Initialize authentication system FIRST
+            console.log('🔐 Initializing authentication system...');
+            const hasSession = authSystem.init();
+            
             setTimeout(() => {
                 // Setup voice before giving greeting
                 merlin.setupMerlinVoice();
-                merlin.giveGreeting();
+                
+                // Customize greeting based on auth status
+                if (hasSession && authSystem.currentUser) {
+                    if (authSystem.isGuest) {
+                        addMessage(`👁️ Welcome, ${authSystem.currentUser.username}! You are viewing as a guest.`, 'system');
+                    } else {
+                        merlin.giveGreeting();
+                    }
+                }
+                
                 merlin.isInitialized = true;
                 scenarioDetector.monitor();
                 console.log('🧙 All systems initialized - Merlin AI online with Ryan Barbrick wisdom');
