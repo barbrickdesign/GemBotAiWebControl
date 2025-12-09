@@ -312,8 +312,7 @@ class VirtualMachine3D {
         
         const ground = BABYLON.MeshBuilder.CreateGround(
             'ground',
-            200, 200,
-            2, 2,
+            { width: 200, height: 200, subdivisions: 2 },
             this.scene
         );
         ground.material = groundMaterial;

@@ -3,18 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://cdn.babylonjs.com https://www.babylonjs-playground.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline'; media-src 'self' blob:; connect-src 'self' blob: indexeddb: https://cdn.jsdelivr.net https://api.qrserver.com https://gembotaiwebcontrol.onrender.com:8000; object-src 'none'; img-src 'self' data: blob: https://api.qrserver.com;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://cdn.babylonjs.com https://www.babylonjs-playground.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline'; media-src 'self' blob:; connect-src 'self' blob: indexeddb: https://cdn.jsdelivr.net https://api.qrserver.com https://gembotaiwebcontrol.onrender.com:8000 https://cdn.babylonjs.com; object-src 'none'; img-src 'self' data: blob: https://api.qrserver.com;">
     <title>GemBot AI Control System</title>
     
     <!-- Babylon.js for 3D Virtual Machine -->
     <script src="https://cdn.babylonjs.com/babylon.js"></script>
     <script src="https://cdn.babylonjs.com/cannon.js"></script>
     
-    <!-- QR Code Library (Primary) -->
+    <!-- QR Code Library -->
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3"></script>
-    
-    <!-- QR Code Library (Fallback) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     
     <!-- Virtual Machine 3D Module -->
     <script src="./virtual-machine-3d.js"></script>
@@ -751,6 +748,178 @@
             .left-panel { order: 1; }
             .center-panel { order: 2; }
             .right-panel { order: 3; }
+        }
+
+        /* MOBILE OPTIMIZATION */
+        @media (max-width: 768px) {
+            body {
+                padding: 0;
+                margin: 0;
+            }
+
+            .app-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr;
+                gap: 0;
+                height: 100vh;
+            }
+
+            .header-panel {
+                flex-direction: column;
+                gap: 12px;
+                padding: 12px;
+                border-radius: 0;
+            }
+
+            .header-title {
+                font-size: 18px;
+                margin-bottom: 4px;
+            }
+
+            .connection-panel {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            .btn-primary, .btn-scan, .btn-danger {
+                padding: 8px 12px;
+                font-size: 13px;
+                flex: 1;
+                min-width: 80px;
+            }
+
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 12px;
+                padding: 12px;
+                overflow-y: auto;
+                overflow-x: hidden;
+            }
+
+            .left-panel, .center-panel, .right-panel {
+                width: 100%;
+            }
+
+            .control-section {
+                padding: 12px;
+                margin-bottom: 8px;
+            }
+
+            .section-title {
+                font-size: 14px;
+                margin-bottom: 8px;
+            }
+
+            .button-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+
+            .btn-control {
+                padding: 10px;
+                font-size: 12px;
+            }
+
+            .motor-display {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+
+            .joystick-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 6px;
+            }
+
+            .joystick-btn {
+                padding: 12px;
+                font-size: 18px;
+                border-radius: 8px;
+            }
+
+            .message-bubble {
+                max-width: 85%;
+                padding: 10px 12px;
+                font-size: 13px;
+                border-radius: 8px;
+            }
+
+            .message-input {
+                padding: 10px;
+                font-size: 13px;
+            }
+
+            .chat-input {
+                padding: 8px 12px;
+                font-size: 13px;
+            }
+
+            .control-label {
+                font-size: 12px;
+            }
+
+            .control-input {
+                height: 24px;
+            }
+
+            #mobileConnectionPanel {
+                padding: 12px !important;
+            }
+
+            #mobileConnectionPanel > div {
+                grid-template-columns: 1fr !important;
+                gap: 12px !important;
+            }
+
+            #networkURLDisplay {
+                font-size: 11px !important;
+                padding: 6px 8px !important;
+            }
+
+            #toggleQRBtn, #copyURLBtn, #rescanNetworkBtn {
+                width: 100% !important;
+                padding: 10px !important;
+                font-size: 12px !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-panel {
+                padding: 10px;
+                gap: 10px;
+            }
+
+            .header-title {
+                font-size: 16px;
+            }
+
+            .button-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .joystick-grid {
+                gap: 4px;
+            }
+
+            .joystick-btn {
+                padding: 10px;
+                font-size: 16px;
+            }
+
+            .control-section {
+                padding: 10px;
+                margin-bottom: 6px;
+            }
+
+            .message-bubble {
+                max-width: 90%;
+                font-size: 12px;
+                padding: 8px 10px;
+            }
+
+            .control-row {
+                flex-wrap: wrap;
+                gap: 6px;
+            }
         }
     </style>
 </head>
