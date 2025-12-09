@@ -900,8 +900,11 @@
             <!-- CENTER: 3D VIRTUAL MACHINE & WEBCAM -->
             <div class="center-panel">
                 <!-- 3D Virtual Machine View -->
-                <div id="machineViewContainer" style="width: 100%; height: 400px; background: #1a1f3a; border-radius: 8px; border: 2px solid #667eea; margin-bottom: 12px; overflow: hidden;">
-                    <canvas id="babylon-canvas" style="width: 100%; height: 100%;"></canvas>
+                <div id="machineViewContainer" style="width: 100%; height: 400px; background: #1a1f3a; border-radius: 8px; border: 2px solid #667eea; margin-bottom: 12px; overflow: hidden; position: relative;">
+                    <canvas id="babylon-canvas" style="width: 100%; height: 100%; display: block;"></canvas>
+                    <div id="machineLoadingStatus" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.8); padding: 16px; border-radius: 8px; color: #4affff; font-size: 14px; text-align: center; z-index: 10;">
+                        ⏳ Initializing 3D Virtual Machine...
+                    </div>
                 </div>
                 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; font-size: 11px;">
@@ -1046,24 +1049,50 @@
          */
         async function initializeVirtualMachine() {
             try {
-                // Check if Babylon.js is loaded
-                if (typeof BABYLON === 'undefined') {
-                    console.log('Babylon.js not loaded yet, retrying...');
-                    setTimeout(initializeVirtualMachine, 100);
+                console.log('Starting Virtual Machine 3D initialization...');
+                
+                // Check if canvas exists
+                const canvas = document.getElementById('babylon-canvas');
+                if (!canvas) {
+                    console.error('❌ Canvas element babylon-canvas not found!');
                     return;
                 }
+                console.log('✅ Canvas found');
                 
+                // Check if VirtualMachine3D class exists
+                if (typeof VirtualMachine3D === 'undefined') {
+                    console.log('⏳ VirtualMachine3D not loaded yet, retrying...');
+                    setTimeout(initializeVirtualMachine, 500);
+                    return;
+                }
+                console.log('✅ VirtualMachine3D class loaded');
+                
+                // Check if Babylon.js loaded
+                if (typeof BABYLON === 'undefined') {
+                    console.log('⏳ Babylon.js not loaded yet, retrying...');
+                    setTimeout(initializeVirtualMachine, 500);
+                    return;
+                }
+                console.log('✅ Babylon.js loaded');
+                
+                // Create and initialize virtual machine
                 virtualMachine = new VirtualMachine3D('babylon-canvas');
+                console.log('✅ VirtualMachine3D instance created');
+                
                 const success = await virtualMachine.initialize();
                 
                 if (success) {
-                    console.log('✅ Virtual Machine 3D initialized successfully');
+                    console.log('🎉 Virtual Machine 3D initialized successfully!');
                     setupVirtualMachineControls();
+                    addMessage('✅ Virtual Machine 3D loaded - Ready to learn!', 'system');
                 } else {
                     console.error('❌ Failed to initialize Virtual Machine 3D');
+                    addMessage('⚠️ Virtual Machine 3D initialization failed', 'error');
                 }
             } catch (error) {
-                console.error('Virtual Machine initialization error:', error);
+                console.error('❌ Virtual Machine initialization error:', error);
+                console.error('Stack:', error.stack);
+                addMessage('❌ Virtual Machine error: ' + error.message, 'error');
             }
         }
         
@@ -1071,18 +1100,27 @@
          * Setup controls for virtual machine
          */
         function setupVirtualMachineControls() {
+            // Hide loading indicator
+            const loadingStatus = document.getElementById('machineLoadingStatus');
+            if (loadingStatus) {
+                loadingStatus.style.display = 'none';
+            }
+            
             const homeBtn = document.getElementById('btnHomeAll');
             if (homeBtn) {
                 homeBtn.addEventListener('click', () => {
                     if (virtualMachine) {
                         virtualMachine.homeAllMotors();
                         updateMotorDisplays();
+                        console.log('✅ Homed all motors');
                     }
                 });
             }
             
             // Update position displays periodically
             setInterval(updateMotorDisplays, 100);
+            
+            console.log('✅ Virtual Machine controls setup complete');
         }
         
         /**
@@ -9474,13 +9512,21 @@
         
         // ==================== INITIALIZE VIRTUAL MACHINE ====================
         // Initialize virtual machine when Babylon.js and DOM are ready
+        // Wait longer to ensure all libraries are loaded
+        console.log('Scheduling Virtual Machine 3D initialization in 2 seconds...');
         setTimeout(() => {
-            if (typeof VirtualMachine3D !== 'undefined') {
+            console.log('Checking dependencies...');
+            console.log('- Babylon.js available:', typeof BABYLON !== 'undefined');
+            console.log('- VirtualMachine3D available:', typeof VirtualMachine3D !== 'undefined');
+            console.log('- Canvas present:', !!document.getElementById('babylon-canvas'));
+            
+            if (typeof VirtualMachine3D !== 'undefined' && typeof BABYLON !== 'undefined') {
                 initializeVirtualMachine();
             } else {
-                console.warn('Virtual Machine 3D module not loaded');
+                console.warn('⚠️ Dependencies not ready, retrying in 1 second...');
+                setTimeout(initializeVirtualMachine, 1000);
             }
-        }, 1000);
+        }, 2000);
         
         // Merlin greeting will be given on window load, no duplicate welcome needed
     </script>

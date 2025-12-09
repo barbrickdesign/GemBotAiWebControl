@@ -76,40 +76,71 @@ class VirtualMachine3D {
      */
     async initialize() {
         try {
+            // Wait for BABYLON to be available
+            let retries = 0;
+            while (typeof BABYLON === 'undefined' && retries < 50) {
+                await new Promise(resolve => setTimeout(resolve, 100));
+                retries++;
+            }
+            
+            if (typeof BABYLON === 'undefined') {
+                throw new Error('Babylon.js failed to load after 5 seconds');
+            }
+            
+            console.log('✅ Babylon.js loaded, initializing scene...');
+            
             // Create engine
             this.engine = new BABYLON.Engine(this.canvasElement, true, {
                 preserveDrawingBuffer: true,
                 antialias: true,
-                stencil: true
+                stencil: true,
+                disableWebGL2Support: false
             });
+            
+            if (!this.engine) {
+                throw new Error('Failed to create Babylon.js engine');
+            }
+            
+            console.log('✅ Engine created');
             
             // Create scene
             this.scene = new BABYLON.Scene(this.engine);
-            this.scene.collisionsEnabled = true;
-            this.scene.gravity = new BABYLON.Vector3(0, -9.81, 0);
+            this.scene.clearColor = new BABYLON.Color3(0.1, 0.12, 0.16);
+            this.scene.collisionsEnabled = false; // Disable for now, enable if needed
+            
+            console.log('✅ Scene created');
             
             // Setup camera - Front view of machine
             this.setupCamera();
+            console.log('✅ Camera setup');
             
             // Setup lighting
             this.setupLighting();
+            console.log('✅ Lighting setup');
             
             // Create machine geometry
             this.createMachineGeometry();
+            console.log('✅ Machine geometry created');
             
-            // Setup physics
-            this.setupPhysics();
+            // Skip physics for now - not needed for visualization
+            // this.setupPhysics();
             
             // Start render loop
             this.startRenderLoop();
+            console.log('✅ Render loop started');
             
             // Handle window resize
-            window.addEventListener('resize', () => this.engine.resize());
+            window.addEventListener('resize', () => {
+                if (this.engine) this.engine.resize();
+            });
             
-            console.log('Virtual Machine 3D initialized successfully');
+            console.log('✅ Virtual Machine 3D initialized successfully!');
             return true;
         } catch (error) {
-            console.error('Failed to initialize Virtual Machine 3D:', error);
+            console.error('❌ Failed to initialize Virtual Machine 3D:', error);
+            // Log more details
+            console.error('Canvas element:', this.canvasElement);
+            console.error('BABYLON defined:', typeof BABYLON !== 'undefined');
             return false;
         }
     }
@@ -290,14 +321,12 @@ class VirtualMachine3D {
     }
     
     /**
-     * Setup physics engine
+     * Setup physics engine (disabled for now)
      */
     setupPhysics() {
-        // Use Babylon physics for collisions
-        this.scene.enablePhysics(
-            new BABYLON.Vector3(0, -9.81, 0),
-            new BABYLON.CannonJSPlugin()
-        );
+        // Physics disabled - not needed for visualization
+        // Enable later if collision detection is needed
+        console.log('Physics disabled (visualization only)');
     }
     
     /**

@@ -1,0 +1,437 @@
+/**
+ * GemBot Rotating Cube UI - Styles
+ * Futuristic 3D interface
+ */
+
+#cube-container {
+    width: 100%;
+    height: 100vh;
+    perspective: 1200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+    overflow: hidden;
+    position: relative;
+}
+
+/* Main Cube */
+.cube {
+    width: 100%;
+    max-width: 500px;
+    height: 600px;
+    position: relative;
+    transform-style: preserve-3d;
+    transform: rotateY(0deg);
+    transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* Cube Faces */
+.cube-face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    border: 2px solid rgba(74, 255, 255, 0.3);
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+    backface-visibility: hidden;
+    transform-style: preserve-3d;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* Position each face */
+.face-0 { transform: translateZ(250px); }
+.face-1 { transform: rotateY(60deg) translateZ(250px); }
+.face-2 { transform: rotateY(120deg) translateZ(250px); }
+.face-3 { transform: rotateY(180deg) translateZ(250px); }
+.face-4 { transform: rotateY(240deg) translateZ(250px); }
+.face-5 { transform: rotateY(300deg) translateZ(250px); }
+
+/* Face Content */
+.face-content {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    animation: fadeIn 0.6s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.face-header {
+    font-size: 24px;
+    font-weight: bold;
+    color: #4affff;
+    margin-bottom: 16px;
+    text-align: center;
+    text-shadow: 0 0 10px rgba(74, 255, 255, 0.5);
+}
+
+.face-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #667eea rgba(255, 255, 255, 0.1);
+}
+
+.face-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.face-body::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 3px;
+}
+
+.face-body::-webkit-scrollbar-thumb {
+    background: #667eea;
+    border-radius: 3px;
+}
+
+/* Dashboard Stats */
+.stat-box {
+    background: rgba(102, 126, 234, 0.2);
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(74, 255, 255, 0.2);
+    text-align: center;
+}
+
+.stat-label {
+    font-size: 11px;
+    color: #aaa;
+    margin-bottom: 4px;
+}
+
+.stat-value {
+    font-size: 18px;
+    font-weight: bold;
+    color: #4affff;
+}
+
+/* Motor Display */
+.motor-display {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.motor-axis {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+/* Learning */
+.lesson-box {
+    background: rgba(102, 126, 234, 0.2);
+    padding: 16px;
+    border-radius: 8px;
+    border: 1px solid rgba(74, 255, 255, 0.2);
+    margin-bottom: 12px;
+}
+
+.lesson-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: #4affff;
+    margin-bottom: 8px;
+}
+
+.lesson-content {
+    font-size: 13px;
+    color: #bbb;
+    line-height: 1.6;
+}
+
+/* Controls - Joystick Grid */
+.joystick-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.joystick-btn {
+    aspect-ratio: 1;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: 2px solid #4affff;
+    border-radius: 12px;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 0 15px rgba(74, 255, 255, 0.3);
+}
+
+.joystick-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 25px rgba(74, 255, 255, 0.6);
+}
+
+.joystick-btn:active {
+    transform: scale(0.95);
+}
+
+/* Stats Container */
+.stats-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.stat-item {
+    background: rgba(102, 126, 234, 0.2);
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(74, 255, 255, 0.2);
+    text-align: center;
+}
+
+.stat-icon {
+    font-size: 28px;
+    margin-bottom: 4px;
+}
+
+.stat-name {
+    font-size: 11px;
+    color: #aaa;
+    margin-bottom: 4px;
+}
+
+.stat-number {
+    font-size: 20px;
+    font-weight: bold;
+    color: #4affff;
+}
+
+/* Settings */
+.setting-item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.setting-item label {
+    font-size: 12px;
+    color: #aaa;
+    font-weight: 600;
+}
+
+.setting-slider {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    outline: none;
+    -webkit-appearance: none;
+}
+
+.setting-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #4affff;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(74, 255, 255, 0.5);
+}
+
+.setting-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #4affff;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 0 10px rgba(74, 255, 255, 0.5);
+}
+
+/* Buttons */
+.face-btn {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: 2px solid #4affff;
+    border-radius: 8px;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 0 15px rgba(74, 255, 255, 0.3);
+}
+
+.face-btn:hover {
+    box-shadow: 0 0 25px rgba(74, 255, 255, 0.6);
+    transform: translateY(-2px);
+}
+
+.face-btn:active {
+    transform: translateY(0);
+}
+
+.emergency-btn {
+    background: linear-gradient(135deg, #ff4444 0%, #cc0000 100%) !important;
+    border-color: #ff6b6b !important;
+}
+
+.emergency-btn:hover {
+    box-shadow: 0 0 25px rgba(255, 68, 68, 0.6) !important;
+}
+
+/* Cube Controls */
+.cube-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-top: 30px;
+    flex-wrap: wrap;
+}
+
+.cube-nav-btn {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: 2px solid #4affff;
+    border-radius: 50%;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 0 15px rgba(74, 255, 255, 0.3);
+}
+
+.cube-nav-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 25px rgba(74, 255, 255, 0.6);
+}
+
+.cube-nav-btn:active {
+    transform: scale(0.95);
+}
+
+/* Indicator Dots */
+.cube-indicator {
+    display: flex;
+    gap: 8px;
+}
+
+.indicator-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(74, 255, 255, 0.2);
+    border: 2px solid rgba(74, 255, 255, 0.4);
+    transition: all 0.3s;
+    cursor: pointer;
+}
+
+.indicator-dot.active {
+    background: #4affff;
+    box-shadow: 0 0 15px rgba(74, 255, 255, 0.8);
+    transform: scale(1.3);
+}
+
+.indicator-dot:hover {
+    border-color: #4affff;
+}
+
+/* Cube Title */
+.cube-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #4affff;
+    text-shadow: 0 0 10px rgba(74, 255, 255, 0.5);
+    margin-top: 20px;
+    text-align: center;
+    min-height: 24px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .cube {
+        max-width: 90vw;
+        height: 70vh;
+    }
+
+    .face-header {
+        font-size: 20px;
+    }
+
+    .cube-nav-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
+    }
+
+    .cube-title {
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    #cube-container {
+        padding: 10px;
+    }
+
+    .cube {
+        max-width: 100%;
+        height: 60vh;
+    }
+
+    .cube-face {
+        padding: 16px;
+    }
+
+    .face-header {
+        font-size: 18px;
+        margin-bottom: 12px;
+    }
+
+    .joystick-grid {
+        gap: 6px;
+    }
+
+    .joystick-btn {
+        font-size: 20px;
+    }
+
+    .stats-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .cube-nav-btn {
+        width: 36px;
+        height: 36px;
+        font-size: 16px;
+    }
+
+    .indicator-dot {
+        width: 10px;
+        height: 10px;
+    }
+}
