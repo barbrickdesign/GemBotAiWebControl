@@ -781,9 +781,10 @@
                 background: #0a0e27;
             }
 
-            /* LANDSCAPE ORIENTATION PROMPT - Shows when in portrait */
+            /* LANDSCAPE ORIENTATION PROMPT - Only shows on MOBILE portrait */
+            /* DESKTOP: Always hidden. MOBILE: Controlled by JavaScript */
             .rotate-device-overlay {
-                display: none;
+                display: none !important; /* Default: hidden everywhere */
                 position: fixed;
                 top: 0;
                 left: 0;
@@ -797,6 +798,11 @@
                 gap: 24px;
                 text-align: center;
                 padding: 20px;
+            }
+            
+            /* Only allow showing on actual touch devices via JS */
+            .rotate-device-overlay.show-mobile {
+                display: flex !important;
             }
 
             .rotate-icon {
@@ -1355,11 +1361,11 @@
             }
         }
 
-        /* MOBILE PORTRAIT - Show rotation prompt */
+        /* MOBILE PORTRAIT - Rotation prompt controlled by JavaScript */
+        /* The CSS no longer auto-shows - JS adds .show-mobile class on real mobile devices only */
         @media (max-width: 768px) and (orientation: portrait) {
-            .rotate-device-overlay {
-                display: flex !important;
-            }
+            /* Overlay visibility is now 100% controlled by JavaScript */
+            /* This ensures desktop browsers with narrow windows don't trigger it */
             
             .rotate-device-overlay.dismissed {
                 display: none !important;
@@ -4681,14 +4687,22 @@
                 
                 if (!overlay) return;
                 
-                // Only show on actual mobile devices AND in portrait mode
-                // Desktop should NEVER see this prompt regardless of window size
-                const isTrueMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) && 'ontouchstart' in window;
+                // STRICT mobile detection - must be a real mobile device with touch
+                // Desktop browsers (even with touch screens or narrow windows) should NEVER see this
+                const userAgent = navigator.userAgent.toLowerCase();
+                const isTrueMobile = (
+                    (/iphone|ipad|ipod|android|webos|blackberry|iemobile|opera mini/i.test(userAgent)) &&
+                    ('ontouchstart' in window || navigator.maxTouchPoints > 0) &&
+                    !(/windows nt|macintosh|linux(?!.*android)/i.test(userAgent)) // Exclude desktop OS
+                );
+                
+                // Remove any inline styles that might interfere
+                overlay.style.display = '';
                 
                 if (isLandscape || this.isRotatePromptDismissed || !isTrueMobile) {
-                    overlay.style.display = 'none';
+                    overlay.classList.remove('show-mobile');
                 } else if (isTrueMobile) {
-                    overlay.style.display = 'flex';
+                    overlay.classList.add('show-mobile');
                 }
                 
                 // Trigger resize event for layout recalculation
