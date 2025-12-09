@@ -9075,6 +9075,19 @@
                             tipsReceived: 0,
                             streamHighlights: [],
                             subscriberCount: 0
+                        },
+                        
+                        // 🎮 GEMBOT FARM GAME INTEGRATION
+                        gameStats: {
+                            farmLevel: 0,
+                            totalGems: 0,
+                            machineCount: 0,
+                            perfectCuts: 0,
+                            playTime: 0,
+                            lastPlayed: null,
+                            highScore: 0,
+                            achievements: [],
+                            merlinTipsInGame: 0
                         }
                     },
                     // ==================== END GEMFORGE ECONOMY ====================
@@ -9780,6 +9793,249 @@
                 } else {
                     return `I sense the Arduino is not yet connected. Would you like me to guide you through the connection process? It is quite simple once you know the steps.`;
                 }
+            }
+            
+            // ==================== GEMBOT FARM GAME INTEGRATION ====================
+            
+            /**
+             * Get game-aware context for responses
+             */
+            getGameContext() {
+                const gameStats = this.userProfile?.gemForge?.gameStats;
+                if (!gameStats || gameStats.farmLevel === 0) {
+                    return null;
+                }
+                return gameStats;
+            }
+            
+            /**
+             * Update game stats from the GemBot Farm game
+             */
+            updateGameStats(stats) {
+                if (!this.userProfile.gemForge) {
+                    this.userProfile.gemForge = {};
+                }
+                this.userProfile.gemForge.gameStats = {
+                    ...this.userProfile.gemForge.gameStats,
+                    ...stats,
+                    lastPlayed: new Date().toISOString()
+                };
+                this.saveUserProfile();
+            }
+            
+            /**
+             * Get contextual advice based on game progress
+             */
+            getGameAdvice() {
+                const stats = this.getGameContext();
+                if (!stats) {
+                    return `I see you haven't explored the GemBot Farm yet. Would you like to try the game? It teaches gem cutting concepts in a fun, interactive way. Click the 🎮 GemBot Farm in your menu.`;
+                }
+                
+                const advice = [];
+                
+                if (stats.farmLevel < 3) {
+                    advice.push(`Your farm is at level ${stats.farmLevel}. Keep cutting gems to level up and unlock rarer stone types!`);
+                    advice.push(`You have cut ${stats.totalGems} gems so far. Each gem teaches you something about the craft.`);
+                }
+                
+                if (stats.farmLevel >= 3 && stats.farmLevel < 7) {
+                    advice.push(`Level ${stats.farmLevel} - you're progressing well! Have you tried adding more machines to increase production?`);
+                    advice.push(`With ${stats.perfectCuts} perfect cuts, your technique is improving. In the real machine, perfect cuts come from precise angle control.`);
+                }
+                
+                if (stats.farmLevel >= 7) {
+                    advice.push(`Level ${stats.farmLevel}! You've mastered the basics in the game. Ready to apply this knowledge to the real GemBot?`);
+                    advice.push(`Your ${stats.totalGems} gems cut shows dedication. The skills translate directly to physical gem cutting.`);
+                }
+                
+                if (stats.machineCount > 3) {
+                    advice.push(`Managing ${stats.machineCount} machines shows organizational skill. Real gem cutting also requires managing multiple factors simultaneously.`);
+                }
+                
+                return advice[Math.floor(Math.random() * advice.length)];
+            }
+            
+            /**
+             * Generate response that incorporates game knowledge
+             */
+            generateGameAwareResponse(topic) {
+                const gameStats = this.getGameContext();
+                const userName = this.userProfile.userName || 'apprentice';
+                
+                // Base responses for different topics, enhanced with game context
+                const responses = {
+                    gems: gameStats 
+                        ? `Ah, ${userName}, you've cut ${gameStats.totalGems} virtual gems in your farm! Each type has unique properties. In the physical world, hardness determines cutting speed. Diamond at 10 on the Mohs scale requires patience, while Quartz at 7 cuts more quickly.`
+                        : `Gems have varying hardness on the Mohs scale. Diamond is 10, Sapphire is 9, and Quartz is 7. Harder gems need slower, more careful cuts.`,
+                    
+                    perfect_cuts: gameStats
+                        ? `With ${gameStats.perfectCuts} perfect cuts in the game, you understand the concept! In real cutting, perfection comes from: 1) Correct angle, 2) Proper pressure, 3) Appropriate lap speed, 4) Patience.`
+                        : `A perfect cut maximizes light return. The facet angles must be precise to within fractions of a degree.`,
+                    
+                    machines: gameStats && gameStats.machineCount > 1
+                        ? `You manage ${gameStats.machineCount} machines in your farm! Each virtual machine teaches production concepts. The real GemBot has X, Y, and P axes that you control directly.`
+                        : `The GemBot machine has three motorized axes: X (horizontal), Y (vertical), and P (rotation). Master each to achieve precision.`,
+                    
+                    learning: gameStats
+                        ? `Your game progress shows ${gameStats.farmLevel} levels achieved and ${Math.round(gameStats.playTime / 60)} minutes of practice. This foundation prepares you for the real machine. Shall I teach you the next concept?`
+                        : `Learning gem cutting combines theory and practice. I can teach you systematically—just say "teach me" and we begin.`,
+                    
+                    progress: gameStats
+                        ? `Let me assess your journey, ${userName}. Game: Level ${gameStats.farmLevel}, ${gameStats.totalGems} gems, ${gameStats.perfectCuts} perfect cuts. ${this.userProfile.topicsLearned?.length || 0} topics learned with me. You're ${this.getProgressAssessment(gameStats)}.`
+                        : `Your learning progress shows ${this.userProfile.topicsLearned?.length || 0} topics explored. Each question deepens your understanding.`
+                };
+                
+                return responses[topic] || this.getGameAdvice();
+            }
+            
+            /**
+             * Assess overall progress combining game and learning
+             */
+            getProgressAssessment(gameStats) {
+                const topicsLearned = this.userProfile.topicsLearned?.length || 0;
+                const gameLevel = gameStats?.farmLevel || 0;
+                const totalScore = topicsLearned + (gameLevel * 2);
+                
+                if (totalScore < 5) return 'just beginning your journey';
+                if (totalScore < 15) return 'making steady progress';
+                if (totalScore < 30) return 'developing real skill';
+                if (totalScore < 50) return 'becoming quite accomplished';
+                return 'approaching mastery';
+            }
+            
+            /**
+             * Check if user should be encouraged to try the game
+             */
+            shouldSuggestGame() {
+                const gameStats = this.getGameContext();
+                
+                // Never played
+                if (!gameStats || gameStats.farmLevel === 0) {
+                    return {
+                        suggest: true,
+                        reason: 'never_played',
+                        message: `${this.userProfile.userName || 'My student'}, have you discovered the GemBot Farm? It's a game that teaches gem cutting concepts while you have fun. Click 🎮 in the menu to try it!`
+                    };
+                }
+                
+                // Haven't played in a while
+                if (gameStats.lastPlayed) {
+                    const daysSincePlayed = (Date.now() - new Date(gameStats.lastPlayed).getTime()) / (1000 * 60 * 60 * 24);
+                    if (daysSincePlayed > 3) {
+                        return {
+                            suggest: true,
+                            reason: 'inactive',
+                            message: `Your GemBot Farm awaits! It's been ${Math.floor(daysSincePlayed)} days since your last visit. Your machines miss you!`
+                        };
+                    }
+                }
+                
+                return { suggest: false };
+            }
+            
+            /**
+             * Handle game-related questions
+             */
+            handleGameQuestion(question) {
+                const q = question.toLowerCase();
+                
+                if (q.includes('game') || q.includes('farm') || q.includes('play')) {
+                    const gameStats = this.getGameContext();
+                    if (gameStats) {
+                        return `Your GemBot Farm is at Level ${gameStats.farmLevel} with ${gameStats.machineCount} machines and ${gameStats.totalGems} gems cut. To continue playing, click 🎮 GemBot Farm in the menu. The game and real machine learning complement each other!`;
+                    } else {
+                        return `The GemBot Farm is a fun way to learn gem cutting concepts! Click 🎮 GemBot Farm in the user menu to start your virtual gem cutting empire. What you learn there applies to real cutting!`;
+                    }
+                }
+                
+                if (q.includes('score') || q.includes('level') || q.includes('progress')) {
+                    return this.generateGameAwareResponse('progress');
+                }
+                
+                if (q.includes('perfect') && q.includes('cut')) {
+                    return this.generateGameAwareResponse('perfect_cuts');
+                }
+                
+                return null; // Not a game question
+            }
+            
+            /**
+             * Get all knowledge Merlin has about the user
+             */
+            getAllKnowledge() {
+                const profile = this.userProfile;
+                const gameStats = profile?.gemForge?.gameStats;
+                
+                return {
+                    // User identity
+                    userName: profile.userName,
+                    sessionCount: profile.sessionCount,
+                    skillLevel: profile.skillLevel,
+                    relationshipScore: profile.merlinRelationshipScore,
+                    
+                    // Learning progress
+                    topicsLearned: profile.topicsLearned || [],
+                    questionsAsked: profile.questionsAsked?.length || 0,
+                    troubleSpots: profile.troubleSpots || [],
+                    masteries: profile.masteriesAchieved || [],
+                    
+                    // Machine interaction
+                    connectionSuccesses: profile.connectionSuccess,
+                    connectionFailures: profile.connectionFailures,
+                    diagnosticTests: profile.diagnosticTests?.length || 0,
+                    
+                    // Game progress
+                    gameLevel: gameStats?.farmLevel || 0,
+                    gameTotalGems: gameStats?.totalGems || 0,
+                    gamePerfectCuts: gameStats?.perfectCuts || 0,
+                    gameMachines: gameStats?.machineCount || 0,
+                    gamePlayTime: gameStats?.playTime || 0,
+                    
+                    // GemForge economy
+                    walletBalance: profile.gemForge?.wallet?.balance || 0,
+                    certificationTier: profile.gemForge?.certification?.currentTier || 'apprentice',
+                    unlockedStones: profile.gemForge?.stoneAccess?.unlockedStones || [],
+                    
+                    // Computed insights
+                    overallProgress: this.getProgressAssessment(gameStats),
+                    daysSinceCreated: Math.floor((Date.now() - new Date(profile.createdDate).getTime()) / (1000 * 60 * 60 * 24)),
+                    isActivePlayer: gameStats?.lastPlayed ? (Date.now() - new Date(gameStats.lastPlayed).getTime()) < (3 * 24 * 60 * 60 * 1000) : false
+                };
+            }
+            
+            /**
+             * Generate comprehensive status report
+             */
+            generateStatusReport() {
+                const knowledge = this.getAllKnowledge();
+                const userName = knowledge.userName || 'Student';
+                
+                let report = `📊 **${userName}'s Complete Profile**\n\n`;
+                
+                report += `**Learning Journey:**\n`;
+                report += `• Sessions: ${knowledge.sessionCount}\n`;
+                report += `• Skill Level: ${knowledge.skillLevel}\n`;
+                report += `• Topics Learned: ${knowledge.topicsLearned.length}\n`;
+                report += `• Questions Asked: ${knowledge.questionsAsked}\n`;
+                report += `• Merlin Relationship: ${knowledge.relationshipScore} points\n\n`;
+                
+                report += `**GemBot Farm Game:**\n`;
+                report += `• Farm Level: ${knowledge.gameLevel}\n`;
+                report += `• Total Gems: ${knowledge.gameTotalGems}\n`;
+                report += `• Perfect Cuts: ${knowledge.gamePerfectCuts}\n`;
+                report += `• Machines: ${knowledge.gameMachines}\n`;
+                report += `• Play Time: ${Math.round(knowledge.gamePlayTime / 60)} minutes\n\n`;
+                
+                report += `**GemForge Economy:**\n`;
+                report += `• Wallet: ${knowledge.walletBalance} gems\n`;
+                report += `• Tier: ${knowledge.certificationTier}\n`;
+                report += `• Unlocked Stones: ${knowledge.unlockedStones.join(', ') || 'Basic only'}\n\n`;
+                
+                report += `**Overall:** ${knowledge.overallProgress}\n`;
+                report += `Account age: ${knowledge.daysSinceCreated} days`;
+                
+                return report;
             }
         }
         
@@ -14315,15 +14571,41 @@
             if (!gameInitialized && typeof GemBotFarmGame !== 'undefined') {
                 gameFarm = new GemBotFarmGame();
                 
-                // Set up callbacks
+                // Set up callbacks with Merlin integration
                 gameFarm.onGemCut = (data) => {
                     addGameActivity(`💎 Cut ${data.gem.name}${data.perfect ? ' ⭐PERFECT!' : ''} +${data.value}`);
                     updateGameUI();
+                    
+                    // Merlin celebrates perfect cuts
+                    if (data.perfect && gameFarm.merlin) {
+                        gameFarm.merlinCelebrate('perfect_cut', data);
+                    }
+                    
+                    // Sync with Merlin's knowledge
+                    if (merlin && gameFarm.state.stats.totalCuts % 10 === 0) {
+                        merlin.updateGameStats({
+                            totalGems: gameFarm.state.player.totalGemsEver,
+                            perfectCuts: gameFarm.state.stats.perfectCuts
+                        });
+                    }
                 };
                 
                 gameFarm.onLevelUp = (level) => {
                     addGameActivity(`🎉 LEVEL UP! Now level ${level}`);
                     updateGameUI();
+                    
+                    // Merlin celebrates level ups
+                    if (gameFarm.merlin) {
+                        gameFarm.merlinCelebrate('level_up', { level });
+                    }
+                    
+                    // Update Merlin's knowledge
+                    if (merlin) {
+                        merlin.updateGameStats({
+                            farmLevel: level,
+                            totalGems: gameFarm.state.player.totalGemsEver
+                        });
+                    }
                 };
                 
                 gameFarm.onAchievement = (achievement) => {
@@ -14340,6 +14622,17 @@
                 if (success) {
                     gameInitialized = true;
                     console.log('✅ GemBot Farm initialized');
+                    
+                    // Sync Merlin with game state
+                    if (merlin) {
+                        merlin.updateGameStats({
+                            farmLevel: gameFarm.state.player.level,
+                            totalGems: gameFarm.state.player.totalGemsEver,
+                            machineCount: gameFarm.state.machines.length,
+                            perfectCuts: gameFarm.state.stats.perfectCuts,
+                            playTime: gameFarm.state.stats.playTime
+                        });
+                    }
                     
                     // Check if real machine is connected
                     if (typeof serial !== 'undefined' && serial.port) {
@@ -14370,6 +14663,33 @@
             if (gameFarm) {
                 gameFarm.pause();
                 gameFarm.save();
+                
+                // Final sync with Merlin
+                if (merlin) {
+                    merlin.updateGameStats({
+                        farmLevel: gameFarm.state.player.level,
+                        totalGems: gameFarm.state.player.totalGemsEver,
+                        machineCount: gameFarm.state.machines.length,
+                        perfectCuts: gameFarm.state.stats.perfectCuts,
+                        playTime: gameFarm.state.stats.playTime
+                    });
+                }
+            }
+        }
+        
+        // Helper to add game activity with potential Merlin context
+        function addGameActivity(message) {
+            const feed = document.getElementById('activityFeed');
+            if (feed) {
+                const item = document.createElement('div');
+                item.className = 'activity-item';
+                item.textContent = message;
+                feed.insertBefore(item, feed.firstChild);
+                
+                // Keep only last 20 items
+                while (feed.children.length > 20) {
+                    feed.removeChild(feed.lastChild);
+                }
             }
         }
         

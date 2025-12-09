@@ -1,6 +1,7 @@
 /**
  * GemBot Farm Game - Cyberpunk Gem Cutting Idle/Clicker Game
  * Integrates with real GemBot hardware for bonuses
+ * MERLIN AI INTEGRATION: Merlin guides, teaches, and learns alongside the player
  * 
  * Features:
  * - Multiple GemBot machines in a virtual farm
@@ -9,6 +10,7 @@
  * - Level progression and achievements
  * - Crypto token rewards integration
  * - Real machine connection bonuses
+ * - Merlin AI assistant in-game for tips, teaching, and celebration
  */
 
 class GemBotFarmGame {
@@ -18,6 +20,14 @@ class GemBotFarmGame {
         this.engine = null;
         this.scene = null;
         this.camera = null;
+        
+        // Merlin AI Integration
+        this.merlin = null;
+        this.merlinAvatar = null;
+        this.merlinSpeechBubble = null;
+        this.merlinLastMessage = '';
+        this.merlinMessageQueue = [];
+        this.merlinTipInterval = null;
         
         // Game state
         this.state = {
@@ -37,7 +47,15 @@ class GemBotFarmGame {
                 totalCuts: 0,
                 perfectCuts: 0,
                 playTime: 0,
-                realMachineTime: 0
+                realMachineTime: 0,
+                merlinTipsReceived: 0,
+                lessonsCompleted: 0
+            },
+            merlinInteractions: {
+                tipsGiven: 0,
+                questionsAnswered: 0,
+                celebrationsMade: 0,
+                teachingMoments: 0
             }
         };
         
@@ -45,9 +63,11 @@ class GemBotFarmGame {
         this.config = {
             baseProductionRate: 1,
             realMachineBonus: 1.5,
+            merlinWisdomBonus: 1.1, // Bonus when Merlin gives tips
             maxMachinesPerRoom: 6,
             tickRate: 1000, // 1 second
-            autoSaveInterval: 30000 // 30 seconds
+            autoSaveInterval: 30000, // 30 seconds
+            merlinTipInterval: 45000 // Merlin speaks every 45 seconds
         };
         
         // Machine types
@@ -185,6 +205,9 @@ class GemBotFarmGame {
             if (this.state.machines.length === 0) {
                 this.addMachine('gembot_basic', 'starter_workshop');
             }
+            
+            // Initialize Merlin AI integration
+            this.initializeMerlin();
             
             console.log('✅ GemBot Farm ready!');
             return true;
@@ -908,12 +931,484 @@ class GemBotFarmGame {
             this.gameLoop = null;
         }
         
+        if (this.merlinTipInterval) {
+            clearInterval(this.merlinTipInterval);
+            this.merlinTipInterval = null;
+        }
+        
         if (this.engine) {
             this.engine.dispose();
         }
+    }
+    
+    // ==================== MERLIN AI INTEGRATION ====================
+    
+    /**
+     * Initialize Merlin AI in the game
+     */
+    initializeMerlin() {
+        // Get reference to global Merlin
+        this.merlin = window.merlin || null;
+        
+        if (this.merlin) {
+            console.log('🧙 Merlin AI connected to GemBot Farm');
+            
+            // Create Merlin's avatar in the 3D scene
+            this.createMerlinAvatar();
+            
+            // Welcome message
+            this.merlinSpeak(this.getMerlinWelcomeMessage());
+            
+            // Start periodic tips
+            this.startMerlinTips();
+            
+            // Sync game progress with Merlin's knowledge
+            this.syncWithMerlin();
+        } else {
+            console.log('⚠️ Merlin AI not available, game will function without AI guidance');
+        }
+    }
+    
+    /**
+     * Create Merlin's 3D avatar in the scene
+     */
+    createMerlinAvatar() {
+        if (!this.scene) return;
+        
+        // Create wizard character
+        const merlinRoot = new BABYLON.TransformNode('merlin_avatar', this.scene);
+        merlinRoot.position = new BABYLON.Vector3(-12, 1, 8);
+        
+        // Robe body
+        const robe = BABYLON.MeshBuilder.CreateCylinder('merlin_robe', {
+            height: 3,
+            diameterTop: 0.8,
+            diameterBottom: 1.5
+        }, this.scene);
+        robe.parent = merlinRoot;
+        robe.position.y = 1.5;
+        
+        const robeMat = new BABYLON.StandardMaterial('merlin_robe_mat', this.scene);
+        robeMat.diffuseColor = new BABYLON.Color3(0.2, 0.1, 0.4);
+        robeMat.emissiveColor = new BABYLON.Color3(0.1, 0.05, 0.2);
+        robe.material = robeMat;
+        
+        // Head
+        const head = BABYLON.MeshBuilder.CreateSphere('merlin_head', { diameter: 0.8 }, this.scene);
+        head.parent = merlinRoot;
+        head.position.y = 3.4;
+        
+        const headMat = new BABYLON.StandardMaterial('merlin_head_mat', this.scene);
+        headMat.diffuseColor = new BABYLON.Color3(0.9, 0.8, 0.7);
+        head.material = headMat;
+        
+        // Wizard hat
+        const hat = BABYLON.MeshBuilder.CreateCylinder('merlin_hat', {
+            height: 1.2,
+            diameterTop: 0,
+            diameterBottom: 0.8
+        }, this.scene);
+        hat.parent = merlinRoot;
+        hat.position.y = 4.2;
+        
+        const hatMat = new BABYLON.StandardMaterial('merlin_hat_mat', this.scene);
+        hatMat.diffuseColor = new BABYLON.Color3(0.1, 0.05, 0.3);
+        hatMat.emissiveColor = new BABYLON.Color3(0.05, 0.02, 0.15);
+        hat.material = hatMat;
+        
+        // Hat brim
+        const brim = BABYLON.MeshBuilder.CreateCylinder('merlin_brim', {
+            height: 0.1,
+            diameter: 1.2
+        }, this.scene);
+        brim.parent = merlinRoot;
+        brim.position.y = 3.7;
+        brim.material = hatMat;
+        
+        // Staff
+        const staff = BABYLON.MeshBuilder.CreateCylinder('merlin_staff', {
+            height: 4,
+            diameter: 0.1
+        }, this.scene);
+        staff.parent = merlinRoot;
+        staff.position = new BABYLON.Vector3(0.8, 2, 0);
+        staff.rotation.z = 0.1;
+        
+        const staffMat = new BABYLON.StandardMaterial('merlin_staff_mat', this.scene);
+        staffMat.diffuseColor = new BABYLON.Color3(0.4, 0.2, 0.1);
+        staff.material = staffMat;
+        
+        // Glowing orb on staff
+        const orb = BABYLON.MeshBuilder.CreateSphere('merlin_orb', { diameter: 0.4 }, this.scene);
+        orb.parent = merlinRoot;
+        orb.position = new BABYLON.Vector3(0.9, 4.2, 0);
+        
+        const orbMat = new BABYLON.StandardMaterial('merlin_orb_mat', this.scene);
+        orbMat.emissiveColor = new BABYLON.Color3(0, 1, 1);
+        orbMat.diffuseColor = new BABYLON.Color3(0.5, 1, 1);
+        orb.material = orbMat;
+        
+        // Pulsing animation for orb
+        this.scene.registerBeforeRender(() => {
+            if (orb) {
+                const pulse = 0.3 + Math.sin(Date.now() / 500) * 0.1;
+                orb.scaling = new BABYLON.Vector3(pulse / 0.4, pulse / 0.4, pulse / 0.4);
+            }
+        });
+        
+        // Create speech bubble
+        this.createSpeechBubble(merlinRoot);
+        
+        this.merlinAvatar = merlinRoot;
+    }
+    
+    /**
+     * Create speech bubble above Merlin
+     */
+    createSpeechBubble(parent) {
+        const bubblePlane = BABYLON.MeshBuilder.CreatePlane('speech_bubble', {
+            width: 6,
+            height: 2
+        }, this.scene);
+        bubblePlane.parent = parent;
+        bubblePlane.position = new BABYLON.Vector3(2, 5.5, 0);
+        bubblePlane.billboardMode = BABYLON.Mesh.BILLBOARDMODE_ALL;
+        
+        // Dynamic texture for text
+        const bubbleTex = new BABYLON.DynamicTexture('bubble_tex', { width: 512, height: 180 }, this.scene);
+        
+        const bubbleMat = new BABYLON.StandardMaterial('bubble_mat', this.scene);
+        bubbleMat.diffuseTexture = bubbleTex;
+        bubbleMat.emissiveTexture = bubbleTex;
+        bubbleMat.backFaceCulling = false;
+        bubbleMat.useAlphaFromDiffuseTexture = true;
+        bubblePlane.material = bubbleMat;
+        
+        this.merlinSpeechBubble = {
+            plane: bubblePlane,
+            texture: bubbleTex,
+            visible: false
+        };
+        
+        // Start hidden
+        bubblePlane.isVisible = false;
+    }
+    
+    /**
+     * Update speech bubble text
+     */
+    updateSpeechBubble(text) {
+        if (!this.merlinSpeechBubble) return;
+        
+        const tex = this.merlinSpeechBubble.texture;
+        const ctx = tex.getContext();
+        
+        // Clear and draw background
+        ctx.clearRect(0, 0, 512, 180);
+        
+        // Rounded rectangle background
+        ctx.fillStyle = 'rgba(20, 10, 40, 0.9)';
+        ctx.strokeStyle = '#00ffff';
+        ctx.lineWidth = 3;
+        this.roundRect(ctx, 10, 10, 492, 160, 15);
+        ctx.fill();
+        ctx.stroke();
+        
+        // Text
+        ctx.fillStyle = '#00ffff';
+        ctx.font = 'bold 20px Arial';
+        ctx.textAlign = 'center';
+        
+        // Word wrap
+        const words = text.split(' ');
+        let line = '';
+        let y = 50;
+        const maxWidth = 460;
+        
+        for (let word of words) {
+            const testLine = line + word + ' ';
+            const metrics = ctx.measureText(testLine);
+            if (metrics.width > maxWidth && line !== '') {
+                ctx.fillText(line.trim(), 256, y);
+                line = word + ' ';
+                y += 28;
+            } else {
+                line = testLine;
+            }
+        }
+        ctx.fillText(line.trim(), 256, y);
+        
+        tex.update();
+        
+        // Show bubble
+        this.merlinSpeechBubble.plane.isVisible = true;
+        
+        // Hide after delay
+        setTimeout(() => {
+            if (this.merlinSpeechBubble) {
+                this.merlinSpeechBubble.plane.isVisible = false;
+            }
+        }, 8000);
+    }
+    
+    /**
+     * Helper to draw rounded rectangle
+     */
+    roundRect(ctx, x, y, width, height, radius) {
+        ctx.beginPath();
+        ctx.moveTo(x + radius, y);
+        ctx.lineTo(x + width - radius, y);
+        ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+        ctx.lineTo(x + width, y + height - radius);
+        ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+        ctx.lineTo(x + radius, y + height);
+        ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+        ctx.lineTo(x, y + radius);
+        ctx.quadraticCurveTo(x, y, x + radius, y);
+        ctx.closePath();
+    }
+    
+    /**
+     * Make Merlin speak
+     */
+    merlinSpeak(message) {
+        if (!message) return;
+        
+        this.merlinLastMessage = message;
+        this.state.merlinInteractions.tipsGiven++;
+        this.state.stats.merlinTipsReceived++;
+        
+        // Update 3D speech bubble
+        this.updateSpeechBubble(message);
+        
+        // Also display in game activity feed if available
+        if (typeof addGameActivity === 'function') {
+            addGameActivity(`🧙 Merlin: "${message}"`);
+        }
+        
+        // Use text-to-speech if Merlin's voice is enabled
+        if (this.merlin && this.merlin.merlinSettings?.voiceEnabled) {
+            this.speakWithVoice(message);
+        }
+        
+        console.log(`🧙 Merlin says: "${message}"`);
+    }
+    
+    /**
+     * Text-to-speech for Merlin
+     */
+    speakWithVoice(text) {
+        if ('speechSynthesis' in window) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            
+            // Use Merlin's voice settings
+            if (this.merlin?.merlinSettings) {
+                utterance.rate = this.merlin.merlinSettings.speechRate || 1.2;
+                utterance.pitch = this.merlin.merlinSettings.pitch || 0.55;
+                utterance.volume = this.merlin.merlinSettings.volume || 1.0;
+            }
+            
+            // Find a suitable voice
+            const voices = speechSynthesis.getVoices();
+            const maleVoice = voices.find(v => v.name.includes('Male') || v.name.includes('David') || v.name.includes('Mark'));
+            if (maleVoice) utterance.voice = maleVoice;
+            
+            speechSynthesis.speak(utterance);
+        }
+    }
+    
+    /**
+     * Get contextual welcome message from Merlin
+     */
+    getMerlinWelcomeMessage() {
+        const player = this.state.player;
+        const userName = this.merlin?.userProfile?.userName || 'young apprentice';
+        
+        if (player.totalGemsEver === 0) {
+            return `Welcome to the GemBot Farm, ${userName}! I am Merlin, your guide. Watch as the machines cut gems, and I shall teach you the ancient art!`;
+        } else if (player.level < 5) {
+            return `Ah, ${userName} returns! Your farm grows nicely. Keep cutting gems and you shall unlock the secrets of the rarer stones.`;
+        } else if (player.level < 10) {
+            return `${userName}, your skill impresses me. The machines respond to your mastery. Soon, you will unlock the legendary Alexandrite!`;
+        } else {
+            return `Greetings, Master ${userName}! Your gem empire flourishes. I sense great things ahead in your journey.`;
+        }
+    }
+    
+    /**
+     * Start periodic tips from Merlin
+     */
+    startMerlinTips() {
+        if (this.merlinTipInterval) {
+            clearInterval(this.merlinTipInterval);
+        }
+        
+        this.merlinTipInterval = setInterval(() => {
+            if (!this.isPaused) {
+                this.giveMerlinTip();
+            }
+        }, this.config.merlinTipInterval);
+    }
+    
+    /**
+     * Give contextual tip based on game state
+     */
+    giveMerlinTip() {
+        const tips = this.getContextualTips();
+        if (tips.length > 0) {
+            const tip = tips[Math.floor(Math.random() * tips.length)];
+            this.merlinSpeak(tip);
+        }
+    }
+    
+    /**
+     * Get tips relevant to current game state
+     */
+    getContextualTips() {
+        const player = this.state.player;
+        const machines = this.state.machines;
+        const tips = [];
+        
+        // Level-based tips
+        if (player.level < 3) {
+            tips.push('Each machine cuts gems automatically. More machines means faster production!');
+            tips.push('Watch for the golden glow - that means a PERFECT cut! Double value!');
+            tips.push('Your level increases with XP. Higher levels unlock rarer gem types.');
+        }
+        
+        if (player.level >= 3 && player.level < 7) {
+            tips.push('The Pro GemBot costs 100 gems but produces 3x faster. A worthy investment!');
+            tips.push('Connect a REAL GemBot machine for a 50% production bonus!');
+            tips.push('Rare gems like Diamond and Opal are unlocked at higher levels.');
+        }
+        
+        if (player.level >= 7) {
+            tips.push('The Ultra GemBot is the pinnacle of gem cutting technology!');
+            tips.push('Legendary Alexandrite appears only for master cutters like yourself.');
+            tips.push('Your mastery grows. Soon, no gem shall be beyond your skill.');
+        }
+        
+        // Machine-based tips
+        if (machines.length === 1) {
+            tips.push('A single machine works hard, but two would double your output!');
+        }
+        
+        if (machines.length >= 3) {
+            tips.push('Your workshop bustles with activity! Consider upgrading to the Neon Factory for more slots.');
+        }
+        
+        // Economy tips
+        if (player.gems > 200 && machines.length < 3) {
+            tips.push('You have gems to spare. Perhaps invest in another machine?');
+        }
+        
+        if (player.tokens > 0) {
+            tips.push('Tokens earned here can be used in the main GemForge economy!');
+        }
+        
+        // Teaching moments
+        tips.push('In real gem cutting, the angle of the facet determines how light dances within the stone.');
+        tips.push('The lap spins at thousands of RPM. Patience and precision are the cutter\'s virtues.');
+        tips.push('Each gem type has unique hardness. Diamond is hardest, but Opal requires the gentlest touch.');
+        tips.push('A perfect cut maximizes brilliance - the light that returns to your eye.');
+        
+        // Real machine integration tips
+        if (this.realMachineConnected) {
+            tips.push('Your real GemBot is connected! The virtual farm learns from your actual cuts.');
+        } else {
+            tips.push('Connect your physical GemBot to earn bonus gems and sync your learning!');
+        }
+        
+        return tips;
+    }
+    
+    /**
+     * Merlin celebrates achievements
+     */
+    merlinCelebrate(achievementType, data) {
+        this.state.merlinInteractions.celebrationsMade++;
+        
+        const celebrations = {
+            'level_up': [
+                `Magnificent! Level ${data.level}! Your mastery grows!`,
+                `You have ascended! Level ${data.level} achieved!`,
+                `The ancient spirits acknowledge your growth to level ${data.level}!`
+            ],
+            'perfect_cut': [
+                'A PERFECT cut! The gem sings with brilliance!',
+                'Flawless execution! Even I could not have done better!',
+                'Perfect! This gem will be spoken of for generations!'
+            ],
+            'rare_gem': [
+                `A ${data.gemName}! Truly rare and precious!`,
+                `The ${data.gemName} reveals itself! Fortune smiles upon you!`,
+                `${data.gemName}! Few ever witness such beauty!`
+            ],
+            'new_machine': [
+                'A new machine joins your workshop! Production increases!',
+                'The workshop grows! Your empire expands!',
+                'Another faithful machine to serve your vision!'
+            ],
+            'milestone': [
+                `${data.count} gems cut! A milestone worthy of celebration!`,
+                'You have carved your name into gem cutting history!',
+                'The ancients would be proud of such achievement!'
+            ]
+        };
+        
+        const messages = celebrations[achievementType] || ['Well done, apprentice!'];
+        const message = messages[Math.floor(Math.random() * messages.length)];
+        
+        this.merlinSpeak(message);
+    }
+    
+    /**
+     * Sync game progress with Merlin's knowledge system
+     */
+    syncWithMerlin() {
+        if (!this.merlin) return;
+        
+        // Update Merlin's knowledge of user's game progress
+        if (this.merlin.userProfile) {
+            // Record game stats
+            this.merlin.userProfile.gemForge = this.merlin.userProfile.gemForge || {};
+            this.merlin.userProfile.gemForge.gameStats = {
+                farmLevel: this.state.player.level,
+                totalGems: this.state.player.totalGemsEver,
+                machineCount: this.state.machines.length,
+                perfectCuts: this.state.stats.perfectCuts,
+                playTime: this.state.stats.playTime
+            };
+            
+            // Increase relationship score for playing
+            this.merlin.userProfile.merlinRelationshipScore += 1;
+            
+            // Save Merlin's profile
+            this.merlin.saveUserProfile();
+        }
+    }
+    
+    /**
+     * Get advice from Merlin about a specific topic
+     */
+    askMerlin(topic) {
+        this.state.merlinInteractions.questionsAnswered++;
+        
+        const advice = {
+            'gems': 'Each gem has unique properties. Harder gems like Diamond require slower, more precise cuts. Softer gems like Opal need gentle treatment.',
+            'machines': 'Your machines work tirelessly. Upgrade to Pro for speed, or Ultra for maximum production. Each has its purpose.',
+            'strategy': 'Balance is key. Invest in machines early, then let production compound. Patience builds empires.',
+            'real_machine': 'The virtual farm teaches concepts, but true mastery comes from the physical machine. The two work in harmony.',
+            'levels': 'Higher levels unlock rarer gems. Focus on consistent production and perfect cuts to advance quickly.',
+            'tokens': 'Tokens earned here have value in the broader GemForge ecosystem. They represent your proven skill.'
+        };
+        
+        const response = advice[topic] || 'Hmm, ask me about gems, machines, strategy, or levels, and I shall enlighten you.';
+        this.merlinSpeak(response);
+        return response;
     }
 }
 
 // Export for global access
 window.GemBotFarmGame = GemBotFarmGame;
-console.log('🎮 GemBot Farm Game module loaded');
+console.log('🎮 GemBot Farm Game module loaded (with Merlin AI integration)');
