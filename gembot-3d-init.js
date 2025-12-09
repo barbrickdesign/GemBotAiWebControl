@@ -10,8 +10,12 @@ let machineState = null;
 function initializeGemBot3DVisualizer() {
     console.log('🎨 Initializing GemBot 3D Visualizer...');
     
-    // Create container if it doesn't exist
-    const container3D = document.getElementById('canvas3D');
+    // Try to find container (machineViewContainer is primary, canvas3D is fallback)
+    let container3D = document.getElementById('machineViewContainer');
+    if (!container3D) {
+        container3D = document.getElementById('canvas3D');
+    }
+    
     if (!container3D) {
         console.warn('⚠️ 3D Canvas container not found. Creating...');
         const workspacePanel = document.querySelector('.workspace-main');
@@ -27,6 +31,7 @@ function initializeGemBot3DVisualizer() {
                 position: relative;
             `;
             workspacePanel.appendChild(canvas3DDiv);
+            container3D = canvas3DDiv;
             console.log('✅ 3D Canvas container created');
         }
     }
@@ -39,7 +44,9 @@ function initializeGemBot3DVisualizer() {
             return;
         }
         
-        gembot3DVisualizer = new GemBot3DVisualizer('canvas3D');
+        // Use correct container ID
+        const containerId = container3D.id || 'machineViewContainer';
+        gembot3DVisualizer = new GemBot3DVisualizer(containerId);
         machineState = gembot3DVisualizer.machine;
         
         console.log('✅ GemBot 3D Visualizer initialized successfully');

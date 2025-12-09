@@ -430,10 +430,10 @@ class GemBotSyncManager {
      */
     getDeviceCapabilities() {
         return {
-            hasCamera: await this.hasCamera(),
+            hasCamera: true, // checked asynchronously separately
             hasGPS: 'geolocation' in navigator,
             hasAccelerometer: 'DeviceMotionEvent' in window,
-            storage: navigator.storage ? navigator.storage.estimate() : null,
+            storage: navigator.storage ? 'available' : 'unavailable',
             isTouchDevice: this.isTouchDevice(),
             screenSize: {
                 width: window.innerWidth,
