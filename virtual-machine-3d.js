@@ -243,214 +243,262 @@ class VirtualMachine3D {
      */
     createMachineGeometry() {
         try {
-            // === MATERIALS ===
-            const blackMetalMaterial = new BABYLON.StandardMaterial('blackMetal', this.scene);
-            blackMetalMaterial.diffuse = new BABYLON.Color3(0.15, 0.15, 0.18);
-            blackMetalMaterial.specularColor = new BABYLON.Color3(0.3, 0.3, 0.35);
-            blackMetalMaterial.specularPower = 32;
-            
-            const stainlessMaterial = new BABYLON.StandardMaterial('stainless', this.scene);
-            stainlessMaterial.diffuse = new BABYLON.Color3(0.7, 0.7, 0.75);
-            stainlessMaterial.specularColor = new BABYLON.Color3(0.9, 0.9, 0.95);
-            stainlessMaterial.specularPower = 64;
-            
-            const platformMaterial = new BABYLON.StandardMaterial('platformMaterial', this.scene);
-            platformMaterial.diffuse = new BABYLON.Color3(0.25, 0.25, 0.3);
-            platformMaterial.specularColor = new BABYLON.Color3(0.4, 0.4, 0.45);
-            
-            // Grinding wheel materials - different grits with color coding
+            // ==================== MATERIALS ====================
+            const aluminumMat = new BABYLON.StandardMaterial('aluminum', this.scene);
+            aluminumMat.diffuse = new BABYLON.Color3(0.75, 0.77, 0.8);
+            aluminumMat.specularColor = new BABYLON.Color3(1, 1, 1);
+            aluminumMat.specularPower = 96;
+
+            const blackMetalMat = new BABYLON.StandardMaterial('blackMetal', this.scene);
+            blackMetalMat.diffuse = new BABYLON.Color3(0.08, 0.08, 0.1);
+            blackMetalMat.specularColor = new BABYLON.Color3(0.2, 0.2, 0.2);
+            blackMetalMat.specularPower = 32;
+
+            const stainlessMat = new BABYLON.StandardMaterial('stainless', this.scene);
+            stainlessMat.diffuse = new BABYLON.Color3(0.85, 0.87, 0.9);
+            stainlessMat.specularColor = new BABYLON.Color3(1, 1, 1);
+            stainlessMat.specularPower = 128;
+
+            const chuckMat = new BABYLON.StandardMaterial('chuck', this.scene);
+            chuckMat.diffuse = new BABYLON.Color3(0.2, 0.2, 0.2);
+            chuckMat.specularColor = new BABYLON.Color3(0.35, 0.35, 0.35);
+            chuckMat.specularPower = 64;
+
+            const dopStickMat = new BABYLON.StandardMaterial('dopStick', this.scene);
+            dopStickMat.diffuse = new BABYLON.Color3(0.92, 0.9, 0.88);
+            dopStickMat.specularColor = new BABYLON.Color3(1, 1, 1);
+            dopStickMat.specularPower = 100;
+
+            // Grinding wheel materials
             const wheelMaterials = {
-                coarse: this.createWheelMaterial('#C0C0C0', 'coarseWheel'),      // Light gray - 60-80 grit
-                medium: this.createWheelMaterial('#A9A9A9', 'mediumWheel'),      // Dark gray - 120 grit
-                fine: this.createWheelMaterial('#808080', 'fineWheel'),           // Darker gray - 220 grit
-                polish: this.createWheelMaterial('#696969', 'polishWheel')        // Very dark gray - 600+ grit
+                coarse: this.createWheelMaterial('#C0C0C0', 'coarseWheel'),
+                medium: this.createWheelMaterial('#A9A9A9', 'mediumWheel'),
+                fine: this.createWheelMaterial('#808080', 'fineWheel'),
+                polish: this.createWheelMaterial('#696969', 'polishWheel')
             };
-            
-            const motorMaterial = new BABYLON.StandardMaterial('motorMaterial', this.scene);
-            motorMaterial.diffuse = new BABYLON.Color3(0.3, 0.3, 0.35);
-            
-            const gemstoneMaterial = new BABYLON.StandardMaterial('gemstoneMaterial', this.scene);
-            gemstoneMaterial.diffuse = new BABYLON.Color3(0.8, 0.2, 0.2);  // Ruby red
-            gemstoneMaterial.specularColor = new BABYLON.Color3(1, 0.5, 0.5);
-            gemstoneMaterial.specularPower = 128;
-            
-            // === BASE STRUCTURE ===
-            const baseWidth = 200;
-            const baseHeight = 40;
-            const baseDepth = 160;
-            
-            const base = BABYLON.MeshBuilder.CreateBox(
-                'machineBase',
-                { width: baseWidth, height: baseHeight, depth: baseDepth },
-                this.scene
-            );
-            base.material = blackMetalMaterial;
-            base.position.y = baseHeight / 2;
-            
-            // === INDEX MOTOR HOUSING ===
-            // This houses the 96-step rotation stepper motor
-            const motorBoxSize = 30;
-            const motorHousing = BABYLON.MeshBuilder.CreateBox(
-                'indexMotorHousing',
-                { width: motorBoxSize, height: motorBoxSize, depth: motorBoxSize },
-                this.scene
-            );
-            motorHousing.material = blackMetalMaterial;
-            motorHousing.position.set(-baseWidth / 3, baseHeight + motorBoxSize / 2, 0);
-            
-            const motorShaft = BABYLON.MeshBuilder.CreateCylinder(
-                'motorShaft',
-                { diameter: 8, height: 12, tessellation: 16 },
-                this.scene
-            );
-            motorShaft.material = stainlessMaterial;
-            motorShaft.position.set(-baseWidth / 3 + motorBoxSize / 2, baseHeight + motorBoxSize / 2, 0);
-            motorShaft.rotation.z = Math.PI / 2;
-            
-            // === GRINDING WHEEL SPINDLE ===
-            // Main rotating spindle with interchangeable wheel
-            const spindleShaftLength = 100;
-            const spindleShaft = BABYLON.MeshBuilder.CreateCylinder(
-                'spindleShaft',
-                { diameter: 12, height: spindleShaftLength, tessellation: 32 },
-                this.scene
-            );
-            spindleShaft.material = stainlessMaterial;
-            spindleShaft.position.set(baseWidth / 3, baseHeight + 60, 0);
-            spindleShaft.rotation.z = Math.PI / 2;
-            
-            // === GRINDING WHEEL - Default COARSE (60-80 grit) ===
-            const wheelDiameter = 80;
-            const wheelThickness = 12;
-            
-            this.pAxisSpindle = BABYLON.MeshBuilder.CreateCylinder(
-                'grindingWheel',
-                { diameter: wheelDiameter, height: wheelThickness, tessellation: 64 },
-                this.scene
-            );
+
+            // ==================== BASE PLATFORM ====================
+            const basePlatform = BABYLON.MeshBuilder.CreateBox('basePlatform',
+                { width: 280, height: 20, depth: 220 }, this.scene);
+            basePlatform.material = aluminumMat;
+            basePlatform.position.y = 10;
+
+            // ==================== 20x20 ALUMINUM FRAME ====================
+            // Front-left vertical rail
+            const railFL = BABYLON.MeshBuilder.CreateBox('railFL',
+                { width: 20, height: 180, depth: 20 }, this.scene);
+            railFL.material = aluminumMat;
+            railFL.position.set(-120, 90, -100);
+
+            // Front-right vertical rail
+            const railFR = BABYLON.MeshBuilder.CreateBox('railFR',
+                { width: 20, height: 180, depth: 20 }, this.scene);
+            railFR.material = aluminumMat;
+            railFR.position.set(120, 90, -100);
+
+            // Back-left vertical rail
+            const railBL = BABYLON.MeshBuilder.CreateBox('railBL',
+                { width: 20, height: 180, depth: 20 }, this.scene);
+            railBL.material = aluminumMat;
+            railBL.position.set(-120, 90, 100);
+
+            // Back-right vertical rail
+            const railBR = BABYLON.MeshBuilder.CreateBox('railBR',
+                { width: 20, height: 180, depth: 20 }, this.scene);
+            railBR.material = aluminumMat;
+            railBR.position.set(120, 90, 100);
+
+            // Top-front horizontal rail
+            const railTF = BABYLON.MeshBuilder.CreateBox('railTF',
+                { width: 260, height: 20, depth: 20 }, this.scene);
+            railTF.material = aluminumMat;
+            railTF.position.set(0, 170, -100);
+
+            // Top-back horizontal rail
+            const railTB = BABYLON.MeshBuilder.CreateBox('railTB',
+                { width: 260, height: 20, depth: 20 }, this.scene);
+            railTB.material = aluminumMat;
+            railTB.position.set(0, 170, 100);
+
+            // ==================== FLAT HORIZONTAL GRINDING WHEEL ====================
+            const wheelDiameter = 100;
+            const wheelThickness = 14;
+
+            this.pAxisSpindle = BABYLON.MeshBuilder.CreateCylinder('grindingWheel',
+                { diameter: wheelDiameter, height: wheelThickness, tessellation: 64 }, this.scene);
             this.pAxisSpindle.material = wheelMaterials.coarse;
-            this.pAxisSpindle.position.set(baseWidth / 3, baseHeight + 60, 0);
-            this.pAxisSpindle.rotation.z = Math.PI / 2;
+            this.pAxisSpindle.position.set(90, 120, 0);
+            // Wheel sits FLAT - no rotation needed
             this.pAxisSpindle.wheelType = 'coarse';
             this.pAxisSpindle.wheelTypes = wheelMaterials;
-            
-            // Wheel grooves for texture detail
-            for (let i = 0; i < 8; i++) {
-                const groove = BABYLON.MeshBuilder.CreateTorus(
-                    `groove_${i}`,
-                    { diameter: wheelDiameter * 0.95, thickness: 1 },
-                    this.scene
-                );
-                groove.material = new BABYLON.StandardMaterial(`grooveMat_${i}`, this.scene);
-                groove.material.diffuse = new BABYLON.Color3(0.4, 0.4, 0.4);
-                groove.position.set(baseWidth / 3, baseHeight + 60, -wheelThickness / 2 + (wheelThickness / 9) * i);
-                groove.rotation.z = Math.PI / 2;
+
+            // Wheel motor housing
+            const wheelMotor = BABYLON.MeshBuilder.CreateBox('wheelMotor',
+                { width: 35, height: 35, depth: 35 }, this.scene);
+            wheelMotor.material = blackMetalMat;
+            wheelMotor.position.set(90, 100, 0);
+
+            // ==================== X-AXIS BALL SCREW (LEFT-RIGHT) ====================
+            this.ballScrewX = BABYLON.MeshBuilder.CreateCylinder('ballScrewX',
+                { diameter: 12, height: 240, tessellation: 32 }, this.scene);
+            this.ballScrewX.material = stainlessMat;
+            this.ballScrewX.position.set(0, 155, 0);
+            this.ballScrewX.rotation.z = Math.PI / 2;
+
+            // ==================== X-AXIS CARRIAGE ====================
+            this.xAxisCarriage = BABYLON.MeshBuilder.CreateBox('xCarriage',
+                { width: 60, height: 35, depth: 100 }, this.scene);
+            this.xAxisCarriage.material = aluminumMat;
+            this.xAxisCarriage.position.set(0, 135, 0);
+            this.xAxisPosition = 0;
+
+            // ==================== Y-AXIS BALL SCREW (UP-DOWN) ====================
+            this.ballScrewY = BABYLON.MeshBuilder.CreateCylinder('ballScrewY',
+                { diameter: 12, height: 120, tessellation: 32 }, this.scene);
+            this.ballScrewY.material = stainlessMat;
+            this.ballScrewY.position.set(30, 110, 0);
+
+            // ==================== Y-AXIS PLATFORM (RAISES/LOWERS) ====================
+            this.yAxisPlatform = BABYLON.MeshBuilder.CreateBox('yPlatform',
+                { width: 140, height: 18, depth: 120 }, this.scene);
+            this.yAxisPlatform.material = aluminumMat;
+            this.yAxisPlatform.position.set(0, 80, 0);
+            this.yAxisPlatform.parent = this.xAxisCarriage;
+            this.yAxisPosition = 0;
+
+            // ==================== INDEX MOTOR & CHUCK ASSEMBLY ====================
+            // Index motor housing (96-step stepper)
+            const indexMotorHousing = BABYLON.MeshBuilder.CreateBox('indexMotor',
+                { width: 40, height: 40, depth: 40 }, this.scene);
+            indexMotorHousing.material = blackMetalMat;
+            indexMotorHousing.position.set(-50, 105, 0);
+            indexMotorHousing.parent = this.yAxisPlatform;
+
+            // Motor shaft
+            this.motorShaft = BABYLON.MeshBuilder.CreateCylinder('motorShaft',
+                { diameter: 10, height: 60, tessellation: 24 }, this.scene);
+            this.motorShaft.material = stainlessMat;
+            this.motorShaft.position.set(-20, 105, 0);
+            this.motorShaft.rotation.z = Math.PI / 2;
+            this.motorShaft.parent = this.yAxisPlatform;
+
+            // 96-step index gear
+            this.indexGear = BABYLON.MeshBuilder.CreateCylinder('indexGear',
+                { diameter: 70, height: 12, tessellation: 96 }, this.scene);
+            this.indexGear.material = chuckMat;
+            this.indexGear.position.set(10, 105, 0);
+            this.indexGear.rotation.z = Math.PI / 2;
+            this.indexGear.parent = this.yAxisPlatform;
+
+            // ==================== CHUCK (HOLDS DOP STICK) ====================
+            this.chuck = BABYLON.MeshBuilder.CreateCylinder('chuck',
+                { diameter: 30, height: 35, tessellation: 32 }, this.scene);
+            this.chuck.material = chuckMat;
+            this.chuck.position.set(40, 105, 0);
+            this.chuck.rotation.z = Math.PI / 2;
+            this.chuck.parent = this.yAxisPlatform;
+
+            // ==================== DOP STICK (REMOVABLE) ====================
+            this.dopStick = BABYLON.MeshBuilder.CreateCylinder('dopStick',
+                { diameter: 10, height: 80, tessellation: 16 }, this.scene);
+            this.dopStick.material = dopStickMat;
+            this.dopStick.position.set(55, 105, 0);
+            this.dopStick.rotation.z = Math.PI / 2;
+            this.dopStick.parent = this.chuck;
+            this.dopStick.isRemovable = true;
+
+            // ==================== GEMSTONE (REMOVABLE) ====================
+            this.gemstone = BABYLON.MeshBuilder.CreatePolyhedron('gemstone', { type: 3 }, this.scene);
+            this.gemstone.material = new BABYLON.StandardMaterial('gemMat', this.scene);
+            this.gemstone.material.diffuse = new BABYLON.Color3(0.95, 0.85, 0.4);
+            this.gemstone.material.specularColor = new BABYLON.Color3(1, 1, 1);
+            this.gemstone.material.alpha = 0.95;
+            this.gemstone.scaling.set(16, 16, 16);
+            this.gemstone.position.set(85, 105, 0);
+            this.gemstone.parent = this.dopStick;
+            this.gemstone.isRemovable = true;
+
+            // ==================== ROUGH STONE SELECTION AREA ====================
+            // Work bench for hand prepping rough stones
+            const workBench = BABYLON.MeshBuilder.CreateBox('workBench',
+                { width: 140, height: 12, depth: 120 }, this.scene);
+            workBench.material = new BABYLON.StandardMaterial('benchMat', this.scene);
+            workBench.material.diffuse = new BABYLON.Color3(0.35, 0.3, 0.25);
+            workBench.position.set(-120, 50, 0);
+
+            // Rough stone display area
+            const displayArea = BABYLON.MeshBuilder.CreateBox('displayArea',
+                { width: 140, height: 4, depth: 120 }, this.scene);
+            displayArea.material = new BABYLON.StandardMaterial('displayMat', this.scene);
+            displayArea.material.diffuse = new BABYLON.Color3(0.25, 0.3, 0.28);
+            displayArea.position.set(-120, 45, 0);
+
+            // 6 rough stones for selection (different colors)
+            for (let i = 0; i < 6; i++) {
+                const roughStone = BABYLON.MeshBuilder.CreatePolyhedron('roughStone' + i, { type: 2 }, this.scene);
+                roughStone.material = new BABYLON.StandardMaterial('roughMat' + i, this.scene);
+                const colors = [
+                    new BABYLON.Color3(0.65, 0.55, 0.35),  // Brown
+                    new BABYLON.Color3(0.75, 0.72, 0.55),  // Tan
+                    new BABYLON.Color3(0.55, 0.65, 0.45),  // Olive
+                    new BABYLON.Color3(0.65, 0.65, 0.65),  // Gray
+                    new BABYLON.Color3(0.82, 0.65, 0.45),  // Orange
+                    new BABYLON.Color3(0.75, 0.58, 0.55)   // Red
+                ];
+                roughStone.material.diffuse = colors[i];
+                roughStone.scaling.set(12, 12, 12);
+                roughStone.position.set(-140 + (i % 3) * 40, 65, -50 + Math.floor(i / 3) * 60);
             }
-            
-            // === Y-AXIS PLATFORM (Height/Approach Control) ===
-            // Raises/lowers gemstone against the spinning wheel
-            const platformWidth = 100;
-            const platformHeight = 15;
-            const platformDepth = 80;
-            
-            this.yAxisCarriage = BABYLON.MeshBuilder.CreateBox(
-                'cuttingPlatform',
-                { width: platformWidth, height: platformHeight, depth: platformDepth },
-                this.scene
-            );
-            this.yAxisCarriage.material = platformMaterial;
-            this.yAxisCarriage.position.set(0, baseHeight + 80, 0);
-            
-            // === GEMSTONE HOLDER / FIXTURE ===
-            const gemHolderSize = 20;
-            const gemHolder = BABYLON.MeshBuilder.CreateBox(
-                'gemstoneHolder',
-                { width: gemHolderSize, height: gemHolderSize, depth: gemHolderSize },
-                this.scene
-            );
-            gemHolder.material = platformMaterial;
-            gemHolder.position.set(baseWidth / 3 - 15, baseHeight + 95, 0);
-            gemHolder.parent = this.yAxisCarriage;
-            
-            // === ACTUAL GEMSTONE (Visual Indicator) ===
-            this.workpiecePlaceholder = BABYLON.MeshBuilder.CreateOctahedron(
-                'gemstone',
-                { size: 6 },
-                this.scene
-            );
-            this.workpiecePlaceholder.material = gemstoneMaterial;
-            this.workpiecePlaceholder.position.set(baseWidth / 3 - 5, baseHeight + 95, 0);
-            this.workpiecePlaceholder.parent = gemHolder;
-            
-            // === ANGLE ADJUSTMENT MOTOR ===
-            // Secondary stepper controlling cut angle
-            const angleMotor = BABYLON.MeshBuilder.CreateCylinder(
-                'angleMotor',
-                { diameter: 10, height: 10, tessellation: 16 },
-                this.scene
-            );
-            angleMotor.material = motorMaterial;
-            angleMotor.position.set(-baseWidth / 3.5, baseHeight + 40, baseDepth / 3);
-            
-            // Angle adjustment arm
-            const angleArm = BABYLON.MeshBuilder.CreateBox(
-                'angleArm',
-                { width: 8, height: 4, depth: 40 },
-                this.scene
-            );
-            angleArm.material = blackMetalMaterial;
-            angleArm.position.set(-baseWidth / 3.5, baseHeight + 45, baseDepth / 2.5);
-            
-            // === X-AXIS (Lateral Positioning) ===
-            this.xAxisCarriage = BABYLON.MeshBuilder.CreateBox(
-                'lateralGuide',
-                { width: 10, height: 12, depth: baseDepth * 0.8 },
-                this.scene
-            );
-            this.xAxisCarriage.material = blackMetalMaterial;
-            this.xAxisCarriage.position.set(0, baseHeight + 30, 0);
-            
-            // === Z-AXIS SUPPORT FRAME ===
-            // Vertical rails for Y-axis movement
-            const railThickness = 6;
-            const railHeight = 100;
-            
-            for (let x of [-baseWidth / 2.5, baseWidth / 2.5]) {
-                const rail = BABYLON.MeshBuilder.CreateBox(
-                    `zRail_${x}`,
-                    { width: railThickness, height: railHeight, depth: railThickness },
-                    this.scene
-                );
-                rail.material = stainlessMaterial;
-                rail.position.set(x, baseHeight + railHeight / 2, 0);
-            }
-            
-            // === WATER COOLING SYSTEM ===
-            const waterTankHeight = 25;
-            const waterTank = BABYLON.MeshBuilder.CreateBox(
-                'waterTank',
-                { width: 60, height: waterTankHeight, depth: 40 },
-                this.scene
-            );
-            const waterMaterial = new BABYLON.StandardMaterial('waterMaterial', this.scene);
-            waterMaterial.diffuse = new BABYLON.Color3(0.2, 0.5, 0.8);
-            waterMaterial.alpha = 0.6;
-            waterTank.material = waterMaterial;
-            waterTank.position.set(-baseWidth / 2.5, baseHeight + waterTankHeight / 2, -baseDepth / 2.5);
-            
-            // === REFERENCE GROUND ===
-            const groundMaterial = new BABYLON.StandardMaterial('groundMaterial', this.scene);
-            groundMaterial.diffuse = new BABYLON.Color3(0.12, 0.12, 0.15);
-            
-            const ground = BABYLON.MeshBuilder.CreateGround(
-                'ground',
-                { width: 300, height: 300, subdivisions: 4 },
-                this.scene
-            );
-            ground.material = groundMaterial;
-            ground.position.y = -5;
-            
-            console.log('✅ GemBot Gemstone Cutting Machine 3D model created successfully!');
+
+            // ==================== SUPPORT BRACKETS ====================
+            const supportL = BABYLON.MeshBuilder.CreateBox('supportL',
+                { width: 20, height: 40, depth: 20 }, this.scene);
+            supportL.material = aluminumMat;
+            supportL.position.set(60, 90, -55);
+            supportL.parent = this.yAxisPlatform;
+
+            const supportR = BABYLON.MeshBuilder.CreateBox('supportR',
+                { width: 20, height: 40, depth: 20 }, this.scene);
+            supportR.material = aluminumMat;
+            supportR.position.set(60, 90, 55);
+            supportR.parent = this.yAxisPlatform;
+
+            // ==================== COOLING SYSTEM ====================
+            const waterTank = BABYLON.MeshBuilder.CreateBox('waterTank',
+                { width: 70, height: 30, depth: 50 }, this.scene);
+            const waterMat = new BABYLON.StandardMaterial('waterMat', this.scene);
+            waterMat.diffuse = new BABYLON.Color3(0.3, 0.6, 0.9);
+            waterMat.alpha = 0.5;
+            waterTank.material = waterMat;
+            waterTank.position.set(70, 35, -80);
+
+            const coolingPump = BABYLON.MeshBuilder.CreateBox('pump',
+                { width: 25, height: 25, depth: 25 }, this.scene);
+            coolingPump.material = blackMetalMat;
+            coolingPump.position.set(60, 25, -100);
+
+            // ==================== TOUCH SCREEN CONTROLLER AREA ====================
+            const controlPanel = BABYLON.MeshBuilder.CreateBox('controlPanel',
+                { width: 100, height: 120, depth: 20 }, this.scene);
+            controlPanel.material = new BABYLON.StandardMaterial('panelMat', this.scene);
+            controlPanel.material.diffuse = new BABYLON.Color3(0.15, 0.15, 0.18);
+            controlPanel.position.set(-135, 100, 120);
+
+            const panelScreen = BABYLON.MeshBuilder.CreateBox('panelScreen',
+                { width: 85, height: 85, depth: 8 }, this.scene);
+            panelScreen.material = new BABYLON.StandardMaterial('screenMat', this.scene);
+            panelScreen.material.diffuse = new BABYLON.Color3(0.05, 0.05, 0.08);
+            panelScreen.position.set(-135, 105, 128);
+
+            // ==================== GROUND REFERENCE ====================
+            const ground = BABYLON.MeshBuilder.CreateGround('ground',
+                { width: 500, height: 500 }, this.scene);
+            const groundMat = new BABYLON.StandardMaterial('groundMat', this.scene);
+            groundMat.diffuse = new BABYLON.Color3(0.15, 0.18, 0.15);
+            ground.material = groundMat;
+            ground.position.y = 0;
+
+            console.log('✅ Accurate GemBot Gemstone Cutting Machine 3D model created!');
         } catch (error) {
             console.error('Error creating machine geometry:', error);
             const fallback = BABYLON.MeshBuilder.CreateBox('fallback', { size: 20 }, this.scene);
