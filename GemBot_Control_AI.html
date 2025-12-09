@@ -1616,6 +1616,7 @@
             <div class="auth-tabs">
                 <button class="auth-tab active" id="loginTab" onclick="authUI.switchTab('login')">Sign In</button>
                 <button class="auth-tab" id="registerTab" onclick="authUI.switchTab('register')">Register</button>
+                <button class="auth-tab" id="linkDeviceTab" onclick="authUI.switchTab('linkDevice')">📱 Link Device</button>
             </div>
 
             <div id="authError" class="auth-error"></div>
@@ -1631,6 +1632,9 @@
                     <input type="password" id="loginPassword" class="auth-input" placeholder="••••••••" required>
                 </div>
                 <button type="submit" class="auth-btn" id="loginBtn">🔐 Sign In</button>
+                <p style="font-size: 11px; color: #888; margin-top: 12px; text-align: center;">
+                    Registered on another device? Use <strong style="color: #4affff;">Link Device</strong> tab
+                </p>
             </form>
 
             <!-- Register Form (hidden by default) -->
@@ -1652,6 +1656,30 @@
                     <input type="password" id="registerConfirm" class="auth-input" placeholder="••••••••" required>
                 </div>
                 <button type="submit" class="auth-btn" id="registerBtn">📝 Create Account</button>
+            </form>
+
+            <!-- Link Device Form (hidden by default) -->
+            <form id="linkDeviceForm" class="auth-form" style="display: none;" onsubmit="authUI.linkDevice(event)">
+                <div style="background: rgba(102, 126, 234, 0.2); padding: 12px; border-radius: 8px; margin-bottom: 16px; font-size: 12px; color: #aaa;">
+                    <strong style="color: #4affff;">📱 Link your mobile & desktop</strong><br>
+                    Use this to connect a new device to your existing account. You'll need your <strong style="color: #ffd700;">Access Code</strong> from your logged-in device.
+                </div>
+                <div class="auth-input-group">
+                    <label for="linkAccessCode">Your Access Code</label>
+                    <input type="text" id="linkAccessCode" class="auth-input" placeholder="ABC123" maxlength="6" style="text-transform: uppercase; letter-spacing: 3px; text-align: center; font-size: 18px;" required>
+                </div>
+                <div class="auth-input-group">
+                    <label for="linkEmail">Email</label>
+                    <input type="email" id="linkEmail" class="auth-input" placeholder="your@email.com" required>
+                </div>
+                <div class="auth-input-group">
+                    <label for="linkPassword">Password</label>
+                    <input type="password" id="linkPassword" class="auth-input" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="auth-btn" id="linkDeviceBtn">🔗 Link This Device</button>
+                <p style="font-size: 11px; color: #888; margin-top: 12px; text-align: center;">
+                    Find your Access Code in <strong style="color: #4affff;">Profile → Share Access</strong> on your logged-in device
+                </p>
             </form>
 
             <div class="auth-divider">or</div>
@@ -2068,9 +2096,22 @@
                 canChangeSettings: false
             },
             connectedGuests: [],
+            broadcastChannel: null,
+            deviceId: null,
+            linkedDevices: [],
             
             // Initialize auth system
             init() {
+                // Generate or retrieve unique device ID
+                this.deviceId = localStorage.getItem('gembot_device_id');
+                if (!this.deviceId) {
+                    this.deviceId = 'device_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                    localStorage.setItem('gembot_device_id', this.deviceId);
+                }
+                
+                // Set up cross-tab/device communication
+                this.setupBroadcastChannel();
+                
                 // Check for existing session
                 const savedSession = localStorage.getItem('gembot_session');
                 if (savedSession) {
@@ -2080,8 +2121,11 @@
                             this.currentUser = session.user;
                             this.sessionToken = session.token;
                             this.isGuest = session.isGuest || false;
+                            this.linkedDevices = session.linkedDevices || [];
                             this.hideAuthOverlay();
                             this.updateUserUI();
+                            // Broadcast login to other tabs/devices
+                            this.broadcastAuth('session_active', this.currentUser);
                             console.log('✅ Session restored for:', this.currentUser.username);
                             return true;
                         }
@@ -2095,17 +2139,258 @@
                 return false;
             },
             
+            // Set up cross-device communication
+            setupBroadcastChannel() {
+                try {
+                    this.broadcastChannel = new BroadcastChannel('gembot_auth_channel');
+                    this.broadcastChannel.onmessage = (event) => {
+                        this.handleBroadcastMessage(event.data);
+                    };
+                } catch (e) {
+                    console.warn('BroadcastChannel not supported, using storage events');
+                }
+                
+                // Also listen for storage events (cross-tab sync)
+                window.addEventListener('storage', (e) => {
+                    if (e.key === 'gembot_users_sync') {
+                        this.handleUserSync(JSON.parse(e.newValue));
+                    }
+                    if (e.key === 'gembot_device_link') {
+                        this.handleDeviceLink(JSON.parse(e.newValue));
+                    }
+                });
+            },
+            
+            // Broadcast auth events to other tabs/devices
+            broadcastAuth(type, data) {
+                const message = {
+                    type: type,
+                    deviceId: this.deviceId,
+                    timestamp: Date.now(),
+                    data: data
+                };
+                
+                if (this.broadcastChannel) {
+                    this.broadcastChannel.postMessage(message);
+                }
+                
+                // Also use localStorage for cross-tab sync
+                localStorage.setItem('gembot_auth_event', JSON.stringify(message));
+                setTimeout(() => localStorage.removeItem('gembot_auth_event'), 100);
+            },
+            
+            // Handle broadcast messages
+            handleBroadcastMessage(message) {
+                console.log('📡 Auth broadcast received:', message.type);
+                
+                switch (message.type) {
+                    case 'user_registered':
+                        // Sync new user to this device
+                        this.syncUserToLocal(message.data);
+                        break;
+                    case 'session_active':
+                        // Another device/tab is logged in as same user
+                        if (this.currentUser && message.data.id === this.currentUser.id) {
+                            this.addLinkedDevice(message.deviceId);
+                        }
+                        break;
+                    case 'device_link_request':
+                        // Another device wants to link
+                        if (this.currentUser && message.data.accessCode === this.currentUser.machineAccessCode) {
+                            this.approveDeviceLink(message.deviceId, message.data);
+                        }
+                        break;
+                    case 'device_linked':
+                        // This device has been approved for linking
+                        if (message.data.targetDeviceId === this.deviceId) {
+                            this.completeDeviceLink(message.data);
+                        }
+                        break;
+                }
+            },
+            
+            // Sync user data to local storage
+            syncUserToLocal(userData) {
+                const users = JSON.parse(localStorage.getItem('gembot_users') || '{}');
+                if (!users[userData.email]) {
+                    users[userData.email] = userData;
+                    localStorage.setItem('gembot_users', JSON.stringify(users));
+                    console.log('📥 Synced user from other device:', userData.username);
+                }
+            },
+            
+            // Handle user sync from storage event
+            handleUserSync(syncData) {
+                if (syncData && syncData.users) {
+                    const localUsers = JSON.parse(localStorage.getItem('gembot_users') || '{}');
+                    let updated = false;
+                    
+                    Object.entries(syncData.users).forEach(([email, user]) => {
+                        if (!localUsers[email]) {
+                            localUsers[email] = user;
+                            updated = true;
+                        }
+                    });
+                    
+                    if (updated) {
+                        localStorage.setItem('gembot_users', JSON.stringify(localUsers));
+                        console.log('📥 Users synced from storage event');
+                    }
+                }
+            },
+            
+            // Add linked device
+            addLinkedDevice(deviceId) {
+                if (!this.linkedDevices.includes(deviceId) && deviceId !== this.deviceId) {
+                    this.linkedDevices.push(deviceId);
+                    this.saveSession();
+                    console.log('🔗 Device linked:', deviceId);
+                }
+            },
+            
+            // Handle device link from storage event
+            handleDeviceLink(linkData) {
+                if (linkData.targetDeviceId === this.deviceId && linkData.approved) {
+                    this.completeDeviceLink(linkData);
+                }
+            },
+            
+            // Request to link this device to an existing account using access code
+            async linkDeviceWithCode(accessCode, email, password) {
+                // This allows a user to link their mobile/desktop using access code + credentials
+                const users = JSON.parse(localStorage.getItem('gembot_users') || '{}');
+                
+                // First, try to find the user locally
+                let user = users[email];
+                
+                if (user) {
+                    // Verify password
+                    const passwordHash = await this.hashPassword(password);
+                    if (passwordHash !== user.passwordHash) {
+                        throw new Error('Invalid password');
+                    }
+                    
+                    // Verify access code matches
+                    if (user.machineAccessCode !== accessCode.toUpperCase()) {
+                        throw new Error('Access code does not match this account');
+                    }
+                    
+                    // Success! Link this device
+                    return this.loginAndLinkDevice(user);
+                }
+                
+                // User not found locally - broadcast request to find on other devices
+                this.broadcastAuth('device_link_request', {
+                    accessCode: accessCode.toUpperCase(),
+                    email: email,
+                    passwordHash: await this.hashPassword(password),
+                    requestingDeviceId: this.deviceId
+                });
+                
+                throw new Error('Account not found on this device. If you registered on another device, make sure both devices are on the same network, or login on that device first.');
+            },
+            
+            // Approve device link request
+            approveDeviceLink(requestingDeviceId, requestData) {
+                if (!this.currentUser) return;
+                
+                // Share user data with requesting device
+                const userData = {
+                    ...this.currentUser,
+                    linkedFromDevice: this.deviceId
+                };
+                
+                // Broadcast approval
+                this.broadcastAuth('device_linked', {
+                    targetDeviceId: requestingDeviceId,
+                    approved: true,
+                    userData: userData
+                });
+                
+                // Also set in localStorage for cross-tab sync
+                localStorage.setItem('gembot_device_link', JSON.stringify({
+                    targetDeviceId: requestingDeviceId,
+                    approved: true,
+                    userData: userData,
+                    timestamp: Date.now()
+                }));
+                
+                console.log('✅ Approved device link for:', requestingDeviceId);
+                addMessage(`📱 New device linked to your account!`, 'success');
+            },
+            
+            // Complete device linking on the requesting device
+            completeDeviceLink(linkData) {
+                if (linkData.approved && linkData.userData) {
+                    this.currentUser = linkData.userData;
+                    this.sessionToken = this.generateSessionToken();
+                    this.isGuest = false;
+                    this.linkedDevices = [linkData.userData.linkedFromDevice];
+                    
+                    this.saveSession();
+                    this.hideAuthOverlay();
+                    this.updateUserUI();
+                    
+                    console.log('✅ Device linked successfully!');
+                    addMessage(`🔗 Device linked! You're now logged in as ${this.currentUser.username}`, 'success');
+                }
+            },
+            
+            // Login and link device
+            async loginAndLinkDevice(user) {
+                this.currentUser = {
+                    id: user.id,
+                    username: user.username,
+                    email: user.email,
+                    machineAccessCode: user.machineAccessCode,
+                    settings: user.settings
+                };
+                this.sessionToken = this.generateSessionToken();
+                this.isGuest = false;
+                
+                // Add this device to linked devices
+                if (!user.linkedDevices) user.linkedDevices = [];
+                if (!user.linkedDevices.includes(this.deviceId)) {
+                    user.linkedDevices.push(this.deviceId);
+                }
+                this.linkedDevices = user.linkedDevices;
+                
+                this.saveSession();
+                
+                // Broadcast that this device is now linked
+                this.broadcastAuth('session_active', this.currentUser);
+                
+                console.log('✅ Device linked and logged in as:', user.username);
+                this.hideAuthOverlay();
+                this.updateUserUI();
+                return this.currentUser;
+            },
+            
+            // Save current session
+            saveSession() {
+                localStorage.setItem('gembot_session', JSON.stringify({
+                    user: this.currentUser,
+                    token: this.sessionToken,
+                    isGuest: this.isGuest,
+                    linkedDevices: this.linkedDevices,
+                    deviceId: this.deviceId,
+                    expires: Date.now() + (24 * 60 * 60 * 1000)
+                }));
+            },
+            
             // Register new user
             async register(username, email, password) {
-                // In production, this would call your backend API
-                // For now, we'll use localStorage-based auth
+                // Normalize email
+                email = email.toLowerCase().trim();
+                
+                // Check local users first
                 const users = JSON.parse(localStorage.getItem('gembot_users') || '{}');
                 
                 if (users[email]) {
-                    throw new Error('Email already registered');
+                    throw new Error('Email already registered. Please login instead, or use "Link Device" if you registered on another device.');
                 }
                 
-                if (Object.values(users).some(u => u.username === username)) {
+                if (Object.values(users).some(u => u.username.toLowerCase() === username.toLowerCase())) {
                     throw new Error('Username already taken');
                 }
                 
@@ -2117,7 +2402,9 @@
                     email: email,
                     passwordHash: await this.hashPassword(password),
                     createdAt: Date.now(),
+                    registeredOnDevice: this.deviceId,
                     machineAccessCode: this.generateAccessCode(),
+                    linkedDevices: [this.deviceId],
                     allowedGuests: [],
                     settings: {
                         autoShare: false,
@@ -2129,22 +2416,39 @@
                 users[email] = user;
                 localStorage.setItem('gembot_users', JSON.stringify(users));
                 
+                // Broadcast new user to other tabs/devices on same browser
+                this.broadcastAuth('user_registered', user);
+                
+                // Also trigger storage sync for cross-tab
+                localStorage.setItem('gembot_users_sync', JSON.stringify({
+                    users: users,
+                    timestamp: Date.now()
+                }));
+                
+                console.log('📝 New user registered:', username, '| Access Code:', user.machineAccessCode);
+                
                 // Auto-login after registration
                 return this.login(email, password);
             },
             
             // Login user
             async login(emailOrUsername, password) {
+                // Normalize input
+                emailOrUsername = emailOrUsername.toLowerCase().trim();
+                
                 const users = JSON.parse(localStorage.getItem('gembot_users') || '{}');
                 
-                // Find user by email or username
+                // Find user by email or username (case-insensitive)
                 let user = users[emailOrUsername];
                 if (!user) {
-                    user = Object.values(users).find(u => u.username === emailOrUsername);
+                    user = Object.values(users).find(u => 
+                        u.username.toLowerCase() === emailOrUsername || 
+                        u.email.toLowerCase() === emailOrUsername
+                    );
                 }
                 
                 if (!user) {
-                    throw new Error('User not found');
+                    throw new Error('User not found. If you registered on another device, use "Link Device" with your access code.');
                 }
                 
                 // Verify password
@@ -2163,16 +2467,24 @@
                 };
                 this.sessionToken = this.generateSessionToken();
                 this.isGuest = false;
+                this.linkedDevices = user.linkedDevices || [this.deviceId];
                 
-                // Save session (24 hour expiry)
-                localStorage.setItem('gembot_session', JSON.stringify({
-                    user: this.currentUser,
-                    token: this.sessionToken,
-                    isGuest: false,
-                    expires: Date.now() + (24 * 60 * 60 * 1000)
-                }));
+                // Add this device to linked devices if not already there
+                if (!this.linkedDevices.includes(this.deviceId)) {
+                    this.linkedDevices.push(this.deviceId);
+                    // Update user record
+                    user.linkedDevices = this.linkedDevices;
+                    users[user.email] = user;
+                    localStorage.setItem('gembot_users', JSON.stringify(users));
+                }
                 
-                console.log('✅ Logged in as:', user.username);
+                // Save session using the saveSession method
+                this.saveSession();
+                
+                // Broadcast login to sync with other tabs/devices
+                this.broadcastAuth('session_active', this.currentUser);
+                
+                console.log('✅ Logged in as:', user.username, '| Device:', this.deviceId);
                 this.hideAuthOverlay();
                 this.updateUserUI();
                 return this.currentUser;
@@ -2357,19 +2669,31 @@
             switchTab(tab) {
                 const loginTab = document.getElementById('loginTab');
                 const registerTab = document.getElementById('registerTab');
+                const linkDeviceTab = document.getElementById('linkDeviceTab');
                 const loginForm = document.getElementById('loginForm');
                 const registerForm = document.getElementById('registerForm');
+                const linkDeviceForm = document.getElementById('linkDeviceForm');
                 
+                // Remove active from all tabs
+                loginTab.classList.remove('active');
+                registerTab.classList.remove('active');
+                linkDeviceTab.classList.remove('active');
+                
+                // Hide all forms
+                loginForm.style.display = 'none';
+                registerForm.style.display = 'none';
+                linkDeviceForm.style.display = 'none';
+                
+                // Show selected tab/form
                 if (tab === 'login') {
                     loginTab.classList.add('active');
-                    registerTab.classList.remove('active');
                     loginForm.style.display = 'flex';
-                    registerForm.style.display = 'none';
-                } else {
-                    loginTab.classList.remove('active');
+                } else if (tab === 'register') {
                     registerTab.classList.add('active');
-                    loginForm.style.display = 'none';
                     registerForm.style.display = 'flex';
+                } else if (tab === 'linkDevice') {
+                    linkDeviceTab.classList.add('active');
+                    linkDeviceForm.style.display = 'flex';
                 }
                 this.clearError();
             },
@@ -2436,6 +2760,33 @@
                 }
             },
             
+            async linkDevice(event) {
+                event.preventDefault();
+                this.clearError();
+                
+                const accessCode = document.getElementById('linkAccessCode').value.toUpperCase();
+                const email = document.getElementById('linkEmail').value;
+                const password = document.getElementById('linkPassword').value;
+                const btn = document.getElementById('linkDeviceBtn');
+                
+                if (accessCode.length !== 6) {
+                    this.showError('Please enter a valid 6-character access code');
+                    return;
+                }
+                
+                btn.disabled = true;
+                btn.textContent = '⏳ Linking device...';
+                
+                try {
+                    await authSystem.linkDeviceWithCode(accessCode, email, password);
+                    addMessage('🔗 Device linked successfully! You can now use both devices with the same account.', 'success');
+                } catch (error) {
+                    this.showError(error.message);
+                    btn.disabled = false;
+                    btn.textContent = '🔗 Link This Device';
+                }
+            },
+            
             async joinWithCode() {
                 this.clearError();
                 const code = document.getElementById('guestCode').value.toUpperCase();
@@ -2466,7 +2817,9 @@
             showProfile() {
                 this.toggleUserMenu();
                 if (authSystem.currentUser && !authSystem.isGuest) {
-                    addMessage(`👤 Profile: ${authSystem.currentUser.username}\n📧 Email: ${authSystem.currentUser.email}\n🔗 Access Code: ${authSystem.currentUser.machineAccessCode}`, 'system');
+                    const linkedCount = authSystem.linkedDevices ? authSystem.linkedDevices.length : 1;
+                    const deviceType = /Mobi|Android/i.test(navigator.userAgent) ? '📱 Mobile' : '💻 Desktop';
+                    addMessage(`👤 Profile: ${authSystem.currentUser.username}\n📧 Email: ${authSystem.currentUser.email}\n🔗 Access Code: ${authSystem.currentUser.machineAccessCode}\n${deviceType} Device ID: ${authSystem.deviceId?.slice(-8) || 'Unknown'}\n📱 Linked Devices: ${linkedCount}`, 'system');
                 }
             },
             
@@ -2474,7 +2827,8 @@
                 this.toggleUserMenu();
                 if (authSystem.currentUser && !authSystem.isGuest) {
                     const code = authSystem.currentUser.machineAccessCode;
-                    addMessage(`🔗 Share this code to allow others to view/control your machine:\n\n📋 ${code}\n\nThey can enter this code on the login screen.`, 'system');
+                    const linkedCount = authSystem.linkedDevices ? authSystem.linkedDevices.length : 1;
+                    addMessage(`🔗 Your Access Code: ${code}\n\n📱 Use this code to:\n• Link your mobile/desktop devices (with your email+password)\n• Allow guests to view/control your machine\n\n✅ Currently ${linkedCount} device(s) linked to your account.`, 'system');
                 }
             },
             
