@@ -1040,12 +1040,35 @@
                 </div>
             </div>
 
+            <!-- USB Connection Help (Desktop Only) -->
+            <div id="usbHelpPanel" style="margin-top: 8px; background: rgba(102, 126, 234, 0.1); padding: 10px; border-radius: 6px; border-left: 4px solid #667eea; display: none;">
+                <div style="font-size: 11px; color: #aaa; margin-bottom: 6px;">💡 TWO WAYS TO CONNECT ARDUINO:</div>
+                <div style="font-size: 10px; color: #ccc; line-height: 1.5; margin-bottom: 8px;">
+                    <div><strong style="color: #4affff;">Direct:</strong> Use Web Serial API (local/LAN only)</div>
+                    <div><strong style="color: #4affff;">Bridge:</strong> Local server + cloud app (Render works!)</div>
+                </div>
+                <div style="font-size: 9px; color: #aaa;">
+                    <a href="https://github.com/barbrickdesign/GemBotAiWebControl/blob/main/LOCAL_USB_BRIDGE_SETUP.md" target="_blank" style="color: #4affff; text-decoration: none;">📖 Setup Guide</a>
+                </div>
+            </div>
+
             <!-- Camera/Mobile Connection Controls -->
             <div class="connection-panel" style="margin-top: 8px;">
                 <button class="btn-primary" id="cameraConnectBtn" style="flex: 1;">🔗 Link to Desktop</button>
                 <button class="btn-danger hidden" id="cameraDisconnectBtn" style="flex: 1;">📵 Disconnect</button>
-                <button style="background: #4a5a8e; color: white; padding: 6px 10px; border: 1px solid #667eea; border-radius: 6px; font-size: 12px; cursor: pointer;" id="btnDiagnostic">⚙️</button>
+                <button style="background: #4a5a8e; color: white; padding: 6px 10px; border: 1px solid #667eea; border-radius: 6px; font-size: 12px; cursor: pointer;" id="btnDiagnostic" title="Show connection help and diagnostics">⚙️</button>
             </div>
+
+            <!-- Show USB help on desktop only -->
+            <script>
+                const isMobileDevice = /iPhone|iPad|iPod|Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                if (!isMobileDevice) {
+                    setTimeout(() => {
+                        const helpPanel = document.getElementById('usbHelpPanel');
+                        if (helpPanel) helpPanel.style.display = 'block';
+                    }, 500);
+                }
+            </script>
         </div>
 
         <!-- MOBILE CONNECTION INFO PANEL -->
