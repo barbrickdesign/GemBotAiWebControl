@@ -160,14 +160,18 @@ class VirtualMachine3D {
         this.camera = new BABYLON.ArcRotateCamera(
             'machineCamera',
             Math.PI,              // Alpha (horizontal rotation)
-            Math.PI / 2.5,        // Beta (vertical rotation)
-            80,                   // Radius (distance)
-            new BABYLON.Vector3(0, 30, 0)  // Target (center of machine)
+            Math.PI / 2.8,        // Beta (vertical rotation)
+            120,                  // Radius (distance) - increased for better view
+            new BABYLON.Vector3(0, 35, 0)  // Target (center of machine)
         );
         
         this.camera.attachControl(this.canvasElement, true);
         this.camera.wheelPrecision = 50;
         this.camera.inertia = 0.7;
+        this.camera.angularSensibilityX = 1000;
+        this.camera.angularSensibilityY = 1000;
+        this.camera.minZ = 1;
+        this.camera.maxZ = 500;
         
         // Limit camera zoom
         this.camera.lowerRadiusLimit = 40;

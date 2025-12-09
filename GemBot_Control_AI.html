@@ -751,175 +751,183 @@
             .right-panel { order: 3; }
         }
 
-        /* MOBILE OPTIMIZATION */
+        /* MOBILE OPTIMIZATION - Simplified layout */
         @media (max-width: 768px) {
+            * {
+                box-sizing: border-box;
+            }
+
             body {
                 padding: 0;
                 margin: 0;
+                overflow: hidden;
             }
 
             .app-container {
-                grid-template-columns: 1fr;
-                grid-template-rows: auto 1fr;
-                gap: 0;
+                display: flex;
+                flex-direction: column;
                 height: 100vh;
+                width: 100vw;
+                gap: 0;
+                padding: 0;
             }
 
             .header-panel {
-                flex-direction: column;
-                gap: 12px;
-                padding: 12px;
-                border-radius: 0;
+                flex: 0 0 auto;
+                padding: 10px;
+                border-bottom: 2px solid #4a9eff;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
             }
 
             .header-title {
-                font-size: 18px;
-                margin-bottom: 4px;
+                font-size: 16px;
+                margin-bottom: 8px;
             }
 
             .connection-panel {
+                display: flex;
                 flex-wrap: wrap;
-                gap: 8px;
+                gap: 6px;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
             }
 
             .btn-primary, .btn-scan, .btn-danger {
-                padding: 8px 12px;
-                font-size: 13px;
-                flex: 1;
-                min-width: 80px;
+                padding: 6px 10px;
+                font-size: 12px;
+                white-space: nowrap;
+                flex-shrink: 0;
             }
 
             .main-content {
-                grid-template-columns: 1fr;
-                gap: 12px;
-                padding: 12px;
+                flex: 1 1 auto;
+                display: flex;
+                flex-direction: column;
+                gap: 0;
+                padding: 10px;
                 overflow-y: auto;
-                overflow-x: hidden;
+                -webkit-overflow-scrolling: touch;
+                width: 100%;
             }
 
             .left-panel, .center-panel, .right-panel {
                 width: 100%;
-            }
-
-            .control-section {
-                padding: 12px;
-                margin-bottom: 8px;
-            }
-
-            .section-title {
-                font-size: 14px;
-                margin-bottom: 8px;
-            }
-
-            .button-grid {
-                grid-template-columns: 1fr 1fr;
-                gap: 8px;
-            }
-
-            .btn-control {
-                padding: 10px;
-                font-size: 12px;
-            }
-
-            .motor-display {
-                grid-template-columns: 1fr;
-                gap: 8px;
-            }
-
-            .joystick-grid {
-                grid-template-columns: repeat(3, 1fr);
-                gap: 6px;
-            }
-
-            .joystick-btn {
-                padding: 12px;
-                font-size: 18px;
-                border-radius: 8px;
-            }
-
-            .message-bubble {
-                max-width: 85%;
-                padding: 10px 12px;
-                font-size: 13px;
-                border-radius: 8px;
-            }
-
-            .message-input {
-                padding: 10px;
-                font-size: 13px;
-            }
-
-            .chat-input {
-                padding: 8px 12px;
-                font-size: 13px;
-            }
-
-            .control-label {
-                font-size: 12px;
-            }
-
-            .control-input {
-                height: 24px;
-            }
-
-            #mobileConnectionPanel {
-                padding: 12px !important;
-            }
-
-            #mobileConnectionPanel > div {
-                grid-template-columns: 1fr !important;
-                gap: 12px !important;
-            }
-
-            #networkURLDisplay {
-                font-size: 11px !important;
-                padding: 6px 8px !important;
-            }
-
-            #toggleQRBtn, #copyURLBtn, #rescanNetworkBtn {
-                width: 100% !important;
-                padding: 10px !important;
-                font-size: 12px !important;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .header-panel {
-                padding: 10px;
-                gap: 10px;
-            }
-
-            .header-title {
-                font-size: 16px;
-            }
-
-            .button-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .joystick-grid {
-                gap: 4px;
-            }
-
-            .joystick-btn {
-                padding: 10px;
-                font-size: 16px;
+                margin-bottom: 10px;
             }
 
             .control-section {
                 padding: 10px;
                 margin-bottom: 6px;
+                background: rgba(74, 158, 255, 0.05);
+                border-radius: 6px;
+                border: 1px solid rgba(74, 158, 255, 0.2);
+            }
+
+            .section-title {
+                font-size: 13px;
+                margin-bottom: 8px;
+                font-weight: 600;
+            }
+
+            .button-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 6px;
+            }
+
+            .btn-control {
+                padding: 8px;
+                font-size: 11px;
+                border-radius: 6px;
+            }
+
+            .joystick-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 6px;
+            }
+
+            .joystick-btn {
+                padding: 10px;
+                font-size: 16px;
+                aspect-ratio: 1;
+                border-radius: 6px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
             }
 
             .message-bubble {
                 max-width: 90%;
-                font-size: 12px;
                 padding: 8px 10px;
+                font-size: 12px;
+                border-radius: 6px;
+                margin: 4px 0;
             }
 
-            .control-row {
-                flex-wrap: wrap;
+            .chat-input {
+                padding: 8px 10px;
+                font-size: 12px;
+                border-radius: 6px;
+                margin-top: 8px;
+            }
+
+            .control-label {
+                font-size: 11px;
+                margin-bottom: 4px;
+            }
+
+            .control-input {
+                width: 100%;
+                height: 28px;
+            }
+
+            .display-value {
+                font-size: 12px;
+                margin-left: 6px;
+            }
+
+            #mobileConnectionPanel {
+                display: none !important;
+            }
+
+            #networkDevicesPanel {
+                display: none !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-panel {
+                padding: 8px;
                 gap: 6px;
+            }
+
+            .header-title {
+                font-size: 14px;
+            }
+
+            .main-content {
+                padding: 8px;
+                gap: 6px;
+            }
+
+            .control-section {
+                padding: 8px;
+                margin-bottom: 4px;
+            }
+
+            .section-title {
+                font-size: 12px;
+            }
+
+            .button-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .joystick-btn {
+                padding: 8px;
+                font-size: 14px;
             }
         }
     </style>
@@ -1074,6 +1082,12 @@
                     <canvas id="babylon-canvas" style="width: 100%; height: 100%; display: block;"></canvas>
                     <div id="machineLoadingStatus" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.8); padding: 16px; border-radius: 8px; color: #4affff; font-size: 14px; text-align: center; z-index: 10;">
                         ⏳ Initializing 3D Virtual Machine...
+                    </div>
+                    <!-- 3D Scene Controls -->
+                    <div style="position: absolute; bottom: 12px; left: 12px; display: flex; gap: 8px; z-index: 5;">
+                        <button id="btn3DZoomIn" style="background: #667eea; color: white; border: 1px solid #4affff; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;">🔍+</button>
+                        <button id="btn3DZoomOut" style="background: #667eea; color: white; border: 1px solid #4affff; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;">🔍−</button>
+                        <button id="btn3DReset" style="background: #764ba2; color: white; border: 1px solid #9f7aea; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;">⟲ Reset</button>
                     </div>
                 </div>
                 
@@ -1274,6 +1288,37 @@
             const loadingStatus = document.getElementById('machineLoadingStatus');
             if (loadingStatus) {
                 loadingStatus.style.display = 'none';
+            }
+            
+            // 3D Scene Camera Controls
+            const zoomInBtn = document.getElementById('btn3DZoomIn');
+            const zoomOutBtn = document.getElementById('btn3DZoomOut');
+            const resetBtn = document.getElementById('btn3DReset');
+            
+            if (zoomInBtn && virtualMachine) {
+                zoomInBtn.addEventListener('click', () => {
+                    if (virtualMachine.camera) {
+                        virtualMachine.camera.radius = Math.max(20, virtualMachine.camera.radius - 10);
+                    }
+                });
+            }
+            
+            if (zoomOutBtn && virtualMachine) {
+                zoomOutBtn.addEventListener('click', () => {
+                    if (virtualMachine.camera) {
+                        virtualMachine.camera.radius = Math.min(200, virtualMachine.camera.radius + 10);
+                    }
+                });
+            }
+            
+            if (resetBtn && virtualMachine) {
+                resetBtn.addEventListener('click', () => {
+                    if (virtualMachine.camera) {
+                        virtualMachine.camera.radius = 80;
+                        virtualMachine.camera.alpha = Math.PI;
+                        virtualMachine.camera.beta = Math.PI / 2.5;
+                    }
+                });
             }
             
             const homeBtn = document.getElementById('btnHomeAll');
