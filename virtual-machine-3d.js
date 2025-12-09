@@ -626,6 +626,13 @@ class VirtualMachine3D {
         };
     }
     
+    /**
+     * Get motor positions (alias for getPositions for compatibility)
+     */
+    getMotorPositions() {
+        return this.getPositions();
+    }
+    
     // ==================== ANIMATION PLAYBACK ====================
     
     /**

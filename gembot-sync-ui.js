@@ -164,12 +164,19 @@ class GemBotSyncUI {
         panel.appendChild(statsContainer);
         
         this.panel = panel;
+        this.attachRetryCount = 0;
+        this.maxAttachRetries = 10;
     }
     
     attachListeners() {
         if (!window.gembotSync) {
-            console.warn('⚠️ gembotSync not available yet, retrying in 1s...');
-            setTimeout(() => this.attachListeners(), 1000);
+            this.attachRetryCount++;
+            if (this.attachRetryCount <= this.maxAttachRetries) {
+                console.warn(`⚠️ gembotSync not available yet, retrying in 1s... (${this.attachRetryCount}/${this.maxAttachRetries})`);
+                setTimeout(() => this.attachListeners(), 1000);
+            } else {
+                console.warn('⚠️ gembotSync not available after max retries - sync features disabled');
+            }
             return;
         }
         
