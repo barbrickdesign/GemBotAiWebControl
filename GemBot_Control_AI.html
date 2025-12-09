@@ -22,6 +22,7 @@
     <!-- Virtual Machine 3D Module -->
     <script src="./virtual-machine-3d.js"></script>
     <script src="./gembot-3d-init.js"></script>
+    <script src="./gembot-farm-game.js"></script>
     
     <!-- Multi-Device Synchronization -->
     <script src="./gembot-sync-manager.js"></script>
@@ -1450,7 +1451,8 @@
                 padding: 8px;
                 height: calc(100vh - 44px);
                 height: calc(100dvh - 44px);
-                overflow: hidden;
+                overflow: auto;
+                -webkit-overflow-scrolling: touch;
             }
 
             /* LEFT SECTION - 3D View & Camera */
@@ -1483,7 +1485,8 @@
                 border-radius: 8px;
                 border: 1px solid #2d3561;
                 padding: 8px;
-                overflow: hidden;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
                 order: 2;
                 max-width: 300px;
             }
@@ -1878,6 +1881,321 @@
             color: #ffd700;
             letter-spacing: 4px;
             margin-bottom: 12px;
+        }
+
+        /* ==================== GEMBOT FARM GAME MODE ==================== */
+        .game-mode-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0a0015 0%, #1a0a2e 50%, #0a1a2e 100%);
+            z-index: 99998;
+            display: none;
+            flex-direction: column;
+        }
+        
+        .game-mode-overlay.active {
+            display: flex;
+        }
+        
+        .game-mode-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            width: 100%;
+        }
+        
+        .game-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 16px;
+            background: linear-gradient(135deg, rgba(255,0,128,0.2) 0%, rgba(0,255,255,0.1) 100%);
+            border-bottom: 2px solid #ff0080;
+            flex-shrink: 0;
+        }
+        
+        .game-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .game-logo {
+            font-size: 32px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 10px #ff0080); }
+            50% { transform: scale(1.1); filter: drop-shadow(0 0 20px #00ffff); }
+        }
+        
+        .game-title h1 {
+            margin: 0;
+            font-size: 24px;
+            background: linear-gradient(90deg, #ff0080, #00ffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .game-subtitle {
+            font-size: 10px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .game-stats-bar {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .game-stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 4px 12px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .stat-icon { font-size: 16px; }
+        .stat-value { font-size: 18px; font-weight: bold; color: #ffd700; }
+        .stat-label { font-size: 9px; color: #888; text-transform: uppercase; }
+        
+        .game-stat.xp-bar {
+            width: 150px;
+            height: 24px;
+            background: rgba(0,0,0,0.5);
+            border: 1px solid #9b59b6;
+            position: relative;
+            padding: 0;
+        }
+        
+        .xp-fill {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            background: linear-gradient(90deg, #9b59b6, #e74c3c);
+            border-radius: 6px;
+            transition: width 0.3s ease;
+        }
+        
+        .xp-text {
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            font-size: 10px;
+            color: white;
+            line-height: 22px;
+            z-index: 1;
+        }
+        
+        .game-close-btn {
+            background: rgba(255,0,0,0.3);
+            border: 1px solid #ff4444;
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .game-close-btn:hover {
+            background: #ff4444;
+            transform: scale(1.1);
+        }
+        
+        .game-main {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .game-canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        
+        .game-hud {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            padding: 12px;
+            display: flex;
+        }
+        
+        .game-panel {
+            background: rgba(10, 15, 30, 0.85);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 12px;
+            padding: 12px;
+            pointer-events: auto;
+            backdrop-filter: blur(5px);
+        }
+        
+        .game-panel h3 {
+            margin: 0 0 8px 0;
+            font-size: 12px;
+            color: #00ffff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .game-machines-panel {
+            position: absolute;
+            left: 12px;
+            top: 12px;
+            width: 200px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .game-upgrades-panel {
+            position: absolute;
+            right: 12px;
+            top: 12px;
+            width: 200px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .game-activity-panel {
+            position: absolute;
+            bottom: 12px;
+            left: 12px;
+            right: 12px;
+            height: 60px;
+            overflow: hidden;
+        }
+        
+        .machines-list, .rooms-list, .upgrades-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+        
+        .machine-item, .room-item {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 6px;
+            padding: 8px;
+            font-size: 11px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .machine-item.active { border-color: #00ff88; }
+        
+        .activity-feed {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding: 4px 0;
+        }
+        
+        .activity-item {
+            background: rgba(0,0,0,0.5);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            white-space: nowrap;
+            border: 1px solid rgba(255,255,255,0.1);
+            animation: slideIn 0.3s ease;
+        }
+        
+        .game-btn {
+            background: rgba(102, 126, 234, 0.3);
+            border: 1px solid #667eea;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .game-btn:hover {
+            background: rgba(102, 126, 234, 0.5);
+            transform: translateY(-2px);
+        }
+        
+        .game-btn-primary {
+            background: linear-gradient(135deg, #ff0080, #7928ca);
+            border-color: #ff0080;
+        }
+        
+        .game-btn-primary:hover {
+            box-shadow: 0 0 20px rgba(255, 0, 128, 0.5);
+        }
+        
+        .real-machine-bonus {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, rgba(0,255,136,0.2), rgba(0,255,255,0.2));
+            border: 2px solid #00ff88;
+            border-radius: 12px;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: glow 2s infinite;
+        }
+        
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(0,255,136,0.3); }
+            50% { box-shadow: 0 0 40px rgba(0,255,136,0.6); }
+        }
+        
+        .bonus-icon { font-size: 24px; }
+        .bonus-text { color: #00ff88; font-weight: bold; }
+        .bonus-value { color: #ffd700; font-size: 12px; }
+        
+        .game-footer {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            padding: 8px 16px;
+            background: rgba(0,0,0,0.5);
+            border-top: 1px solid rgba(255,255,255,0.1);
+            flex-shrink: 0;
+        }
+        
+        .production-rate {
+            background: rgba(0,0,0,0.3);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            color: #00ffff;
+        }
+        
+        /* Mobile responsive for game mode */
+        @media (max-width: 768px) {
+            .game-stats-bar { gap: 8px; }
+            .game-stat { padding: 2px 6px; }
+            .stat-value { font-size: 14px; }
+            .game-title h1 { font-size: 16px; }
+            .game-subtitle { display: none; }
+            .game-machines-panel, .game-upgrades-panel { width: 150px; }
+            .game-stat.xp-bar { width: 80px; }
         }
 
         /* ==================== GLOBAL LEADERBOARD & ACTIVITY LOG ==================== */
@@ -2413,6 +2731,99 @@
         </div>
     </div>
 
+    <!-- ==================== GEMBOT FARM GAME MODE OVERLAY ==================== -->
+    <div id="gameModeOverlay" class="game-mode-overlay">
+        <div class="game-mode-container">
+            <!-- Game Header -->
+            <div class="game-header">
+                <div class="game-title">
+                    <span class="game-logo">💎</span>
+                    <h1>GemBot Farm</h1>
+                    <span class="game-subtitle">Cyberpunk Gem Cutting Tycoon</span>
+                </div>
+                <div class="game-stats-bar">
+                    <div class="game-stat">
+                        <span class="stat-icon">💎</span>
+                        <span class="stat-value" id="gameGemCount">0</span>
+                        <span class="stat-label">Gems</span>
+                    </div>
+                    <div class="game-stat">
+                        <span class="stat-icon">🪙</span>
+                        <span class="stat-value" id="gameTokenCount">0</span>
+                        <span class="stat-label">Tokens</span>
+                    </div>
+                    <div class="game-stat">
+                        <span class="stat-icon">⭐</span>
+                        <span class="stat-value" id="gameLevel">1</span>
+                        <span class="stat-label">Level</span>
+                    </div>
+                    <div class="game-stat xp-bar">
+                        <div class="xp-fill" id="gameXpFill" style="width: 0%"></div>
+                        <span class="xp-text" id="gameXpText">0 / 100 XP</span>
+                    </div>
+                </div>
+                <button class="game-close-btn" onclick="closeGameMode()">✕</button>
+            </div>
+            
+            <!-- Game Canvas Area -->
+            <div class="game-main">
+                <canvas id="game-canvas" class="game-canvas"></canvas>
+                
+                <!-- Game HUD Overlay -->
+                <div class="game-hud">
+                    <!-- Left Panel - Machines -->
+                    <div class="game-panel game-machines-panel">
+                        <h3>🔧 Machines</h3>
+                        <div id="machinesList" class="machines-list">
+                            <!-- Machines populated by JS -->
+                        </div>
+                        <button class="game-btn game-btn-primary" onclick="gameFarm.addMachine('gembot_basic', gameFarm.currentRoom)">
+                            + Add Machine (Free)
+                        </button>
+                    </div>
+                    
+                    <!-- Right Panel - Rooms & Upgrades -->
+                    <div class="game-panel game-upgrades-panel">
+                        <h3>🏠 Rooms</h3>
+                        <div id="roomsList" class="rooms-list">
+                            <!-- Rooms populated by JS -->
+                        </div>
+                        <h3 style="margin-top: 12px;">⬆️ Upgrades</h3>
+                        <div id="upgradesList" class="upgrades-list">
+                            <!-- Upgrades populated by JS -->
+                        </div>
+                    </div>
+                    
+                    <!-- Bottom - Activity Feed -->
+                    <div class="game-panel game-activity-panel">
+                        <div id="activityFeed" class="activity-feed">
+                            <div class="activity-item">🎮 Welcome to GemBot Farm!</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Real Machine Connection Bonus -->
+                <div id="realMachineBonus" class="real-machine-bonus" style="display: none;">
+                    <span class="bonus-icon">🔌</span>
+                    <span class="bonus-text">Real GemBot Connected!</span>
+                    <span class="bonus-value">+50% Bonus Active</span>
+                </div>
+            </div>
+            
+            <!-- Game Footer -->
+            <div class="game-footer">
+                <button class="game-btn" onclick="leaderboardUI.open()">🏆 Leaderboard</button>
+                <button class="game-btn" onclick="gameFarm.save()">💾 Save</button>
+                <div class="production-rate">
+                    <span>⚡ Production: </span>
+                    <span id="productionRate">1.0</span>
+                    <span>/sec</span>
+                </div>
+                <button class="game-btn game-btn-primary" onclick="closeGameMode()">Back to Control Panel</button>
+            </div>
+        </div>
+    </div>
+
     <!-- ==================== GLOBAL LEADERBOARD OVERLAY ==================== -->
     <div id="leaderboardOverlay" class="leaderboard-overlay">
         <div class="leaderboard-modal">
@@ -2462,6 +2873,7 @@
                     <div class="user-menu" id="userMenu">
                         <div class="user-menu-item" onclick="authUI.showProfile()">👤 My Profile</div>
                         <div class="user-menu-item" onclick="leaderboardUI.open()">🏆 Leaderboard</div>
+                        <div class="user-menu-item" onclick="openGameMode()" style="background: linear-gradient(135deg, rgba(255,0,128,0.2), rgba(0,255,255,0.2)); border-left: 3px solid #ff0080;">🎮 GemBot Farm</div>
                         <div class="user-menu-item" onclick="authUI.showShareAccess()">🔗 Share Access</div>
                         <div class="user-menu-item" onclick="authUI.showMachineSettings()">⚙️ Machine Settings</div>
                         <div class="user-menu-item" id="connectedGuestsItem" style="display: none;">👥 Connected Guests (0)</div>
@@ -4269,9 +4681,13 @@
                 
                 if (!overlay) return;
                 
-                if (isLandscape || this.isRotatePromptDismissed) {
+                // Only show on actual mobile devices AND in portrait mode
+                // Desktop should NEVER see this prompt regardless of window size
+                const isTrueMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) && 'ontouchstart' in window;
+                
+                if (isLandscape || this.isRotatePromptDismissed || !isTrueMobile) {
                     overlay.style.display = 'none';
-                } else if (this.isMobile()) {
+                } else if (isTrueMobile) {
                     overlay.style.display = 'flex';
                 }
                 
@@ -13879,6 +14295,214 @@
                 setTimeout(initializeVirtualMachine, 1000);
             }
         }, 2000);
+        
+        // ==================== GEMBOT FARM GAME MODE ====================
+        let gameFarm = null;
+        let gameInitialized = false;
+        
+        async function openGameMode() {
+            console.log('🎮 Opening GemBot Farm game mode...');
+            
+            const overlay = document.getElementById('gameModeOverlay');
+            if (!overlay) {
+                console.error('Game overlay not found');
+                return;
+            }
+            
+            overlay.classList.add('active');
+            
+            // Initialize game if not already done
+            if (!gameInitialized && typeof GemBotFarmGame !== 'undefined') {
+                gameFarm = new GemBotFarmGame();
+                
+                // Set up callbacks
+                gameFarm.onGemCut = (data) => {
+                    addGameActivity(`💎 Cut ${data.gem.name}${data.perfect ? ' ⭐PERFECT!' : ''} +${data.value}`);
+                    updateGameUI();
+                };
+                
+                gameFarm.onLevelUp = (level) => {
+                    addGameActivity(`🎉 LEVEL UP! Now level ${level}`);
+                    updateGameUI();
+                };
+                
+                gameFarm.onAchievement = (achievement) => {
+                    addGameActivity(`🏆 Achievement: ${achievement.name}!`);
+                    updateGameUI();
+                };
+                
+                gameFarm.onUIUpdate = (state) => {
+                    updateGameUI();
+                };
+                
+                // Initialize the game
+                const success = await gameFarm.initialize('game-canvas');
+                if (success) {
+                    gameInitialized = true;
+                    console.log('✅ GemBot Farm initialized');
+                    
+                    // Check if real machine is connected
+                    if (typeof serial !== 'undefined' && serial.port) {
+                        gameFarm.onRealMachineConnected();
+                        document.getElementById('realMachineBonus').style.display = 'flex';
+                    }
+                    
+                    updateGameUI();
+                    renderMachinesList();
+                    renderRoomsList();
+                } else {
+                    console.error('Failed to initialize game');
+                }
+            } else if (gameFarm) {
+                // Resume existing game
+                gameFarm.resume();
+                gameFarm.engine?.resize();
+                updateGameUI();
+            }
+        }
+        
+        function closeGameMode() {
+            const overlay = document.getElementById('gameModeOverlay');
+            if (overlay) {
+                overlay.classList.remove('active');
+            }
+            
+            if (gameFarm) {
+                gameFarm.pause();
+                gameFarm.save();
+            }
+        }
+        
+        function updateGameUI() {
+            if (!gameFarm) return;
+            
+            const state = gameFarm.getState();
+            const player = state.player;
+            
+            // Update stats
+            document.getElementById('gameGemCount').textContent = formatNumber(player.gems);
+            document.getElementById('gameTokenCount').textContent = formatNumber(player.tokens);
+            document.getElementById('gameLevel').textContent = player.level;
+            
+            // XP bar
+            const xpPercent = (player.xp / player.xpToNextLevel) * 100;
+            document.getElementById('gameXpFill').style.width = xpPercent + '%';
+            document.getElementById('gameXpText').textContent = `${player.xp} / ${player.xpToNextLevel} XP`;
+            
+            // Production rate
+            let totalProd = 0;
+            gameFarm.activeMachines.forEach(m => {
+                if (m.isActive) totalProd += gameFarm.calcProduction(m);
+            });
+            document.getElementById('productionRate').textContent = totalProd.toFixed(1);
+            
+            // Real machine bonus
+            const bonusEl = document.getElementById('realMachineBonus');
+            if (bonusEl) {
+                bonusEl.style.display = gameFarm.realMachineConnected ? 'flex' : 'none';
+            }
+            
+            // Update main page gem display too
+            const mainGemDisplay = document.getElementById('gemBalanceDisplay');
+            if (mainGemDisplay) {
+                mainGemDisplay.textContent = `💎 ${formatNumber(player.gems)}`;
+            }
+        }
+        
+        function renderMachinesList() {
+            if (!gameFarm) return;
+            
+            const container = document.getElementById('machinesList');
+            if (!container) return;
+            
+            let html = '';
+            gameFarm.activeMachines.forEach(m => {
+                const type = gameFarm.machineTypes[m.typeId];
+                const prod = gameFarm.calcProduction(m);
+                html += `
+                    <div class="machine-item ${m.isActive ? 'active' : ''}">
+                        <div>
+                            <strong>${type.name}</strong>
+                            <div style="font-size: 9px; color: #888;">Lvl ${m.level} • ${prod.toFixed(1)}/s</div>
+                        </div>
+                        <button class="game-btn" style="padding: 4px 8px; font-size: 10px;" 
+                                onclick="gameFarm.upgradeMachine('${m.id}'); updateGameUI(); renderMachinesList();">
+                            ⬆️ ${formatNumber(type.upgradeCost * m.level)}
+                        </button>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html || '<div style="color: #666; font-size: 11px;">No machines yet</div>';
+        }
+        
+        function renderRoomsList() {
+            if (!gameFarm) return;
+            
+            const container = document.getElementById('roomsList');
+            if (!container) return;
+            
+            let html = '';
+            Object.values(gameFarm.rooms).forEach(room => {
+                const isUnlocked = gameFarm.player.unlockedRooms.includes(room.id);
+                const canUnlock = (!room.unlockLevel || gameFarm.player.level >= room.unlockLevel) && 
+                                  gameFarm.player.gems >= room.unlockCost;
+                
+                html += `
+                    <div class="room-item" style="${!isUnlocked ? 'opacity: 0.5;' : ''}">
+                        <div>
+                            <strong>${room.name}</strong>
+                            <div style="font-size: 9px; color: #888;">${room.maxMachines} slots</div>
+                        </div>
+                        ${isUnlocked 
+                            ? `<span style="color: #00ff88;">✓</span>`
+                            : `<button class="game-btn" style="padding: 4px 8px; font-size: 10px;" 
+                                    onclick="gameFarm.unlockRoom('${room.id}'); updateGameUI(); renderRoomsList();"
+                                    ${!canUnlock ? 'disabled style="opacity:0.5;"' : ''}>
+                                🔓 ${formatNumber(room.unlockCost)}
+                            </button>`
+                        }
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        function addGameActivity(message) {
+            const feed = document.getElementById('activityFeed');
+            if (!feed) return;
+            
+            const item = document.createElement('div');
+            item.className = 'activity-item';
+            item.textContent = message;
+            
+            feed.insertBefore(item, feed.firstChild);
+            
+            // Keep only last 10 items
+            while (feed.children.length > 10) {
+                feed.removeChild(feed.lastChild);
+            }
+        }
+        
+        function formatNumber(num) {
+            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+            if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+            return Math.floor(num).toString();
+        }
+        
+        // Listen for real machine connection changes
+        if (typeof serial !== 'undefined') {
+            const originalConnect = serial.connect;
+            serial.connect = async function(...args) {
+                const result = await originalConnect.apply(this, args);
+                if (gameFarm && this.port) {
+                    gameFarm.onRealMachineConnected();
+                    updateGameUI();
+                }
+                return result;
+            };
+        }
         
         // Merlin greeting will be given on window load, no duplicate welcome needed
     </script>
