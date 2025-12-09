@@ -1507,7 +1507,20 @@
                     </div>
 
                     <div class="section-title">🔗 SYNC VARIABLES</div>
-                    <button class="btn-control" id="btnSyncVariables" title="Fetch all variables from Nextion" style="background: #4a7c2e; width: 100%;">📥 SYNC</button>
+                    <button class="btn-control" id="btnSyncVariables" title="Fetch all variables from Nextion" style="background: #4a7c2e; width: 100%;">📥 SYNC FROM TOUCH</button>
+                    
+                    <!-- Bi-directional Touch Screen Controls -->
+                    <div style="margin-top: 8px; padding: 8px; background: #2a3050; border-radius: 4px;">
+                        <div style="font-size: 10px; color: #aaa; margin-bottom: 6px;">📤 Push to Touch Screen</div>
+                        <div class="button-grid" style="gap: 4px;">
+                            <button class="btn-control" id="btnPushSpeed" title="Send current speed to Touch Screen" style="background: #2e5a7c; font-size: 10px; padding: 6px;">⚡ Speed</button>
+                            <button class="btn-control" id="btnPushMode" title="Send current mode to Touch Screen" style="background: #2e5a7c; font-size: 10px; padding: 6px;">🎛️ Mode</button>
+                        </div>
+                        <div class="button-grid" style="gap: 4px; margin-top: 4px;">
+                            <button class="btn-control" id="btnPushPosition" title="Send current position to Touch Screen" style="background: #5a2e7c; font-size: 10px; padding: 6px; grid-column: 1 / -1;">📍 Sync Position →</button>
+                        </div>
+                        <div id="pushStatus" style="padding: 4px; font-size: 9px; color: #888; margin-top: 4px; text-align: center;">Ready to push</div>
+                    </div>
                     <div id="syncStatus" style="padding: 6px; background: #1a1f3a; border-radius: 4px; font-size: 9px; color: #aaa; margin-top: 4px; text-align: center;">Ready</div>
                 </div>
             </div>
@@ -10187,6 +10200,113 @@
                         syncStatus.style.color = '#aaa';
                     }, 3000);
                 }
+            });
+
+            // ==================== BI-DIRECTIONAL TOUCH SCREEN SYNC ====================
+            
+            /**
+             * Push current speed setting to Touch Screen
+             */
+            document.getElementById('btnPushSpeed')?.addEventListener('click', () => {
+                const pushStatus = document.getElementById('pushStatus');
+                if (!isConnected) {
+                    pushStatus.textContent = '⚠️ Not connected';
+                    pushStatus.style.color = '#ff6666';
+                    return;
+                }
+                
+                const currentSpeed = machineGlobalState.hardware.motorSpeed || motorSpeed || 1;
+                pushStatus.textContent = `⏳ Pushing Speed ${currentSpeed}...`;
+                pushStatus.style.color = '#667eea';
+                
+                // Send speed to Touch Screen
+                const success = nextion.setVariable('motorSpeed', currentSpeed);
+                
+                if (success) {
+                    pushStatus.textContent = `✅ Speed ${currentSpeed} sent`;
+                    pushStatus.style.color = '#00ff88';
+                    addMessage(`📤 Pushed Speed ${currentSpeed} to Touch Screen`, 'success');
+                } else {
+                    pushStatus.textContent = '❌ Push failed';
+                    pushStatus.style.color = '#ff6666';
+                }
+                
+                setTimeout(() => {
+                    pushStatus.textContent = 'Ready to push';
+                    pushStatus.style.color = '#888';
+                }, 2000);
+            });
+            
+            /**
+             * Push current mode setting to Touch Screen
+             */
+            document.getElementById('btnPushMode')?.addEventListener('click', () => {
+                const pushStatus = document.getElementById('pushStatus');
+                if (!isConnected) {
+                    pushStatus.textContent = '⚠️ Not connected';
+                    pushStatus.style.color = '#ff6666';
+                    return;
+                }
+                
+                const currentMode = machineGlobalState.hardware.motorMode || (motorMode || 'continuous');
+                const modeValue = currentMode === 'step' ? 1 : 0; // 1 for step, 0 for continuous
+                pushStatus.textContent = `⏳ Pushing ${currentMode.toUpperCase()}...`;
+                pushStatus.style.color = '#667eea';
+                
+                // Send mode to Touch Screen
+                const success = nextion.setVariable('motorMode', modeValue);
+                
+                if (success) {
+                    pushStatus.textContent = `✅ ${currentMode.toUpperCase()} sent`;
+                    pushStatus.style.color = '#00ff88';
+                    addMessage(`📤 Pushed ${currentMode.toUpperCase()} mode to Touch Screen`, 'success');
+                } else {
+                    pushStatus.textContent = '❌ Push failed';
+                    pushStatus.style.color = '#ff6666';
+                }
+                
+                setTimeout(() => {
+                    pushStatus.textContent = 'Ready to push';
+                    pushStatus.style.color = '#888';
+                }, 2000);
+            });
+            
+            /**
+             * Push current position to Touch Screen
+             */
+            document.getElementById('btnPushPosition')?.addEventListener('click', () => {
+                const pushStatus = document.getElementById('pushStatus');
+                if (!isConnected) {
+                    pushStatus.textContent = '⚠️ Not connected';
+                    pushStatus.style.color = '#ff6666';
+                    return;
+                }
+                
+                pushStatus.textContent = '⏳ Syncing position...';
+                pushStatus.style.color = '#667eea';
+                
+                const position = machineGlobalState.hardware.position;
+                let successCount = 0;
+                
+                // Push all position values
+                if (nextion.setVariable('positionX', position.x || 0)) successCount++;
+                if (nextion.setVariable('positionY', position.y || 0)) successCount++;
+                if (nextion.setVariable('rotationAngle', position.rotation || 0)) successCount++;
+                if (nextion.setVariable('indexPosition', position.index || 0)) successCount++;
+                
+                if (successCount === 4) {
+                    pushStatus.textContent = '✅ Position synced';
+                    pushStatus.style.color = '#00ff88';
+                    addMessage(`📤 Position pushed to Touch Screen: X=${position.x}, Y=${position.y}, Angle=${position.rotation}°, Index=${position.index}`, 'success');
+                } else {
+                    pushStatus.textContent = `⚠️ ${successCount}/4 values sent`;
+                    pushStatus.style.color = '#ffaa00';
+                }
+                
+                setTimeout(() => {
+                    pushStatus.textContent = 'Ready to push';
+                    pushStatus.style.color = '#888';
+                }, 2000);
             });
 
             document.getElementById('emergencyStop')?.addEventListener('click', () => {
