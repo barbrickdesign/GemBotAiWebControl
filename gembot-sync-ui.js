@@ -6,6 +6,9 @@
 class GemBotSyncUI {
     constructor() {
         this.panel = null;
+        this.attachRetryCount = 0;
+        this.maxAttachRetries = 10;
+        this.listenersAttached = false;
         this.init();
     }
     
@@ -164,11 +167,12 @@ class GemBotSyncUI {
         panel.appendChild(statsContainer);
         
         this.panel = panel;
-        this.attachRetryCount = 0;
-        this.maxAttachRetries = 10;
     }
     
     attachListeners() {
+        // Prevent multiple attachment attempts if already attached
+        if (this.listenersAttached) return;
+        
         if (!window.gembotSync) {
             this.attachRetryCount++;
             if (this.attachRetryCount <= this.maxAttachRetries) {
@@ -180,6 +184,8 @@ class GemBotSyncUI {
             return;
         }
         
+        this.listenersAttached = true;
+        console.log('✅ gembotSync connected to UI');
         const sync = window.gembotSync;
         
         // Listen for sync events

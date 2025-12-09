@@ -802,16 +802,18 @@ class GemBotSyncManager {
 
 // Initialize on page load
 let gembotSync = null;
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-        gembotSync = new GemBotSyncManager();
-        console.log('✅ GemBot Sync Manager ready');
-    });
-} else {
+
+function initGembotSync() {
     gembotSync = new GemBotSyncManager();
+    window.gembotSync = gembotSync; // Update window reference after creation
     console.log('✅ GemBot Sync Manager ready');
 }
 
-// Export for use in other modules
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initGembotSync);
+} else {
+    initGembotSync();
+}
+
+// Export class for use in other modules
 window.GemBotSyncManager = GemBotSyncManager;
-window.gembotSync = gembotSync;
