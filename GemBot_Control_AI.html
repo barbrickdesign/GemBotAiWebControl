@@ -2307,6 +2307,343 @@
                 text-align: center;
             }
         }
+
+        /* ==================== CSS FACETING MACHINE VISUALIZATION ==================== */
+        /* Inspired by Pure CSS Claw Crane by Jon Kantner - codepen.io/jkantner/pen/abOBdgV */
+        
+        .css-machine {
+            --x-pos: 0;
+            --y-pos: 0;
+            --rotation: 0;
+            --arm-height: 80px;
+            --lap-spin: 0deg;
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0a0e1a 0%, #1a1f3a 50%, #0a0e1a 100%);
+            border-radius: 8px;
+            overflow: hidden;
+            perspective: 800px;
+        }
+
+        .css-machine__frame {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 280px;
+            height: 260px;
+            border: 3px solid #3a4070;
+            border-radius: 8px;
+            background: linear-gradient(to bottom, #1a1f3a, #0d1020);
+            box-shadow: 
+                inset 0 0 30px rgba(102, 126, 234, 0.1),
+                0 0 20px rgba(102, 126, 234, 0.2);
+        }
+
+        /* Horizontal Rail (X-axis) */
+        .css-machine__rail-x {
+            position: absolute;
+            top: 30px;
+            left: 20px;
+            right: 20px;
+            height: 8px;
+            background: linear-gradient(to bottom, #4a5580, #2a3050);
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .css-machine__rail-x::before,
+        .css-machine__rail-x::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 12px;
+            height: 12px;
+            background: #667eea;
+            border-radius: 50%;
+            box-shadow: 0 0 8px rgba(102, 126, 234, 0.5);
+        }
+
+        .css-machine__rail-x::before { left: -6px; }
+        .css-machine__rail-x::after { right: -6px; }
+
+        /* X-Axis Carriage */
+        .css-machine__carriage {
+            position: absolute;
+            top: 20px;
+            left: calc(20px + (var(--x-pos) * 2px));
+            width: 40px;
+            height: 28px;
+            background: linear-gradient(to bottom, #667eea, #4a5090);
+            border-radius: 4px;
+            transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+            z-index: 2;
+        }
+
+        .css-machine__carriage::before {
+            content: 'X';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        /* Vertical Arm (Y-axis) */
+        .css-machine__arm {
+            position: absolute;
+            top: 48px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: calc(var(--arm-height) + (var(--y-pos) * 1px));
+            background: linear-gradient(to right, #3a4070, #5a6090, #3a4070);
+            transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 2px 0 4px rgba(0,0,0,0.3);
+        }
+
+        /* Dop Stick / Stone Holder */
+        .css-machine__dop {
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%) rotate(calc(var(--rotation) * 1deg));
+            width: 4px;
+            height: 40px;
+            background: linear-gradient(to bottom, #9f7aea, #667eea);
+            border-radius: 2px;
+            transition: transform 0.2s ease-out;
+            transform-origin: top center;
+        }
+
+        /* The Gemstone */
+        .css-machine__stone {
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 24px;
+            height: 28px;
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.9) 0%,
+                rgba(74, 255, 255, 0.8) 25%,
+                rgba(102, 126, 234, 0.9) 50%,
+                rgba(159, 122, 234, 0.8) 75%,
+                rgba(255, 255, 255, 0.9) 100%);
+            clip-path: polygon(50% 0%, 100% 30%, 100% 70%, 50% 100%, 0% 70%, 0% 30%);
+            box-shadow: 
+                0 0 15px rgba(74, 255, 255, 0.5),
+                inset 0 0 10px rgba(255, 255, 255, 0.3);
+            animation: gemSparkle 3s ease-in-out infinite;
+        }
+
+        @keyframes gemSparkle {
+            0%, 100% { filter: brightness(1) saturate(1); }
+            50% { filter: brightness(1.3) saturate(1.2); }
+        }
+
+        /* Lap / Polishing Wheel */
+        .css-machine__lap-container {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%) perspective(200px) rotateX(60deg);
+            width: 160px;
+            height: 160px;
+        }
+
+        .css-machine__lap {
+            width: 100%;
+            height: 100%;
+            background: conic-gradient(
+                from 0deg,
+                #3a4070 0deg,
+                #5a6090 30deg,
+                #3a4070 60deg,
+                #5a6090 90deg,
+                #3a4070 120deg,
+                #5a6090 150deg,
+                #3a4070 180deg,
+                #5a6090 210deg,
+                #3a4070 240deg,
+                #5a6090 270deg,
+                #3a4070 300deg,
+                #5a6090 330deg,
+                #3a4070 360deg
+            );
+            border-radius: 50%;
+            box-shadow: 
+                0 0 20px rgba(102, 126, 234, 0.3),
+                inset 0 0 30px rgba(0,0,0,0.5);
+            animation: lapSpin var(--lap-speed, 10s) linear infinite;
+            animation-play-state: var(--lap-state, paused);
+        }
+
+        .css-machine__lap::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 30px;
+            height: 30px;
+            background: #1a1f3a;
+            border-radius: 50%;
+            border: 3px solid #667eea;
+        }
+
+        @keyframes lapSpin {
+            from { transform: rotate(var(--lap-spin)); }
+            to { transform: rotate(calc(var(--lap-spin) + 360deg)); }
+        }
+
+        /* Machine Base */
+        .css-machine__base {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 30px;
+            background: linear-gradient(to bottom, #2a3050, #1a1f3a);
+            border-radius: 8px 8px 0 0;
+            box-shadow: 0 -4px 8px rgba(0,0,0,0.3);
+        }
+
+        /* LED Indicators */
+        .css-machine__leds {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .css-machine__led {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #333;
+            box-shadow: 0 0 4px rgba(0,0,0,0.5);
+        }
+
+        .css-machine__led--power {
+            background: #00ff88;
+            box-shadow: 0 0 8px rgba(0, 255, 136, 0.6);
+        }
+
+        .css-machine__led--active {
+            background: #4affff;
+            box-shadow: 0 0 8px rgba(74, 255, 255, 0.6);
+            animation: ledBlink 0.5s ease-in-out infinite;
+        }
+
+        .css-machine__led--warning {
+            background: #ff6b6b;
+            box-shadow: 0 0 8px rgba(255, 107, 107, 0.6);
+        }
+
+        @keyframes ledBlink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        /* Position Display */
+        .css-machine__display {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: #0a0e1a;
+            border: 2px solid #3a4070;
+            border-radius: 6px;
+            padding: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 10px;
+            color: #4affff;
+            text-shadow: 0 0 4px rgba(74, 255, 255, 0.5);
+        }
+
+        .css-machine__display div {
+            margin: 2px 0;
+        }
+
+        /* Button Press Animation States */
+        .css-machine.moving-left .css-machine__carriage { 
+            animation: moveLeft 0.2s ease-out; 
+        }
+        .css-machine.moving-right .css-machine__carriage { 
+            animation: moveRight 0.2s ease-out; 
+        }
+        .css-machine.moving-forward .css-machine__arm { 
+            animation: moveDown 0.2s ease-out; 
+        }
+        .css-machine.moving-backward .css-machine__arm { 
+            animation: moveUp 0.2s ease-out; 
+        }
+
+        @keyframes moveLeft {
+            0% { transform: translateX(0); }
+            50% { transform: translateX(-4px); }
+            100% { transform: translateX(0); }
+        }
+
+        @keyframes moveRight {
+            0% { transform: translateX(0); }
+            50% { transform: translateX(4px); }
+            100% { transform: translateX(0); }
+        }
+
+        @keyframes moveDown {
+            0%, 100% { box-shadow: 2px 0 4px rgba(0,0,0,0.3); }
+            50% { box-shadow: 2px 4px 8px rgba(0,0,0,0.5); }
+        }
+
+        @keyframes moveUp {
+            0%, 100% { box-shadow: 2px 0 4px rgba(0,0,0,0.3); }
+            50% { box-shadow: 2px -2px 4px rgba(0,0,0,0.3); }
+        }
+
+        /* View Toggle Button */
+        .view-toggle {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(102, 126, 234, 0.3);
+            border: 1px solid #667eea;
+            color: #4affff;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 10px;
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.2s;
+        }
+
+        .view-toggle:hover {
+            background: rgba(102, 126, 234, 0.5);
+            transform: scale(1.05);
+        }
+
+        /* Hidden state for switching views */
+        #cssVirtualMachine {
+            display: none;
+        }
+
+        #cssVirtualMachine.active {
+            display: block;
+        }
+
+        #babylon-canvas.hidden {
+            display: none;
+        }
+
+        /* ==================== END CSS FACETING MACHINE ==================== */
     </style>
 </head>
 <body>
@@ -2656,9 +2993,57 @@
             <div class="center-panel">
                 <!-- 3D Virtual Machine View -->
                 <div id="machineViewContainer" style="width: 100%; height: 400px; background: #1a1f3a; border-radius: 8px; border: 2px solid #667eea; margin-bottom: 12px; overflow: hidden; position: relative;">
+                    <!-- View Toggle Button -->
+                    <button class="view-toggle" id="viewToggleBtn" onclick="toggleMachineView()" title="Switch between 3D and CSS view">🔄 CSS View</button>
+                    
+                    <!-- Babylon.js 3D Canvas -->
                     <canvas id="babylon-canvas" style="width: 100%; height: 100%; display: block;"></canvas>
+                    
+                    <!-- CSS-Only Faceting Machine (Lightweight Alternative) -->
+                    <div id="cssVirtualMachine" class="css-machine">
+                        <!-- Machine Frame -->
+                        <div class="css-machine__frame">
+                            <!-- X-Axis Rail -->
+                            <div class="css-machine__rail-x"></div>
+                            
+                            <!-- X-Axis Carriage -->
+                            <div class="css-machine__carriage" id="cssCarriage">
+                                <!-- Vertical Arm (Y-axis) -->
+                                <div class="css-machine__arm" id="cssArm">
+                                    <!-- Dop Stick with Stone -->
+                                    <div class="css-machine__dop" id="cssDop">
+                                        <div class="css-machine__stone"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Lap / Polishing Wheel -->
+                            <div class="css-machine__lap-container">
+                                <div class="css-machine__lap" id="cssLap"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Machine Base -->
+                        <div class="css-machine__base"></div>
+                        
+                        <!-- LED Indicators -->
+                        <div class="css-machine__leds">
+                            <div class="css-machine__led css-machine__led--power" title="Power"></div>
+                            <div class="css-machine__led" id="cssLedMotor" title="Motor Activity"></div>
+                            <div class="css-machine__led" id="cssLedConnection" title="Connection"></div>
+                        </div>
+                        
+                        <!-- Position Display -->
+                        <div class="css-machine__display">
+                            <div>X: <span id="cssDisplayX">0</span></div>
+                            <div>Y: <span id="cssDisplayY">0</span></div>
+                            <div>R: <span id="cssDisplayR">0</span>°</div>
+                        </div>
+                    </div>
+                    
                     <div id="machineLoadingStatus" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.8); padding: 16px; border-radius: 8px; color: #4affff; font-size: 14px; text-align: center; z-index: 10;">
                         ⏳ Initializing 3D Virtual Machine...
+                    </div>
                     </div>
                     
                     <!-- MOBILE IN-VIEW CONTROLS (hidden on desktop) -->
@@ -4215,6 +4600,193 @@
             }
         });
 
+        // ==================== CSS FACETING MACHINE CONTROLLER ====================
+        // Lightweight CSS-based visualization inspired by Pure CSS Claw Crane (codepen.io/jkantner/pen/abOBdgV)
+        const cssMachineController = {
+            currentView: '3d', // '3d' or 'css'
+            xPos: 0,
+            yPos: 0,
+            rotation: 0,
+            lapRunning: false,
+            
+            init() {
+                console.log('🎨 CSS Machine Controller initialized');
+                this.updateDisplay();
+            },
+            
+            // Toggle between 3D and CSS view
+            toggleView() {
+                const babylonCanvas = document.getElementById('babylon-canvas');
+                const cssMachine = document.getElementById('cssVirtualMachine');
+                const toggleBtn = document.getElementById('viewToggleBtn');
+                
+                if (this.currentView === '3d') {
+                    this.currentView = 'css';
+                    babylonCanvas.classList.add('hidden');
+                    cssMachine.classList.add('active');
+                    toggleBtn.textContent = '🎮 3D View';
+                    toggleBtn.title = 'Switch to 3D Babylon.js view';
+                    console.log('🎨 Switched to CSS view');
+                } else {
+                    this.currentView = '3d';
+                    babylonCanvas.classList.remove('hidden');
+                    cssMachine.classList.remove('active');
+                    toggleBtn.textContent = '🔄 CSS View';
+                    toggleBtn.title = 'Switch to lightweight CSS view';
+                    console.log('🎮 Switched to 3D view');
+                }
+            },
+            
+            // Update position from motor commands
+            updatePosition(x, y, r) {
+                // Clamp values
+                this.xPos = Math.max(0, Math.min(100, x || this.xPos));
+                this.yPos = Math.max(0, Math.min(100, y || this.yPos));
+                this.rotation = r !== undefined ? r : this.rotation;
+                
+                // Update CSS custom properties
+                const machine = document.getElementById('cssVirtualMachine');
+                if (machine) {
+                    machine.style.setProperty('--x-pos', this.xPos);
+                    machine.style.setProperty('--y-pos', this.yPos);
+                    machine.style.setProperty('--rotation', this.rotation);
+                }
+                
+                this.updateDisplay();
+            },
+            
+            // Update display values
+            updateDisplay() {
+                const displayX = document.getElementById('cssDisplayX');
+                const displayY = document.getElementById('cssDisplayY');
+                const displayR = document.getElementById('cssDisplayR');
+                
+                if (displayX) displayX.textContent = Math.round(this.xPos);
+                if (displayY) displayY.textContent = Math.round(this.yPos);
+                if (displayR) displayR.textContent = Math.round(this.rotation);
+            },
+            
+            // Animate movement for button press
+            animateMove(direction) {
+                const machine = document.getElementById('cssVirtualMachine');
+                if (!machine) return;
+                
+                // Remove any existing animation classes
+                machine.classList.remove('moving-left', 'moving-right', 'moving-forward', 'moving-backward');
+                
+                // Add direction class
+                machine.classList.add(`moving-${direction}`);
+                
+                // Flash motor LED
+                const motorLed = document.getElementById('cssLedMotor');
+                if (motorLed) {
+                    motorLed.classList.add('css-machine__led--active');
+                    setTimeout(() => motorLed.classList.remove('css-machine__led--active'), 300);
+                }
+                
+                // Remove animation class after animation
+                setTimeout(() => {
+                    machine.classList.remove(`moving-${direction}`);
+                }, 200);
+            },
+            
+            // Move left (X-)
+            moveLeft(steps = 5) {
+                this.xPos = Math.max(0, this.xPos - steps);
+                this.updatePosition(this.xPos);
+                this.animateMove('left');
+            },
+            
+            // Move right (X+)
+            moveRight(steps = 5) {
+                this.xPos = Math.min(100, this.xPos + steps);
+                this.updatePosition(this.xPos);
+                this.animateMove('right');
+            },
+            
+            // Move forward (Y+) - arm extends down
+            moveForward(steps = 5) {
+                this.yPos = Math.min(100, this.yPos + steps);
+                this.updatePosition(null, this.yPos);
+                this.animateMove('forward');
+            },
+            
+            // Move backward (Y-) - arm retracts up
+            moveBackward(steps = 5) {
+                this.yPos = Math.max(0, this.yPos - steps);
+                this.updatePosition(null, this.yPos);
+                this.animateMove('backward');
+            },
+            
+            // Rotate dop
+            rotate(degrees) {
+                this.rotation = (this.rotation + degrees) % 360;
+                this.updatePosition(null, null, this.rotation);
+            },
+            
+            // Start/stop lap spinning
+            toggleLap(running) {
+                this.lapRunning = running !== undefined ? running : !this.lapRunning;
+                const lap = document.getElementById('cssLap');
+                if (lap) {
+                    lap.style.setProperty('--lap-state', this.lapRunning ? 'running' : 'paused');
+                }
+            },
+            
+            // Set lap speed (1-5 maps to 15s-3s rotation)
+            setLapSpeed(speed) {
+                const lap = document.getElementById('cssLap');
+                if (lap) {
+                    // Speed 1 = slow (15s), Speed 5 = fast (3s)
+                    const duration = 18 - (speed * 3);
+                    lap.style.setProperty('--lap-speed', `${duration}s`);
+                }
+            },
+            
+            // Update connection LED
+            setConnected(connected) {
+                const led = document.getElementById('cssLedConnection');
+                if (led) {
+                    if (connected) {
+                        led.classList.add('css-machine__led--power');
+                    } else {
+                        led.classList.remove('css-machine__led--power');
+                    }
+                }
+            },
+            
+            // Home all axes
+            home() {
+                this.xPos = 50; // Center X
+                this.yPos = 0;  // Top Y
+                this.rotation = 0;
+                this.updatePosition(this.xPos, this.yPos, this.rotation);
+                console.log('🏠 CSS Machine homed');
+            },
+            
+            // Sync from main position display
+            syncFromMain() {
+                const xDisplay = document.getElementById('motorXPosition');
+                const yDisplay = document.getElementById('motorYPosition');
+                
+                if (xDisplay) {
+                    const xMatch = xDisplay.textContent.match(/-?\d+/);
+                    if (xMatch) this.xPos = Math.min(100, Math.max(0, (parseInt(xMatch[0]) + 100) / 2));
+                }
+                if (yDisplay) {
+                    const yMatch = yDisplay.textContent.match(/-?\d+/);
+                    if (yMatch) this.yPos = Math.min(100, Math.max(0, parseInt(yMatch[0])));
+                }
+                
+                this.updatePosition(this.xPos, this.yPos);
+            }
+        };
+
+        // Global toggle function for button
+        function toggleMachineView() {
+            cssMachineController.toggleView();
+        }
+
         // ==================== MOBILE ORIENTATION HANDLING ====================
         const mobileOrientationHandler = {
             isRotatePromptDismissed: false,
@@ -4316,9 +4888,13 @@
 
         // Initialize mobile orientation handler when DOM is ready
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => mobileOrientationHandler.init());
+            document.addEventListener('DOMContentLoaded', () => {
+                mobileOrientationHandler.init();
+                cssMachineController.init();
+            });
         } else {
             mobileOrientationHandler.init();
+            cssMachineController.init();
         }
 
         // ==================== GLOBAL STATE ====================
@@ -5224,6 +5800,13 @@
                             console.log(`✅ Connected at ${baudRate} baud!`);
                             addMessage(`✅ Connected at ${baudRate} baud (Direct)!`, 'success');
                             updateConnectionStatus(true);
+                            
+                            // Update CSS machine connection LED
+                            if (typeof cssMachineController !== 'undefined') {
+                                cssMachineController.setConnected(true);
+                                cssMachineController.toggleLap(true);
+                            }
+                            
                             document.getElementById('connectBtn').classList.add('hidden');
                             document.getElementById('disconnectBtn').classList.remove('hidden');
                             document.getElementById('portSelect').disabled = true;
@@ -5367,6 +5950,13 @@
                     this.bridgeMode = false;
                     addMessage('✅ Disconnected - Machine state saved', 'system');
                     updateConnectionStatus(false);
+                    
+                    // Update CSS machine connection LED and stop lap
+                    if (typeof cssMachineController !== 'undefined') {
+                        cssMachineController.setConnected(false);
+                        cssMachineController.toggleLap(false);
+                    }
+                    
                     document.getElementById('connectBtn').classList.remove('hidden');
                     document.getElementById('disconnectBtn').classList.add('hidden');
                     document.getElementById('portSelect').disabled = false;
@@ -5591,6 +6181,19 @@
                     
                     // Log command to session
                     sessionRecorder.logMotorCommand(cmd);
+                    
+                    // Update CSS machine visualization
+                    if (typeof cssMachineController !== 'undefined') {
+                        const cmdLower = cmd.toLowerCase();
+                        switch(cmdLower) {
+                            case 'w': cssMachineController.moveRight(5); break;   // X+
+                            case 's': cssMachineController.moveLeft(5); break;    // X-
+                            case 'a': cssMachineController.moveBackward(5); break; // Y-
+                            case 'd': cssMachineController.moveForward(5); break;  // Y+
+                            case 'z': cssMachineController.rotate(15); break;      // Rotate
+                            case 'h': cssMachineController.home(); break;          // Home
+                        }
+                    }
                     
                     // Track for Merlin's understanding
                     if (typeof merlin !== 'undefined' && merlin) {
@@ -12835,6 +13438,11 @@
                 const intervalMs = Math.max(8, Math.floor(40 / motorSpeed));
                 console.log(`⚡ Speed changed to level ${motorSpeed} (${intervalMs}ms interval - ${(1000/intervalMs).toFixed(0)} Hz)`);
                 addMessage(`⚡ Speed: ${motorSpeed}/5 - Command interval now ${intervalMs}ms`, 'system');
+                
+                // Update CSS machine lap speed
+                if (typeof cssMachineController !== 'undefined') {
+                    cssMachineController.setLapSpeed(motorSpeed);
+                }
             });
 
             document.getElementById('btnContinuous')?.addEventListener('click', () => {
