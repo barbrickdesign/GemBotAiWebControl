@@ -186,7 +186,7 @@ Your personality: Helpful, knowledgeable, encouraging. You celebrate user progre
             if (line.match(/^\d+\.\s/) || line.match(/^[-*]\s/)) {
                 steps.push({
                     step: currentStep++,
-                    instruction: line.replace(/^[\d.|-*\s]+/, '').trim()
+                    instruction: line.replace(/^[\d.\-*\s]+/, '').trim()
                 });
             }
         }

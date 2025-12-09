@@ -540,7 +540,8 @@
             overflow-wrap: break-word;
             word-break: break-word;
             max-width: 100%;
-            flex-shrink: 0;
+            flex-shrink: 1;
+            min-width: 0;
         }
 
         .ai-message.user {
@@ -1066,8 +1067,8 @@
 
             <!-- Show USB help on desktop only -->
             <script>
-                const isMobileDevice = /iPhone|iPad|iPod|Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-                if (!isMobileDevice) {
+                const isDesktopVersion = /iPhone|iPad|iPod|Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                if (!isDesktopVersion) {
                     setTimeout(() => {
                         const helpPanel = document.getElementById('usbHelpPanel');
                         if (helpPanel) helpPanel.style.display = 'block';

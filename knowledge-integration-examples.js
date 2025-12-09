@@ -10,14 +10,30 @@
  * Copy and paste these into your browser console (F12)
  */
 
-// 1. Check knowledge base status
-console.log('Knowledge Base Status:', window.getMerlinKnowledgeStatus());
+// Wait for knowledge base to load before running examples
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initExamples);
+} else {
+    setTimeout(initExamples, 1000);
+}
 
-// 2. Search for gemstone cutting information
-window.searchGemBotDocs('gemstone cutting').then(results => {
-    console.log('🔍 Search Results:', results);
-    results.forEach(doc => console.log(`  📄 ${doc.title} (${doc.category})`));
-});
+function initExamples() {
+    // Only initialize if knowledge base is available
+    if (typeof window.getMerlinKnowledgeStatus !== 'function') {
+        console.log('⏳ Waiting for knowledge base to load...');
+        return;
+    }
+
+    // 1. Check knowledge base status
+    console.log('Knowledge Base Status:', window.getMerlinKnowledgeStatus());
+
+    // 2. Search for gemstone cutting information (non-blocking)
+    if (typeof window.searchGemBotDocs === 'function') {
+        window.searchGemBotDocs('gemstone cutting').then(results => {
+            console.log('🔍 Search Results:', results);
+            results.forEach(doc => console.log(`  📄 ${doc.title} (${doc.category})`));
+        }).catch(err => console.log('Search not yet ready'));
+    }
 
 // 3. Get code examples
 window.getCodeExample('motor control').then(examples => {
@@ -252,3 +268,4 @@ console.log(`
 ║  getTutorial(topic)                       ║
 ╚════════════════════════════════════════════╝
 `);
+}  // Close initExamples function
