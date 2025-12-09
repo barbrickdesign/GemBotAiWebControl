@@ -2,6 +2,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
+const WebSocket = require('ws');
 
 const PORT = process.env.PORT || 8000;
 const HOST = '0.0.0.0'; // Listen on all network interfaces
@@ -26,6 +27,10 @@ const isProduction = process.env.RENDER === 'true';
 const networkURL = isProduction 
   ? `https://${process.env.RENDER_EXTERNAL_HOSTNAME || 'localhost'}`
   : `http://${localIP}:${PORT}`;
+
+// Store connected mobile devices and desktop clients
+let mobileDevices = new Map();
+let desktopClients = new Set();
 
 const server = http.createServer((req, res) => {
   // Log incoming connections with user agent info
@@ -98,11 +103,55 @@ server.listen(PORT, HOST, () => {
   console.log('✓ Mobile devices on WiFi can access: ' + networkURL);
   console.log('✓ Health check: ' + networkURL + '/health');
   console.log('✓ Serving: GemBot_Control_AI.html');
+  console.log('✓ WebSocket relay: /mobile-camera-send (mobile→desktop)');
+  console.log('✓ WebSocket relay: /mobile-camera (desktop receives)');
   console.log('✓ Press Ctrl+C to stop');
   console.log('');
 });
 
-server.on('error', (err) => {
-  console.error('Server error:', err);
-  process.exit(1);
+// Create WebSocket server for camera streaming
+const wss = new WebSocket.Server({ server });
+
+wss.on('connection', (ws, req) => {
+  const url = req.url;
+  const clientIP = req.socket.remoteAddress;
+  
+  if (url === '/mobile-camera-send') {
+    // Mobile device sending camera frames to desktop
+    console.log(`📤 Mobile camera send connection from ${clientIP}`);
+    const mobileId = `mobile-${Date.now()}`;
+    mobileDevices.set(mobileId, ws);
+    
+    ws.on('message', (data) => {
+      // Relay frame data to all connected desktop clients
+      desktopClients.forEach(desktop => {
+        if (desktop.readyState === WebSocket.OPEN) {
+          desktop.send(data);
+        }
+      });
+    });
+    
+    ws.on('close', () => {
+      console.log(`📤 Mobile camera closed: ${mobileId}`);
+      mobileDevices.delete(mobileId);
+    });
+    
+    ws.on('error', (err) => {
+      console.error(`📤 Mobile camera error: ${err.message}`);
+    });
+  } 
+  else if (url === '/mobile-camera') {
+    // Desktop client receiving camera frames from mobile
+    console.log(`📥 Desktop camera receive connection from ${clientIP}`);
+    desktopClients.add(ws);
+    
+    ws.on('close', () => {
+      console.log(`📥 Desktop client disconnected`);
+      desktopClients.delete(ws);
+    });
+    
+    ws.on('error', (err) => {
+      console.error(`📥 Desktop client error: ${err.message}`);
+    });
+  }
 });

@@ -781,6 +781,18 @@
                 -webkit-overflow-scrolling: touch;
             }
 
+            /* Show USB controls on desktop, hide on mobile */
+            @media (max-width: 768px) {
+                .header-panel > .connection-panel:first-of-type {
+                    display: none !important;
+                }
+            }
+            @media (min-width: 769px) {
+                .header-panel {
+                    max-height: 120px;
+                }
+            }
+
             .header-title {
                 font-size: 14px;
                 margin-bottom: 6px;
@@ -1016,9 +1028,21 @@
                 </div>
             </div>
             
+            <!-- USB Arduino Connection Controls (RESTORED) -->
+            <div class="connection-panel" style="margin-top: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px;">
+                <div style="display: flex; gap: 4px; flex-wrap: wrap; align-items: center;">
+                    <select id="portSelect" style="flex: 1; min-width: 120px; padding: 6px 8px; background: #2d3b4f; color: #4affff; border: 1px solid #667eea; border-radius: 6px; font-size: 11px; cursor: pointer;">
+                        <option value="">🔍 Select Arduino...</option>
+                    </select>
+                    <button id="scanBtn" class="btn-primary" style="flex: 0 0 auto; padding: 6px 10px; font-size: 11px;">🔍 Scan</button>
+                    <button id="connectBtn" class="btn-primary" style="flex: 0 0 auto; padding: 6px 10px; font-size: 11px;">🔌 Connect</button>
+                    <button id="disconnectBtn" class="btn-danger hidden" style="flex: 0 0 auto; padding: 6px 10px; font-size: 11px;">⏹️ Disconnect</button>
+                </div>
+            </div>
+
             <!-- Camera/Mobile Connection Controls -->
             <div class="connection-panel" style="margin-top: 8px;">
-                <button class="btn-primary" id="cameraConnectBtn" style="flex: 1;">📱 Connect Mobile</button>
+                <button class="btn-primary" id="cameraConnectBtn" style="flex: 1;">🔗 Link to Desktop</button>
                 <button class="btn-danger hidden" id="cameraDisconnectBtn" style="flex: 1;">📵 Disconnect</button>
                 <button style="background: #4a5a8e; color: white; padding: 6px 10px; border: 1px solid #667eea; border-radius: 6px; font-size: 12px; cursor: pointer;" id="btnDiagnostic">⚙️</button>
             </div>
@@ -1205,6 +1229,7 @@
                         <option value="auto">📱 Auto Select Camera</option>
                         <option value="environment">🖥️ Rear/External Camera</option>
                         <option value="user">😊 Front Camera</option>
+                        <option value="mobile-device">📲 Mobile Device Camera</option>
                     </select>
                 </div>
                 <div class="camera-adjustments">
@@ -8470,7 +8495,8 @@
             mobileDevices.set(deviceId, {
                 name: deviceName,
                 connectedAt: new Date().toLocaleTimeString(),
-                userAgent: userAgent.substring(0, 50)
+                userAgent: userAgent.substring(0, 50),
+                hasCamera: false
             });
             
             console.log(`📱 MOBILE DEVICE CONNECTED: ${deviceName} at ${new Date().toLocaleTimeString()}`);
@@ -8478,8 +8504,75 @@
             
             updateMobileDevicesList();
             
+            // Start streaming camera to desktop
+            startMobileToDesktopCameraStream();
+            
             // Show system message
             addMessage(`📱 Mobile device connected: ${deviceName}`, 'system');
+        }
+
+        async function startMobileToDesktopCameraStream() {
+            try {
+                // Request camera access on mobile device
+                const constraints = {
+                    video: {
+                        facingMode: 'environment', // Rear camera on mobile
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    },
+                    audio: true
+                };
+                
+                const mobileStream = await navigator.mediaDevices.getUserMedia(constraints);
+                console.log('📱 Mobile camera accessed, starting stream to desktop');
+                
+                // Connect to WebSocket server to send frames
+                const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+                const wsUrl = protocol + '//' + window.location.host + '/mobile-camera-send';
+                
+                window.mobileToDesktopWS = new WebSocket(wsUrl);
+                
+                window.mobileToDesktopWS.onopen = () => {
+                    console.log('📤 Connected to desktop camera relay');
+                    addMessage('📤 Streaming camera to desktop controller...', 'success');
+                    
+                    // Start capturing frames from mobile camera
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    const video = document.createElement('video');
+                    video.srcObject = mobileStream;
+                    video.play();
+                    
+                    video.onloadedmetadata = () => {
+                        canvas.width = video.videoWidth;
+                        canvas.height = video.videoHeight;
+                        
+                        // Send frames at ~15fps
+                        setInterval(() => {
+                            if (window.mobileToDesktopWS && window.mobileToDesktopWS.readyState === WebSocket.OPEN) {
+                                ctx.drawImage(video, 0, 0);
+                                canvas.toBlob((blob) => {
+                                    window.mobileToDesktopWS.send(blob);
+                                }, 'image/jpeg', 0.8);
+                            }
+                        }, 66); // ~15 fps
+                    };
+                };
+                
+                window.mobileToDesktopWS.onerror = (error) => {
+                    console.error('📤 Mobile camera stream error:', error);
+                    addMessage('❌ Desktop connection failed', 'error');
+                    mobileStream.getTracks().forEach(t => t.stop());
+                };
+                
+                window.mobileToDesktopWS.onclose = () => {
+                    console.log('📤 Mobile stream closed');
+                    mobileStream.getTracks().forEach(t => t.stop());
+                };
+            } catch (error) {
+                console.error('📱 Mobile camera access denied:', error);
+                addMessage(`❌ Camera access denied: ${error.message}`, 'error');
+            }
         }
         
         function updateMobileDevicesList() {
@@ -8663,10 +8756,18 @@
                 // Determine camera source based on user selection or device type
                 const sourceSelect = document.getElementById('cameraSourceSelect');
                 let facingMode = 'environment'; // Default to rear/external camera
+                let usesMobileDevice = false;
                 
                 if (sourceSelect) {
                     const selectedSource = sourceSelect.value;
-                    if (selectedSource === 'user') {
+                    if (selectedSource === 'mobile-device') {
+                        usesMobileDevice = true;
+                        addMessage('📱 Waiting for mobile device camera stream...', 'system');
+                        startMobileDeviceCameraConnection();
+                        document.getElementById('cameraStartBtn').style.display = 'none';
+                        document.getElementById('cameraStopBtn').style.display = 'block';
+                        return;
+                    } else if (selectedSource === 'user') {
                         facingMode = 'user'; // Front camera
                     } else if (selectedSource === 'environment') {
                         facingMode = 'environment'; // Rear camera
@@ -8722,7 +8823,64 @@
             }
         }
 
+        function startMobileDeviceCameraConnection() {
+            // Connect to WebSocket server to receive mobile device video stream
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = protocol + '//' + window.location.host + '/mobile-camera';
+            
+            mobileWebSocket = new WebSocket(wsUrl);
+            
+            mobileWebSocket.onopen = () => {
+                console.log('📱 Connected to mobile camera relay server');
+                addMessage('📱 Mobile camera relay connected', 'success');
+            };
+            
+            mobileWebSocket.onmessage = (event) => {
+                try {
+                    if (event.data instanceof Blob) {
+                        // Handle binary frame data
+                        const videoElement = document.getElementById('cameraFeed');
+                        const url = URL.createObjectURL(event.data);
+                        videoElement.src = url;
+                    } else {
+                        const data = JSON.parse(event.data);
+                        if (data.type === 'frame') {
+                            // Canvas-based rendering of frame data
+                            const canvas = document.getElementById('cameraFeed').parentElement.querySelector('canvas');
+                            if (canvas) {
+                                const ctx = canvas.getContext('2d');
+                                const img = new Image();
+                                img.onload = () => {
+                                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                                };
+                                img.src = data.frame;
+                            }
+                        }
+                    }
+                } catch (e) {
+                    console.error('Mobile camera frame error:', e);
+                }
+            };
+            
+            mobileWebSocket.onerror = (error) => {
+                console.error('📱 Mobile camera connection error:', error);
+                addMessage('❌ Mobile camera connection failed', 'error');
+            };
+            
+            mobileWebSocket.onclose = () => {
+                console.log('📱 Mobile camera connection closed');
+                addMessage('📱 Mobile device disconnected', 'warning');
+            };
+        }
+
+
         async function stopCamera() {
+            // Close mobile WebSocket if connected
+            if (window.mobileWebSocket && window.mobileWebSocket.readyState === WebSocket.OPEN) {
+                window.mobileWebSocket.close();
+                window.mobileWebSocket = null;
+            }
+            
             if (stream) {
                 stream.getTracks().forEach(track => track.stop());
                 cameraActive = false;
