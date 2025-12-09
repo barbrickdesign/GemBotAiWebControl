@@ -1605,12 +1605,17 @@
             <!-- RIGHT: AI ASSISTANT & STATUS -->
             <div class="right-panel">
                 <div class="status-display">
-                    <div class="section-title">📊 Position</div>
+                    <div class="section-title">📊 Position 
+                        <span id="positionUpdateStatus" style="display: inline-block; margin-left: 8px; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; background: #666; color: #fff;">⏸️ SYNC</span>
+                    </div>
                     <div class="status-box">
                         <div class="status-item"><div class="status-label">X</div><div class="status-value" id="statusX">—</div></div>
                         <div class="status-item"><div class="status-label">Y</div><div class="status-value" id="statusY">—</div></div>
                         <div class="status-item"><div class="status-label">ANGLE</div><div class="status-value" id="statusAngle">—</div></div>
                         <div class="status-item"><div class="status-label">INDEX</div><div class="status-value" id="statusIndex">—</div></div>
+                    </div>
+                    <div style="font-size: 10px; color: #999; margin-top: 4px; text-align: center;">
+                        Last updated: <span id="lastSyncAge" style="color: #00ff88;">—</span>
                     </div>
                 </div>
                 <div class="ai-header">🤖 AI ASSISTANT 
@@ -1995,6 +2000,116 @@
                 reward: '✨ Master Polisher!'
             }
         };
+
+        // ==================== REAL-TIME POSITION POLLING SYSTEM ====================
+        let positionPollInterval = null;
+        let isPositionPolling = false;
+        let lastPolledPosition = { x: 0, y: 0, rotation: 0, index: 0 };
+        let motorsActiveTimeout = null;
+
+        /**
+         * Start real-time position polling when motors are active
+         * Polls every 500ms and updates UI in real-time
+         */
+        function startPositionPolling() {
+            if (isPositionPolling) return; // Already polling
+            
+            isPositionPolling = true;
+            console.log('🔴 Position polling STARTED');
+            
+            // Update UI indicator
+            updatePositionPollingIndicator(true);
+            
+            positionPollInterval = setInterval(() => {
+                try {
+                    // Send position query to Arduino (if connected)
+                    if (typeof sendSerialData === 'function') {
+                        sendSerialData('?'); // Position query command
+                    }
+                    
+                    // Update last sync timestamp
+                    machineGlobalState.hardware.lastUpdate = Date.now();
+                    updateLastSyncDisplay();
+                    
+                } catch (e) {
+                    console.log('Position poll error (benign):', e.message);
+                }
+            }, 500); // Poll every 500ms
+        }
+
+        /**
+         * Stop position polling (call when motors stop)
+         */
+        function stopPositionPolling() {
+            if (positionPollInterval) {
+                clearInterval(positionPollInterval);
+                positionPollInterval = null;
+            }
+            isPositionPolling = false;
+            console.log('⏹️ Position polling STOPPED');
+            
+            // Update UI indicator
+            updatePositionPollingIndicator(false);
+        }
+
+        /**
+         * Extend polling timeout when motors are active
+         * Call this whenever a motor command is sent
+         */
+        function extendMotorPollingTimeout() {
+            // Start polling if not already
+            if (!isPositionPolling) {
+                startPositionPolling();
+            }
+            
+            // Clear existing timeout
+            if (motorsActiveTimeout) {
+                clearTimeout(motorsActiveTimeout);
+            }
+            
+            // Set timeout to stop polling 2 seconds after last command
+            motorsActiveTimeout = setTimeout(() => {
+                stopPositionPolling();
+            }, 2000);
+        }
+
+        /**
+         * Update the LIVE/SYNC indicator in UI
+         */
+        function updatePositionPollingIndicator(isLive) {
+            const statusEl = document.getElementById('positionUpdateStatus');
+            if (statusEl) {
+                if (isLive) {
+                    statusEl.textContent = '🔴 LIVE';
+                    statusEl.style.background = '#00ff88';
+                    statusEl.style.color = '#000';
+                } else {
+                    statusEl.textContent = '⏸️ SYNC';
+                    statusEl.style.background = '#666';
+                    statusEl.style.color = '#fff';
+                }
+            }
+        }
+
+        /**
+         * Update the "Last updated" timestamp display
+         */
+        function updateLastSyncDisplay() {
+            const lastSyncEl = document.getElementById('lastSyncAge');
+            if (lastSyncEl && machineGlobalState.hardware.lastUpdate) {
+                const age = Math.floor((Date.now() - machineGlobalState.hardware.lastUpdate) / 1000);
+                if (age < 2) {
+                    lastSyncEl.textContent = 'now';
+                    lastSyncEl.style.color = '#00ff88';
+                } else if (age < 60) {
+                    lastSyncEl.textContent = `${age}s ago`;
+                    lastSyncEl.style.color = '#ffaa00';
+                } else {
+                    lastSyncEl.textContent = `${Math.floor(age / 60)}m ago`;
+                    lastSyncEl.style.color = '#ff6666';
+                }
+            }
+        }
 
         // ==================== AI VISION CONTEXT ====================
         const aiVisionContext = {
@@ -2761,6 +2876,18 @@
             sendCommand(cmd) {
                 try {
                     if (!this.isConnected) return;
+                    
+                    // ===== REAL-TIME POSITION POLLING =====
+                    // Start/extend polling for motor movement commands
+                    const motorCommands = ['w', 'z', 'a', 'd', 'q', 'e', 'i', 'o', 't', 'h'];
+                    if (motorCommands.includes(cmd.toLowerCase()) && typeof extendMotorPollingTimeout === 'function') {
+                        extendMotorPollingTimeout();
+                    }
+                    // Stop polling on emergency stop
+                    if (cmd.toLowerCase() === 'u' && typeof stopPositionPolling === 'function') {
+                        stopPositionPolling();
+                    }
+                    // ===== END POLLING INTEGRATION =====
                     
                     // ===== GEMFORGE COMMAND COST TRACKING =====
                     if (typeof merlin !== 'undefined' && merlin && merlin.userProfile?.gemForge) {
