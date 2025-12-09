@@ -6339,6 +6339,9 @@
         // Initialize Merlin AFTER the class is fully defined
         merlin = new MerlinPersonality();
         
+        // Initialize machine state manager (MUST be global for access at line 10197)
+        window.machineState = new MachineStateManager();
+        
         // Now initialize GemBotAI (which depends on merlin)
         const ai = new GemBotAI();
         const helpers = new HelperButtons();
@@ -10190,8 +10193,12 @@
         // Initialize immediately to ensure all listeners are attached
         initializeEventListeners();
         
-        // Initialize machine state manager
-        machineState.initialize();
+        // Initialize machine state manager (using window.machineState set at line 6343)
+        if (window.machineState) {
+            window.machineState.initialize();
+        } else {
+            console.warn('⚠️ machineState not yet initialized');
+        }
         
         // Start power-up sequence and initialize Merlin personality
         window.addEventListener('load', () => {
