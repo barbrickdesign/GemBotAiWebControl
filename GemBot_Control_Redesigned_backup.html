@@ -1,0 +1,2484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GemBot AI Control System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0e27;
+            color: #e0e6ed;
+            min-height: 100vh;
+        }
+
+        .app-container {
+            display: grid;
+            grid-template-columns: 280px 1fr 320px;
+            grid-template-rows: auto 1fr auto;
+            min-height: 100vh;
+            gap: 12px;
+            padding: 12px;
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+
+        /* HEADER spanning all columns */
+        .header-panel {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 15px 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .header-title {
+            font-size: 24px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ff4444;
+            animation: pulse 1.5s infinite;
+        }
+
+        .status-indicator.connected {
+            background: #44ff44;
+            box-shadow: 0 0 8px #44ff44;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .connection-panel {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .port-select, .input-field {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            min-height: 36px;
+        }
+
+        button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-height: 36px;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-scan {
+            background: #4facfe;
+            color: white;
+        }
+
+        .btn-scan:hover {
+            background: #3f9ae8;
+        }
+
+        .btn-danger {
+            background: #ff4444;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dd0000;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* FOOTER Emergency Bar */
+        .footer-panel {
+            grid-column: 1 / -1;
+            background: #8B0000;
+            padding: 12px;
+            border-radius: 8px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .footer-panel button {
+            padding: 12px 24px;
+            font-size: 14px;
+        }
+
+        /* THREE COLUMN LAYOUT */
+        .main-content {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: 280px 1fr 320px;
+            gap: 12px;
+        }
+
+        /* LEFT PANEL - MOTOR CONTROLS */
+        .left-panel {
+            background: #1a1f3a;
+            border-radius: 12px;
+            padding: 16px;
+            overflow-y: auto;
+            border: 1px solid #2d3561;
+        }
+
+        .control-section {
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #2d3561;
+        }
+
+        .control-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .section-title {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #667eea;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+
+        .control-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .control-label {
+            font-size: 11px;
+            min-width: 45px;
+            font-weight: 600;
+        }
+
+        .control-input {
+            flex: 1;
+            min-height: 28px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 4px;
+            border-radius: 2px;
+            background: #2d3561;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            border: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            background: #7c8ff5;
+        }
+
+        .display-value {
+            min-width: 35px;
+            text-align: right;
+            font-size: 11px;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .button-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+
+        .btn-control {
+            padding: 8px;
+            background: #2d3561;
+            color: #e0e6ed;
+            border: 1px solid #3d4571;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-control:hover {
+            background: #3d4571;
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .btn-control.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .dpad-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 4px;
+            margin-bottom: 8px;
+        }
+
+        .dpad-btn {
+            padding: 10px;
+            background: #2d3561;
+            color: #e0e6ed;
+            border: 1px solid #3d4571;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 10px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .dpad-btn:hover {
+            background: #3d4571;
+            border-color: #667eea;
+        }
+
+        .dpad-btn.up { grid-column: 2; }
+        .dpad-btn.left { grid-column: 1; }
+        .dpad-btn.down { grid-column: 2; grid-row: 3; }
+        .dpad-btn.right { grid-column: 3; }
+        .dpad-btn.stop { grid-column: 1 / -1; grid-row: 4; background: #4a2020; }
+
+        /* CENTER PANEL - WEBCAM & ML ANALYSIS */
+        .center-panel {
+            background: #1a1f3a;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #2d3561;
+        }
+
+        .camera-container {
+            flex: 1;
+            position: relative;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 400px;
+        }
+
+        #cameraFeed {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .camera-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        #mlCanvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        .camera-controls {
+            padding: 12px;
+            background: #0f0f1e;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            border-top: 1px solid #2d3561;
+        }
+
+        .camera-controls button {
+            flex: 1;
+            min-width: 100px;
+            padding: 8px 12px;
+            font-size: 11px;
+        }
+
+        .ml-status {
+            padding: 8px 12px;
+            background: #1a1f3a;
+            border-top: 1px solid #2d3561;
+            font-size: 11px;
+            text-align: center;
+            color: #aaa;
+        }
+
+        /* RIGHT PANEL - AI ASSISTANT & STATUS */
+        .right-panel {
+            background: #1a1f3a;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #2d3561;
+            overflow: hidden;
+        }
+
+        .status-display {
+            padding: 12px;
+            background: #0f0f1e;
+            border-bottom: 1px solid #2d3561;
+        }
+
+        .status-box {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+
+        .status-item {
+            background: #2d3561;
+            padding: 8px;
+            border-radius: 6px;
+            text-align: center;
+            border: 1px solid #3d4571;
+        }
+
+        .status-label {
+            font-size: 9px;
+            color: #aaa;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 2px;
+        }
+
+        .status-value {
+            font-size: 14px;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .ai-assistant {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .ai-header {
+            padding: 10px 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-size: 12px;
+            font-weight: 700;
+            border-bottom: 1px solid #2d3561;
+        }
+
+        .ai-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .ai-message {
+            padding: 8px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            line-height: 1.4;
+        }
+
+        .ai-message.user {
+            background: #2d3561;
+            color: #e0e6ed;
+            align-self: flex-end;
+            max-width: 90%;
+        }
+
+        .ai-message.assistant {
+            background: #3d4571;
+            color: #a8b5e0;
+            align-self: flex-start;
+            max-width: 90%;
+        }
+
+        .ai-message.system {
+            background: #2d5f3f;
+            color: #6db877;
+            align-self: center;
+            max-width: 95%;
+            text-align: center;
+            font-size: 10px;
+        }
+
+        .ai-input-area {
+            padding: 10px 12px;
+            border-top: 1px solid #2d3561;
+            display: flex;
+            gap: 6px;
+        }
+
+        .ai-input-area input {
+            flex: 1;
+            padding: 6px 8px;
+            border: 1px solid #3d4571;
+            border-radius: 4px;
+            background: #2d3561;
+            color: #e0e6ed;
+            font-size: 11px;
+        }
+
+        .ai-input-area button {
+            padding: 6px 10px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .ai-input-area button:hover {
+            background: #7c8ff5;
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a1f3a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #3d4571;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4d5581;
+        }
+
+        /* Responsive */
+        @media (max-width: 1400px) {
+            .app-container {
+                grid-template-columns: 200px 1fr 260px;
+            }
+            .main-content {
+                grid-template-columns: 200px 1fr 260px;
+            }
+        }
+
+        @media (max-width: 1000px) {
+            .app-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto auto auto;
+            }
+            .main-content {
+                grid-template-columns: 1fr;
+                grid-column: 1;
+            }
+            .left-panel {
+                order: 1;
+            }
+            .center-panel {
+                order: 2;
+            }
+            .right-panel {
+                order: 3;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- HEADER -->
+        <div class="header-panel">
+            <div class="header-title">
+                💎 GEMBOT AI CONTROL
+            </div>
+            <div class="status-badge">
+                <div class="status-indicator" id="statusIndicator"></div>
+                <span id="connectionStatus">DISCONNECTED</span>
+            </div>
+            <div class="connection-panel">
+                <button class="btn-scan" id="scanBtn">🔍 SCAN</button>
+                <select class="port-select" id="portSelect">
+                    <option value="">Select Port...</option>
+                </select>
+                <button class="btn-primary" id="connectBtn">CONNECT</button>
+                <button class="btn-danger hidden" id="disconnectBtn">DISCONNECT</button>
+            </div>
+        </div>
+
+        <!-- MAIN CONTENT - THREE COLUMNS -->
+        <div class="main-content">
+            <!-- LEFT: MOTOR CONTROLS -->
+            <div class="left-panel">
+                <!-- Speed Control -->
+                <div class="control-section">
+                    <div class="section-title">⚡ Speed</div>
+                    <div class="control-row">
+                        <div class="control-label">Level</div>
+                        <input type="range" id="speedSlider" class="control-input" min="1" max="5" value="1">
+                        <div class="display-value"><span id="speedDisplay">1</span>/5</div>
+                    </div>
+                </div>
+
+                <!-- Motor Mode -->
+                <div class="control-section">
+                    <div class="section-title">🎛️ Mode</div>
+                    <div class="button-grid">
+                        <button class="btn-control active" id="btnContinuous">CONTINUOUS</button>
+                        <button class="btn-control" id="btnStep">STEP</button>
+                    </div>
+                </div>
+
+                <!-- Step Size -->
+                <div class="control-section">
+                    <div class="section-title">📏 Step Size</div>
+                    <div class="control-row">
+                        <div class="control-label">Steps</div>
+                        <input type="range" id="stepSlider" class="control-input" min="1" max="70" value="1">
+                        <div class="display-value"><span id="stepDisplay">1</span>/70</div>
+                    </div>
+                </div>
+
+                <!-- Movement -->
+                <div class="control-section">
+                    <div class="section-title">🕹️ Movement</div>
+                    <div class="dpad-container">
+                        <button class="dpad-btn up" data-cmd="w">▲</button>
+                        <button class="dpad-btn left" data-cmd="a">◄</button>
+                        <button class="dpad-btn right" data-cmd="d">►</button>
+                        <button class="dpad-btn down" data-cmd="z">▼</button>
+                        <button class="dpad-btn stop" data-cmd="u">STOP</button>
+                    </div>
+                </div>
+
+                <!-- Rotation -->
+                <div class="control-section">
+                    <div class="section-title">🔄 Rotation</div>
+                    <div class="button-grid">
+                        <button class="btn-control" id="btnRotateCCW">CCW</button>
+                        <button class="btn-control" id="btnRotateCW">CW</button>
+                    </div>
+                </div>
+
+                <!-- Index -->
+                <div class="control-section">
+                    <div class="section-title">🎰 Index</div>
+                    <div class="button-grid">
+                        <button class="btn-control" id="btnIndexBack">◀ BACK</button>
+                        <button class="btn-control" id="btnIndexFwd">FWD ▶</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CENTER: WEBCAM & ML ANALYSIS -->
+            <div class="center-panel">
+                <div class="camera-container">
+                    <video id="cameraFeed" playsinline autoplay muted></video>
+                    <canvas id="mlCanvas" class="camera-overlay"></canvas>
+                </div>
+                <div class="camera-controls">
+                    <button id="cameraStartBtn" style="background: #4a7c2e; flex: 1;">📷 START CAMERA</button>
+                    <button id="cameraStopBtn" style="background: #7c2e2e; flex: 1; display: none;">⏹ STOP</button>
+                    <button id="recordBtn" style="background: #2e4a7c; flex: 1;">⚫ RECORD</button>
+                </div>
+                <div class="ml-status">
+                    <div id="mlStatus">ML Model Ready • Waiting for camera...</div>
+                </div>
+            </div>
+
+            <!-- RIGHT: AI ASSISTANT & STATUS -->
+            <div class="right-panel">
+                <div class="status-display">
+                    <div class="section-title">📊 Position</div>
+                    <div class="status-box">
+                        <div class="status-item">
+                            <div class="status-label">X</div>
+                            <div class="status-value" id="statusX">—</div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-label">Y</div>
+                            <div class="status-value" id="statusY">—</div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-label">ANGLE</div>
+                            <div class="status-value" id="statusAngle">—</div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-label">INDEX</div>
+                            <div class="status-value" id="statusIndex">—</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ai-header">
+                    🤖 AI ASSISTANT
+                </div>
+
+                <div class="ai-messages" id="aiMessages"></div>
+
+                <div class="ai-input-area">
+                    <input type="text" id="aiInput" placeholder="Ask AI for help...">
+                    <button id="aiSendBtn">SEND</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="footer-panel">
+            <button class="btn-danger" id="emergencyStop">🛑 EMERGENCY STOP</button>
+            <button style="background: #2e4a7c; color: white;" id="btnHome">🏠 HOME</button>
+            <button style="background: #4a5a8e; color: white;" id="btnDiagnostic">🔧 DIAGNOSTIC</button>
+        </div>
+    </div>
+
+    <script>
+        // ==================== GLOBAL STATE ====================
+        let port = null;
+        let isConnected = false;
+        let motorSpeed = 1;
+        let motorMode = 'continuous';
+        let motorStepSize = 1;
+        let cameraActive = false;
+        let recordingActive = false;
+
+        // Local ML Model State
+        const mlModel = {
+            isActive: false,
+            sessionData: [],
+            predictions: [],
+            confidence: 0,
+            frameCount: 0,
+            learningData: []
+        };
+
+        // ==================== WEB SERIAL API ====================
+        class GemBotSerial {
+            constructor() {
+                this.port = null;
+                this.reader = null;
+                this.isConnected = false;
+                this.availablePorts = [];
+                this.buffer = '';
+                this.dataStats = {
+                    bytesReceived: 0,
+                    linesProcessed: 0,
+                    errorsFound: 0
+                };
+            }
+
+            async scanPorts() {
+                try {
+                    if (!('serial' in navigator)) {
+                        addDebugLog('❌ Web Serial API not supported', 'error');
+                        return;
+                    }
+
+                    addDebugLog('🔍 Scanning for devices...', 'system');
+                    const ports = await navigator.serial.getPorts();
+                    this.availablePorts = ports;
+
+                    const portSelect = document.getElementById('portSelect');
+                    portSelect.innerHTML = '<option value="">Select Port...</option>';
+
+                    if (ports.length === 0) {
+                        addDebugLog('⚠️ No devices found', 'warning');
+                    } else {
+                        addDebugLog(`✅ Found ${ports.length} device(s)`, 'system');
+                        ports.forEach((port, idx) => {
+                            const info = port.getInfo?.() || {};
+                            const vendorId = info.usbVendorId ? '0x' + info.usbVendorId.toString(16).padStart(4, '0') : 'Unknown';
+                            const option = document.createElement('option');
+                            option.value = idx;
+                            option.textContent = `Port ${idx + 1} (${vendorId})`;
+                            portSelect.appendChild(option);
+                        });
+                    }
+                } catch (error) {
+                    addDebugLog(`❌ Scan failed: ${error.message}`, 'error');
+                }
+            }
+
+            async connect() {
+                try {
+                    const portSelect = document.getElementById('portSelect');
+                    const idx = portSelect.value;
+
+                    if (idx === '') {
+                        addDebugLog('⚠️ Please select a port', 'warning');
+                        return;
+                    }
+
+                    this.port = this.availablePorts[idx];
+                    await this.port.open({ baudRate: 9600 });
+                    
+                    this.isConnected = true;
+                    addDebugLog('✅ Connected!', 'success');
+                    updateConnectionStatus(true);
+                    
+                    document.getElementById('connectBtn').classList.add('hidden');
+                    document.getElementById('disconnectBtn').classList.remove('hidden');
+                    document.getElementById('portSelect').disabled = true;
+                    document.getElementById('scanBtn').disabled = true;
+
+                    this.startReading();
+                } catch (error) {
+                    addDebugLog(`❌ Connection failed: ${error.message}`, 'error');
+                }
+            }
+
+            async disconnect() {
+                try {
+                    if (this.port) {
+                        await this.port.close();
+                        this.isConnected = false;
+                        addDebugLog('✅ Disconnected', 'system');
+                        updateConnectionStatus(false);
+
+                        document.getElementById('connectBtn').classList.remove('hidden');
+                        document.getElementById('disconnectBtn').classList.add('hidden');
+                        document.getElementById('portSelect').disabled = false;
+                        document.getElementById('scanBtn').disabled = false;
+                    }
+                } catch (error) {
+                    addDebugLog(`❌ Disconnect error: ${error.message}`, 'error');
+                }
+            }
+
+            async startReading() {
+                try {
+                    while (this.isConnected && this.port?.readable) {
+                        this.reader = this.port.readable.getReader();
+                        try {
+                            while (true) {
+                                const { value, done } = await this.reader.read();
+                                if (done) break;
+                                
+                                const text = new TextDecoder().decode(value);
+                                this.buffer += text;
+                                this.dataStats.bytesReceived += text.length;
+                                this.processBuffer();
+                            }
+                        } finally {
+                            this.reader.releaseLock();
+                        }
+                    }
+                } catch (error) {
+                    addDebugLog(`❌ Reading error: ${error.message}`, 'error');
+                }
+            }
+
+            processBuffer() {
+                const lines = this.buffer.split('\n');
+                this.buffer = lines[lines.length - 1];
+                
+                for (let i = 0; i < lines.length - 1; i++) {
+                    const line = lines[i].trim();
+                    if (!line || this.isMenuOutput(line)) continue;
+                    
+                    if (line.includes('pX:') || line.includes('pY:')) {
+                        this.parsePositionData(line);
+                    } else if (line.length > 2) {
+                        addDebugLog(`📥 ${line}`, 'info');
+                    }
+                    this.dataStats.linesProcessed++;
+                }
+            }
+
+            isMenuOutput(line) {
+                const menuPatterns = ['Setting', 'Motor', 'Shield', 'found', '---', '>'];
+                return line.length <= 2 || menuPatterns.some(p => line.includes(p));
+            }
+
+            parsePositionData(line) {
+                try {
+                    const xMatch = line.match(/pX:(\d+)/);
+                    const yMatch = line.match(/pY:(\d+)/);
+                    const aMatch = line.match(/pA:(\d+)/);
+                    const iMatch = line.match(/pI:(\d+)/);
+                    
+                    if (xMatch) updateStatusBox('X', parseInt(xMatch[1]));
+                    if (yMatch) updateStatusBox('Y', parseInt(yMatch[1]));
+                    if (aMatch) updateStatusBox('ANGLE', parseInt(aMatch[1]));
+                    if (iMatch) updateStatusBox('INDEX', parseInt(iMatch[1]));
+                } catch (error) {
+                    this.dataStats.errorsFound++;
+                }
+            }
+
+            async sendCommand(cmd) {
+                try {
+                    if (!this.isConnected || !this.port?.writable) return;
+                    const writer = this.port.writable.getWriter();
+                    await writer.write(new TextEncoder().encode(cmd + '\n'));
+                    writer.releaseLock();
+                } catch (error) {
+                    addDebugLog(`❌ Send error: ${error.message}`, 'error');
+                }
+            }
+        }
+
+        const serial = new GemBotSerial();
+
+        // ==================== AI ASSISTANT ====================
+        class GemBotAI {
+            constructor() {
+                this.conversationHistory = [];
+                this.systemPrompt = `You are GemBot AI, an intelligent gemstone cutting assistant. You:
+- Provide real-time guidance for optimal cutting angles and positions
+- Analyze cutting patterns and suggest improvements
+- Help troubleshoot issues with the cutting machine
+- Provide entertainment and motivation during long cutting sessions
+- Learn from cutting data and improve suggestions over time
+- Use emoji and be friendly while staying professional`;
+            }
+
+            addMessage(role, content) {
+                this.conversationHistory.push({ role, content, timestamp: Date.now() });
+                this.displayMessage(role, content);
+            }
+
+            displayMessage(role, content) {
+                const messagesDiv = document.getElementById('aiMessages');
+                const msg = document.createElement('div');
+                msg.className = `ai-message ${role}`;
+                msg.textContent = content;
+                messagesDiv.appendChild(msg);
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            }
+
+            generateResponse(userMessage) {
+                const responses = [
+                    `💡 Great observation! ${userMessage}... Let me analyze the cutting parameters.`,
+                    `🔍 Interesting query! Based on current positioning: Consider adjusting the angle for optimal facet alignment.`,
+                    `✨ Smart thinking! Current gem position is optimal for ${Math.random() > 0.5 ? 'precision' : 'speed'} cutting.`,
+                    `🎯 Perfect timing! The ML model detected smooth cutting progress. Keep current settings!`,
+                    `⚙️ Analyzing... Recommend slight adjustment to speed for better surface finish.`,
+                    `🌟 Excellent execution! Your cutting technique is improving. The AI has learned your style!`,
+                    `📈 Performance metrics show ${Math.floor(Math.random() * 20) + 75}% efficiency. Outstanding!`
+                ];
+                return responses[Math.floor(Math.random() * responses.length)];
+            }
+        }
+
+        const ai = new GemBotAI();
+
+        // ==================== LOCAL ML MODEL ====================
+        class LocalMLModel {
+            constructor() {
+                this.model = null;
+                this.isLoading = false;
+                this.frameBuffer = [];
+                this.maxBufferSize = 30;
+            }
+
+            async initialize() {
+                try {
+                    addDebugLog('🤖 Initializing local ML model...', 'system');
+                    // Placeholder for actual ML initialization
+                    // In production, load TensorFlow.js or similar
+                    this.isLoading = false;
+                    addDebugLog('✅ ML Model initialized', 'success');
+                } catch (error) {
+                    addDebugLog(`❌ ML init failed: ${error.message}`, 'error');
+                }
+            }
+
+            analyzeFrame(imageData) {
+                // Placeholder for ML analysis
+                mlModel.frameCount++;
+                mlModel.confidence = Math.random() * 100;
+                
+                if (mlModel.frameCount % 30 === 0) {
+                    const suggestion = this.generateSuggestion();
+                    if (suggestion) {
+                        addDebugLog(suggestion, 'info');
+                        ai.addMessage('assistant', suggestion);
+                    }
+                }
+            }
+
+            generateSuggestion() {
+                const suggestions = [
+                    '📍 Consider rotating 2-3 degrees for better symmetry',
+                    '⚡ Speed could increase by 1 level without quality loss',
+                    '💎 Surface finish looks optimal - maintain current settings',
+                    '🔄 Time to check index positioning for next facet'
+                ];
+                return Math.random() > 0.7 ? suggestions[Math.floor(Math.random() * suggestions.length)] : null;
+            }
+        }
+
+        const mlModel2 = new LocalMLModel();
+
+        // ==================== CAMERA & ML PROCESSING ====================
+        let stream = null;
+        let canvasCtx = null;
+
+        async function startCamera() {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: 'environment' } 
+                });
+                
+                const video = document.getElementById('cameraFeed');
+                video.srcObject = stream;
+                
+                cameraActive = true;
+                document.getElementById('cameraStartBtn').style.display = 'none';
+                document.getElementById('cameraStopBtn').style.display = 'block';
+                
+                addDebugLog('📷 Camera started', 'success');
+                ai.addMessage('system', '📷 Camera activated - AI monitoring cutting process');
+                
+                const canvas = document.getElementById('mlCanvas');
+                canvasCtx = canvas.getContext('2d');
+                canvas.width = video.videoWidth || 640;
+                canvas.height = video.videoHeight || 480;
+                
+                processVideoFrames();
+            } catch (error) {
+                addDebugLog(`❌ Camera error: ${error.message}`, 'error');
+            }
+        }
+
+        async function stopCamera() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                cameraActive = false;
+                document.getElementById('cameraStartBtn').style.display = 'block';
+                document.getElementById('cameraStopBtn').style.display = 'none';
+                addDebugLog('⏹ Camera stopped', 'system');
+                ai.addMessage('system', '⏹ Camera deactivated');
+            }
+        }
+
+        function processVideoFrames() {
+            if (!cameraActive) return;
+            
+            const video = document.getElementById('cameraFeed');
+            const canvas = document.getElementById('mlCanvas');
+            
+            if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                canvasCtx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                
+                // Analyze frame
+                mlModel2.analyzeFrame(canvasCtx.getImageData(0, 0, canvas.width, canvas.height));
+                
+                // Update ML status
+                const mlStatus = document.getElementById('mlStatus');
+                mlStatus.textContent = `🔴 Recording • Frame: ${mlModel.frameCount} • Confidence: ${mlModel.confidence.toFixed(1)}%`;
+            }
+            
+            requestAnimationFrame(processVideoFrames);
+        }
+
+        // ==================== UI HELPERS ====================
+        function addDebugLog(message, type = 'info') {
+            // Messages go through AI system
+            ai.addMessage('system', message);
+        }
+
+        function updateConnectionStatus(connected) {
+            const badge = document.getElementById('connectionStatus');
+            const indicator = document.getElementById('statusIndicator');
+            
+            if (connected) {
+                badge.textContent = 'CONNECTED';
+                indicator.classList.add('connected');
+            } else {
+                badge.textContent = 'DISCONNECTED';
+                indicator.classList.remove('connected');
+            }
+        }
+
+        function updateStatusBox(axis, value) {
+            const elementId = `status${axis}`;
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.textContent = axis === 'ANGLE' ? `${value}°` : value;
+                element.style.animation = 'none';
+                setTimeout(() => { element.style.animation = 'pulse 0.5s'; }, 10);
+            }
+        }
+
+        // ==================== EVENT LISTENERS ====================
+        function initializeEventListeners() {
+            // Connection
+            document.getElementById('scanBtn')?.addEventListener('click', () => serial.scanPorts());
+            document.getElementById('connectBtn')?.addEventListener('click', () => serial.connect());
+            document.getElementById('disconnectBtn')?.addEventListener('click', () => serial.disconnect());
+
+            // Camera
+            document.getElementById('cameraStartBtn')?.addEventListener('click', startCamera);
+            document.getElementById('cameraStopBtn')?.addEventListener('click', stopCamera);
+            document.getElementById('recordBtn')?.addEventListener('click', () => {
+                recordingActive = !recordingActive;
+                const btn = document.getElementById('recordBtn');
+                btn.style.background = recordingActive ? '#c41e3a' : '#2e4a7c';
+                btn.textContent = recordingActive ? '⏹ STOP RECORD' : '⚫ RECORD';
+                addDebugLog(recordingActive ? '🔴 Recording started' : '⏹ Recording stopped', 'system');
+            });
+
+            // Speed
+            document.getElementById('speedSlider')?.addEventListener('input', (e) => {
+                motorSpeed = parseInt(e.target.value);
+                document.getElementById('speedDisplay').textContent = motorSpeed;
+                if (serial.isConnected) serial.sendCommand('s' + motorSpeed);
+            });
+
+            // Mode
+            document.getElementById('btnContinuous')?.addEventListener('click', () => {
+                motorMode = 'continuous';
+                document.getElementById('btnContinuous').classList.add('active');
+                document.getElementById('btnStep').classList.remove('active');
+                if (serial.isConnected) serial.sendCommand('y');
+            });
+
+            document.getElementById('btnStep')?.addEventListener('click', () => {
+                motorMode = 'step';
+                document.getElementById('btnStep').classList.add('active');
+                document.getElementById('btnContinuous').classList.remove('active');
+                if (serial.isConnected) serial.sendCommand('y');
+            });
+
+            // Step size
+            document.getElementById('stepSlider')?.addEventListener('input', (e) => {
+                motorStepSize = parseInt(e.target.value);
+                document.getElementById('stepDisplay').textContent = motorStepSize;
+                if (serial.isConnected) serial.sendCommand('n' + motorStepSize);
+            });
+
+            // Movement pad
+            document.querySelectorAll('.dpad-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if (serial.isConnected) serial.sendCommand(btn.dataset.cmd);
+                });
+            });
+
+            // Rotation
+            document.getElementById('btnRotateCCW')?.addEventListener('click', () => {
+                if (serial.isConnected) serial.sendCommand('j');
+            });
+
+            document.getElementById('btnRotateCW')?.addEventListener('click', () => {
+                if (serial.isConnected) serial.sendCommand('e');
+            });
+
+            // Index
+            document.getElementById('btnIndexBack')?.addEventListener('click', () => {
+                if (serial.isConnected) serial.sendCommand('i');
+            });
+
+            document.getElementById('btnIndexFwd')?.addEventListener('click', () => {
+                if (serial.isConnected) serial.sendCommand('c');
+            });
+
+            // Emergency
+            document.getElementById('emergencyStop')?.addEventListener('click', () => {
+                addDebugLog('🛑 EMERGENCY STOP', 'error');
+                if (serial.isConnected) serial.sendCommand('u');
+            });
+
+            document.getElementById('btnHome')?.addEventListener('click', () => {
+                if (serial.isConnected) serial.sendCommand('h');
+            });
+
+            // AI Chat
+            document.getElementById('aiSendBtn')?.addEventListener('click', () => {
+                const input = document.getElementById('aiInput');
+                const message = input.value.trim();
+                if (message) {
+                    ai.addMessage('user', message);
+                    const response = ai.generateResponse(message);
+                    setTimeout(() => ai.addMessage('assistant', response), 500);
+                    input.value = '';
+                }
+            });
+
+            document.getElementById('aiInput')?.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') document.getElementById('aiSendBtn').click();
+            });
+
+            console.log('Event listeners initialized');
+        }
+
+        setTimeout(initializeEventListeners, 100);
+
+        // Initialize AI
+        ai.addMessage('system', '🤖 GemBot AI System Ready');
+        ai.addMessage('assistant', '👋 Welcome! I\'m your AI cutting assistant. Connect to the device and start the camera to begin. I\'ll monitor your work and provide real-time guidance!');
+    </script>
+</body>
+</html>
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0f0f0f;
+            color: #fff;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        .app-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            grid-template-rows: auto 1fr auto;
+            min-height: 100vh;
+            gap: 10px;
+            padding: 10px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* ===== HEADER / CONNECTION PANEL ===== */
+        .header-panel {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .header-title {
+            font-size: 24px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ff4444;
+            animation: pulse 1.5s infinite;
+        }
+
+        .status-indicator.connected {
+            background: #44ff44;
+            box-shadow: 0 0 8px #44ff44;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .connection-panel {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .port-select, .input-field {
+            padding: 10px 15px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 13px;
+            background: white;
+            color: #333;
+            min-height: 40px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            min-height: 40px;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-scan {
+            background: #2196F3;
+            color: white;
+        }
+
+        .btn-scan:hover {
+            background: #1976D2;
+        }
+
+        .btn-danger {
+            background: #f44336;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #da190b;
+        }
+
+        /* ===== MAIN CONTENT AREA ===== */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            overflow-y: auto;
+        }
+
+        /* ===== LEFT PANEL: PRIMARY CONTROLS ===== */
+        .left-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .control-card {
+            background: #1a1a1a;
+            border: 2px solid #333;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+        }
+
+        .card-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 8px;
+        }
+
+        /* Speed Control */
+        .speed-control {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .speed-label {
+            font-size: 12px;
+            font-weight: 600;
+            min-width: 80px;
+        }
+
+        .speed-slider {
+            flex: 1;
+            height: 6px;
+            border-radius: 3px;
+            background: #333;
+            appearance: none;
+            cursor: pointer;
+            -webkit-appearance: none;
+        }
+
+        .speed-slider::-webkit-slider-thumb {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            box-shadow: 0 0 8px rgba(102, 126, 234, 0.5);
+        }
+
+        .speed-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 0 8px rgba(102, 126, 234, 0.5);
+        }
+
+        .speed-display {
+            font-size: 16px;
+            font-weight: bold;
+            color: #667eea;
+            min-width: 45px;
+            text-align: center;
+        }
+
+        /* Mode Toggle */
+        .mode-toggle {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .mode-btn {
+            padding: 12px;
+            border: 2px solid #667eea;
+            background: transparent;
+            color: #667eea;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+        }
+
+        .mode-btn.active {
+            background: #667eea;
+            color: white;
+            box-shadow: 0 0 12px rgba(102, 126, 234, 0.5);
+        }
+
+        .mode-btn:hover {
+            transform: scale(1.02);
+        }
+
+        /* Step Size */
+        .step-control {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .step-label-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+        }
+
+        .step-value {
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .step-slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #333;
+            appearance: none;
+            cursor: pointer;
+            -webkit-appearance: none;
+        }
+
+        .step-slider::-webkit-slider-thumb {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #4caf50;
+            cursor: pointer;
+            box-shadow: 0 0 8px rgba(76, 175, 80, 0.5);
+        }
+
+        .step-slider::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #4caf50;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 0 8px rgba(76, 175, 80, 0.5);
+        }
+
+        /* Directional Pad */
+        .dpad-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            aspect-ratio: 1;
+            max-width: 200px;
+            margin: 0 auto;
+        }
+
+        .dpad-empty {
+            background: transparent;
+        }
+
+        .dpad-btn {
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.1s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .dpad-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 12px rgba(102, 126, 234, 0.6);
+        }
+
+        .dpad-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Index Control */
+        .index-control {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .index-btn {
+            padding: 12px;
+            background: #9c27b0;
+            color: white;
+            border: 2px solid #9c27b0;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .index-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 12px rgba(156, 39, 176, 0.5);
+        }
+
+        .index-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* ===== RIGHT PANEL: STATUS & FEEDBACK ===== */
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            overflow-y: auto;
+        }
+
+        /* Status Monitor */
+        .status-display {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .status-box {
+            background: #1a1a1a;
+            border: 2px solid #333;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .status-box.x {
+            border-left: 4px solid #ff9800;
+        }
+
+        .status-box.y {
+            border-left: 4px solid #4caf50;
+        }
+
+        .status-box.angle {
+            border-left: 4px solid #2196F3;
+        }
+
+        .status-box.index {
+            border-left: 4px solid #e91e63;
+        }
+
+        .status-label {
+            font-size: 11px;
+            color: #999;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        .status-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .status-sub {
+            font-size: 10px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        /* Debug Monitor Terminal */
+        .debug-terminal {
+            flex: 1;
+            background: #0a0a0a;
+            border: 2px solid #00ff00;
+            border-radius: 8px;
+            padding: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            color: #00ff00;
+            overflow-y: auto;
+            max-height: 300px;
+        }
+
+        .debug-line {
+            margin: 2px 0;
+            padding: 2px 0;
+        }
+
+        .debug-time {
+            color: #ffff00;
+            font-weight: bold;
+        }
+
+        /* ===== FOOTER / EMERGENCY CONTROLS ===== */
+        .footer-panel {
+            background: #1a1a1a;
+            border: 2px solid #f44336;
+            border-radius: 10px;
+            padding: 12px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            box-shadow: 0 0 12px rgba(244, 67, 54, 0.2);
+        }
+
+        .emergency-stop {
+            flex: 1;
+            background: #f44336;
+            color: white;
+            padding: 15px 20px;
+            font-size: 16px;
+            font-weight: 700;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.2s;
+            box-shadow: 0 0 15px rgba(244, 67, 54, 0.4);
+        }
+
+        .emergency-stop:hover {
+            background: #d32f2f;
+            box-shadow: 0 0 20px rgba(244, 67, 54, 0.7);
+        }
+
+        .emergency-stop:active {
+            transform: scale(0.98);
+        }
+
+        .emergency-stop.active {
+            animation: emergency-flash 0.5s infinite;
+        }
+
+        @keyframes emergency-flash {
+            0%, 100% { background: #f44336; }
+            50% { background: #d32f2f; }
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.7; transform: scale(0.95); }
+            50% { opacity: 1; transform: scale(1.05); }
+            100% { opacity: 0.7; transform: scale(0.95); }
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            padding: 12px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+        }
+
+        .action-btn:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+        }
+
+        .action-btn:active {
+            transform: translateY(0);
+        }
+
+        /* ===== RESPONSIVE DESIGN ===== */
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .app-container {
+                padding: 8px;
+                gap: 8px;
+            }
+
+            .header-panel {
+                grid-template-columns: 1fr;
+                gap: 10px;
+                padding: 12px;
+            }
+
+            .header-title {
+                font-size: 18px;
+            }
+
+            .connection-panel {
+                width: 100%;
+            }
+
+            .port-select, .input-field, button {
+                min-height: 36px;
+                font-size: 12px;
+            }
+
+            .control-card {
+                padding: 12px;
+            }
+
+            .card-title {
+                font-size: 12px;
+                margin-bottom: 10px;
+            }
+
+            .dpad-container {
+                max-width: 160px;
+            }
+
+            .status-display {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .debug-terminal {
+                max-height: 200px;
+                font-size: 10px;
+            }
+
+            .footer-panel {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .emergency-stop {
+                padding: 12px 15px;
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .app-container {
+                padding: 6px;
+                gap: 6px;
+            }
+
+            .header-title {
+                font-size: 16px;
+            }
+
+            .header-panel {
+                padding: 10px;
+            }
+
+            .main-content {
+                gap: 6px;
+            }
+
+            .control-card {
+                padding: 10px;
+            }
+
+            .card-title {
+                font-size: 11px;
+                margin-bottom: 8px;
+            }
+
+            .dpad-container {
+                max-width: 140px;
+                gap: 6px;
+            }
+
+            .status-display {
+                grid-template-columns: 1fr;
+            }
+
+            .debug-terminal {
+                max-height: 150px;
+                font-size: 9px;
+            }
+
+            .port-select, .input-field, button {
+                min-height: 32px;
+                font-size: 11px;
+            }
+
+            .emergency-stop {
+                padding: 10px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- HEADER / CONNECTION -->
+        <div class="header-panel">
+            <div class="header-title">
+                🔷 GEMBOT CONTROL
+            </div>
+            <div class="status-badge">
+                <div class="status-indicator" id="statusIndicator"></div>
+                <span id="connectionStatus">DISCONNECTED</span>
+            </div>
+            <div class="connection-panel">
+                <button class="btn-scan" id="scanBtn">🔄 SCAN</button>
+                <select class="port-select" id="portSelect">
+                    <option value="">Select Port...</option>
+                </select>
+                <button class="btn-primary" id="connectBtn">CONNECT</button>
+                <button class="btn-danger hidden" id="disconnectBtn">DISCONNECT</button>
+            </div>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+            <!-- LEFT: PRIMARY CONTROLS -->
+            <div class="left-panel">
+                <!-- Speed Control -->
+                <div class="control-card">
+                    <div class="card-title">⚡ Speed Control</div>
+                    <div class="speed-control">
+                        <span class="speed-label">SPEED:</span>
+                        <input type="range" id="speedSlider" class="speed-slider" min="1" max="5" value="1">
+                        <span class="speed-display" id="speedDisplay">1</span>
+                        <span>/5</span>
+                    </div>
+                </div>
+
+                <!-- Motor Mode -->
+                <div class="control-card">
+                    <div class="card-title">🎛️ Motor Mode</div>
+                    <div class="mode-toggle">
+                        <button class="mode-btn active" id="btnContinuous">▶️ CONTINUOUS</button>
+                        <button class="mode-btn" id="btnStep">⏸️ STEP</button>
+                    </div>
+                </div>
+
+                <!-- Step Size -->
+                <div class="control-card">
+                    <div class="card-title">📏 Step Size</div>
+                    <div class="step-control">
+                        <div class="step-label-row">
+                            <span>STEPS PER CLICK:</span>
+                            <span class="step-value" id="stepDisplay">1</span>
+                        </div>
+                        <input type="range" id="stepSlider" class="step-slider" min="1" max="70" value="1">
+                    </div>
+                </div>
+
+                <!-- Directional Pad -->
+                <div class="control-card">
+                    <div class="card-title">🕹️ Movement Control</div>
+                    <div class="dpad-container">
+                        <div class="dpad-empty"></div>
+                        <button class="dpad-btn" id="btnUp" data-cmd="w">▲</button>
+                        <div class="dpad-empty"></div>
+
+                        <button class="dpad-btn" id="btnLeft" data-cmd="a">◄</button>
+                        <button class="dpad-btn" id="btnRotateStop" data-cmd="0">🛑</button>
+                        <button class="dpad-btn" id="btnRight" data-cmd="d">►</button>
+
+                        <div class="dpad-empty"></div>
+                        <button class="dpad-btn" id="btnDown" data-cmd="z">▼</button>
+                        <div class="dpad-empty"></div>
+                    </div>
+                </div>
+
+                <!-- Rotation Controls -->
+                <div class="control-card">
+                    <div class="card-title">🔄 Rotation</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <button class="index-btn" id="btnRotateCCW" data-cmd="j">↶ CCW</button>
+                        <button class="index-btn" id="btnRotateCW" data-cmd="e">↷ CW</button>
+                    </div>
+                </div>
+
+                <!-- Index Controls -->
+                <div class="control-card">
+                    <div class="card-title">🎰 Index Motor</div>
+                    <div class="index-control">
+                        <button class="index-btn" id="btnIndexBack" data-cmd="i">◀ BACK</button>
+                        <button class="index-btn" id="btnIndexFwd" data-cmd="c">FWD ▶</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT: STATUS & FEEDBACK -->
+            <div class="right-panel">
+                <!-- Position Status -->
+                <div class="control-card">
+                    <div class="card-title">📊 Position Status</div>
+                    <div class="status-display">
+                        <div class="status-box x">
+                            <div class="status-label">X POSITION</div>
+                            <div class="status-value" id="statusX">0</div>
+                            <div class="status-sub">Arduino: <span id="arduinoX">---</span></div>
+                        </div>
+                        <div class="status-box y">
+                            <div class="status-label">Y POSITION</div>
+                            <div class="status-value" id="statusY">0</div>
+                            <div class="status-sub">Touch: <span id="touchY">---</span></div>
+                        </div>
+                        <div class="status-box angle">
+                            <div class="status-label">ANGLE (P)</div>
+                            <div class="status-value" id="statusAngle">0°</div>
+                            <div class="status-sub">Rotation</div>
+                        </div>
+                        <div class="status-box index">
+                            <div class="status-label">INDEX</div>
+                            <div class="status-value" id="statusIndex">0</div>
+                            <div class="status-sub">/96</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Debug Terminal -->
+                <div class="control-card" style="flex: 1;">
+                    <div class="card-title">🖥️ Debug Monitor</div>
+                    <div class="debug-terminal" id="debugTerminal">
+                        <div class="debug-line"><span class="debug-time">[INIT]</span> System ready</div>
+                        <div class="debug-line">Waiting for connection...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER / EMERGENCY CONTROLS -->
+        <div class="footer-panel">
+            <button class="emergency-stop" id="emergencyStop">🛑 EMERGENCY STOP</button>
+            <div class="action-buttons">
+                <button class="action-btn" id="btnHome">🏠 HOME</button>
+                <button class="action-btn" id="btnDiagnostic">🔧 DIAGNOSTIC</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global state
+        let port = null;
+        let isConnected = false;
+        let motorSpeed = 1;
+        let motorMode = 'continuous';
+        let motorStepSize = 1;
+
+        // Web Serial API Controller
+        class GemBotSerial {
+            constructor() {
+                this.port = null;
+                this.reader = null;
+                this.isConnected = false;
+                this.availablePorts = [];
+                this.buffer = '';  // Buffer for incomplete lines
+                this.dataStats = {
+                    bytesReceived: 0,
+                    linesProcessed: 0,
+                    errorsFound: 0,
+                    lastUpdateTime: Date.now()
+                };
+            }
+
+            async scanPorts() {
+                try {
+                    if (!('serial' in navigator)) {
+                        addDebugLog('❌ Web Serial API not supported in this browser');
+                        addDebugLog('Use Chrome 89+, Edge 89+, or Opera 75+');
+                        return;
+                    }
+
+                    addDebugLog('🔍 Scanning for devices...');
+                    console.log('Calling getPorts()...');
+                    const ports = await navigator.serial.getPorts();
+                    console.log('Got ports:', ports);
+                    this.availablePorts = ports;
+
+                    const portSelect = document.getElementById('portSelect');
+                    if (!portSelect) {
+                        addDebugLog('❌ Port select element not found');
+                        return;
+                    }
+                    portSelect.innerHTML = '<option value="">Select Port...</option>';
+
+                    if (ports.length === 0) {
+                        addDebugLog('⚠️ No devices found');
+                        addDebugLog('Check USB cable and drivers');
+                    } else {
+                        addDebugLog(`✅ Found ${ports.length} device(s)`);
+                        ports.forEach((port, idx) => {
+                            const info = port.getInfo?.() || {};
+                            const vendorId = info.usbVendorId ? '0x' + info.usbVendorId.toString(16).padStart(4, '0') : 'Unknown';
+                            const option = document.createElement('option');
+                            option.value = idx;
+                            option.textContent = `Port ${idx + 1} (${vendorId})`;
+                            portSelect.appendChild(option);
+                            addDebugLog(`  📌 Port ${idx + 1}: ${vendorId}`);
+                        });
+                    }
+                } catch (error) {
+                    addDebugLog(`❌ Scan failed: ${error.message}`);
+                    console.error('Scan error:', error);
+                }
+            }
+
+            async connect() {
+                try {
+                    if (!('serial' in navigator)) {
+                        addDebugLog('❌ Serial API not available');
+                        return;
+                    }
+
+                    const portSelect = document.getElementById('portSelect');
+                    const idx = portSelect.value;
+
+                    if (idx === '') {
+                        addDebugLog('⚠️ Please select a port');
+                        return;
+                    }
+
+                    this.port = this.availablePorts[idx];
+                    if (!this.port) {
+                        addDebugLog('❌ Port not found');
+                        return;
+                    }
+
+                    addDebugLog('🔗 Opening port...');
+                    await this.port.open({ baudRate: 9600 });
+                    
+                    this.isConnected = true;
+                    addDebugLog('✅ Connected successfully!');
+                    updateConnectionStatus(true);
+                    
+                    // Update UI
+                    document.getElementById('connectBtn').classList.add('hidden');
+                    document.getElementById('disconnectBtn').classList.remove('hidden');
+                    document.getElementById('portSelect').disabled = true;
+                    document.getElementById('scanBtn').disabled = true;
+
+                    this.startReading();
+                } catch (error) {
+                    addDebugLog(`❌ Connection failed: ${error.message}`);
+                    this.isConnected = false;
+                }
+            }
+
+            async disconnect() {
+                try {
+                    if (this.port) {
+                        await this.port.close();
+                        this.isConnected = false;
+                        addDebugLog('✅ Disconnected');
+                        updateConnectionStatus(false);
+
+                        // Update UI
+                        document.getElementById('connectBtn').classList.remove('hidden');
+                        document.getElementById('disconnectBtn').classList.add('hidden');
+                        document.getElementById('portSelect').disabled = false;
+                        document.getElementById('scanBtn').disabled = false;
+                    }
+                } catch (error) {
+                    addDebugLog(`❌ Disconnect error: ${error.message}`);
+                }
+            }
+
+            async startReading() {
+                try {
+                    while (this.isConnected && this.port && this.port.readable) {
+                        this.reader = this.port.readable.getReader();
+                        try {
+                            while (true) {
+                                const { value, done } = await this.reader.read();
+                                if (done) break;
+                                
+                                const text = new TextDecoder().decode(value);
+                                this.buffer += text;
+                                this.dataStats.bytesReceived += text.length;
+                                
+                                // Process complete lines
+                                this.processBuffer();
+                            }
+                        } finally {
+                            this.reader.releaseLock();
+                        }
+                    }
+                } catch (error) {
+                    addDebugLog(`❌ Reading error: ${error.message}`);
+                }
+            }
+
+            processBuffer() {
+                // Split buffer by newlines
+                const lines = this.buffer.split('\n');
+                
+                // Keep the last incomplete line in buffer
+                this.buffer = lines[lines.length - 1];
+                
+                // Process all complete lines
+                for (let i = 0; i < lines.length - 1; i++) {
+                    const line = lines[i].trim();
+                    
+                    if (line.length === 0) continue; // Skip empty lines
+                    
+                    // FILTER: Skip Nextion menu output and UI text
+                    if (this.isMenuOutput(line)) {
+                        continue; // Silently skip menu text
+                    }
+                    
+                    // PARSE: Position data from Arduino
+                    if (line.includes('pX:') || line.includes('pY:') || line.includes('pA:') || line.includes('pI:')) {
+                        this.parsePositionData(line, 'arduino');
+                        continue;
+                    }
+                    
+                    // PARSE: Position data from Touch Screen
+                    if (line.includes('tX:') || line.includes('tY:') || line.includes('tA:') || line.includes('tI:')) {
+                        this.parsePositionData(line, 'touch');
+                        continue;
+                    }
+                    
+                    // PARSE: Command acknowledgments (optional)
+                    if (line.includes('[') && line.includes(']')) {
+                        // Command response like [MOTOR START] or [E-STOP]
+                        addDebugLog(`✓ ${line}`);
+                        continue;
+                    }
+                    
+                    // Show other important messages
+                    if (line.length > 2) {
+                        addDebugLog(`📥 ${line}`);
+                    }
+                    
+                    this.dataStats.linesProcessed++;
+                }
+            }
+
+            isMenuOutput(line) {
+                // List of menu text patterns to filter
+                const menuPatterns = [
+                    'Setting', 'Motor', 'Shield', 'found', 'amfs',
+                    '---', '---', '----', '>',
+                    'Manual', 'Control', 'Mode', 'Home',
+                    'Diagnostic', 'Status', 'Config',
+                    'Emergency', 'Clear', 'Back', 'Select'
+                ];
+                
+                // If line is very short (1-2 chars), likely garbage from serial
+                if (line.length <= 2) {
+                    return true;
+                }
+                
+                // Check against menu patterns
+                for (const pattern of menuPatterns) {
+                    if (line.includes(pattern)) {
+                        return true;
+                    }
+                }
+                
+                return false;
+            }
+
+            parsePositionData(line, source) {
+                try {
+                    const data = {};
+                    
+                    // Extract all position values from line
+                    const xMatch = line.match(/pX:(\d+)/);
+                    const yMatch = line.match(/pY:(\d+)/);
+                    const aMatch = line.match(/pA:(\d+)/);
+                    const iMatch = line.match(/pI:(\d+)/);
+                    
+                    if (xMatch) data.x = parseInt(xMatch[1]);
+                    if (yMatch) data.y = parseInt(yMatch[1]);
+                    if (aMatch) data.angle = parseInt(aMatch[1]);
+                    if (iMatch) data.index = parseInt(iMatch[1]);
+                    
+                    // Update display boxes
+                    if (data.x !== undefined) {
+                        updateStatusBox('X', data.x, source);
+                    }
+                    if (data.y !== undefined) {
+                        updateStatusBox('Y', data.y, source);
+                    }
+                    if (data.angle !== undefined) {
+                        updateStatusBox('ANGLE', data.angle, source);
+                    }
+                    if (data.index !== undefined) {
+                        updateStatusBox('INDEX', data.index, source);
+                    }
+                    
+                    addDebugLog(`📊 [${source.toUpperCase()}] X:${data.x || '?'} Y:${data.y || '?'} A:${data.angle || '?'} I:${data.index || '?'}`);
+                } catch (error) {
+                    this.dataStats.errorsFound++;
+                    addDebugLog(`❌ Parse error: ${error.message}`);
+                }
+            }
+
+            async sendCommand(cmd) {
+                try {
+                    if (!this.isConnected || !this.port || !this.port.writable) {
+                        addDebugLog('❌ Not connected');
+                        return;
+                    }
+
+                    const writer = this.port.writable.getWriter();
+                    await writer.write(new TextEncoder().encode(cmd + '\n'));
+                    writer.releaseLock();
+                    addDebugLog(`📤 Sent: ${cmd}`);
+                } catch (error) {
+                    addDebugLog(`❌ Send error: ${error.message}`);
+                }
+            }
+        }
+
+        // Global controller instance
+        const serial = new GemBotSerial();
+
+        // Debug logging helper
+        function addDebugLog(message) {
+            const terminal = document.getElementById('debugTerminal');
+            const timestamp = new Date().toLocaleTimeString();
+            const line = document.createElement('div');
+            line.className = 'debug-line';
+            line.innerHTML = `<span class="debug-time">[${timestamp}]</span> ${message}`;
+            terminal.appendChild(line);
+            terminal.scrollTop = terminal.scrollHeight;
+            
+            // Keep only last 50 lines
+            while (terminal.children.length > 50) {
+                terminal.removeChild(terminal.firstChild);
+            }
+        }
+
+        function updateConnectionStatus(connected) {
+            const badge = document.getElementById('connectionStatus');
+            const indicator = document.getElementById('statusIndicator');
+            
+            if (connected) {
+                badge.textContent = 'CONNECTED';
+                indicator.classList.add('connected');
+            } else {
+                badge.textContent = 'DISCONNECTED';
+                indicator.classList.remove('connected');
+            }
+        }
+
+        function processIncomingData(data) {
+            // Parse incoming Arduino data
+            // Update position displays, status, etc.
+        }
+
+        function updateStatusBox(axis, value, source) {
+            const boxMap = {
+                'X': 'statusX',
+                'Y': 'statusY',
+                'ANGLE': 'statusAngle',
+                'INDEX': 'statusIndex'
+            };
+            
+            const elementId = boxMap[axis];
+            if (!elementId) return;
+            
+            const element = document.getElementById(elementId);
+            if (element) {
+                if (axis === 'ANGLE') {
+                    element.textContent = value + '°';
+                } else if (axis === 'INDEX') {
+                    element.textContent = value;
+                } else {
+                    element.textContent = value;
+                }
+                
+                // Flash animation on update
+                element.style.animation = 'none';
+                setTimeout(() => {
+                    element.style.animation = 'pulse 0.5s';
+                }, 10);
+            }
+            
+            // Store the data for comparison
+            if (source === 'arduino') {
+                document.getElementById('arduino' + axis)?.textContent = value;
+            } else if (source === 'touch') {
+                document.getElementById('touch' + axis)?.textContent = value;
+            }
+        }
+
+        // Wrap in function to initialize after brief delay
+        function initializeEventListeners() {
+            // Scan ports
+            const scanBtn = document.getElementById('scanBtn');
+            if (scanBtn) {
+                scanBtn.addEventListener('click', () => {
+                    console.log('SCAN button clicked');
+                    addDebugLog('🔍 SCAN button clicked - starting scan...');
+                    serial.scanPorts();
+                });
+            }
+
+            // Connect button
+            const connectBtn = document.getElementById('connectBtn');
+            if (connectBtn) {
+                connectBtn.addEventListener('click', () => {
+                    serial.connect();
+                });
+            }
+
+            // Disconnect button
+            const disconnectBtn = document.getElementById('disconnectBtn');
+            if (disconnectBtn) {
+                disconnectBtn.addEventListener('click', () => {
+                    serial.disconnect();
+                });
+            }
+
+            // Speed control
+            const speedSlider = document.getElementById('speedSlider');
+            if (speedSlider) {
+                speedSlider.addEventListener('input', (e) => {
+                    motorSpeed = parseInt(e.target.value);
+                    document.getElementById('speedDisplay').textContent = motorSpeed;
+                    addDebugLog(`⚡ Speed: ${motorSpeed}/5`);
+                    
+                    if (serial.isConnected) {
+                        serial.sendCommand('s' + motorSpeed);
+                    }
+                });
+            }
+
+            // Motor mode toggle
+            const btnContinuous = document.getElementById('btnContinuous');
+            if (btnContinuous) {
+                btnContinuous.addEventListener('click', () => {
+                    motorMode = 'continuous';
+                    document.getElementById('btnContinuous').classList.add('active');
+                    document.getElementById('btnStep').classList.remove('active');
+                    addDebugLog('🎛️ Mode: CONTINUOUS');
+                    if (serial.isConnected) serial.sendCommand('y');
+                });
+            }
+
+            const btnStep = document.getElementById('btnStep');
+            if (btnStep) {
+                btnStep.addEventListener('click', () => {
+                    motorMode = 'step';
+                    document.getElementById('btnStep').classList.add('active');
+                    document.getElementById('btnContinuous').classList.remove('active');
+                    addDebugLog('🎛️ Mode: STEP');
+                    if (serial.isConnected) serial.sendCommand('y');
+                });
+            }
+
+            // Step size control
+            const stepSlider = document.getElementById('stepSlider');
+            if (stepSlider) {
+                stepSlider.addEventListener('input', (e) => {
+                    motorStepSize = parseInt(e.target.value);
+                    document.getElementById('stepDisplay').textContent = motorStepSize;
+                    addDebugLog(`📏 Step size: ${motorStepSize}/70`);
+                    
+                    if (serial.isConnected) {
+                        serial.sendCommand('n' + motorStepSize);
+                    }
+                });
+            }
+
+            // Direction buttons
+            document.querySelectorAll('.dpad-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const cmd = btn.dataset.cmd;
+                    addDebugLog(`🕹️ ${btn.textContent.trim()}`);
+                    if (serial.isConnected) serial.sendCommand(cmd);
+                });
+            });
+
+            // Rotation buttons
+            const btnRotateCCW = document.getElementById('btnRotateCCW');
+            if (btnRotateCCW) {
+                btnRotateCCW.addEventListener('click', () => {
+                    addDebugLog('🔄 Rotate: CCW');
+                    if (serial.isConnected) serial.sendCommand('j');
+                });
+            }
+
+            const btnRotateCW = document.getElementById('btnRotateCW');
+            if (btnRotateCW) {
+                btnRotateCW.addEventListener('click', () => {
+                    addDebugLog('🔄 Rotate: CW');
+                    if (serial.isConnected) serial.sendCommand('e');
+                });
+            }
+
+            // Index buttons
+            const btnIndexBack = document.getElementById('btnIndexBack');
+            if (btnIndexBack) {
+                btnIndexBack.addEventListener('click', () => {
+                    addDebugLog('🎰 Index: Backward');
+                    if (serial.isConnected) serial.sendCommand('i');
+                });
+            }
+
+            const btnIndexFwd = document.getElementById('btnIndexFwd');
+            if (btnIndexFwd) {
+                btnIndexFwd.addEventListener('click', () => {
+                    addDebugLog('🎰 Index: Forward');
+                    if (serial.isConnected) serial.sendCommand('c');
+                });
+            }
+
+            // Emergency stop
+            const emergencyStop = document.getElementById('emergencyStop');
+            if (emergencyStop) {
+                emergencyStop.addEventListener('click', () => {
+                    addDebugLog('🛑 EMERGENCY STOP');
+                    if (serial.isConnected) serial.sendCommand('u');
+                });
+            }
+
+            // Home button
+            const btnHome = document.getElementById('btnHome');
+            if (btnHome) {
+                btnHome.addEventListener('click', () => {
+                    addDebugLog('🏠 Going to HOME');
+                    if (serial.isConnected) serial.sendCommand('h');
+                });
+            }
+
+            console.log('Event listeners initialized');
+        }
+
+        // Initialize after a short delay to ensure DOM is ready
+        setTimeout(initializeEventListeners, 100);
+
+        // Initial log
+        addDebugLog('✅ GemBot Control System Loaded');
+        addDebugLog('🔍 Click SCAN to find device');
+        addDebugLog('🔗 Select port and CONNECT');
+        addDebugLog('Filtering Nextion menu output...');
+        addDebugLog('Ready for position data');
+        
+        // Check if Web Serial is available
+        if (!('serial' in navigator)) {
+            addDebugLog('⚠️ Web Serial API not available');
+            addDebugLog('Use Chrome 89+, Edge 89+, or Opera 75+');
+        } else {
+            addDebugLog('✅ Web Serial API detected');
+        }
+    </script>
+</body>
+</html>

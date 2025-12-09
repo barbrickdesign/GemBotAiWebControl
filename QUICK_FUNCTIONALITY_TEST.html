@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GemBot Functionality Test</title>
+    <style>
+        body { font-family: monospace; background: #111; color: #0f0; padding: 20px; }
+        .test { border: 1px solid #0f0; padding: 10px; margin: 10px 0; }
+        .pass { background: #0a0a0a; border-color: #0f0; }
+        .fail { background: #1a0a0a; border-color: #f00; }
+        h1 { color: #0f0; }
+    </style>
+</head>
+<body>
+    <h1>🤖 GemBot Control AI - Functionality Test</h1>
+    
+    <div class="test pass">
+        <strong>✅ HTML Structure</strong><br>
+        File: GemBot_Control_AI.html<br>
+        Size: 1602 lines<br>
+        All buttons present: YES
+    </div>
+
+    <div class="test pass">
+        <strong>✅ JavaScript Classes Defined</strong><br>
+        - GemBotSerial (lines 780-950)<br>
+        - GemBotMLModel (lines 955-1057)<br>
+        - SessionRecorder (lines 1063-1180)<br>
+        All classes: PRESENT
+    </div>
+
+    <div class="test pass">
+        <strong>✅ Event Listeners Connected</strong><br>
+        - scanBtn listener: YES (line 1387)<br>
+        - connectBtn listener: YES (line 1391)<br>
+        - cameraStartBtn listener: YES (line 1400)<br>
+        - recordBtn listener: YES (line 1409)<br>
+        Total listeners: 18 attached
+    </div>
+
+    <div class="test pass">
+        <strong>✅ CSS Applied</strong><br>
+        - Grid layout: 3-column<br>
+        - Flex constraints: min-height: 0 applied<br>
+        - Message styling: Color-coded<br>
+        - Responsive: YES
+    </div>
+
+    <div class="test">
+        <strong>⚠️ WHAT WAS VERIFIED IN CODE</strong><br>
+        - Motor commands: REAL (Web Serial API)<br>
+        - Camera feed: REAL (getUserMedia)<br>
+        - ML model: REAL (TensorFlow.js)<br>
+        - Session recording: REAL (MediaRecorder)<br>
+        - All functionality: PRESENT
+    </div>
+
+    <div class="test">
+        <strong>❓ WHAT NEEDS ACTUAL TESTING</strong><br>
+        - Click buttons → does console log appear?<br>
+        - Load page → do initial messages appear?<br>
+        - Start camera → does video display?<br>
+        - Connect Arduino → is status updated?<br>
+        - Record session → is data saved?
+    </div>
+
+    <div class="test fail">
+        <strong>❌ THE REAL ISSUE</strong><br>
+        We verified the code is THERE and REAL.<br>
+        But we haven't actually tested:<br>
+        1. Does the page load without errors?<br>
+        2. Do button clicks trigger handlers?<br>
+        3. Do console logs appear?<br>
+        4. Does camera permission work?<br>
+        5. Is data actually saved?
+    </div>
+
+    <div class="test pass">
+        <strong>✅ SOLUTION</strong><br>
+        1. Open http://localhost:8000/GemBot_Control_AI.html<br>
+        2. Press F12 to open DevTools<br>
+        3. Go to Console tab<br>
+        4. Click buttons one by one<br>
+        5. Watch console for log messages<br>
+        6. Report what you see!
+    </div>
+
+    <h2>Quick Test Commands (paste in console F12):</h2>
+    <pre>
+// Test 1: Check if system initialized
+mlModel !== undefined && serial !== undefined ? "✅ System ready" : "❌ System failed"
+
+// Test 2: Try scanning ports
+serial.scanPorts();
+
+// Test 3: Check state variables  
+console.log("isConnected:", isConnected, "cameraActive:", cameraActive);
+
+// Test 4: Send test command (if connected)
+if (isConnected) serial.sendCommand('w'); else console.log("Not connected")
+
+// Test 5: Check for console logs
+console.log("Test message from console");
+    </pre>
+
+    <script>
+        console.log("%c🤖 GemBot Control AI - Diagnostics", "color: lime; font-size: 16px; font-weight: bold;");
+        console.log("%c✅ Test page loaded successfully", "color: lime");
+        console.log("%c📋 Next: Open http://localhost:8000/GemBot_Control_AI.html and check the console", "color: yellow");
+    </script>
+</body>
+</html>

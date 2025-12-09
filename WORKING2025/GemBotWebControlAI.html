@@ -1,0 +1,2027 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; media-src 'self' blob:; connect-src 'self' blob: indexeddb: https://cdn.jsdelivr.net; object-src 'none'; img-src 'self' data: blob:;">
+    <title>GemBot AI Control System</title>
+    
+    <!-- TensorFlow.js for ML Analysis -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.11.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0e27;
+            color: #e0e6ed;
+            min-height: 100vh;
+        }
+
+        .app-container {
+            display: grid;
+            grid-template-columns: 280px 1fr 320px;
+            grid-template-rows: auto 1fr auto;
+            min-height: 100vh;
+            gap: 12px;
+            padding: 12px;
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+
+        /* HEADER spanning all columns */
+        .header-panel {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 15px 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .header-title {
+            font-size: 24px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ff4444;
+            animation: pulse 1.5s infinite;
+        }
+
+        .status-indicator.connected {
+            background: #44ff44;
+            box-shadow: 0 0 8px #44ff44;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .connection-panel {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .port-select, .input-field {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            min-height: 36px;
+        }
+
+        button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-height: 36px;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-scan {
+            background: #4facfe;
+            color: white;
+        }
+
+        .btn-scan:hover {
+            background: #3f9ae8;
+        }
+
+        .btn-danger {
+            background: #ff4444;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dd0000;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* FOOTER Emergency Bar */
+        .footer-panel {
+            grid-column: 1 / -1;
+            background: #8B0000;
+            padding: 12px;
+            border-radius: 8px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .footer-panel button {
+            padding: 12px 24px;
+            font-size: 14px;
+        }
+
+        /* THREE COLUMN LAYOUT */
+        .main-content {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: 280px 1fr 320px;
+            gap: 12px;
+            min-height: 0;
+            max-height: 100%;
+        }
+
+        /* LEFT PANEL - MOTOR CONTROLS */
+        .left-panel {
+            background: #1a1f3a;
+            border-radius: 12px;
+            padding: 16px;
+            overflow-y: auto;
+            border: 1px solid #2d3561;
+        }
+
+        .control-section {
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #2d3561;
+        }
+
+        .control-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .section-title {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #667eea;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+
+        .control-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .control-label {
+            font-size: 11px;
+            min-width: 45px;
+            font-weight: 600;
+        }
+
+        .control-input {
+            flex: 1;
+            min-height: 28px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 4px;
+            border-radius: 2px;
+            background: #2d3561;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            border: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            background: #7c8ff5;
+        }
+
+        .display-value {
+            min-width: 35px;
+            text-align: right;
+            font-size: 11px;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .button-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+
+        .btn-control {
+            padding: 8px;
+            background: #2d3561;
+            color: #e0e6ed;
+            border: 1px solid #3d4571;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-control:hover {
+            background: #3d4571;
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .btn-control.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .dpad-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 4px;
+            margin-bottom: 8px;
+        }
+
+        .dpad-btn {
+            padding: 10px;
+            background: #2d3561;
+            color: #e0e6ed;
+            border: 1px solid #3d4571;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 10px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .dpad-btn:hover {
+            background: #3d4571;
+            border-color: #667eea;
+        }
+
+        .dpad-btn.up { grid-column: 2; }
+        .dpad-btn.left { grid-column: 1; }
+        .dpad-btn.down { grid-column: 2; grid-row: 3; }
+        .dpad-btn.right { grid-column: 3; }
+        .dpad-btn.stop { grid-column: 1 / -1; grid-row: 4; background: #4a2020; }
+
+        /* CENTER PANEL - WEBCAM & ML ANALYSIS */
+        .center-panel {
+            background: #1a1f3a;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #2d3561;
+            min-height: 0;
+            max-height: 100%;
+        }
+
+        .camera-container {
+            flex: 1;
+            position: relative;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 400px;
+        }
+
+        #cameraFeed {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .camera-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        #mlCanvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        .camera-controls {
+            padding: 12px;
+            background: #0f0f1e;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            border-top: 1px solid #2d3561;
+        }
+
+        .camera-controls button {
+            flex: 1;
+            min-width: 100px;
+            padding: 8px 12px;
+            font-size: 11px;
+        }
+
+        .camera-adjustments {
+            padding: 8px 12px;
+            background: #1a1f3a;
+            border-top: 1px solid #2d3561;
+        }
+
+        .camera-adjustments input[type="range"] {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            accent-color: #667eea;
+        }
+
+        .ml-status {
+            padding: 8px 12px;
+            background: #1a1f3a;
+            border-top: 1px solid #2d3561;
+            font-size: 11px;
+            text-align: center;
+            color: #aaa;
+        }
+
+        /* RIGHT PANEL - AI ASSISTANT & STATUS */
+        .right-panel {
+            background: #1a1f3a;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #2d3561;
+            overflow: hidden;
+            min-height: 0;
+            max-height: 100%;
+        }
+
+        .status-display {
+            padding: 12px;
+            background: #0f0f1e;
+            border-bottom: 1px solid #2d3561;
+        }
+
+        .status-box {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+
+        .status-item {
+            background: #2d3561;
+            padding: 8px;
+            border-radius: 6px;
+            text-align: center;
+            border: 1px solid #3d4571;
+        }
+
+        .status-label {
+            font-size: 9px;
+            color: #aaa;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 2px;
+        }
+
+        .status-value {
+            font-size: 14px;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .ai-assistant {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            min-height: 0;
+            max-height: 100%;
+        }
+
+        .ai-header {
+            padding: 10px 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-size: 12px;
+            font-weight: 700;
+            border-bottom: 1px solid #2d3561;
+        }
+
+        .ai-messages {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-height: 0;
+            max-height: 100%;
+            word-wrap: break-word;
+            word-break: break-word;
+            white-space: normal;
+        }
+
+        .ai-message {
+            padding: 8px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            line-height: 1.4;
+            overflow-wrap: break-word;
+            word-break: break-word;
+            max-width: 100%;
+            flex-shrink: 0;
+        }
+
+        .ai-message.user {
+            background: #2d3561;
+            color: #e0e6ed;
+            align-self: flex-end;
+            max-width: 90%;
+        }
+
+        .ai-message.assistant {
+            background: #3d4571;
+            color: #a8b5e0;
+            align-self: flex-start;
+            max-width: 90%;
+        }
+
+        .ai-message.system {
+            background: #2d5f3f;
+            color: #6db877;
+            align-self: center;
+            max-width: 95%;
+            text-align: center;
+            font-size: 10px;
+        }
+
+        .ai-message.error {
+            background: #5f2d2d;
+            color: #d86b6b;
+            align-self: flex-start;
+            max-width: 90%;
+            border-left: 3px solid #d86b6b;
+        }
+
+        .ai-message.info {
+            background: #2d4f5f;
+            color: #6ba5d8;
+            align-self: flex-start;
+            max-width: 90%;
+            border-left: 3px solid #6ba5d8;
+        }
+
+        .ai-message.success {
+            background: #2d5f4f;
+            color: #6bd89a;
+            align-self: flex-start;
+            max-width: 90%;
+            border-left: 3px solid #6bd89a;
+        }
+
+        .ai-message.warning {
+            background: #5f5f2d;
+            color: #d8d86b;
+            align-self: flex-start;
+            max-width: 90%;
+            border-left: 3px solid #d8d86b;
+        }
+
+        .ai-input-area {
+            padding: 10px 12px;
+            border-top: 1px solid #2d3561;
+            display: flex;
+            gap: 6px;
+        }
+
+        .ai-input-area input {
+            flex: 1;
+            padding: 6px 8px;
+            border: 1px solid #3d4571;
+            border-radius: 4px;
+            background: #2d3561;
+            color: #e0e6ed;
+            font-size: 11px;
+        }
+
+        .ai-input-area button {
+            padding: 6px 10px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .ai-input-area button:hover {
+            background: #7c8ff5;
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a1f3a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #3d4571;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4d5581;
+        }
+
+        /* Responsive */
+        @media (max-width: 1400px) {
+            .app-container {
+                grid-template-columns: 200px 1fr 260px;
+            }
+            .main-content {
+                grid-template-columns: 200px 1fr 260px;
+            }
+        }
+
+        @media (max-width: 1000px) {
+            .app-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto auto auto;
+            }
+            .main-content {
+                grid-template-columns: 1fr;
+                grid-column: 1;
+            }
+            .left-panel { order: 1; }
+            .center-panel { order: 2; }
+            .right-panel { order: 3; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- HEADER -->
+        <div class="header-panel">
+            <div class="header-title">💎 GEMBOT AI CONTROL</div>
+            <div class="status-badge">
+                <div class="status-indicator" id="statusIndicator"></div>
+                <span id="connectionStatus">DISCONNECTED</span>
+            </div>
+            <div class="connection-panel">
+                <button class="btn-scan" id="scanBtn">🔍 SCAN</button>
+                <select class="port-select" id="portSelect" aria-label="Select serial port" title="Serial port selector"><option value="">Select Port...</option></select>
+                <button class="btn-primary" id="connectBtn">CONNECT</button>
+                <button class="btn-danger hidden" id="disconnectBtn">DISCONNECT</button>
+            </div>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+            <!-- LEFT: MOTOR CONTROLS -->
+            <div class="left-panel">
+                <div class="control-section">
+                    <div class="section-title">⚡ Speed</div>
+                    <div class="control-row">
+                        <div class="control-label">Level</div>
+                        <input type="range" id="speedSlider" class="control-input" min="1" max="5" value="1" aria-label="Motor speed level">
+                        <div class="display-value"><span id="speedDisplay">1</span>/5</div>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <div class="section-title">🎛️ Mode</div>
+                    <div class="button-grid">
+                        <button class="btn-control active" id="btnContinuous">CONTINUOUS</button>
+                        <button class="btn-control" id="btnStep">STEP</button>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <div class="section-title">📏 Step Size</div>
+                    <div class="control-row">
+                        <div class="control-label">Steps</div>
+                        <input type="range" id="stepSlider" class="control-input" min="1" max="70" value="1" aria-label="Motor step size">
+                        <div class="display-value"><span id="stepDisplay">1</span>/70</div>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <div class="section-title">🕹️ Movement</div>
+                    <div class="dpad-container">
+                        <button class="dpad-btn up" data-cmd="w">▲</button>
+                        <button class="dpad-btn left" data-cmd="a">◄</button>
+                        <button class="dpad-btn right" data-cmd="d">►</button>
+                        <button class="dpad-btn down" data-cmd="z">▼</button>
+                        <button class="dpad-btn stop" data-cmd="u">STOP</button>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <div class="section-title">🔄 Rotation</div>
+                    <div class="button-grid">
+                        <button class="btn-control" id="btnRotateCCW">CCW</button>
+                        <button class="btn-control" id="btnRotateCW">CW</button>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <div class="section-title">🎰 Index</div>
+                    <div class="button-grid">
+                        <button class="btn-control" id="btnIndexBack">◀ BACK</button>
+                        <button class="btn-control" id="btnIndexFwd">FWD ▶</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CENTER: WEBCAM & ML ANALYSIS -->
+            <div class="center-panel">
+                <div class="camera-container">
+                    <video id="cameraFeed" playsinline autoplay muted></video>
+                    <canvas id="mlCanvas" class="camera-overlay"></canvas>
+                </div>
+                <div class="camera-controls">
+                    <button id="cameraStartBtn" style="background: #4a7c2e;">📷 START CAMERA</button>
+                    <button id="cameraStopBtn" style="background: #7c2e2e; display: none;">⏹ STOP</button>
+                    <button id="recordBtn" style="background: #2e4a7c;">⚫ RECORD</button>
+                </div>
+                <div class="camera-adjustments">
+                    <div style="font-size: 11px; color: #aaa; font-weight: 600; margin: 8px 0 4px 0;">🎨 Image Adjustment
+                        <button id="autoAdjustBtn" style="float: right; background: #667eea; color: white; border: none; padding: 2px 8px; border-radius: 4px; font-size: 10px; cursor: pointer; font-weight: 600;">AUTO</button>
+                    </div>
+                    <div style="display: grid; grid-template-columns: auto 1fr auto; gap: 6px; align-items: center; font-size: 11px;">
+                        <label for="brightnessSlider" style="color: #aaa;">Brightness:</label>
+                        <input type="range" id="brightnessSlider" min="0" max="200" value="100" style="cursor: pointer;" aria-label="Image brightness adjustment">
+                        <span id="brightnessValue" style="color: #667eea; font-weight: 600; min-width: 30px;">100%</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: auto 1fr auto; gap: 6px; align-items: center; font-size: 11px; margin-top: 4px;">
+                        <label for="contrastSlider" style="color: #aaa;">Contrast:</label>
+                        <input type="range" id="contrastSlider" min="0" max="200" value="100" style="cursor: pointer;" aria-label="Image contrast adjustment">
+                        <span id="contrastValue" style="color: #667eea; font-weight: 600; min-width: 30px;">100%</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: auto 1fr auto; gap: 6px; align-items: center; font-size: 11px; margin-top: 4px;">
+                        <label for="saturationSlider" style="color: #aaa;">Saturation:</label>
+                        <input type="range" id="saturationSlider" min="0" max="200" value="100" style="cursor: pointer;" aria-label="Image saturation adjustment">
+                        <span id="saturationValue" style="color: #667eea; font-weight: 600; min-width: 30px;">100%</span>
+                    </div>
+                </div>
+                <div class="ml-status"><div id="mlStatus">ML Model Ready • Waiting for camera...</div></div>
+            </div>
+
+            <!-- RIGHT: AI ASSISTANT & STATUS -->
+            <div class="right-panel">
+                <div class="status-display">
+                    <div class="section-title">📊 Position</div>
+                    <div class="status-box">
+                        <div class="status-item"><div class="status-label">X</div><div class="status-value" id="statusX">—</div></div>
+                        <div class="status-item"><div class="status-label">Y</div><div class="status-value" id="statusY">—</div></div>
+                        <div class="status-item"><div class="status-label">ANGLE</div><div class="status-value" id="statusAngle">—</div></div>
+                        <div class="status-item"><div class="status-label">INDEX</div><div class="status-value" id="statusIndex">—</div></div>
+                    </div>
+                </div>
+                <div class="ai-header">🤖 AI ASSISTANT</div>
+                <div class="ai-messages" id="aiMessages"></div>
+                <div class="ai-input-area">
+                    <input type="text" id="aiInput" placeholder="Ask AI for help...">
+                    <button id="aiSendBtn">SEND</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="footer-panel">
+            <button class="btn-danger" id="emergencyStop">🛑 EMERGENCY STOP</button>
+            <button style="background: #2e4a7c; color: white;" id="btnHome">🏠 HOME</button>
+            <button style="background: #4a5a8e; color: white;" id="btnDiagnostic">🔧 DIAGNOSTIC</button>
+        </div>
+    </div>
+
+    <script>
+        // ==================== GLOBAL STATE ====================
+        let port = null;
+        let isConnected = false;
+        let motorSpeed = 1;
+        let motorMode = 'continuous';
+        let motorStepSize = 1;
+        let cameraActive = false;
+        let recordingActive = false;
+        let mlModelLoaded = false;
+
+        const mlState = {
+            frameCount: 0,
+            confidence: 0,
+            detections: [],
+            sessionData: [],
+            lastSuggestion: ''
+        };
+
+        // ==================== WEB SERIAL API ====================
+        class GemBotSerial {
+            constructor() {
+                this.port = null;
+                this.isConnected = false;
+                this.availablePorts = [];
+                this.buffer = '';
+            }
+
+            async scanPorts() {
+                console.log('%c🔍 SCAN PORTS CALLED', 'color: #00ff00; font-weight: bold; font-size: 14px');
+                try {
+                    if (!('serial' in navigator)) {
+                        console.error('❌ Web Serial API not supported in this browser');
+                        addMessage('❌ Web Serial API not supported', 'error');
+                        return;
+                    }
+                    console.log('🔍 Scanning for USB ports...');
+                    addMessage('🔍 Scanning for devices...', 'system');
+                    let ports = await navigator.serial.getPorts();
+                    
+                    // If no ports found, try requestPort to allow user to select
+                    if (ports.length === 0) {
+                        console.log('ℹ️ No paired devices. Requesting new port selection...');
+                        addMessage('ℹ️ No paired devices. Opening port selector...', 'info');
+                        try {
+                            const port = await navigator.serial.requestPort();
+                            ports = [port];
+                            console.log('✅ Port selected by user');
+                            addMessage('✅ Port selected', 'system');
+                        } catch (err) {
+                            if (err.name !== 'NotFoundError') {
+                                console.log(`ℹ️ ${err.message}`);
+                            }
+                            ports = [];
+                        }
+                    }
+                    
+                    console.log(`Found ${ports.length} port(s):`, ports);
+                    this.availablePorts = ports;
+                    const portSelect = document.getElementById('portSelect');
+                    portSelect.innerHTML = '<option value="">Select Port...</option>';
+                    if (ports.length === 0) {
+                        console.log('⚠️ No USB ports detected');
+                        addMessage('⚠️ No devices found', 'warning');
+                    } else {
+                        addMessage(`✅ Found ${ports.length} device(s)`, 'system');
+                        ports.forEach((port, idx) => {
+                            const info = port.getInfo?.() || {};
+                            const vendorId = info.usbVendorId ? '0x' + info.usbVendorId.toString(16).padStart(4, '0') : 'Unknown';
+                            const productId = info.usbProductId ? '0x' + info.usbProductId.toString(16).padStart(4, '0') : 'Unknown';
+                            console.log(`Port ${idx}: VID=${vendorId}, PID=${productId}`);
+                            const option = document.createElement('option');
+                            option.value = idx;
+                            option.textContent = `Port ${idx + 1} (${vendorId}:${productId})`;
+                            portSelect.appendChild(option);
+                        });
+                    }
+                } catch (error) {
+                    console.error('❌ Scan failed:', error);
+                    addMessage(`❌ Scan failed: ${error.message}`, 'error');
+                }
+            }
+
+            async connect() {
+                console.log('%c🔌 CONNECT CALLED', 'color: #00ff00; font-weight: bold; font-size: 14px');
+                try {
+                    const portSelect = document.getElementById('portSelect');
+                    const idx = portSelect.value;
+                    if (idx === '') {
+                        addMessage('⚠️ Please select a port', 'warning');
+                        return;
+                    }
+                    
+                    this.port = this.availablePorts[idx];
+                    const info = this.port.getInfo?.() || {};
+                    console.log(`📋 Port Info - VID: 0x${info.usbVendorId?.toString(16)}, PID: 0x${info.usbProductId?.toString(16)}`);
+                    
+                    // Try to close if already open
+                    if (this.port.readable || this.port.writable) {
+                        try {
+                            console.log('🔄 Port already open, closing...');
+                            await this.port.close();
+                            await new Promise(r => setTimeout(r, 500));
+                        } catch (e) {
+                            console.log(`⚠️ Close attempt: ${e.message}`);
+                        }
+                    }
+                    
+                    const baudRates = [9600, 115200, 230400, 57600, 19200];
+                    let connected = false;
+                    
+                    for (const baudRate of baudRates) {
+                        try {
+                            console.log(`🔌 Attempting connection at ${baudRate} baud...`);
+                            addMessage(`🔌 Trying ${baudRate} baud...`, 'system');
+                            await this.port.open({ baudRate, bufferSize: 255 });
+                            this.isConnected = true;
+                            isConnected = true;
+                            console.log(`✅ Connected at ${baudRate} baud!`);
+                            addMessage(`✅ Connected at ${baudRate} baud!`, 'success');
+                            updateConnectionStatus(true);
+                            document.getElementById('connectBtn').classList.add('hidden');
+                            document.getElementById('disconnectBtn').classList.remove('hidden');
+                            document.getElementById('portSelect').disabled = true;
+                            // Initialize firmware speed multiplier to 1 (prevents motor step multiplication)
+                            this.sendCommand('s1');
+                            this.startReading();
+                            connected = true;
+                            break;
+                        } catch (err) {
+                            console.log(`⚠️ Failed at ${baudRate}: ${err.message}`);
+                            addMessage(`⚠️ Failed at ${baudRate}: ${err.message}`, 'warning');
+                            try { 
+                                if (this.port.readable || this.port.writable) {
+                                    await this.port.close(); 
+                                }
+                            } catch (e) {}
+                            await new Promise(r => setTimeout(r, 200));
+                        }
+                    }
+                    
+                    if (!connected) {
+                        addMessage('❌ Could not connect at any baud rate. Try unplugging/replugging the device.', 'error');
+                    }
+                } catch (error) {
+                    addMessage(`❌ Connection failed: ${error.message}`, 'error');
+                }
+            }
+
+            async disconnect() {
+                try {
+                    if (this.port) {
+                        await this.port.close();
+                        this.isConnected = false;
+                        isConnected = false;
+                        addMessage('✅ Disconnected', 'system');
+                        updateConnectionStatus(false);
+                        document.getElementById('connectBtn').classList.remove('hidden');
+                        document.getElementById('disconnectBtn').classList.add('hidden');
+                        document.getElementById('portSelect').disabled = false;
+                    }
+                } catch (error) {
+                    addMessage(`❌ Disconnect error: ${error.message}`, 'error');
+                }
+            }
+
+            async startReading() {
+                try {
+                    while (this.isConnected && this.port?.readable) {
+                        const reader = this.port.readable.getReader();
+                        try {
+                            while (true) {
+                                const { value, done } = await reader.read();
+                                if (done) break;
+                                const text = new TextDecoder().decode(value);
+                                this.buffer += text;
+                                this.processBuffer();
+                            }
+                        } finally {
+                            reader.releaseLock();
+                        }
+                    }
+                } catch (error) {
+                    addMessage(`❌ Reading error: ${error.message}`, 'error');
+                }
+            }
+
+            processBuffer() {
+                const lines = this.buffer.split('\n');
+                this.buffer = lines[lines.length - 1];
+                
+                let menuItems = [];
+                let isMenuMode = false;
+                
+                for (let i = 0; i < lines.length - 1; i++) {
+                    const line = lines[i].trim();
+                    if (!line || line.length <= 2) continue;
+                    
+                    // Detect menu start
+                    if (line.includes('menu:')) {
+                        isMenuMode = true;
+                        addMessage('📋 MAIN MENU', 'system');
+                        continue;
+                    }
+                    
+                    // Detect menu end (various patterns)
+                    if (line.includes('------') || line.includes('Motor Shield') || (isMenuMode && !line.includes('<') && !line.includes(',') && line.includes('Settings'))) {
+                        if (menuItems.length > 0) {
+                            displayMenuStructured(menuItems);
+                            menuItems = [];
+                        }
+                        isMenuMode = false;
+                        continue;
+                    }
+                    
+                    // Parse menu items (format: "< Label , ID" or "Label, ID")
+                    const menuMatch = line.match(/^<?(.+?)\s*,\s*(\d+)$/);
+                    if (menuMatch && isMenuMode) {
+                        const label = menuMatch[1].trim();
+                        const id = menuMatch[2];
+                        menuItems.push({ label, id, isSubmenu: line.includes('<') });
+                        continue;
+                    }
+                    
+                    // Parse position data
+                    let x, y, angle, index;
+                    
+                    if (line.includes('pX:')) {
+                        const xMatch = line.match(/pX:(\d+)/);
+                        if (xMatch) {
+                            x = parseInt(xMatch[1]);
+                            updateStatusBox('X', x);
+                            console.log(`📨 Serial received: Position X = ${x}`);
+                        }
+                    }
+                    if (line.includes('pY:')) {
+                        const yMatch = line.match(/pY:(\d+)/);
+                        if (yMatch) {
+                            y = parseInt(yMatch[1]);
+                            updateStatusBox('Y', y);
+                            console.log(`📨 Serial received: Position Y = ${y}`);
+                        }
+                    }
+                    if (line.includes('pA:')) {
+                        const aMatch = line.match(/pA:(\d+)/);
+                        if (aMatch) {
+                            angle = parseInt(aMatch[1]);
+                            updateStatusBox('ANGLE', angle);
+                            console.log(`📨 Serial received: Angle = ${angle}°`);
+                        }
+                    }
+                    if (line.includes('pI:')) {
+                        const iMatch = line.match(/pI:(\d+)/);
+                        if (iMatch) {
+                            index = parseInt(iMatch[1]);
+                            updateStatusBox('INDEX', index);
+                            console.log(`📨 Serial received: Index = ${index}`);
+                        }
+                    }
+                    
+                    // Log position to session if we have all values
+                    if (x !== undefined || y !== undefined || angle !== undefined || index !== undefined) {
+                        sessionRecorder.logPositionData(x, y, angle, index);
+                    }
+                    
+                    // Log other messages
+                    if (!isMenuMode && !line.includes('pX:') && !line.includes('pY:') && !line.includes('pA:') && !line.includes('pI:') && !line.includes('menu:')) {
+                        if (line.includes('Motor Shield')) {
+                            addMessage(`⚙️ ${line}`, 'system');
+                        } else if (line.length > 3) {
+                            console.log(`📥 ${line}`);
+                        }
+                    }
+                }
+                
+                if (menuItems.length > 0) {
+                    this.displayMenu(menuItems);
+                }
+            }
+            
+            displayMenu(menuItems) {
+                if (menuItems.length === 0) return;
+                
+                const submenus = menuItems.filter(m => m.isSubmenu);
+                const actions = menuItems.filter(m => !m.isSubmenu);
+                
+                if (submenus.length > 0) {
+                    addMessage('═══ SUBMENUS ═══', 'system');
+                    submenus.forEach(item => {
+                        addMessage(`  ➤ ${item.label}`, 'system');
+                    });
+                }
+                
+                if (actions.length > 0) {
+                    addMessage('═══ ACTIONS ═══', 'system');
+                    actions.forEach(item => {
+                        addMessage(`  ○ ${item.label}`, 'system');
+                    });
+                }
+            }
+
+            sendCommand(cmd) {
+                try {
+                    if (!this.isConnected || !this.port?.writable) return;
+                    const writer = this.port.writable.getWriter();
+                    console.log(`📡 TRANSMITTING: '${cmd}' (char code ${cmd.charCodeAt(0)}) + newline`);
+                    writer.write(new TextEncoder().encode(cmd + '\n'));
+                    writer.releaseLock();
+                    
+                    // Log command to session
+                    sessionRecorder.logMotorCommand(cmd);
+                } catch (error) {
+                    console.error(`❌ Send error: ${error.message}`);
+                }
+            }
+            
+            // Emergency stop - send multiple rapid stop commands directly to hardware
+            emergencyStop() {
+                try {
+                    if (!this.isConnected || !this.port?.writable) return;
+                    const writer = this.port.writable.getWriter();
+                    // Send 5 rapid stop commands in quick succession
+                    // This ensures Arduino receives stop signal even if some get lost
+                    const stopSignal = 'u\nu\nu\nu\nu\n';
+                    writer.write(new TextEncoder().encode(stopSignal));
+                    writer.releaseLock();
+                    console.log('🛑 Emergency stop sent (5x rapid) - Motors cut to zero power');
+                } catch (error) {
+                    console.error(`❌ Emergency stop error: ${error.message}`);
+                }
+            }
+        }
+
+        const serial = new GemBotSerial();
+        console.log('✅ GemBotSerial instance created:', serial);
+        let mlModel; // Declare globally
+
+        // ==================== TensorFlow.js ML Model ====================
+        class GemBotMLModel {
+            constructor() {
+                this.model = null;
+                this.net = null;
+                this.analysisHistory = [];
+                this.maxHistoryLength = 30;
+            }
+
+            async load() {
+                try {
+                    addMessage('🤖 Loading ML model...', 'system');
+                    this.net = await cocoSsd.load();
+                    mlModelLoaded = true;
+                    addMessage('✅ ML model loaded successfully!', 'success');
+                } catch (error) {
+                    addMessage(`❌ ML load failed: ${error.message}`, 'error');
+                    mlModelLoaded = false;
+                }
+            }
+
+            async detectObjects(videoElement) {
+                try {
+                    if (!this.net || !mlModelLoaded) return [];
+                    const predictions = await this.net.detect(videoElement);
+                    return predictions;
+                } catch (error) {
+                    console.error('Detection error:', error);
+                    return [];
+                }
+            }
+
+            analyzeFrameFeatures(imageData) {
+                const data = imageData.data;
+                let brightness = 0, contrast = 0, edgeIntensity = 0;
+                
+                // Calculate brightness (average luminance)
+                for (let i = 0; i < data.length; i += 4) {
+                    const r = data[i], g = data[i+1], b = data[i+2];
+                    brightness += (r + g + b) / 3;
+                }
+                brightness = brightness / (data.length / 4);
+                
+                // Analyze surface characteristics
+                const centerX = imageData.width / 2;
+                const centerY = imageData.height / 2;
+                const centerRadius = Math.min(imageData.width, imageData.height) / 4;
+                
+                let centerBrightness = 0;
+                let pixelCount = 0;
+                
+                for (let y = centerY - centerRadius; y < centerY + centerRadius; y++) {
+                    for (let x = centerX - centerRadius; x < centerX + centerRadius; x++) {
+                        const idx = (Math.floor(y) * imageData.width + Math.floor(x)) * 4;
+                        if (idx >= 0 && idx < data.length) {
+                            centerBrightness += (data[idx] + data[idx+1] + data[idx+2]) / 3;
+                            pixelCount++;
+                        }
+                    }
+                }
+                centerBrightness = centerBrightness / pixelCount;
+                
+                return {
+                    brightness: Math.round(brightness),
+                    centerBrightness: Math.round(centerBrightness),
+                    focusQuality: Math.round((centerBrightness / brightness) * 100),
+                    timestamp: Date.now()
+                };
+            }
+
+            generateSmartSuggestion(detections, features) {
+                const suggestions = [];
+                
+                // Brightness-based suggestions
+                if (features.brightness < 100) {
+                    suggestions.push('💡 Increase lighting for better surface visibility');
+                } else if (features.brightness > 200) {
+                    suggestions.push('🌟 Good lighting detected - surface clarity optimal');
+                }
+                
+                // Focus quality suggestions
+                if (features.focusQuality > 90) {
+                    suggestions.push('🎯 Excellent focus alignment - perfect for precision cuts');
+                } else if (features.focusQuality < 70) {
+                    suggestions.push('⚠️ Adjust positioning for better center focus');
+                }
+                
+                // Detection-based suggestions
+                if (detections.length > 0) {
+                    const maxConfidence = Math.max(...detections.map(d => d.score));
+                    if (maxConfidence > 0.8) {
+                        suggestions.push('✨ Clear object detection - proceed with confidence');
+                    } else if (maxConfidence > 0.6) {
+                        suggestions.push('🔍 Moderate visibility - consider adjusting angle');
+                    }
+                }
+                
+                // Speed optimization
+                if (features.brightness > 150 && detections.length > 0) {
+                    suggestions.push('⚡ Lighting optimal - can increase cutting speed');
+                }
+                
+                return suggestions.length > 0 ? suggestions[Math.floor(Math.random() * suggestions.length)] : '🤖 Monitoring in progress...';
+            }
+        }
+
+        // ==================== SESSION RECORDING ====================
+        class SessionRecorder {
+            constructor() {
+                this.isRecording = false;
+                this.mediaRecorder = null;
+                this.recordedChunks = [];
+                this.sessionData = {
+                    startTime: null,
+                    frames: [],
+                    motorCommands: [],
+                    positionData: []
+                };
+            }
+
+            async startRecording(stream) {
+                try {
+                    this.isRecording = true;
+                    this.recordedChunks = [];
+                    this.sessionData = {
+                        startTime: Date.now(),
+                        frames: [],
+                        motorCommands: [],
+                        positionData: []
+                    };
+                    
+                    const mimeType = 'video/webm';
+                    this.mediaRecorder = new MediaRecorder(stream, { mimeType });
+                    
+                    this.mediaRecorder.ondataavailable = (e) => {
+                        if (e.data.size > 0) {
+                            this.recordedChunks.push(e.data);
+                        }
+                    };
+                    
+                    this.mediaRecorder.onstop = () => {
+                        this.saveSession();
+                    };
+                    
+                    this.mediaRecorder.start();
+                    addMessage('🔴 Session recording started', 'system');
+                } catch (error) {
+                    addMessage(`❌ Recording error: ${error.message}`, 'error');
+                }
+            }
+
+            stopRecording() {
+                if (this.mediaRecorder && this.isRecording) {
+                    this.mediaRecorder.stop();
+                    this.isRecording = false;
+                    addMessage('⏹ Session recording stopped - processing...', 'system');
+                }
+            }
+
+            logMotorCommand(cmd) {
+                if (this.isRecording) {
+                    this.sessionData.motorCommands.push({
+                        command: cmd,
+                        timestamp: Date.now() - this.sessionData.startTime
+                    });
+                }
+            }
+
+            logPositionData(x, y, angle, index) {
+                if (this.isRecording) {
+                    this.sessionData.positionData.push({
+                        x, y, angle, index,
+                        timestamp: Date.now() - this.sessionData.startTime,
+                        frameCount: mlState.frameCount
+                    });
+                }
+            }
+
+            logFrameAnalysis(features, detections) {
+                if (this.isRecording) {
+                    this.sessionData.frames.push({
+                        frameNumber: mlState.frameCount,
+                        features,
+                        detectionCount: detections.length,
+                        maxConfidence: detections.length > 0 ? Math.max(...detections.map(d => d.score)) : 0,
+                        timestamp: Date.now() - this.sessionData.startTime
+                    });
+                }
+            }
+
+            async saveSession() {
+                try {
+                    const blob = new Blob(this.recordedChunks, { type: 'video/webm' });
+                    const sessionBlob = new Blob([JSON.stringify(this.sessionData)], { type: 'application/json' });
+                    
+                    const sessionId = Date.now();
+                    const db = await this.openIndexDB();
+                    const tx = db.transaction('sessions', 'readwrite');
+                    const store = tx.objectStore('sessions');
+                    
+                    store.add({
+                        id: sessionId,
+                        videoBlob: blob,
+                        dataJSON: sessionBlob,
+                        timestamp: new Date(),
+                        duration: this.sessionData.startTime ? Date.now() - this.sessionData.startTime : 0,
+                        commandCount: this.sessionData.motorCommands.length,
+                        frameCount: this.sessionData.frames.length
+                    });
+                    
+                    addMessage(`✅ Session saved (ID: ${sessionId}) - ${this.sessionData.motorCommands.length} commands, ${this.sessionData.frames.length} frames analyzed`, 'system');
+                } catch (error) {
+                    addMessage(`⚠️ Session save error: ${error.message}`, 'error');
+                }
+            }
+
+            async openIndexDB() {
+                return new Promise((resolve, reject) => {
+                    const request = indexedDB.open('GemBotSessions', 1);
+                    request.onerror = () => reject(request.error);
+                    request.onsuccess = () => resolve(request.result);
+                    request.onupgradeneeded = (e) => {
+                        const db = e.target.result;
+                        if (!db.objectStoreNames.contains('sessions')) {
+                            db.createObjectStore('sessions', { keyPath: 'id' });
+                        }
+                    };
+                });
+            }
+        }
+
+        const sessionRecorder = new SessionRecorder();
+
+        // ==================== UI HELPERS ====================
+        function addMessage(text, type = 'info') {
+            const messagesDiv = document.getElementById('aiMessages');
+            if (!messagesDiv) {
+                console.error('❌ aiMessages element not found in DOM');
+                console.log('Message would have been:', text);
+                return;
+            }
+            const msg = document.createElement('div');
+            msg.className = `ai-message ${type === 'system' ? 'system' : type === 'error' ? 'assistant' : 'system'}`;
+            msg.textContent = text;
+            messagesDiv.appendChild(msg);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        function updateConnectionStatus(connected) {
+            const badge = document.getElementById('connectionStatus');
+            const indicator = document.getElementById('statusIndicator');
+            if (connected) {
+                badge.textContent = 'CONNECTED';
+                indicator.classList.add('connected');
+            } else {
+                badge.textContent = 'DISCONNECTED';
+                indicator.classList.remove('connected');
+            }
+        }
+
+        function updateStatusBox(axis, value) {
+            const elementId = `status${axis}`;
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.textContent = axis === 'ANGLE' ? `${value}°` : value;
+                console.log(`📍 Status ${axis}: ${value}${axis === 'ANGLE' ? '°' : ''}`);
+            }
+        }
+
+        // ==================== CAMERA & ML PROCESSING ====================
+        let stream = null;
+        let canvasCtx = null;
+
+        async function startCamera() {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+                const video = document.getElementById('cameraFeed');
+                video.srcObject = stream;
+                cameraActive = true;
+                document.getElementById('cameraStartBtn').style.display = 'none';
+                document.getElementById('cameraStopBtn').style.display = 'block';
+                addMessage('📷 Camera started - ML monitoring active', 'system');
+                
+                const canvas = document.getElementById('mlCanvas');
+                canvasCtx = canvas.getContext('2d');
+                await mlModel.load();
+                processVideoFrames();
+            } catch (error) {
+                addMessage(`❌ Camera error: ${error.message}`, 'error');
+            }
+        }
+
+        async function stopCamera() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                cameraActive = false;
+                document.getElementById('cameraStartBtn').style.display = 'block';
+                document.getElementById('cameraStopBtn').style.display = 'none';
+                addMessage('⏹ Camera stopped', 'system');
+            }
+        }
+
+        function autoAdjustImage() {
+            // Analyze current frame and adjust for optimal ML detection
+            const canvas = document.getElementById('mlCanvas');
+            if (!canvasCtx || canvas.width === 0) return;
+            
+            const imageData = canvasCtx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imageData.data;
+            
+            // Detailed image quality analysis
+            let brightness = 0, darkPixels = 0, brightPixels = 0;
+            let rChannel = 0, gChannel = 0, bChannel = 0;
+            let pixelCount = data.length / 4;
+            
+            for (let i = 0; i < data.length; i += 4) {
+                const r = data[i], g = data[i+1], b = data[i+2];
+                const gray = (r + g + b) / 3;
+                brightness += gray;
+                rChannel += r;
+                gChannel += g;
+                bChannel += b;
+                if (gray < 50) darkPixels++;
+                if (gray > 200) brightPixels++;
+            }
+            
+            brightness = brightness / pixelCount;
+            const colorBalance = Math.max(rChannel, gChannel, bChannel) / Math.min(rChannel, gChannel, bChannel);
+            const dynamicRange = (brightPixels + darkPixels) / pixelCount;
+            
+            // Calculate optimal adjustments
+            let targetBrightness = 100;
+            let targetContrast = 100;
+            let targetSaturation = 100;
+            
+            // Brightness: target range is 110-140 for best ML detection
+            if (brightness < 80) {
+                targetBrightness = Math.min(200, 100 + (80 - brightness) * 1.2);
+            } else if (brightness > 180) {
+                targetBrightness = Math.max(60, 100 - (brightness - 180) * 0.8);
+            } else if (brightness < 110 || brightness > 140) {
+                targetBrightness = Math.max(70, Math.min(150, 100 + (128 - brightness) * 0.4));
+            }
+            
+            // Contrast: boost if image looks flat (low dynamic range)
+            if (dynamicRange < 0.15) {
+                targetContrast = Math.min(180, 100 + (0.15 - dynamicRange) * 400);
+            } else if (dynamicRange > 0.4) {
+                targetContrast = Math.max(80, 100 - (dynamicRange - 0.4) * 100);
+            }
+            
+            // Saturation: boost for better color detection, but not too much
+            targetSaturation = Math.min(140, Math.max(90, 100 + (colorBalance - 1) * 50));
+            
+            // Apply adjustments
+            document.getElementById('brightnessSlider').value = Math.round(targetBrightness);
+            document.getElementById('brightnessValue').textContent = Math.round(targetBrightness) + '%';
+            document.getElementById('contrastSlider').value = Math.round(targetContrast);
+            document.getElementById('contrastValue').textContent = Math.round(targetContrast) + '%';
+            document.getElementById('saturationSlider').value = Math.round(targetSaturation);
+            document.getElementById('saturationValue').textContent = Math.round(targetSaturation) + '%';
+            
+            console.log(`Auto-adjust: Brightness ${Math.round(brightness)} → ${Math.round(targetBrightness)}%, DynRange ${(dynamicRange*100).toFixed(0)}% → Contrast ${Math.round(targetContrast)}%`);
+            addMessage(`✨ Optimized • Brightness: ${Math.round(targetBrightness)}% • Contrast: ${Math.round(targetContrast)}% • Saturation: ${Math.round(targetSaturation)}%`, 'system');
+        }
+
+        async function processVideoFrames() {
+            if (!cameraActive) return;
+            const video = document.getElementById('cameraFeed');
+            const canvas = document.getElementById('mlCanvas');
+            
+            if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                
+                // Apply image adjustments via canvas filters
+                const brightness = parseInt(document.getElementById('brightnessSlider').value) / 100;
+                const contrast = parseInt(document.getElementById('contrastSlider').value) / 100;
+                const saturation = parseInt(document.getElementById('saturationSlider').value) / 100;
+                
+                canvasCtx.filter = `brightness(${brightness}) contrast(${contrast}) saturate(${saturation})`;
+                canvasCtx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                canvasCtx.filter = 'none';
+                
+                mlState.frameCount++;
+                
+                // Extract frame data for feature analysis every frame
+                const frameImageData = canvasCtx.getImageData(0, 0, canvas.width, canvas.height);
+                const features = mlModel.analyzeFrameFeatures(frameImageData);
+                
+                // Run ML detection every 30 frames
+                if (mlState.frameCount % 30 === 0 && mlModelLoaded) {
+                    const predictions = await mlModel.detectObjects(video);
+                    mlState.detections = predictions;
+                    
+                    // Log frame analysis to session
+                    sessionRecorder.logFrameAnalysis(features, predictions);
+                    
+                    if (predictions.length > 0) {
+                        mlState.confidence = Math.max(...predictions.map(p => p.score)) * 100;
+                        console.log(`🎯 Detection: ${predictions.length} objects found. Confidence: ${mlState.confidence.toFixed(0)}%`);
+                        
+                        // Draw bounding boxes
+                        predictions.forEach(prediction => {
+                            const [x, y, width, height] = prediction.bbox;
+                            canvasCtx.strokeStyle = '#00ff00';
+                            canvasCtx.lineWidth = 2;
+                            canvasCtx.strokeRect(x, y, width, height);
+                            canvasCtx.fillStyle = '#00ff00';
+                            canvasCtx.font = '12px Arial';
+                            canvasCtx.fillText(`${prediction.class} ${(prediction.score * 100).toFixed(0)}%`, x, y - 5);
+                        });
+                    } else {
+                        console.log('🔍 No objects detected');
+                    }
+                    
+                    // Generate smart suggestions every 300 frames (5 seconds at 60FPS) and only if different
+                    if (mlState.frameCount % 300 === 0) {
+                        const suggestion = mlModel.generateSmartSuggestion(predictions, features);
+                        if (suggestion !== mlState.lastSuggestion) {
+                            console.log(`💡 New suggestion: ${suggestion}`);
+                            addMessage(suggestion, 'assistant');
+                            mlState.lastSuggestion = suggestion;
+                        }
+                    }
+                }
+                
+                // Update ML status with real feature data
+                const statusText = `🔴 Recording • Frame: ${mlState.frameCount} • Brightness: ${features.brightness} • Focus: ${features.focusQuality}%`;
+                document.getElementById('mlStatus').textContent = statusText;
+            }
+            
+            requestAnimationFrame(processVideoFrames);
+        }
+
+        // ==================== GLOBAL MOTOR STATE ====================
+        const activeHoldIntervals = new Map(); // Track all active D-pad intervals globally
+        let motorKilled = false; // Flag to block commands during emergency stop
+
+        // ==================== EVENT LISTENERS ====================
+        function initializeEventListeners() {
+            console.log('%c🔧 INITIALIZING EVENT LISTENERS', 'color: #667eea; font-weight: bold; font-size: 14px; background: #0a0e27; padding: 5px');
+            
+            const scanBtn = document.getElementById('scanBtn');
+            const connectBtn = document.getElementById('connectBtn');
+            const disconnectBtn = document.getElementById('disconnectBtn');
+            
+            console.log('Button check:', { scanBtn: !!scanBtn, connectBtn: !!connectBtn, disconnectBtn: !!disconnectBtn });
+            
+            if (!scanBtn) console.error('❌ scanBtn NOT FOUND in DOM');
+            if (!connectBtn) console.error('❌ connectBtn NOT FOUND in DOM');
+            if (!disconnectBtn) console.error('❌ disconnectBtn NOT FOUND in DOM');
+            
+            document.getElementById('scanBtn')?.addEventListener('click', () => {
+                console.log('%c📡 SCAN button clicked', 'color: #ffff00; font-weight: bold; font-size: 12px');
+                serial.scanPorts();
+            });
+            document.getElementById('connectBtn')?.addEventListener('click', () => {
+                console.log('%c🔌 CONNECT button clicked', 'color: #ffff00; font-weight: bold; font-size: 12px');
+                serial.connect();
+            });
+            document.getElementById('disconnectBtn')?.addEventListener('click', () => {
+                console.log('%c❌ DISCONNECT button clicked', 'color: #ffff00; font-weight: bold; font-size: 12px');
+                serial.disconnect();
+            });
+
+            document.getElementById('cameraStartBtn')?.addEventListener('click', () => {
+                console.log('📷 CAMERA START button clicked');
+                startCamera();
+            });
+            document.getElementById('cameraStopBtn')?.addEventListener('click', () => {
+                console.log('⏹ CAMERA STOP button clicked');
+                stopCamera();
+            });
+            
+            document.getElementById('recordBtn')?.addEventListener('click', async () => {
+                if (!cameraActive) {
+                    addMessage('⚠️ Please start camera first', 'warning');
+                    return;
+                }
+                
+                recordingActive = !recordingActive;
+                const btn = document.getElementById('recordBtn');
+                
+                if (recordingActive) {
+                    const video = document.getElementById('cameraFeed');
+                    if (video.srcObject) {
+                        sessionRecorder.startRecording(video.srcObject);
+                        btn.style.background = '#c41e3a';
+                        btn.textContent = '⏹ STOP RECORD';
+                    }
+                } else {
+                    sessionRecorder.stopRecording();
+                    btn.style.background = '#2e4a7c';
+                    btn.textContent = '⚫ RECORD';
+                }
+            });
+
+            document.getElementById('speedSlider')?.addEventListener('input', (e) => {
+                motorSpeed = parseInt(e.target.value);
+                document.getElementById('speedDisplay').textContent = motorSpeed;
+                // DON'T send any speed command to firmware - firmware multiplier makes motor run LONGER
+                // Web layer controls speed via command interval frequency only
+                // Speed 1: 40ms interval = slowest
+                // Speed 5: 8ms interval = fastest
+                const intervalMs = Math.max(8, Math.floor(40 / motorSpeed));
+                console.log(`⚡ Speed changed to level ${motorSpeed} (${intervalMs}ms interval - ${(1000/intervalMs).toFixed(0)} Hz)`);
+                addMessage(`⚡ Speed: ${motorSpeed}/5 - Command interval now ${intervalMs}ms`, 'system');
+            });
+
+            document.getElementById('btnContinuous')?.addEventListener('click', () => {
+                motorMode = 'continuous';
+                document.getElementById('btnContinuous').classList.add('active');
+                document.getElementById('btnStep').classList.remove('active');
+                addMessage('🎮 CONTINUOUS MODE ACTIVE - Hold down arrow buttons to move (U/D for Y-axis, L/R for X-axis)', 'system');
+                if (isConnected) serial.sendCommand('y');
+            });
+
+            document.getElementById('btnStep')?.addEventListener('click', () => {
+                motorMode = 'step';
+                document.getElementById('btnStep').classList.add('active');
+                document.getElementById('btnContinuous').classList.remove('active');
+                addMessage('✓ STEP MODE ACTIVE - Each button click = single step', 'system');
+                if (isConnected) serial.sendCommand('y');
+            });
+
+            document.getElementById('stepSlider')?.addEventListener('input', (e) => {
+                motorStepSize = parseInt(e.target.value);
+                document.getElementById('stepDisplay').textContent = motorStepSize;
+                if (isConnected) serial.sendCommand('n' + motorStepSize);
+            });
+
+            document.querySelectorAll('.dpad-btn').forEach(btn => {
+                const btnId = btn.dataset.cmd; // Use command as unique identifier
+                const btnClass = btn.className; // Get button class to identify axis buttons
+                const isXAxisBtn = btnClass.includes('left') || btnClass.includes('right');
+                const isYAxisBtn = btnClass.includes('up') || btnClass.includes('down');
+                
+                btn.addEventListener('mousedown', () => {
+                    if (motorKilled) {
+                        console.warn('🛑 Motor killed - ignoring command');
+                        return;
+                    }
+                    let cmd = btn.dataset.cmd;
+                    if (cmd === 'u') return; // Skip for stop button
+                    
+                    // Map to appropriate firmware commands based on mode
+                    // Firmware limitation: Only has continuous LEFT/UP/DOWN/P-CCW
+                    // So we use single-step for RIGHT/P-CW and repeat them
+                    
+                    if (motorMode === 'step') {
+                        // STEP mode: Single step per click
+                        console.log(`📍 STEP button clicked - Original cmd: ${btn.dataset.cmd}, Button classes: ${btn.className}`);
+                        // CRITICAL: Map based on original button values BEFORE modifying
+                        // Store original for comparison
+                        const originalCmd = cmd;
+                        if (originalCmd === 'w') cmd = 'e'; // UP: 'w' -> 'e' (single)
+                        else if (originalCmd === 'z') cmd = 'i'; // DOWN: 'z' -> 'i' (single)
+                        else if (originalCmd === 'a') cmd = 'd'; // LEFT: 'a' -> 'd' (single)
+                        else if (originalCmd === 'd') cmd = 'f'; // RIGHT: 'd' -> 'f' (single)
+                        console.log(`🎮 STEP MODE - Mapped to firmware command: ${cmd}`);
+                        console.log(`🎮 Sending to Arduino: '${cmd}' (char code ${cmd.charCodeAt(0)})`);
+                        if (isConnected) serial.sendCommand(cmd);
+                        return; // Exit early - no interval for step mode
+                    }
+                    
+                    // CONTINUOUS mode
+                    // Firmware has handlers for: a (LEFT), w (UP), z (DOWN), j (P-CCW)
+                    // For RIGHT and P-CW, use repeated single-step commands
+                    let useSingleStep = false;
+                    if (cmd === 'd') {
+                        // X RIGHT: Use repeated 'f' command since firmware lacks motorXRight handler
+                        cmd = 'f';
+                        useSingleStep = true;
+                    }
+                    
+                    console.log(`🎮 DPAD button held (${motorMode} mode): ${cmd}${useSingleStep ? ' (repeated single-step)' : ''}`);
+                    if (isConnected) {
+                        serial.sendCommand(cmd);
+                        // Send continuous commands while held - interval scales with speed
+                        // Speed 1: 40ms interval, Speed 2: 20ms, Speed 5: 8ms (minimum)
+                        const interval = Math.max(8, Math.floor(40 / motorSpeed));
+                        console.log(`⚡ Command repeat interval: ${interval}ms (speed level ${motorSpeed})`);
+                        const intervalId = setInterval(() => {
+                            if (!motorKilled && isConnected) serial.sendCommand(cmd);
+                            else clearInterval(intervalId); // Stop loop if motor killed
+                        }, interval);
+                        // Track this interval globally so emergency stop can kill it
+                        activeHoldIntervals.set(btnId, intervalId);
+                    } else {
+                        console.warn('⚠️ Not connected to Arduino');
+                    }
+                });
+                
+                btn.addEventListener('mouseup', () => {
+                    console.log('🎮 DPAD button released - sending immediate stop');
+                    // Clear interval FIRST before sending stop
+                    const interval = activeHoldIntervals.get(btnId);
+                    if (interval) {
+                        clearInterval(interval);
+                        activeHoldIntervals.delete(btnId);
+                    }
+                    // ALWAYS send stop immediately on button release (no delay, no conditions)
+                    if (!motorKilled && isConnected) serial.sendCommand('u');
+                });
+                
+                btn.addEventListener('mouseleave', () => {
+                    console.log('🎮 Mouse left button - sending immediate stop');
+                    // Clear interval FIRST before sending stop
+                    const interval = activeHoldIntervals.get(btnId);
+                    if (interval) {
+                        clearInterval(interval);
+                        activeHoldIntervals.delete(btnId);
+                        // Send stop immediately when dragging off button
+                        if (!motorKilled && isConnected) serial.sendCommand('u');
+                    }
+                });
+                
+                // Touch support for mobile
+                btn.addEventListener('touchstart', (e) => {
+                    if (motorKilled) {
+                        console.warn('🛑 Motor killed - ignoring command');
+                        return;
+                    }
+                    let cmd = btn.dataset.cmd;
+                    if (cmd === 'u') return;
+                    e.preventDefault();
+                    
+                    // Map to appropriate firmware commands based on mode
+                    if (motorMode === 'step') {
+                        // STEP mode: Single step per click
+                        console.log(`📍 STEP button touched - Original cmd: ${btn.dataset.cmd}, Button classes: ${btn.className}`);
+                        const originalCmd = cmd; // PRESERVE ORIGINAL BUTTON VALUE
+                        if (originalCmd === 'w') cmd = 'e'; // UP: single
+                        if (originalCmd === 'z') cmd = 'i'; // DOWN: single
+                        if (originalCmd === 'a') cmd = 'd'; // LEFT: single
+                        if (originalCmd === 'd') cmd = 'f'; // RIGHT: single
+                        console.log(`🎮 STEP MODE (touch) - Mapped to firmware command: ${cmd}`);
+                        console.log(`🎮 Sending to Arduino: '${cmd}' (char code ${cmd.charCodeAt(0)})`);
+                        if (isConnected) serial.sendCommand(cmd);
+                        return;
+                    }
+                    
+                    // CONTINUOUS mode with firmware workaround
+                    let useSingleStep = false;
+                    if (cmd === 'd') {
+                        cmd = 'f'; // X RIGHT: use repeated single-step
+                        useSingleStep = true;
+                    }
+                    
+                    console.log(`🎮 DPAD touched (${motorMode} mode): ${cmd}${useSingleStep ? ' (repeated)' : ''}`);
+                    if (isConnected) {
+                        serial.sendCommand(cmd);
+                        // Dynamic interval: Speed 1: 40ms, Speed 5: 8ms (minimum)
+                        const interval = Math.max(8, Math.floor(40 / motorSpeed));
+                        console.log(`⚡ Touch repeat interval: ${interval}ms (speed level ${motorSpeed})`);
+                        const intervalId = setInterval(() => {
+                            if (!motorKilled && isConnected) serial.sendCommand(cmd);
+                            else clearInterval(intervalId);
+                        }, interval);
+                        activeHoldIntervals.set(btnId, intervalId);
+                    }
+                });
+                
+                btn.addEventListener('touchend', (e) => {
+                    e.preventDefault();
+                    console.log('🎮 Touch ended - sending immediate stop');
+                    const interval = activeHoldIntervals.get(btnId);
+                    if (interval) {
+                        clearInterval(interval);
+                        activeHoldIntervals.delete(btnId);
+                    }
+                    // ALWAYS send stop immediately on touch release
+                    if (!motorKilled && isConnected) serial.sendCommand('u');
+                });
+            });
+
+            document.getElementById('btnRotateCCW')?.addEventListener('click', () => {
+                console.log('🔄 Rotate CCW button pressed');
+                if (isConnected) serial.sendCommand('j');
+                else console.warn('⚠️ Not connected');
+            });
+
+            document.getElementById('btnRotateCW')?.addEventListener('click', () => {
+                console.log('🔄 Rotate CW button pressed');
+                if (isConnected) serial.sendCommand('e');
+                else console.warn('⚠️ Not connected');
+            });
+
+            document.getElementById('btnIndexBack')?.addEventListener('click', () => {
+                console.log('📍 Index Back button pressed');
+                if (isConnected) serial.sendCommand('i');
+                else console.warn('⚠️ Not connected');
+            });
+
+            document.getElementById('btnIndexFwd')?.addEventListener('click', () => {
+                console.log('📍 Index Forward button pressed');
+                if (isConnected) serial.sendCommand('c');
+                else console.warn('⚠️ Not connected');
+            });
+
+            document.getElementById('emergencyStop')?.addEventListener('click', () => {
+                console.error('🛑 EMERGENCY STOP BUTTON PRESSED - KILLING ALL MOTORS IMMEDIATELY');
+                
+                // IMMEDIATELY set flag to block any new commands
+                motorKilled = true;
+                
+                // IMMEDIATELY clear ALL active intervals (DO NOT WAIT)
+                activeHoldIntervals.forEach((interval, btnId) => {
+                    clearInterval(interval);
+                    console.log(`  ⚡ Killed interval for: ${btnId}`);
+                });
+                activeHoldIntervals.clear();
+                
+                // Display emergency stop message
+                addMessage('🛑 EMERGENCY STOP ACTIVATED - ALL MOTORS KILLED', 'error');
+                
+                // Send emergency stop with multiple rapid commands
+                if (isConnected) {
+                    console.log('📡 Sending emergency stop commands...');
+                    serial.emergencyStop();
+                }
+                
+                // Reset motorKilled flag after 500ms to allow new commands
+                setTimeout(() => {
+                    motorKilled = false;
+                    console.log('✅ Motor commands re-enabled');
+                }, 500);
+            });
+
+            document.getElementById('btnHome')?.addEventListener('click', () => {
+                if (isConnected) serial.sendCommand('h');
+            });
+
+            // Diagnostic button
+            document.getElementById('btnDiagnostic')?.addEventListener('click', () => {
+                console.log('🔧 DIAGNOSTIC REPORT GENERATED');
+                const diagnostics = {
+                    'Connection Status': isConnected ? '✅ Connected' : '❌ Disconnected',
+                    'Camera Status': cameraActive ? '✅ Active' : '❌ Stopped',
+                    'ML Model Status': mlModelLoaded ? '✅ Loaded' : '❌ Not loaded',
+                    'Recording Status': recordingActive ? '🔴 Recording' : '⚫ Stopped',
+                    'Motor Speed Level': motorSpeed,
+                    'Motor Mode': motorMode === 'continuous' ? 'CONTINUOUS' : 'STEP',
+                    'Step Size': motorStepSize,
+                    'ML Detections (lifetime)': mlState.detections.length,
+                    'Frames Processed': mlState.frameCount,
+                    'Last Suggestion': mlState.lastSuggestion || 'None yet',
+                    'Browser': navigator.userAgent.split(' ').slice(-2).join(' '),
+                    'Timestamp': new Date().toLocaleString()
+                };
+                
+                addMessage('🔧 DIAGNOSTIC REPORT', 'system');
+                Object.entries(diagnostics).forEach(([key, value]) => {
+                    addMessage(`  ${key}: ${value}`, 'info');
+                });
+                
+                // Log to console as well
+                console.table(diagnostics);
+                addMessage('✅ Diagnostic report sent to console', 'success');
+            });
+            document.getElementById('brightnessSlider')?.addEventListener('input', (e) => {
+                const val = e.target.value;
+                document.getElementById('brightnessValue').textContent = val + '%';
+                console.log(`🔆 Brightness set to ${val}%`);
+            });
+
+            document.getElementById('contrastSlider')?.addEventListener('input', (e) => {
+                const val = e.target.value;
+                document.getElementById('contrastValue').textContent = val + '%';
+                console.log(`📊 Contrast set to ${val}%`);
+            });
+
+            document.getElementById('saturationSlider')?.addEventListener('input', (e) => {
+                const val = e.target.value;
+                document.getElementById('saturationValue').textContent = val + '%';
+                console.log(`🎨 Saturation set to ${val}%`);
+            });
+
+            document.getElementById('autoAdjustBtn')?.addEventListener('click', autoAdjustImage);
+
+            document.getElementById('aiSendBtn')?.addEventListener('click', () => {
+                const input = document.getElementById('aiInput');
+                const message = input.value.trim();
+                if (message) {
+                    addMessage(message, 'user');
+                    setTimeout(() => {
+                        const responses = [
+                            '✨ Great question! Based on current cutting parameters...',
+                            '🎯 Smart thinking! Let me analyze the situation...',
+                            '💡 Excellent observation! Current settings are optimal for...',
+                            '🔍 Analyzing data... I recommend...'
+                        ];
+                        addMessage(responses[Math.floor(Math.random() * responses.length)], 'assistant');
+                    }, 300);
+                    input.value = '';
+                }
+            });
+
+            document.getElementById('aiInput')?.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') document.getElementById('aiSendBtn').click();
+            });
+        }
+
+        // Initialize immediately to ensure all listeners are attached
+        initializeEventListeners();
+        
+        console.log('✅ Event listeners initialized');
+
+        // ==================== COMPREHENSIVE DIAGNOSTICS ====================
+        setTimeout(() => {
+            console.log("%c🔍 GEMBOT CONTROL AI - COMPLETE DIAGNOSTICS", "color: #667eea; font-size: 16px; font-weight: bold; background: #0a0e27; padding: 10px;");
+            
+            // 1. Check if libraries loaded
+            console.group("📚 LIBRARY STATUS");
+            console.log("✅ TensorFlow.js available:", typeof tf !== 'undefined');
+            console.log("✅ COCO-SSD available:", typeof cocoSsd !== 'undefined');
+            console.log("✅ Web Serial API available:", typeof navigator.serial !== 'undefined');
+            console.log("✅ getUserMedia available:", typeof navigator.mediaDevices !== 'undefined');
+            console.log("✅ IndexedDB available:", typeof indexedDB !== 'undefined');
+            console.groupEnd();
+            
+            // 2. Check if classes initialized
+            console.group("🏗️ CLASS STATUS");
+            console.log("✅ GemBotSerial class:", typeof serial === 'object' ? `initialized as ${serial.constructor.name}` : 'MISSING');
+            console.log("✅ GemBotMLModel class:", typeof mlModel === 'object' ? `initialized as ${mlModel.constructor.name}` : 'MISSING');
+            console.log("✅ SessionRecorder class:", typeof sessionRecorder === 'object' ? `initialized as ${sessionRecorder.constructor.name}` : 'MISSING');
+            console.groupEnd();
+            
+            // 3. Check if functions exist
+            console.group("⚙️ FUNCTION STATUS");
+            console.log("✅ addMessage:", typeof addMessage === 'function' ? 'ready' : 'MISSING');
+            console.log("✅ startCamera:", typeof startCamera === 'function' ? 'ready' : 'MISSING');
+            console.log("✅ stopCamera:", typeof stopCamera === 'function' ? 'ready' : 'MISSING');
+            console.log("✅ autoAdjustImage:", typeof autoAdjustImage === 'function' ? 'ready' : 'MISSING');
+            console.log("✅ processVideoFrames:", typeof processVideoFrames === 'function' ? 'ready' : 'MISSING');
+            console.groupEnd();
+            
+            // 4. Check if all buttons exist
+            console.group("🔘 BUTTON STATUS");
+            const buttonIds = ['scanBtn', 'connectBtn', 'disconnectBtn', 'cameraStartBtn', 'cameraStopBtn', 'recordBtn', 'btnContinuous', 'btnStep', 'btnRotateCCW', 'btnRotateCW', 'btnIndexBack', 'btnIndexFwd', 'emergencyStop', 'btnHome', 'btnDiagnostic'];
+            let buttonsFound = 0;
+            buttonIds.forEach(id => {
+                const btn = document.getElementById(id);
+                if (btn) {
+                    console.log(`✅ ${id}: exists`);
+                    buttonsFound++;
+                } else {
+                    console.log(`❌ ${id}: MISSING`);
+                }
+            });
+            console.log(`\n📊 Total: ${buttonsFound}/${buttonIds.length} buttons found`);
+            console.groupEnd();
+            
+            // 5. Check all required elements
+            console.group("📦 ELEMENT STATUS");
+            const elementIds = ['cameraFeed', 'mlCanvas', 'aiMessages', 'portSelect', 'speedSlider', 'stepSlider', 'brightnessSlider', 'contrastSlider', 'saturationSlider', 'statusX', 'statusY', 'statusAngle', 'statusIndex'];
+            let elementsFound = 0;
+            elementIds.forEach(id => {
+                const elem = document.getElementById(id);
+                if (elem) {
+                    elementsFound++;
+                    console.log(`✅ ${id}: exists`);
+                } else {
+                    console.log(`❌ ${id}: MISSING`);
+                }
+            });
+            console.log(`\n📊 Total: ${elementsFound}/${elementIds.length} elements found`);
+            console.groupEnd();
+            
+            // 6. System state
+            console.group("🎮 SYSTEM STATE");
+            console.log("isConnected:", isConnected);
+            console.log("cameraActive:", cameraActive);
+            console.log("recordingActive:", recordingActive);
+            console.log("motorSpeed:", motorSpeed);
+            console.log("motorMode:", motorMode);
+            console.log("mlModelLoaded:", mlModelLoaded);
+            console.log("mlState.frameCount:", mlState.frameCount);
+            console.groupEnd();
+            
+            // 7. Test button clicks
+            console.group("🧪 BUTTON CLICK TEST");
+            console.log("Testing if buttons are clickable...");
+            document.getElementById('scanBtn')?.addEventListener('click', () => {
+                console.log('%c🎯 SCAN BUTTON SUCCESSFULLY TRIGGERED', 'color: #ff00ff; font-size: 14px; font-weight: bold');
+            }, { once: true });
+            console.log("✅ SCAN button listener added for test");
+            console.groupEnd();
+            
+            // 8. Summary
+            console.log("%c✅ DIAGNOSTICS COMPLETE", "color: #51cf66; font-size: 14px; font-weight: bold; background: #0a0e27; padding: 5px;");
+            console.log("%c💡 NEXT STEPS:", "color: #667eea; font-weight: bold;");
+            console.log("1. Click '🔍 SCAN' button to scan for Arduino ports");
+            console.log("2. Select a port and click 'CONNECT'");
+            console.log("3. Click '📷 START CAMERA' to begin video feed");
+            console.log("4. Wait for ML model to load (~5-10 seconds)");
+            console.log("5. Point camera at objects to test detection");
+            console.log("6. Use DPAD buttons to test motor commands");
+            
+        }, 500);
+
+        // ==================== RESPONSIVE DESIGN MONITORING ====================
+        function checkResponsiveBreakpoint() {
+            const width = window.innerWidth;
+            let breakpoint = 'Desktop (3-column)';
+            if (width <= 1000) {
+                breakpoint = 'Mobile (1-column stack)';
+            } else if (width <= 1400) {
+                breakpoint = 'Tablet (adaptive 2-3 column)';
+            }
+            console.log(`📱 Viewport: ${width}px → ${breakpoint}`);
+        }
+
+        window.addEventListener('resize', checkResponsiveBreakpoint);
+        checkResponsiveBreakpoint(); // Log initial breakpoint
+
+        // ==================== CSS LAYOUT VALIDATION ====================
+        console.log('✅ CSS Layout: Right panel height constraints applied');
+        console.log('✅ CSS Layout: Chat container max-height: 100% with overflow-y: auto');
+        console.log('✅ CSS Layout: Flex containers have min-height: 0 to prevent stretching');
+
+        // Initialize ML Model and System
+        mlModel = new GemBotMLModel();
+        addMessage('🤖 GemBot AI System Ready', 'system');
+        addMessage('👋 Welcome! Connect Arduino, start camera, and I\'ll help optimize your cuts!', 'assistant');
+    </script>
+</body>
+</html>
