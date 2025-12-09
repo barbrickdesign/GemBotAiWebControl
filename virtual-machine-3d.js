@@ -1,6 +1,6 @@
 /**
- * GemBot Mini Virtual 3D Machine
- * Physics-based simulation using Babylon.js
+ * GemBot Mini Virtual 3D Machine - Enhanced GLB Model Version
+ * Loads professional 3D models with animations
  * Synchronized with real hardware via serial/USB
  */
 
@@ -11,64 +11,81 @@ class VirtualMachine3D {
         this.scene = null;
         this.camera = null;
         
-        // 3D Models
-        this.machine = null;
-        this.xAxisCarriage = null;
-        this.yAxisCarriage = null;
-        this.pAxisSpindle = null;
-        this.workpiecePlaceholder = null;
+        // Loaded GLB models
+        this.machineModel = null;
+        this.gemstoneModels = {};
+        this.currentGemstone = null;
+        
+        // Animation groups from GLB
+        this.animationGroups = [];
+        this.xAxisAnimation = null;
+        this.yAxisAnimation = null;
+        this.zAxisAnimation = null;
+        
+        // Named mesh references for animation control
+        this.meshes = {
+            xCarriage: null,
+            yCarriage: null,
+            zAxis: null,
+            spindle: null,
+            dopStick: null,
+            lap: null,
+            frame: null
+        };
         
         // Motor specifications (from Arduino code)
         this.motors = {
-            // X-axis: 200 steps/rev, 1000 RPM, 16x microstep = 3200 microsteps/rev
             x: {
                 stepsPerRev: 200,
                 microSteps: 16,
                 totalMicrosteps: 3200,
                 rpm: 1000,
-                maxCount: 4200,  // from Arduino countX
-                mmPerRev: 5,     // Estimated based on gantry machine
+                maxCount: 4200,
+                mmPerRev: 5,
                 currentPosition: 0,
-                targetPosition: 0
+                targetPosition: 0,
+                minPos: -100,
+                maxPos: 100
             },
-            // Y-axis: 200 steps/rev, 100 RPM, 16x microstep
             y: {
                 stepsPerRev: 200,
                 microSteps: 16,
                 totalMicrosteps: 3200,
                 rpm: 100,
-                maxCount: 3300,  // from Arduino countY
+                maxCount: 3300,
                 mmPerRev: 5,
                 currentPosition: 0,
-                targetPosition: 0
+                targetPosition: 0,
+                minPos: 0,
+                maxPos: 100
             },
-            // P-axis (rotation): 200 steps/rev, 300 RPM
             p: {
                 stepsPerRev: 200,
                 microSteps: 16,
                 totalMicrosteps: 3200,
                 rpm: 300,
-                maxCount: 360,   // Full rotation
+                maxCount: 360,
                 degreesPerRev: 360,
                 currentPosition: 0,
                 targetPosition: 0
             }
         };
         
-        // Movement update interval (from Arduino motorUpdateInterval)
-        this.updateInterval = 50; // milliseconds
-        this.lastUpdate = 0;
-        
         // Animation state
-        this.isMoving = false;
-        this.movementQueue = [];
+        this.isAnimating = false;
+        this.lapSpinning = false;
+        this.lapSpeed = 1;
         
-        // Collision detection
-        this.limitSwitches = {
-            x: false,
-            y: false,
-            p: false
+        // Model paths - try both relative and root paths
+        this.modelPaths = {
+            machine: './cnc_meachine.glb',
+            animatedMachine: './3_axis_cnc_animation.glb',
+            gemstones: './gemstone_pack.glb'
         };
+        
+        // Loading state
+        this.modelsLoaded = false;
+        this.useAnimatedModel = true;
     }
     
     /**
@@ -89,7 +106,7 @@ class VirtualMachine3D {
             
             console.log('✅ Babylon.js loaded, initializing scene...');
             
-            // Create engine
+            // Create engine with better settings
             this.engine = new BABYLON.Engine(this.canvasElement, true, {
                 preserveDrawingBuffer: true,
                 antialias: true,
@@ -105,12 +122,11 @@ class VirtualMachine3D {
             
             // Create scene
             this.scene = new BABYLON.Scene(this.engine);
-            this.scene.clearColor = new BABYLON.Color3(0.1, 0.12, 0.16);
-            this.scene.collisionsEnabled = false; // Disable for now, enable if needed
+            this.scene.clearColor = new BABYLON.Color4(0.08, 0.1, 0.15, 1);
             
             console.log('✅ Scene created');
             
-            // Setup camera - Front view of machine
+            // Setup camera
             this.setupCamera();
             console.log('✅ Camera setup');
             
@@ -118,19 +134,14 @@ class VirtualMachine3D {
             this.setupLighting();
             console.log('✅ Lighting setup');
             
-            // Create machine geometry
+            // Try to load GLB models
             try {
-                this.createMachineGeometry();
-                console.log('✅ Machine geometry created');
-            } catch (e) {
-                console.warn('⚠️ Machine geometry creation failed, creating minimal scene:', e);
-                // Create a simple cube instead if geometry fails
-                const simpleMesh = BABYLON.MeshBuilder.CreateBox('machineBox', { size: 20 }, this.scene);
-                simpleMesh.position.y = 10;
+                await this.loadModels();
+                console.log('✅ GLB models loaded');
+            } catch (modelError) {
+                console.warn('⚠️ GLB model loading failed, using procedural geometry:', modelError);
+                this.createFallbackGeometry();
             }
-            
-            // Skip physics for now - not needed for visualization
-            // this.setupPhysics();
             
             // Start render loop
             this.startRenderLoop();
@@ -141,558 +152,473 @@ class VirtualMachine3D {
                 if (this.engine) this.engine.resize();
             });
             
+            // Start lap animation
+            this.startLapAnimation();
+            
+            // Hide loading message
+            const loadingStatus = document.getElementById('machineLoadingStatus');
+            if (loadingStatus) {
+                loadingStatus.style.display = 'none';
+            }
+            
             console.log('✅ Virtual Machine 3D initialized successfully!');
             return true;
         } catch (error) {
             console.error('❌ Failed to initialize Virtual Machine 3D:', error);
-            // Log more details
-            console.error('Canvas element:', this.canvasElement);
-            console.error('BABYLON defined:', typeof BABYLON !== 'undefined');
             return false;
         }
     }
     
     /**
-     * Setup camera for front-facing view (matches physical reference image)
+     * Load GLB models
+     */
+    async loadModels() {
+        // Check if GLTF loader is available
+        if (!BABYLON.SceneLoader) {
+            throw new Error('BABYLON.SceneLoader not available - GLTF loader not loaded');
+        }
+        
+        console.log('📦 Loading GLB models...');
+        
+        // Try to load the animated CNC machine first
+        try {
+            const modelPath = this.useAnimatedModel ? this.modelPaths.animatedMachine : this.modelPaths.machine;
+            console.log(`📦 Loading machine from: ${modelPath}`);
+            
+            const result = await BABYLON.SceneLoader.ImportMeshAsync(
+                '', // Import all meshes
+                '',
+                modelPath,
+                this.scene
+            );
+            
+            console.log('📦 Machine model loaded:', result.meshes.length, 'meshes');
+            
+            // Store reference to loaded meshes
+            this.machineModel = result.meshes[0]; // Root mesh
+            
+            // Store animation groups
+            if (result.animationGroups && result.animationGroups.length > 0) {
+                this.animationGroups = result.animationGroups;
+                console.log('🎬 Found', this.animationGroups.length, 'animation groups');
+                
+                // Log animation names
+                this.animationGroups.forEach((group, i) => {
+                    console.log(`  Animation ${i}: ${group.name}`);
+                });
+            }
+            
+            // Find and store named meshes for control
+            result.meshes.forEach(mesh => {
+                const name = mesh.name.toLowerCase();
+                console.log(`  Mesh: ${mesh.name}`);
+                
+                // Try to identify key parts by name
+                if (name.includes('x') && (name.includes('axis') || name.includes('carriage') || name.includes('gantry'))) {
+                    this.meshes.xCarriage = mesh;
+                }
+                if (name.includes('y') && (name.includes('axis') || name.includes('carriage') || name.includes('platform'))) {
+                    this.meshes.yCarriage = mesh;
+                }
+                if (name.includes('z') && (name.includes('axis') || name.includes('spindle'))) {
+                    this.meshes.zAxis = mesh;
+                }
+                if (name.includes('spindle') || name.includes('motor') || name.includes('chuck')) {
+                    this.meshes.spindle = mesh;
+                }
+                if (name.includes('lap') || name.includes('wheel') || name.includes('disk')) {
+                    this.meshes.lap = mesh;
+                }
+            });
+            
+            // Scale and position the model appropriately
+            this.positionModel(result.meshes);
+            
+            this.modelsLoaded = true;
+            
+        } catch (error) {
+            console.warn('⚠️ Could not load animated machine, trying static version:', error);
+            
+            // Try static machine model
+            try {
+                const result = await BABYLON.SceneLoader.ImportMeshAsync(
+                    '',
+                    '',
+                    this.modelPaths.machine,
+                    this.scene
+                );
+                
+                this.machineModel = result.meshes[0];
+                this.positionModel(result.meshes);
+                this.modelsLoaded = true;
+                console.log('📦 Static machine model loaded');
+                
+            } catch (staticError) {
+                console.warn('⚠️ Static model also failed:', staticError);
+                throw staticError;
+            }
+        }
+        
+        // Try to load gemstones (optional)
+        try {
+            const gemResult = await BABYLON.SceneLoader.ImportMeshAsync(
+                '',
+                '',
+                this.modelPaths.gemstones,
+                this.scene
+            );
+            
+            console.log('💎 Gemstone pack loaded:', gemResult.meshes.length, 'meshes');
+            
+            // Hide gemstones initially, we'll show them when needed
+            gemResult.meshes.forEach(mesh => {
+                mesh.isVisible = false;
+                this.gemstoneModels[mesh.name] = mesh;
+            });
+            
+        } catch (gemError) {
+            console.log('💎 Gemstone pack not loaded (optional):', gemError.message);
+        }
+    }
+    
+    /**
+     * Position and scale the loaded model
+     */
+    positionModel(meshes) {
+        if (!meshes || meshes.length === 0) return;
+        
+        // Calculate bounding box of all meshes
+        let minX = Infinity, minY = Infinity, minZ = Infinity;
+        let maxX = -Infinity, maxY = -Infinity, maxZ = -Infinity;
+        
+        meshes.forEach(mesh => {
+            if (mesh.getBoundingInfo) {
+                const bounds = mesh.getBoundingInfo().boundingBox;
+                minX = Math.min(minX, bounds.minimumWorld.x);
+                minY = Math.min(minY, bounds.minimumWorld.y);
+                minZ = Math.min(minZ, bounds.minimumWorld.z);
+                maxX = Math.max(maxX, bounds.maximumWorld.x);
+                maxY = Math.max(maxY, bounds.maximumWorld.y);
+                maxZ = Math.max(maxZ, bounds.maximumWorld.z);
+            }
+        });
+        
+        const sizeX = maxX - minX;
+        const sizeY = maxY - minY;
+        const sizeZ = maxZ - minZ;
+        const maxSize = Math.max(sizeX, sizeY, sizeZ);
+        
+        console.log(`📐 Model size: ${sizeX.toFixed(1)} x ${sizeY.toFixed(1)} x ${sizeZ.toFixed(1)}`);
+        
+        // Scale to fit nicely in view (target ~150 units max dimension)
+        const targetSize = 150;
+        const scale = targetSize / maxSize;
+        
+        // Apply to root mesh
+        const root = meshes[0];
+        if (root) {
+            root.scaling = new BABYLON.Vector3(scale, scale, scale);
+            
+            // Center the model
+            const centerX = (minX + maxX) / 2 * scale;
+            const centerZ = (minZ + maxZ) / 2 * scale;
+            root.position = new BABYLON.Vector3(-centerX, 0, -centerZ);
+            
+            console.log(`📐 Applied scale: ${scale.toFixed(3)}`);
+        }
+    }
+    
+    /**
+     * Create fallback procedural geometry if GLB loading fails
+     */
+    createFallbackGeometry() {
+        console.log('🔧 Creating fallback procedural geometry...');
+        
+        // Materials
+        const frameMat = new BABYLON.StandardMaterial('frameMat', this.scene);
+        frameMat.diffuseColor = new BABYLON.Color3(0.7, 0.72, 0.75);
+        frameMat.specularColor = new BABYLON.Color3(0.9, 0.9, 0.9);
+        frameMat.specularPower = 64;
+        
+        const metalMat = new BABYLON.StandardMaterial('metalMat', this.scene);
+        metalMat.diffuseColor = new BABYLON.Color3(0.15, 0.15, 0.18);
+        metalMat.specularColor = new BABYLON.Color3(0.3, 0.3, 0.3);
+        
+        const lapMat = new BABYLON.StandardMaterial('lapMat', this.scene);
+        lapMat.diffuseColor = new BABYLON.Color3(0.5, 0.5, 0.55);
+        lapMat.specularColor = new BABYLON.Color3(0.8, 0.8, 0.8);
+        lapMat.specularPower = 32;
+        
+        // Base platform
+        const base = BABYLON.MeshBuilder.CreateBox('base', { width: 200, height: 15, depth: 150 }, this.scene);
+        base.material = frameMat;
+        base.position.y = 7.5;
+        
+        // Frame rails (20x20 aluminum extrusion style)
+        const createRail = (name, w, h, d, x, y, z) => {
+            const rail = BABYLON.MeshBuilder.CreateBox(name, { width: w, height: h, depth: d }, this.scene);
+            rail.material = frameMat;
+            rail.position = new BABYLON.Vector3(x, y, z);
+            return rail;
+        };
+        
+        // Vertical rails
+        createRail('railFL', 15, 120, 15, -85, 75, -60);
+        createRail('railFR', 15, 120, 15, 85, 75, -60);
+        createRail('railBL', 15, 120, 15, -85, 75, 60);
+        createRail('railBR', 15, 120, 15, 85, 75, 60);
+        
+        // Top horizontal rails
+        createRail('railTopF', 185, 15, 15, 0, 130, -60);
+        createRail('railTopB', 185, 15, 15, 0, 130, 60);
+        createRail('railTopL', 15, 15, 135, -85, 130, 0);
+        createRail('railTopR', 15, 15, 135, 85, 130, 0);
+        
+        // X-axis gantry (moves left-right)
+        this.meshes.xCarriage = BABYLON.MeshBuilder.CreateBox('xCarriage', { width: 40, height: 25, depth: 120 }, this.scene);
+        this.meshes.xCarriage.material = metalMat;
+        this.meshes.xCarriage.position = new BABYLON.Vector3(0, 115, 0);
+        
+        // Y-axis arm (extends toward lap)
+        this.meshes.yCarriage = BABYLON.MeshBuilder.CreateBox('yCarriage', { width: 30, height: 20, depth: 60 }, this.scene);
+        this.meshes.yCarriage.material = metalMat;
+        this.meshes.yCarriage.position = new BABYLON.Vector3(0, 100, -20);
+        this.meshes.yCarriage.parent = this.meshes.xCarriage;
+        
+        // Dop stick holder
+        const dopHolder = BABYLON.MeshBuilder.CreateCylinder('dopHolder', { diameter: 15, height: 25 }, this.scene);
+        dopHolder.material = metalMat;
+        dopHolder.position = new BABYLON.Vector3(0, -20, -25);
+        dopHolder.parent = this.meshes.yCarriage;
+        
+        // Dop stick
+        this.meshes.dopStick = BABYLON.MeshBuilder.CreateCylinder('dopStick', { diameter: 6, height: 40 }, this.scene);
+        this.meshes.dopStick.material = frameMat;
+        this.meshes.dopStick.position = new BABYLON.Vector3(0, -30, 0);
+        this.meshes.dopStick.rotation.x = Math.PI / 4; // Angled toward lap
+        this.meshes.dopStick.parent = dopHolder;
+        
+        // Gemstone on dop
+        const gem = BABYLON.MeshBuilder.CreatePolyhedron('gemstone', { type: 1, size: 5 }, this.scene);
+        const gemMat = new BABYLON.StandardMaterial('gemMat', this.scene);
+        gemMat.diffuseColor = new BABYLON.Color3(0.2, 0.6, 0.9);
+        gemMat.specularColor = new BABYLON.Color3(1, 1, 1);
+        gemMat.specularPower = 128;
+        gemMat.alpha = 0.85;
+        gem.material = gemMat;
+        gem.position = new BABYLON.Vector3(0, -25, 0);
+        gem.parent = this.meshes.dopStick;
+        
+        // Lap wheel (horizontal grinding surface)
+        this.meshes.lap = BABYLON.MeshBuilder.CreateCylinder('lap', { diameter: 100, height: 10, tessellation: 48 }, this.scene);
+        this.meshes.lap.material = lapMat;
+        this.meshes.lap.position = new BABYLON.Vector3(0, 25, 0);
+        
+        // Lap motor housing
+        const lapMotor = BABYLON.MeshBuilder.CreateBox('lapMotor', { width: 40, height: 25, depth: 40 }, this.scene);
+        lapMotor.material = metalMat;
+        lapMotor.position = new BABYLON.Vector3(0, 10, 0);
+        
+        // Water tray
+        const tray = BABYLON.MeshBuilder.CreateBox('tray', { width: 140, height: 5, depth: 140 }, this.scene);
+        const trayMat = new BABYLON.StandardMaterial('trayMat', this.scene);
+        trayMat.diffuseColor = new BABYLON.Color3(0.2, 0.25, 0.3);
+        tray.material = trayMat;
+        tray.position = new BABYLON.Vector3(0, 17, 0);
+        
+        console.log('✅ Fallback geometry created');
+    }
+    
+    /**
+     * Setup camera for viewing
      */
     setupCamera() {
-        // Front view camera looking at machine - optimized for GemBot visualization
         this.camera = new BABYLON.ArcRotateCamera(
-            'machineCamera',
-            Math.PI,              // Alpha (horizontal rotation) - 180° = front view
-            Math.PI / 3,          // Beta (vertical rotation) - ~60° for isometric view
-            200,                  // Radius (distance) - increased for better overall view
-            new BABYLON.Vector3(0, 55, 0)  // Target (center of machine, accounting for drawer base)
+            'mainCamera',
+            Math.PI * 0.75,    // Alpha - horizontal angle
+            Math.PI / 3,       // Beta - vertical angle (60°)
+            250,               // Radius - distance
+            new BABYLON.Vector3(0, 60, 0),  // Target
+            this.scene
         );
         
         this.camera.attachControl(this.canvasElement, true);
-        this.camera.wheelPrecision = 50;
-        this.camera.inertia = 0.7;
-        this.camera.angularSensibilityX = 1000;
-        this.camera.angularSensibilityY = 1000;
+        this.camera.wheelPrecision = 30;
+        this.camera.inertia = 0.8;
         this.camera.minZ = 1;
-        this.camera.maxZ = 500;
-        
-        // Limit camera zoom for comfortable viewing
-        this.camera.lowerRadiusLimit = 60;
-        this.camera.upperRadiusLimit = 250;
-        
-        // Enable keyboard controls for better interaction
-        this.camera.keys = [];  // Disable default keyboard to prevent conflicts
+        this.camera.maxZ = 1000;
+        this.camera.lowerRadiusLimit = 80;
+        this.camera.upperRadiusLimit = 400;
+        this.camera.lowerBetaLimit = 0.1;
+        this.camera.upperBetaLimit = Math.PI / 2 - 0.1;
     }
     
     /**
-     * Setup scene lighting for realistic industrial machine appearance
+     * Setup scene lighting
      */
     setupLighting() {
-        // Ambient light - subtle base illumination
-        const ambientLight = new BABYLON.HemisphericLight(
-            'ambientLight',
-            new BABYLON.Vector3(0.5, 1, 0.5),
-            this.scene
-        );
-        ambientLight.intensity = 0.5;
-        ambientLight.diffuse = new BABYLON.Color3(0.8, 0.8, 0.85);
-        ambientLight.groundColor = new BABYLON.Color3(0.3, 0.3, 0.35);
+        // Ambient hemisphere light
+        const ambient = new BABYLON.HemisphericLight('ambient', new BABYLON.Vector3(0, 1, 0), this.scene);
+        ambient.intensity = 0.4;
+        ambient.diffuse = new BABYLON.Color3(0.9, 0.9, 0.95);
+        ambient.groundColor = new BABYLON.Color3(0.3, 0.3, 0.35);
         
-        // Main key light - from front left (simulating window/studio light)
-        const keyLight = new BABYLON.PointLight(
-            'keyLight',
-            new BABYLON.Vector3(-80, 120, 100),
-            this.scene
-        );
-        keyLight.intensity = 1.3;
-        keyLight.range = 600;
+        // Key light (front-left)
+        const keyLight = new BABYLON.PointLight('keyLight', new BABYLON.Vector3(-100, 150, 100), this.scene);
+        keyLight.intensity = 1.2;
         keyLight.diffuse = new BABYLON.Color3(1, 0.98, 0.95);
-        keyLight.specular = new BABYLON.Color3(1, 1, 1);
         
-        // Fill light - from front right (softer, warmer)
-        const fillLight = new BABYLON.PointLight(
-            'fillLight',
-            new BABYLON.Vector3(80, 80, 100),
-            this.scene
-        );
-        fillLight.intensity = 0.7;
-        fillLight.range = 500;
-        fillLight.diffuse = new BABYLON.Color3(0.95, 0.96, 1);
+        // Fill light (front-right)
+        const fillLight = new BABYLON.PointLight('fillLight', new BABYLON.Vector3(100, 100, 100), this.scene);
+        fillLight.intensity = 0.6;
+        fillLight.diffuse = new BABYLON.Color3(0.9, 0.92, 1);
         
-        // Top light - for edge highlighting
-        const topLight = new BABYLON.PointLight(
-            'topLight',
-            new BABYLON.Vector3(0, 200, 0),
-            this.scene
-        );
+        // Back rim light
+        const rimLight = new BABYLON.PointLight('rimLight', new BABYLON.Vector3(0, 80, -120), this.scene);
+        rimLight.intensity = 0.4;
+        rimLight.diffuse = new BABYLON.Color3(0.7, 0.8, 1);
+        
+        // Top light
+        const topLight = new BABYLON.PointLight('topLight', new BABYLON.Vector3(0, 200, 0), this.scene);
         topLight.intensity = 0.5;
-        topLight.range = 400;
-        topLight.diffuse = new BABYLON.Color3(1, 1, 1);
-        
-        // Back light - subtle rim lighting for depth
-        const backLight = new BABYLON.PointLight(
-            'backLight',
-            new BABYLON.Vector3(0, 100, -150),
-            this.scene
-        );
-        backLight.intensity = 0.3;
-        backLight.range = 300;
-        backLight.diffuse = new BABYLON.Color3(0.6, 0.7, 0.9);
     }
     
     /**
-     * Create 3D geometry for the GemBot Gemstone Cutting Machine
-     * Lapidary equipment with index motor (96-step), grinding wheel, and Y-axis platform
-     */
-    createMachineGeometry() {
-        try {
-            // ==================== MATERIALS ====================
-            const aluminumMat = new BABYLON.StandardMaterial('aluminum', this.scene);
-            aluminumMat.diffuse = new BABYLON.Color3(0.75, 0.77, 0.8);
-            aluminumMat.specularColor = new BABYLON.Color3(1, 1, 1);
-            aluminumMat.specularPower = 96;
-
-            const blackMetalMat = new BABYLON.StandardMaterial('blackMetal', this.scene);
-            blackMetalMat.diffuse = new BABYLON.Color3(0.08, 0.08, 0.1);
-            blackMetalMat.specularColor = new BABYLON.Color3(0.2, 0.2, 0.2);
-            blackMetalMat.specularPower = 32;
-
-            const stainlessMat = new BABYLON.StandardMaterial('stainless', this.scene);
-            stainlessMat.diffuse = new BABYLON.Color3(0.85, 0.87, 0.9);
-            stainlessMat.specularColor = new BABYLON.Color3(1, 1, 1);
-            stainlessMat.specularPower = 128;
-
-            const chuckMat = new BABYLON.StandardMaterial('chuck', this.scene);
-            chuckMat.diffuse = new BABYLON.Color3(0.2, 0.2, 0.2);
-            chuckMat.specularColor = new BABYLON.Color3(0.35, 0.35, 0.35);
-            chuckMat.specularPower = 64;
-
-            const dopStickMat = new BABYLON.StandardMaterial('dopStick', this.scene);
-            dopStickMat.diffuse = new BABYLON.Color3(0.92, 0.9, 0.88);
-            dopStickMat.specularColor = new BABYLON.Color3(1, 1, 1);
-            dopStickMat.specularPower = 100;
-
-            // Grinding wheel materials
-            const wheelMaterials = {
-                coarse: this.createWheelMaterial('#C0C0C0', 'coarseWheel'),
-                medium: this.createWheelMaterial('#A9A9A9', 'mediumWheel'),
-                fine: this.createWheelMaterial('#808080', 'fineWheel'),
-                polish: this.createWheelMaterial('#696969', 'polishWheel')
-            };
-
-            // ==================== BASE PLATFORM ====================
-            const basePlatform = BABYLON.MeshBuilder.CreateBox('basePlatform',
-                { width: 280, height: 20, depth: 220 }, this.scene);
-            basePlatform.material = aluminumMat;
-            basePlatform.position.y = 10;
-
-            // ==================== 20x20 ALUMINUM FRAME ====================
-            // Front-left vertical rail
-            const railFL = BABYLON.MeshBuilder.CreateBox('railFL',
-                { width: 20, height: 180, depth: 20 }, this.scene);
-            railFL.material = aluminumMat;
-            railFL.position.set(-120, 90, -100);
-
-            // Front-right vertical rail
-            const railFR = BABYLON.MeshBuilder.CreateBox('railFR',
-                { width: 20, height: 180, depth: 20 }, this.scene);
-            railFR.material = aluminumMat;
-            railFR.position.set(120, 90, -100);
-
-            // Back-left vertical rail
-            const railBL = BABYLON.MeshBuilder.CreateBox('railBL',
-                { width: 20, height: 180, depth: 20 }, this.scene);
-            railBL.material = aluminumMat;
-            railBL.position.set(-120, 90, 100);
-
-            // Back-right vertical rail
-            const railBR = BABYLON.MeshBuilder.CreateBox('railBR',
-                { width: 20, height: 180, depth: 20 }, this.scene);
-            railBR.material = aluminumMat;
-            railBR.position.set(120, 90, 100);
-
-            // Top-front horizontal rail
-            const railTF = BABYLON.MeshBuilder.CreateBox('railTF',
-                { width: 260, height: 20, depth: 20 }, this.scene);
-            railTF.material = aluminumMat;
-            railTF.position.set(0, 170, -100);
-
-            // Top-back horizontal rail
-            const railTB = BABYLON.MeshBuilder.CreateBox('railTB',
-                { width: 260, height: 20, depth: 20 }, this.scene);
-            railTB.material = aluminumMat;
-            railTB.position.set(0, 170, 100);
-
-            // ==================== FLAT HORIZONTAL GRINDING WHEEL ====================
-            const wheelDiameter = 100;
-            const wheelThickness = 14;
-
-            this.pAxisSpindle = BABYLON.MeshBuilder.CreateCylinder('grindingWheel',
-                { diameter: wheelDiameter, height: wheelThickness, tessellation: 64 }, this.scene);
-            this.pAxisSpindle.material = wheelMaterials.coarse;
-            this.pAxisSpindle.position.set(90, 120, 0);
-            // Wheel sits FLAT - no rotation needed
-            this.pAxisSpindle.wheelType = 'coarse';
-            this.pAxisSpindle.wheelTypes = wheelMaterials;
-
-            // Wheel motor housing
-            const wheelMotor = BABYLON.MeshBuilder.CreateBox('wheelMotor',
-                { width: 35, height: 35, depth: 35 }, this.scene);
-            wheelMotor.material = blackMetalMat;
-            wheelMotor.position.set(90, 100, 0);
-
-            // ==================== X-AXIS BALL SCREW (LEFT-RIGHT) ====================
-            this.ballScrewX = BABYLON.MeshBuilder.CreateCylinder('ballScrewX',
-                { diameter: 12, height: 240, tessellation: 32 }, this.scene);
-            this.ballScrewX.material = stainlessMat;
-            this.ballScrewX.position.set(0, 155, 0);
-            this.ballScrewX.rotation.z = Math.PI / 2;
-
-            // ==================== X-AXIS CARRIAGE ====================
-            this.xAxisCarriage = BABYLON.MeshBuilder.CreateBox('xCarriage',
-                { width: 60, height: 35, depth: 100 }, this.scene);
-            this.xAxisCarriage.material = aluminumMat;
-            this.xAxisCarriage.position.set(0, 135, 0);
-            this.xAxisPosition = 0;
-
-            // ==================== Y-AXIS BALL SCREW (UP-DOWN) ====================
-            this.ballScrewY = BABYLON.MeshBuilder.CreateCylinder('ballScrewY',
-                { diameter: 12, height: 120, tessellation: 32 }, this.scene);
-            this.ballScrewY.material = stainlessMat;
-            this.ballScrewY.position.set(30, 110, 0);
-
-            // ==================== Y-AXIS PLATFORM (RAISES/LOWERS) ====================
-            this.yAxisPlatform = BABYLON.MeshBuilder.CreateBox('yPlatform',
-                { width: 140, height: 18, depth: 120 }, this.scene);
-            this.yAxisPlatform.material = aluminumMat;
-            this.yAxisPlatform.position.set(0, 80, 0);
-            this.yAxisPlatform.parent = this.xAxisCarriage;
-            this.yAxisPosition = 0;
-
-            // ==================== INDEX MOTOR & CHUCK ASSEMBLY ====================
-            // Index motor housing (96-step stepper)
-            const indexMotorHousing = BABYLON.MeshBuilder.CreateBox('indexMotor',
-                { width: 40, height: 40, depth: 40 }, this.scene);
-            indexMotorHousing.material = blackMetalMat;
-            indexMotorHousing.position.set(-50, 105, 0);
-            indexMotorHousing.parent = this.yAxisPlatform;
-
-            // Motor shaft
-            this.motorShaft = BABYLON.MeshBuilder.CreateCylinder('motorShaft',
-                { diameter: 10, height: 60, tessellation: 24 }, this.scene);
-            this.motorShaft.material = stainlessMat;
-            this.motorShaft.position.set(-20, 105, 0);
-            this.motorShaft.rotation.z = Math.PI / 2;
-            this.motorShaft.parent = this.yAxisPlatform;
-
-            // 96-step index gear
-            this.indexGear = BABYLON.MeshBuilder.CreateCylinder('indexGear',
-                { diameter: 70, height: 12, tessellation: 96 }, this.scene);
-            this.indexGear.material = chuckMat;
-            this.indexGear.position.set(10, 105, 0);
-            this.indexGear.rotation.z = Math.PI / 2;
-            this.indexGear.parent = this.yAxisPlatform;
-
-            // ==================== CHUCK (HOLDS DOP STICK) ====================
-            this.chuck = BABYLON.MeshBuilder.CreateCylinder('chuck',
-                { diameter: 30, height: 35, tessellation: 32 }, this.scene);
-            this.chuck.material = chuckMat;
-            this.chuck.position.set(40, 105, 0);
-            this.chuck.rotation.z = Math.PI / 2;
-            this.chuck.parent = this.yAxisPlatform;
-
-            // ==================== DOP STICK (REMOVABLE) ====================
-            this.dopStick = BABYLON.MeshBuilder.CreateCylinder('dopStick',
-                { diameter: 10, height: 80, tessellation: 16 }, this.scene);
-            this.dopStick.material = dopStickMat;
-            this.dopStick.position.set(55, 105, 0);
-            this.dopStick.rotation.z = Math.PI / 2;
-            this.dopStick.parent = this.chuck;
-            this.dopStick.isRemovable = true;
-
-            // ==================== GEMSTONE (REMOVABLE) ====================
-            this.gemstone = BABYLON.MeshBuilder.CreatePolyhedron('gemstone', { type: 3 }, this.scene);
-            this.gemstone.material = new BABYLON.StandardMaterial('gemMat', this.scene);
-            this.gemstone.material.diffuse = new BABYLON.Color3(0.95, 0.85, 0.4);
-            this.gemstone.material.specularColor = new BABYLON.Color3(1, 1, 1);
-            this.gemstone.material.alpha = 0.95;
-            this.gemstone.scaling.set(16, 16, 16);
-            this.gemstone.position.set(85, 105, 0);
-            this.gemstone.parent = this.dopStick;
-            this.gemstone.isRemovable = true;
-
-            // ==================== ROUGH STONE SELECTION AREA ====================
-            // Work bench for hand prepping rough stones
-            const workBench = BABYLON.MeshBuilder.CreateBox('workBench',
-                { width: 140, height: 12, depth: 120 }, this.scene);
-            workBench.material = new BABYLON.StandardMaterial('benchMat', this.scene);
-            workBench.material.diffuse = new BABYLON.Color3(0.35, 0.3, 0.25);
-            workBench.position.set(-120, 50, 0);
-
-            // Rough stone display area
-            const displayArea = BABYLON.MeshBuilder.CreateBox('displayArea',
-                { width: 140, height: 4, depth: 120 }, this.scene);
-            displayArea.material = new BABYLON.StandardMaterial('displayMat', this.scene);
-            displayArea.material.diffuse = new BABYLON.Color3(0.25, 0.3, 0.28);
-            displayArea.position.set(-120, 45, 0);
-
-            // 6 rough stones for selection (different colors)
-            for (let i = 0; i < 6; i++) {
-                const roughStone = BABYLON.MeshBuilder.CreatePolyhedron('roughStone' + i, { type: 2 }, this.scene);
-                roughStone.material = new BABYLON.StandardMaterial('roughMat' + i, this.scene);
-                const colors = [
-                    new BABYLON.Color3(0.65, 0.55, 0.35),  // Brown
-                    new BABYLON.Color3(0.75, 0.72, 0.55),  // Tan
-                    new BABYLON.Color3(0.55, 0.65, 0.45),  // Olive
-                    new BABYLON.Color3(0.65, 0.65, 0.65),  // Gray
-                    new BABYLON.Color3(0.82, 0.65, 0.45),  // Orange
-                    new BABYLON.Color3(0.75, 0.58, 0.55)   // Red
-                ];
-                roughStone.material.diffuse = colors[i];
-                roughStone.scaling.set(12, 12, 12);
-                roughStone.position.set(-140 + (i % 3) * 40, 65, -50 + Math.floor(i / 3) * 60);
-            }
-
-            // ==================== SUPPORT BRACKETS ====================
-            const supportL = BABYLON.MeshBuilder.CreateBox('supportL',
-                { width: 20, height: 40, depth: 20 }, this.scene);
-            supportL.material = aluminumMat;
-            supportL.position.set(60, 90, -55);
-            supportL.parent = this.yAxisPlatform;
-
-            const supportR = BABYLON.MeshBuilder.CreateBox('supportR',
-                { width: 20, height: 40, depth: 20 }, this.scene);
-            supportR.material = aluminumMat;
-            supportR.position.set(60, 90, 55);
-            supportR.parent = this.yAxisPlatform;
-
-            // ==================== COOLING SYSTEM ====================
-            const waterTank = BABYLON.MeshBuilder.CreateBox('waterTank',
-                { width: 70, height: 30, depth: 50 }, this.scene);
-            const waterMat = new BABYLON.StandardMaterial('waterMat', this.scene);
-            waterMat.diffuse = new BABYLON.Color3(0.3, 0.6, 0.9);
-            waterMat.alpha = 0.5;
-            waterTank.material = waterMat;
-            waterTank.position.set(70, 35, -80);
-
-            const coolingPump = BABYLON.MeshBuilder.CreateBox('pump',
-                { width: 25, height: 25, depth: 25 }, this.scene);
-            coolingPump.material = blackMetalMat;
-            coolingPump.position.set(60, 25, -100);
-
-            // ==================== TOUCH SCREEN CONTROLLER AREA ====================
-            const controlPanel = BABYLON.MeshBuilder.CreateBox('controlPanel',
-                { width: 100, height: 120, depth: 20 }, this.scene);
-            controlPanel.material = new BABYLON.StandardMaterial('panelMat', this.scene);
-            controlPanel.material.diffuse = new BABYLON.Color3(0.15, 0.15, 0.18);
-            controlPanel.position.set(-135, 100, 120);
-
-            const panelScreen = BABYLON.MeshBuilder.CreateBox('panelScreen',
-                { width: 85, height: 85, depth: 8 }, this.scene);
-            panelScreen.material = new BABYLON.StandardMaterial('screenMat', this.scene);
-            panelScreen.material.diffuse = new BABYLON.Color3(0.05, 0.05, 0.08);
-            panelScreen.position.set(-135, 105, 128);
-
-            // ==================== GROUND REFERENCE ====================
-            const ground = BABYLON.MeshBuilder.CreateGround('ground',
-                { width: 500, height: 500 }, this.scene);
-            const groundMat = new BABYLON.StandardMaterial('groundMat', this.scene);
-            groundMat.diffuse = new BABYLON.Color3(0.15, 0.18, 0.15);
-            ground.material = groundMat;
-            ground.position.y = 0;
-
-            console.log('✅ Accurate GemBot Gemstone Cutting Machine 3D model created!');
-        } catch (error) {
-            console.error('Error creating machine geometry:', error);
-            const fallback = BABYLON.MeshBuilder.CreateBox('fallback', { size: 20 }, this.scene);
-            fallback.material = new BABYLON.StandardMaterial('fallbackMat', this.scene);
-            fallback.position.y = 20;
-        }
-    }
-    
-    /**
-     * Create grinding wheel material with texture-like appearance
-     */
-    createWheelMaterial(hexColor, name) {
-        const material = new BABYLON.StandardMaterial(name, this.scene);
-        const rgb = parseInt(hexColor.substring(1), 16);
-        const r = (rgb >> 16) & 255;
-        const g = (rgb >> 8) & 255;
-        const b = rgb & 255;
-        
-        material.diffuse = new BABYLON.Color3(r / 255, g / 255, b / 255);
-        material.specularColor = new BABYLON.Color3(0.3, 0.3, 0.3);
-        material.specularPower = 16;
-        
-        return material;
-    }
-    
-    /**
-     * Change grinding wheel (grit type)
-     */
-    changeGrindingWheel(wheelType) {
-        if (!this.pAxisSpindle || !this.pAxisSpindle.wheelTypes) return;
-        
-        const wheelTypes = ['coarse', 'medium', 'fine', 'polish'];
-        if (!wheelTypes.includes(wheelType)) {
-            console.warn(`Unknown wheel type: ${wheelType}`);
-            return;
-        }
-        
-        this.pAxisSpindle.material = this.pAxisSpindle.wheelTypes[wheelType];
-        this.pAxisSpindle.wheelType = wheelType;
-        
-        console.log(`🔄 Grinding wheel changed to: ${wheelType}`);
-    }
-    
-    /**
-     * Get current wheel type
-     */
-    getCurrentWheel() {
-        return this.pAxisSpindle ? this.pAxisSpindle.wheelType : null;
-    }
-    
-    /**
-     * Setup physics engine (disabled for now)
-     */
-    setupPhysics() {
-        // Physics disabled - not needed for visualization
-        // Enable later if collision detection is needed
-        console.log('Physics disabled (visualization only)');
-    }
-    
-    /**
-     * Convert motor steps to physical movement
-     */
-    stepsToMM(axis, steps) {
-        const motor = this.motors[axis];
-        if (!motor) return 0;
-        
-        // Calculate rotation: steps / stepsPerRev = revolutions
-        const revolutions = steps / motor.stepsPerRev;
-        
-        // Calculate distance: revolutions * mmPerRev
-        return revolutions * motor.mmPerRev;
-    }
-    
-    /**
-     * Convert motor steps to rotation angle
-     */
-    stepsToRotation(axis, steps) {
-        const motor = this.motors[axis];
-        if (!motor) return 0;
-        
-        // For rotation axis: steps / stepsPerRev * 360
-        return (steps / motor.stepsPerRev) * 360;
-    }
-    
-    /**
-     * Move motor to target position
-     * @param {string} axis - 'x', 'y', or 'p'
-     * @param {number} steps - Number of steps to move
-     */
-    moveMotor(axis, steps) {
-        if (!this.motors[axis]) return;
-        
-        this.motors[axis].targetPosition += steps;
-        
-        // Clamp to limits
-        this.motors[axis].targetPosition = Math.max(
-            0,
-            Math.min(this.motors[axis].targetPosition, this.motors[axis].maxCount)
-        );
-        
-        this.isMoving = true;
-    }
-    
-    /**
-     * Immediate motor position command
-     */
-    setMotorPosition(axis, position) {
-        if (!this.motors[axis]) return;
-        
-        this.motors[axis].targetPosition = position;
-        this.motors[axis].currentPosition = position;
-        
-        // Update 3D mesh immediately
-        this.updateMachineGeometry();
-    }
-    
-    /**
-     * Update 3D geometry based on motor positions
-     */
-    updateMachineGeometry() {
-        if (!this.xAxisCarriage) return;
-        
-        // X-axis: horizontal left-right movement
-        const xMM = this.stepsToMM('x', this.motors.x.currentPosition);
-        this.xAxisCarriage.position.x = (xMM - this.stepsToMM('x', this.motors.x.maxCount / 2));
-        
-        // Y-axis: forward-backward movement (along carriage)
-        const yMM = this.stepsToMM('y', this.motors.y.currentPosition);
-        this.yAxisCarriage.position.z = yMM - this.stepsToMM('y', this.motors.y.maxCount / 2);
-        
-        // P-axis: rotation (spindle)
-        const rotation = this.stepsToRotation('p', this.motors.p.currentPosition);
-        this.pAxisSpindle.rotation.y = BABYLON.Tools.ToRadians(rotation);
-    }
-    
-    /**
-     * Animate motor movement (physics-based)
-     */
-    animateMovement(deltaTime) {
-        if (!this.isMoving) return;
-        
-        let anyMoving = false;
-        
-        for (let axis of ['x', 'y', 'p']) {
-            const motor = this.motors[axis];
-            if (motor.currentPosition === motor.targetPosition) continue;
-            
-            anyMoving = true;
-            
-            // Calculate speed based on RPM
-            const stepRate = (motor.rpm / 60) * motor.stepsPerRev;
-            const stepsPerMs = stepRate / 1000;
-            const stepChange = stepsPerMs * this.updateInterval;
-            
-            // Move toward target
-            if (motor.currentPosition < motor.targetPosition) {
-                motor.currentPosition = Math.min(
-                    motor.currentPosition + stepChange,
-                    motor.targetPosition
-                );
-            } else {
-                motor.currentPosition = Math.max(
-                    motor.currentPosition - stepChange,
-                    motor.targetPosition
-                );
-            }
-        }
-        
-        this.updateMachineGeometry();
-        this.isMoving = anyMoving;
-    }
-    
-    /**
-     * Start main render loop
+     * Start the render loop
      */
     startRenderLoop() {
+        let lastTime = performance.now();
+        
         this.engine.runRenderLoop(() => {
             const now = performance.now();
+            const deltaTime = (now - lastTime) / 1000;
+            lastTime = now;
             
-            // Update physics
-            if (now - this.lastUpdate >= this.updateInterval) {
-                this.animateMovement(this.updateInterval);
-                this.lastUpdate = now;
+            // Animate lap rotation
+            if (this.lapSpinning && this.meshes.lap) {
+                this.meshes.lap.rotation.y += deltaTime * this.lapSpeed * 2;
             }
             
-            // Render scene
+            // Smooth motor animations
+            this.updateMotorAnimations(deltaTime);
+            
             this.scene.render();
         });
     }
     
     /**
-     * Get current motor positions as object
+     * Smooth motor position updates
      */
-    getMotorPositions() {
+    updateMotorAnimations(deltaTime) {
+        const lerpSpeed = 5; // Smoothing factor
+        
+        // X-axis movement
+        if (this.meshes.xCarriage) {
+            const targetX = (this.motors.x.currentPosition / this.motors.x.maxCount) * 80;
+            const currentX = this.meshes.xCarriage.position.x;
+            this.meshes.xCarriage.position.x += (targetX - currentX) * deltaTime * lerpSpeed;
+        }
+        
+        // Y-axis movement
+        if (this.meshes.yCarriage) {
+            const targetZ = (this.motors.y.currentPosition / this.motors.y.maxCount) * -40;
+            const currentZ = this.meshes.yCarriage.position.z;
+            this.meshes.yCarriage.position.z += (targetZ - currentZ) * deltaTime * lerpSpeed;
+        }
+        
+        // P-axis rotation (dop stick rotation)
+        if (this.meshes.dopStick) {
+            const targetRot = (this.motors.p.currentPosition / 360) * Math.PI * 2;
+            const currentRot = this.meshes.dopStick.rotation.y;
+            this.meshes.dopStick.rotation.y += (targetRot - currentRot) * deltaTime * lerpSpeed;
+        }
+    }
+    
+    /**
+     * Start lap spinning animation
+     */
+    startLapAnimation() {
+        this.lapSpinning = true;
+    }
+    
+    /**
+     * Stop lap animation
+     */
+    stopLapAnimation() {
+        this.lapSpinning = false;
+    }
+    
+    /**
+     * Set lap speed (1-5)
+     */
+    setLapSpeed(speed) {
+        this.lapSpeed = Math.max(0.5, Math.min(5, speed));
+    }
+    
+    // ==================== MOTOR CONTROL METHODS ====================
+    
+    /**
+     * Move X-axis (left-right)
+     */
+    moveX(steps) {
+        const newPos = this.motors.x.currentPosition + steps;
+        this.motors.x.currentPosition = Math.max(
+            this.motors.x.minPos,
+            Math.min(this.motors.x.maxPos, newPos)
+        );
+        console.log(`🔧 X-axis moved to ${this.motors.x.currentPosition}`);
+    }
+    
+    /**
+     * Move Y-axis (forward-backward toward lap)
+     */
+    moveY(steps) {
+        const newPos = this.motors.y.currentPosition + steps;
+        this.motors.y.currentPosition = Math.max(
+            this.motors.y.minPos,
+            Math.min(this.motors.y.maxPos, newPos)
+        );
+        console.log(`🔧 Y-axis moved to ${this.motors.y.currentPosition}`);
+    }
+    
+    /**
+     * Rotate P-axis (dop rotation)
+     */
+    rotateP(degrees) {
+        this.motors.p.currentPosition = (this.motors.p.currentPosition + degrees) % 360;
+        if (this.motors.p.currentPosition < 0) this.motors.p.currentPosition += 360;
+        console.log(`🔧 P-axis rotated to ${this.motors.p.currentPosition}°`);
+    }
+    
+    /**
+     * Set absolute position
+     */
+    setPosition(x, y, p) {
+        if (x !== undefined && x !== null) {
+            this.motors.x.currentPosition = Math.max(this.motors.x.minPos, Math.min(this.motors.x.maxPos, x));
+        }
+        if (y !== undefined && y !== null) {
+            this.motors.y.currentPosition = Math.max(this.motors.y.minPos, Math.min(this.motors.y.maxPos, y));
+        }
+        if (p !== undefined && p !== null) {
+            this.motors.p.currentPosition = p % 360;
+        }
+    }
+    
+    /**
+     * Home all motors
+     */
+    homeAllMotors() {
+        this.motors.x.currentPosition = 0;
+        this.motors.y.currentPosition = 0;
+        this.motors.p.currentPosition = 0;
+        console.log('🏠 All motors homed');
+    }
+    
+    /**
+     * Get current positions
+     */
+    getPositions() {
         return {
             x: this.motors.x.currentPosition,
             y: this.motors.y.currentPosition,
@@ -700,117 +626,218 @@ class VirtualMachine3D {
         };
     }
     
+    // ==================== ANIMATION PLAYBACK ====================
+    
     /**
-     * Reset all motors to home position
+     * Play animation by name
      */
-    homeAllMotors() {
-        this.motors.x.targetPosition = 0;
-        this.motors.y.targetPosition = 0;
-        this.motors.p.targetPosition = 0;
+    playAnimation(name) {
+        const group = this.animationGroups.find(g => g.name.toLowerCase().includes(name.toLowerCase()));
+        if (group) {
+            group.start(false); // Play once
+            console.log(`🎬 Playing animation: ${group.name}`);
+        } else {
+            console.log(`⚠️ Animation not found: ${name}`);
+        }
     }
     
     /**
-     * Emergency stop
+     * Play all animations
      */
-    emergencyStop() {
-        this.motors.x.targetPosition = this.motors.x.currentPosition;
-        this.motors.y.targetPosition = this.motors.y.currentPosition;
-        this.motors.p.targetPosition = this.motors.p.currentPosition;
-        this.isMoving = false;
+    playAllAnimations() {
+        this.animationGroups.forEach(group => {
+            group.start(true); // Loop
+        });
+        console.log('🎬 Playing all animations');
     }
     
     /**
-     * Update gemstone mesh from detected camera contour (edge detection)
-     * Creates/updates a 3D representation based on edge-detected contour points
-     * @param {Array} points3D - Array of {x, y, z} points from edge detection
+     * Stop all animations
      */
-    updateGemContour(points3D) {
-        if (!points3D || points3D.length < 10) return;
+    stopAllAnimations() {
+        this.animationGroups.forEach(group => {
+            group.stop();
+        });
+        console.log('🎬 Stopped all animations');
+    }
+    
+    // ==================== CAMERA CONTROLS ====================
+    
+    /**
+     * Zoom in
+     */
+    zoomIn() {
+        if (this.camera) {
+            this.camera.radius = Math.max(this.camera.lowerRadiusLimit, this.camera.radius - 20);
+        }
+    }
+    
+    /**
+     * Zoom out
+     */
+    zoomOut() {
+        if (this.camera) {
+            this.camera.radius = Math.min(this.camera.upperRadiusLimit, this.camera.radius + 20);
+        }
+    }
+    
+    /**
+     * Reset camera to default view
+     */
+    resetCamera() {
+        if (this.camera) {
+            this.camera.alpha = Math.PI * 0.75;
+            this.camera.beta = Math.PI / 3;
+            this.camera.radius = 250;
+            this.camera.target = new BABYLON.Vector3(0, 60, 0);
+        }
+    }
+    
+    /**
+     * Set camera to front view
+     */
+    setFrontView() {
+        if (this.camera) {
+            this.camera.alpha = Math.PI;
+            this.camera.beta = Math.PI / 2.5;
+            this.camera.radius = 200;
+        }
+    }
+    
+    /**
+     * Set camera to top view
+     */
+    setTopView() {
+        if (this.camera) {
+            this.camera.alpha = Math.PI / 2;
+            this.camera.beta = 0.1;
+            this.camera.radius = 300;
+        }
+    }
+    
+    /**
+     * Set camera to side view
+     */
+    setSideView() {
+        if (this.camera) {
+            this.camera.alpha = Math.PI / 2;
+            this.camera.beta = Math.PI / 2.5;
+            this.camera.radius = 200;
+        }
+    }
+    
+    // ==================== GEMSTONE DISPLAY ====================
+    
+    /**
+     * Show a gemstone from the loaded pack
+     */
+    showGemstone(name) {
+        // Hide current gemstone
+        if (this.currentGemstone) {
+            this.currentGemstone.isVisible = false;
+        }
         
-        try {
-            // Create or update contour visualization mesh
-            if (this.detectedContourMesh) {
-                this.detectedContourMesh.dispose();
+        // Find and show requested gemstone
+        const gem = Object.values(this.gemstoneModels).find(
+            m => m.name.toLowerCase().includes(name.toLowerCase())
+        );
+        
+        if (gem) {
+            gem.isVisible = true;
+            // Position on dop stick
+            if (this.meshes.dopStick) {
+                gem.parent = this.meshes.dopStick;
+                gem.position = new BABYLON.Vector3(0, -15, 0);
             }
-            
-            // Create material for detected gem outline
-            if (!this.contourMaterial) {
-                this.contourMaterial = new BABYLON.StandardMaterial('contourMat', this.scene);
-                this.contourMaterial.diffuseColor = new BABYLON.Color3(0.3, 1, 0.7);
-                this.contourMaterial.specularColor = new BABYLON.Color3(0.5, 1, 0.8);
-                this.contourMaterial.alpha = 0.7;
-                this.contourMaterial.emissiveColor = new BABYLON.Color3(0.1, 0.4, 0.3);
-            }
-            
-            // Build ribbon mesh from contour points for 3D visualization
-            const paths = [];
-            const topPath = [];
-            const bottomPath = [];
-            
-            for (let i = 0; i < points3D.length; i++) {
-                const p = points3D[i];
-                // Top surface (positive z)
-                topPath.push(new BABYLON.Vector3(p.x, p.y, p.z + 5));
-                // Bottom surface (negative z)
-                bottomPath.push(new BABYLON.Vector3(p.x, p.y, -p.z - 5));
-            }
-            
-            // Close the paths by connecting back to start
-            if (topPath.length > 0) {
-                topPath.push(topPath[0].clone());
-                bottomPath.push(bottomPath[0].clone());
-            }
-            
-            paths.push(bottomPath);
-            paths.push(topPath);
-            
-            // Create ribbon mesh
-            this.detectedContourMesh = BABYLON.MeshBuilder.CreateRibbon('detectedGem', {
-                pathArray: paths,
-                closePath: false,
-                closeArray: false,
-                sideOrientation: BABYLON.Mesh.DOUBLESIDE
-            }, this.scene);
-            
-            this.detectedContourMesh.material = this.contourMaterial;
-            
-            // Position near the gemstone on the dop stick
-            this.detectedContourMesh.position.set(85, 105, 0);
-            this.detectedContourMesh.scaling.set(0.3, 0.3, 0.3);
-            
-            // Optionally parent to dop stick so it rotates with the index motor
-            if (this.dopStick) {
-                this.detectedContourMesh.parent = this.dopStick;
-                this.detectedContourMesh.position.set(30, 0, 0);
-            }
-            
-            console.log(`🔷 Updated 3D gem contour with ${points3D.length} points`);
-            
-        } catch (error) {
-            console.warn('Error updating gem contour:', error.message);
+            this.currentGemstone = gem;
+            console.log(`💎 Showing gemstone: ${gem.name}`);
         }
     }
     
     /**
-     * Clear detected contour mesh
+     * List available gemstones
      */
-    clearDetectedContour() {
-        if (this.detectedContourMesh) {
-            this.detectedContourMesh.dispose();
-            this.detectedContourMesh = null;
-            console.log('🔷 Cleared detected gem contour');
+    listGemstones() {
+        return Object.keys(this.gemstoneModels);
+    }
+    
+    // ==================== PART LABELING FOR TEACHING ====================
+    
+    /**
+     * Highlight a machine part for teaching
+     */
+    highlightPart(partName, color = new BABYLON.Color3(1, 0.8, 0)) {
+        // Find mesh by name
+        let targetMesh = this.meshes[partName];
+        
+        if (!targetMesh && this.machineModel) {
+            // Search in loaded model
+            targetMesh = this.scene.getMeshByName(partName);
+        }
+        
+        if (targetMesh) {
+            // Store original material
+            targetMesh._originalMaterial = targetMesh.material;
+            
+            // Create highlight material
+            const highlightMat = new BABYLON.StandardMaterial('highlight', this.scene);
+            highlightMat.diffuseColor = color;
+            highlightMat.emissiveColor = color.scale(0.3);
+            highlightMat.specularColor = new BABYLON.Color3(1, 1, 1);
+            
+            targetMesh.material = highlightMat;
+            
+            console.log(`🔦 Highlighted: ${partName}`);
+            return true;
+        }
+        
+        console.log(`⚠️ Part not found: ${partName}`);
+        return false;
+    }
+    
+    /**
+     * Remove highlight from part
+     */
+    unhighlightPart(partName) {
+        let targetMesh = this.meshes[partName] || this.scene.getMeshByName(partName);
+        
+        if (targetMesh && targetMesh._originalMaterial) {
+            targetMesh.material = targetMesh._originalMaterial;
+            delete targetMesh._originalMaterial;
+            console.log(`🔦 Unhighlighted: ${partName}`);
         }
     }
     
     /**
-     * Dispose and cleanup
+     * Get list of all mesh names (for teaching reference)
+     */
+    getMeshNames() {
+        const names = [];
+        this.scene.meshes.forEach(mesh => {
+            if (mesh.name && !mesh.name.startsWith('_')) {
+                names.push(mesh.name);
+            }
+        });
+        return names;
+    }
+    
+    // ==================== CLEANUP ====================
+    
+    /**
+     * Dispose of scene resources
      */
     dispose() {
+        if (this.scene) {
+            this.scene.dispose();
+        }
         if (this.engine) {
             this.engine.dispose();
         }
+        console.log('🗑️ VirtualMachine3D disposed');
     }
 }
 
-// Export for use in HTML
-window.VirtualMachine3D = VirtualMachine3D;
+// Export for use
+if (typeof window !== 'undefined') {
+    window.VirtualMachine3D = VirtualMachine3D;
+}
