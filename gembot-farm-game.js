@@ -621,25 +621,141 @@ class GemBotFarmGame {
             }
         };
         
-        // Room types
+        // Room types - From home hobby to industrial warehouse scale
+        // Goal: Support 1000s of GemBots for ultimate factory simulation
         this.roomTypes = {
-            'starter_workshop': {
-                name: 'Starter Workshop',
-                slots: 3,
-                bonus: 1
+            // ===== TIER 1: HOME OPERATIONS =====
+            'home_desk': {
+                name: 'Home Desk Setup',
+                tier: 1,
+                slots: 1,
+                bonus: 1.0,
+                cost: 0,
+                description: 'Single GemBot on your desk - where every cutter starts',
+                dimensions: { width: 3, depth: 2 },
+                unlockLevel: 1
             },
-            'neon_factory': {
-                name: 'Neon Factory',
-                cost: 250,
-                slots: 6,
-                bonus: 1.2
+            'home_workshop': {
+                name: 'Home Workshop',
+                tier: 1,
+                slots: 4,
+                bonus: 1.05,
+                cost: 100,
+                description: 'Dedicated space in your garage or spare room',
+                dimensions: { width: 8, depth: 6 },
+                unlockLevel: 3
             },
-            'quantum_lab': {
-                name: 'Quantum Lab',
-                cost: 1000,
-                slots: 10,
-                bonus: 1.5
+            'home_studio': {
+                name: 'Home Studio',
+                tier: 1,
+                slots: 8,
+                bonus: 1.1,
+                cost: 500,
+                description: 'Full home studio with proper workbenches',
+                dimensions: { width: 12, depth: 10 },
+                unlockLevel: 5
+            },
+            // ===== TIER 2: SMALL BUSINESS =====
+            'small_shop': {
+                name: 'Small Retail Shop',
+                tier: 2,
+                slots: 12,
+                bonus: 1.15,
+                cost: 2000,
+                description: 'Small storefront with back workshop',
+                dimensions: { width: 16, depth: 12 },
+                unlockLevel: 8
+            },
+            'brick_mortar': {
+                name: 'Brick & Mortar Store',
+                tier: 2,
+                slots: 20,
+                bonus: 1.2,
+                cost: 5000,
+                description: 'Full jewelry store with production area',
+                dimensions: { width: 24, depth: 16 },
+                unlockLevel: 12
+            },
+            'boutique_factory': {
+                name: 'Boutique Factory',
+                tier: 2,
+                slots: 35,
+                bonus: 1.25,
+                cost: 15000,
+                description: 'Small factory with multiple cutting stations',
+                dimensions: { width: 32, depth: 24 },
+                unlockLevel: 18
+            },
+            // ===== TIER 3: INDUSTRIAL =====
+            'small_warehouse': {
+                name: 'Small Warehouse',
+                tier: 3,
+                slots: 75,
+                bonus: 1.3,
+                cost: 50000,
+                description: 'Industrial space with rows of GemBots',
+                dimensions: { width: 50, depth: 40 },
+                unlockLevel: 25
+            },
+            'medium_warehouse': {
+                name: 'Medium Warehouse',
+                tier: 3,
+                slots: 200,
+                bonus: 1.35,
+                cost: 150000,
+                description: 'Serious gem cutting operation',
+                dimensions: { width: 80, depth: 60 },
+                unlockLevel: 35
+            },
+            'large_warehouse': {
+                name: 'Large Warehouse',
+                tier: 3,
+                slots: 500,
+                bonus: 1.4,
+                cost: 500000,
+                description: 'Major production facility',
+                dimensions: { width: 120, depth: 80 },
+                unlockLevel: 50
+            },
+            // ===== TIER 4: MEGA OPERATIONS =====
+            'mega_factory': {
+                name: 'Mega Factory',
+                tier: 4,
+                slots: 1000,
+                bonus: 1.5,
+                cost: 2000000,
+                description: 'Massive automated gem cutting facility',
+                dimensions: { width: 200, depth: 150 },
+                unlockLevel: 75
+            },
+            'industrial_complex': {
+                name: 'Industrial Complex',
+                tier: 4,
+                slots: 2500,
+                bonus: 1.6,
+                cost: 10000000,
+                description: 'Multiple buildings, thousands of machines',
+                dimensions: { width: 300, depth: 250 },
+                unlockLevel: 100
+            },
+            'gembot_empire': {
+                name: 'GemBot Empire HQ',
+                tier: 4,
+                slots: 5000,
+                bonus: 2.0,
+                cost: 50000000,
+                description: 'The ultimate gem cutting empire - legendary status',
+                dimensions: { width: 500, depth: 400 },
+                unlockLevel: 150
             }
+        };
+        
+        // Track which tier locations player has unlocked
+        this.locationTiers = {
+            1: ['home_desk'],  // Start with home desk
+            2: [],
+            3: [],
+            4: []
         };
         
         // ==================== REALISTIC GEM CUTTING DATA ====================
@@ -1267,20 +1383,53 @@ class GemBotFarmGame {
     }
     
     /**
-     * Create procedural workshop building
+     * Create procedural workshop building with proper tables for GemBots
      */
     createWorkshopBuilding() {
-        // Main workshop platform
-        const platform = BABYLON.MeshBuilder.CreateBox(
-            'platform',
-            { width: 30, height: 1, depth: 20 },
+        const currentRoom = this.roomTypes[this.state.rooms?.[0] || 'home_workshop'];
+        const roomWidth = currentRoom?.dimensions?.width || 12;
+        const roomDepth = currentRoom?.dimensions?.depth || 10;
+        
+        // Main workshop floor
+        const floor = BABYLON.MeshBuilder.CreateBox(
+            'floor',
+            { width: roomWidth + 10, height: 0.3, depth: roomDepth + 10 },
             this.scene
         );
-        platform.position = new BABYLON.Vector3(0, 0.5, 0);
+        floor.position = new BABYLON.Vector3(0, 0.15, 0);
+        
+        const floorMat = new BABYLON.StandardMaterial('floorMat', this.scene);
+        floorMat.diffuseColor = new BABYLON.Color3(0.15, 0.12, 0.1); // Warm concrete
+        floorMat.specularColor = new BABYLON.Color3(0.1, 0.1, 0.1);
+        floor.material = floorMat;
+        
+        // Create tables for GemBots
+        this.createWorkTables(currentRoom);
+        
+        // Add better ambient lighting
+        const ambientLight = new BABYLON.HemisphericLight(
+            'ambientLight',
+            new BABYLON.Vector3(0, 1, 0),
+            this.scene
+        );
+        ambientLight.intensity = 0.6;
+        ambientLight.diffuse = new BABYLON.Color3(1, 0.95, 0.9); // Warm white
+        ambientLight.groundColor = new BABYLON.Color3(0.3, 0.25, 0.2);
+        
+        // Overhead work lights
+        this.createOverheadLights(roomWidth, roomDepth);
+        
+        // Main workshop platform/raised area
+        const platform = BABYLON.MeshBuilder.CreateBox(
+            'platform',
+            { width: roomWidth + 4, height: 0.2, depth: roomDepth + 4 },
+            this.scene
+        );
+        platform.position = new BABYLON.Vector3(0, 0.4, 0);
         
         const platformMat = new BABYLON.StandardMaterial('platformMat', this.scene);
-        platformMat.diffuseColor = new BABYLON.Color3(0.1, 0.1, 0.15);
-        platformMat.emissiveColor = new BABYLON.Color3(0.02, 0.02, 0.05);
+        platformMat.diffuseColor = new BABYLON.Color3(0.2, 0.18, 0.15);
+        platformMat.specularColor = new BABYLON.Color3(0.1, 0.1, 0.1);
         platform.material = platformMat;
         
         // Neon edge strips
@@ -1442,104 +1591,558 @@ class GemBotFarmGame {
     }
     
     /**
-     * Create 3D mesh for a machine
+     * Create accurate GemBot Mini 3D mesh
+     * 
+     * GemBot Mini anatomy:
+     * - Base unit with motor and lap spindle
+     * - Lap disc (cutting/polishing wheel) - spins horizontally
+     * - Mast (vertical support arm)
+     * - Angle Control Box (attached to mast) - contains index motor
+     * - Index Wheel (96-tooth gear for facet positioning)
+     * - Quill/Chuck assembly (holds dop stick)
+     * - Dop Stick (wax attachment for stone)
+     * - Stone (the gem being cut)
+     * 
+     * Home position: Arm at 90° (parallel to lap), positioned up on Y and right on X
+     * Scale: ~18" x 12" x 10" real size - one GemBot fills a standard workbench
      */
     createMachineMesh(machine, index) {
         if (!this.scene) return;
         
         const machineType = this.machineTypes[machine.type];
+        const roomType = this.roomTypes[machine.room];
         
-        // Position in grid
-        const gridX = (index % 3) * 8 - 8;
-        const gridZ = Math.floor(index / 3) * 8 - 4;
+        // Scale: 1 unit = ~2 inches, GemBot Mini is ~18" wide = 9 units
+        // Each GemBot needs a full table (about 10x8 units)
+        const scale = 1.0;
+        const tableSpacing = 10; // Each table is 10 units apart
         
-        // Create machine group
+        // Position based on room layout - one GemBot per table
+        const roomDims = roomType?.dimensions || { width: 12, depth: 10 };
+        const slotsPerRow = Math.max(1, Math.floor(roomDims.width / tableSpacing));
+        const gridX = (index % slotsPerRow) * tableSpacing - (roomDims.width / 2) + tableSpacing / 2;
+        const gridZ = Math.floor(index / slotsPerRow) * tableSpacing - (roomDims.depth / 2) + tableSpacing / 2;
+        
+        // Create machine root
         const machineRoot = new BABYLON.TransformNode(machine.id, this.scene);
-        machineRoot.position = new BABYLON.Vector3(gridX, 1, gridZ);
+        machineRoot.position = new BABYLON.Vector3(gridX, 0, gridZ);
         
-        // Machine base
-        const base = BABYLON.MeshBuilder.CreateBox(
-            machine.id + '_base',
-            { width: 4, height: 2, depth: 3 },
-            this.scene
-        );
+        // Store animation targets
+        machine.animationTargets = {};
+        
+        // ===== MATERIALS =====
+        const metalMat = new BABYLON.StandardMaterial(machine.id + '_metal', this.scene);
+        metalMat.diffuseColor = new BABYLON.Color3(0.3, 0.3, 0.35);
+        metalMat.specularColor = new BABYLON.Color3(0.6, 0.6, 0.7);
+        metalMat.specularPower = 32;
+        
+        const darkMetalMat = new BABYLON.StandardMaterial(machine.id + '_darkMetal', this.scene);
+        darkMetalMat.diffuseColor = new BABYLON.Color3(0.15, 0.15, 0.18);
+        darkMetalMat.specularColor = new BABYLON.Color3(0.4, 0.4, 0.5);
+        
+        const blackMat = new BABYLON.StandardMaterial(machine.id + '_black', this.scene);
+        blackMat.diffuseColor = new BABYLON.Color3(0.05, 0.05, 0.07);
+        
+        const copperMat = new BABYLON.StandardMaterial(machine.id + '_copper', this.scene);
+        copperMat.diffuseColor = new BABYLON.Color3(0.72, 0.45, 0.2);
+        copperMat.specularColor = new BABYLON.Color3(0.9, 0.7, 0.5);
+        
+        const acrylicMat = new BABYLON.StandardMaterial(machine.id + '_acrylic', this.scene);
+        acrylicMat.diffuseColor = new BABYLON.Color3(0.1, 0.1, 0.15);
+        acrylicMat.alpha = 0.7;
+        
+        // ===== 1. BASE UNIT (Motor housing) =====
+        const baseWidth = 4.5 * scale;
+        const baseHeight = 1.5 * scale;
+        const baseDepth = 3 * scale;
+        
+        const base = BABYLON.MeshBuilder.CreateBox(machine.id + '_base', {
+            width: baseWidth, height: baseHeight, depth: baseDepth
+        }, this.scene);
         base.parent = machineRoot;
-        base.position.y = 1;
+        base.position.y = baseHeight / 2;
+        base.material = darkMetalMat;
         
-        const baseMat = new BABYLON.StandardMaterial(machine.id + '_baseMat', this.scene);
-        baseMat.diffuseColor = new BABYLON.Color3(0.2, 0.2, 0.25);
-        baseMat.specularColor = new BABYLON.Color3(0.5, 0.5, 0.6);
-        base.material = baseMat;
-        
-        // Machine arm (vertical)
-        const arm = BABYLON.MeshBuilder.CreateBox(
-            machine.id + '_arm',
-            { width: 0.5, height: 3, depth: 0.5 },
-            this.scene
-        );
-        arm.parent = machineRoot;
-        arm.position = new BABYLON.Vector3(-1.5, 3.5, 0);
-        
-        const armMat = new BABYLON.StandardMaterial(machine.id + '_armMat', this.scene);
-        armMat.diffuseColor = new BABYLON.Color3(0.3, 0.3, 0.35);
-        arm.material = armMat;
-        
-        // Spindle head
-        const spindle = BABYLON.MeshBuilder.CreateCylinder(
-            machine.id + '_spindle',
-            { height: 1.5, diameter: 0.8 },
-            this.scene
-        );
-        spindle.parent = machineRoot;
-        spindle.position = new BABYLON.Vector3(-1.5, 5.5, 0);
-        spindle.rotation.z = Math.PI / 2;
-        
-        const spindleMat = new BABYLON.StandardMaterial(machine.id + '_spindleMat', this.scene);
-        spindleMat.diffuseColor = new BABYLON.Color3(0.5, 0.5, 0.55);
-        spindleMat.specularColor = new BABYLON.Color3(0.8, 0.8, 0.9);
-        spindle.material = spindleMat;
-        
-        // Lap disc
-        const lap = BABYLON.MeshBuilder.CreateCylinder(
-            machine.id + '_lap',
-            { height: 0.3, diameter: 2 },
-            this.scene
-        );
-        lap.parent = machineRoot;
-        lap.position = new BABYLON.Vector3(0.5, 2.2, 0);
-        
-        const lapMat = new BABYLON.StandardMaterial(machine.id + '_lapMat', this.scene);
-        lapMat.diffuseColor = new BABYLON.Color3(0.4, 0.35, 0.3);
-        lapMat.specularColor = new BABYLON.Color3(0.6, 0.5, 0.4);
-        lap.material = lapMat;
-        
-        // Status light
-        const statusLight = BABYLON.MeshBuilder.CreateSphere(
-            machine.id + '_status',
-            { diameter: 0.3 },
-            this.scene
-        );
-        statusLight.parent = machineRoot;
-        statusLight.position = new BABYLON.Vector3(1.8, 2.3, 1.3);
-        
-        const statusMat = new BABYLON.StandardMaterial(machine.id + '_statusMat', this.scene);
-        statusMat.emissiveColor = new BABYLON.Color3(0, 1, 0);
-        statusLight.material = statusMat;
-        
-        // Store mesh reference
-        machine.mesh = machineRoot;
-        machine.lapMesh = lap;
-        machine.statusMesh = statusLight;
-        machine.statusMat = statusMat;
-        
-        // Add spinning animation for lap
-        this.scene.registerBeforeRender(() => {
-            if (lap && !this.isPaused) {
-                lap.rotation.y += 0.02 * machineType.speed;
-            }
+        // Base feet
+        const footPositions = [
+            [-baseWidth/2 + 0.3, 0, -baseDepth/2 + 0.3],
+            [baseWidth/2 - 0.3, 0, -baseDepth/2 + 0.3],
+            [-baseWidth/2 + 0.3, 0, baseDepth/2 - 0.3],
+            [baseWidth/2 - 0.3, 0, baseDepth/2 - 0.3]
+        ];
+        footPositions.forEach((pos, i) => {
+            const foot = BABYLON.MeshBuilder.CreateCylinder(machine.id + '_foot' + i, {
+                height: 0.2, diameter: 0.4
+            }, this.scene);
+            foot.parent = machineRoot;
+            foot.position = new BABYLON.Vector3(pos[0], 0.1, pos[2]);
+            foot.material = blackMat;
         });
         
+        // ===== 2. LAP SPINDLE & DISC =====
+        // Spindle housing (center of base, top)
+        const spindleHousing = BABYLON.MeshBuilder.CreateCylinder(machine.id + '_spindleHousing', {
+            height: 0.8, diameter: 1.2
+        }, this.scene);
+        spindleHousing.parent = machineRoot;
+        spindleHousing.position = new BABYLON.Vector3(0, baseHeight + 0.4, 0);
+        spindleHousing.material = metalMat;
+        
+        // Lap disc (cutting wheel) - sits on spindle
+        const lapDisc = BABYLON.MeshBuilder.CreateCylinder(machine.id + '_lap', {
+            height: 0.15, diameter: 3.5
+        }, this.scene);
+        lapDisc.parent = machineRoot;
+        lapDisc.position = new BABYLON.Vector3(0, baseHeight + 0.85, 0);
+        
+        const lapMat = new BABYLON.StandardMaterial(machine.id + '_lapMat', this.scene);
+        lapMat.diffuseColor = new BABYLON.Color3(0.5, 0.45, 0.4); // Bronze/copper lap color
+        lapMat.specularColor = new BABYLON.Color3(0.7, 0.6, 0.5);
+        lapDisc.material = lapMat;
+        machine.lapMesh = lapDisc;
+        
+        // Water drip tray rim
+        const trayRim = BABYLON.MeshBuilder.CreateTorus(machine.id + '_trayRim', {
+            diameter: 4, thickness: 0.1, tessellation: 32
+        }, this.scene);
+        trayRim.parent = machineRoot;
+        trayRim.position = new BABYLON.Vector3(0, baseHeight + 0.7, 0);
+        trayRim.material = metalMat;
+        
+        // ===== 3. MAST (Vertical support arm) =====
+        const mastHeight = 3.5 * scale;
+        const mast = BABYLON.MeshBuilder.CreateBox(machine.id + '_mast', {
+            width: 0.4, height: mastHeight, depth: 0.4
+        }, this.scene);
+        mast.parent = machineRoot;
+        mast.position = new BABYLON.Vector3(-baseWidth/2 - 0.3, baseHeight + mastHeight/2, 0);
+        mast.material = metalMat;
+        
+        // Mast base bracket
+        const mastBracket = BABYLON.MeshBuilder.CreateBox(machine.id + '_mastBracket', {
+            width: 0.8, height: 0.3, depth: 0.6
+        }, this.scene);
+        mastBracket.parent = machineRoot;
+        mastBracket.position = new BABYLON.Vector3(-baseWidth/2 - 0.3, baseHeight + 0.15, 0);
+        mastBracket.material = darkMetalMat;
+        
+        // ===== 4. ANGLE CONTROL BOX (Contains index motor) =====
+        // This is the key component - holds the index wheel mechanism
+        const angleBoxWidth = 1.2;
+        const angleBoxHeight = 1.0;
+        const angleBoxDepth = 0.8;
+        
+        // Angle arm pivot (attaches to mast, allows vertical angle adjustment)
+        const angleArmPivot = new BABYLON.TransformNode(machine.id + '_angleArmPivot', this.scene);
+        angleArmPivot.parent = machineRoot;
+        angleArmPivot.position = new BABYLON.Vector3(-baseWidth/2 - 0.3, baseHeight + mastHeight - 0.5, 0);
+        machine.animationTargets.angleArmPivot = angleArmPivot;
+        
+        // Horizontal arm from mast to angle box
+        const angleArm = BABYLON.MeshBuilder.CreateBox(machine.id + '_angleArm', {
+            width: 2.5, height: 0.3, depth: 0.3
+        }, this.scene);
+        angleArm.parent = angleArmPivot;
+        angleArm.position = new BABYLON.Vector3(1.25, 0, 0);
+        angleArm.material = metalMat;
+        
+        // Angle control box (motor housing for index)
+        const angleBox = BABYLON.MeshBuilder.CreateBox(machine.id + '_angleBox', {
+            width: angleBoxWidth, height: angleBoxHeight, depth: angleBoxDepth
+        }, this.scene);
+        angleBox.parent = angleArmPivot;
+        angleBox.position = new BABYLON.Vector3(2.5, 0, 0);
+        angleBox.material = darkMetalMat;
+        
+        // ===== 5. INDEX WHEEL (96-tooth gear for facet positioning) =====
+        const indexWheelPivot = new BABYLON.TransformNode(machine.id + '_indexWheelPivot', this.scene);
+        indexWheelPivot.parent = angleArmPivot;
+        indexWheelPivot.position = new BABYLON.Vector3(2.5 + angleBoxWidth/2 + 0.3, 0, 0);
+        machine.animationTargets.indexWheelPivot = indexWheelPivot;
+        
+        // Index wheel (gear-like appearance)
+        const indexWheel = BABYLON.MeshBuilder.CreateCylinder(machine.id + '_indexWheel', {
+            height: 0.15, diameter: 0.9
+        }, this.scene);
+        indexWheel.parent = indexWheelPivot;
+        indexWheel.rotation.z = Math.PI / 2;
+        indexWheel.material = metalMat;
+        
+        // Index wheel teeth suggestion (outer ring)
+        const indexRing = BABYLON.MeshBuilder.CreateTorus(machine.id + '_indexRing', {
+            diameter: 0.95, thickness: 0.05, tessellation: 48
+        }, this.scene);
+        indexRing.parent = indexWheelPivot;
+        indexRing.rotation.z = Math.PI / 2;
+        indexRing.material = copperMat;
+        
+        // ===== 6. QUILL/CHUCK ASSEMBLY =====
+        const chuckPivot = new BABYLON.TransformNode(machine.id + '_chuckPivot', this.scene);
+        chuckPivot.parent = indexWheelPivot;
+        chuckPivot.position = new BABYLON.Vector3(0.3, 0, 0);
+        machine.animationTargets.chuckPivot = chuckPivot;
+        
+        // Chuck body
+        const chuck = BABYLON.MeshBuilder.CreateCylinder(machine.id + '_chuck', {
+            height: 0.6, diameterTop: 0.25, diameterBottom: 0.35
+        }, this.scene);
+        chuck.parent = chuckPivot;
+        chuck.rotation.z = Math.PI / 2;
+        chuck.position.x = 0.3;
+        chuck.material = metalMat;
+        
+        // ===== 7. DOP STICK =====
+        const dopStick = BABYLON.MeshBuilder.CreateCylinder(machine.id + '_dopStick', {
+            height: 1.2, diameter: 0.08
+        }, this.scene);
+        dopStick.parent = chuckPivot;
+        dopStick.rotation.z = Math.PI / 2;
+        dopStick.position.x = 1.2;
+        
+        const dopMat = new BABYLON.StandardMaterial(machine.id + '_dopMat', this.scene);
+        dopMat.diffuseColor = new BABYLON.Color3(0.6, 0.5, 0.3); // Brass color
+        dopStick.material = dopMat;
+        
+        // Dop wax bulb (where stone attaches)
+        const dopWax = BABYLON.MeshBuilder.CreateSphere(machine.id + '_dopWax', {
+            diameter: 0.2
+        }, this.scene);
+        dopWax.parent = chuckPivot;
+        dopWax.position.x = 1.8;
+        
+        const waxMat = new BABYLON.StandardMaterial(machine.id + '_waxMat', this.scene);
+        waxMat.diffuseColor = new BABYLON.Color3(0.4, 0.25, 0.1); // Brown wax
+        dopWax.material = waxMat;
+        
+        // ===== 8. STONE (Gem being cut) =====
+        const stonePivot = new BABYLON.TransformNode(machine.id + '_stonePivot', this.scene);
+        stonePivot.parent = chuckPivot;
+        stonePivot.position = new BABYLON.Vector3(1.95, 0, 0);
+        machine.animationTargets.stonePivot = stonePivot;
+        
+        // Create gem stone (octahedron shape for rough, or faceted for in-progress)
+        const stone = BABYLON.MeshBuilder.CreatePolyhedron(machine.id + '_stone', {
+            type: 1, // Octahedron
+            size: 0.12
+        }, this.scene);
+        stone.parent = stonePivot;
+        
+        const stoneMat = new BABYLON.StandardMaterial(machine.id + '_stoneMat', this.scene);
+        stoneMat.diffuseColor = new BABYLON.Color3(0.5, 0, 1); // Purple amethyst default
+        stoneMat.specularColor = new BABYLON.Color3(1, 1, 1);
+        stoneMat.specularPower = 64;
+        stoneMat.alpha = 0.85;
+        stone.material = stoneMat;
+        machine.stoneMesh = stone;
+        machine.stoneMat = stoneMat;
+        
+        // ===== 9. STATUS INDICATORS =====
+        // LED status light on base
+        const statusLED = BABYLON.MeshBuilder.CreateSphere(machine.id + '_statusLED', {
+            diameter: 0.15
+        }, this.scene);
+        statusLED.parent = machineRoot;
+        statusLED.position = new BABYLON.Vector3(baseWidth/2 - 0.3, baseHeight + 0.1, baseDepth/2 - 0.3);
+        
+        const statusMat = new BABYLON.StandardMaterial(machine.id + '_statusMat', this.scene);
+        statusMat.emissiveColor = new BABYLON.Color3(0, 1, 0); // Green = idle
+        statusLED.material = statusMat;
+        machine.statusMesh = statusLED;
+        machine.statusMat = statusMat;
+        
+        // ===== 10. SET HOME POSITION =====
+        // Home: Arm at 90° (horizontal, parallel to lap surface)
+        // The arm extends from the mast to the right (+X direction)
+        // Stone should be UP on Y axis and to the RIGHT on X axis
+        angleArmPivot.rotation.z = 0; // 0 radians = horizontal arm (90° from vertical)
+        
+        // Position the stone above and to the side of the lap (home/park position)
+        // When angle is 0 (horizontal), stone is positioned to the side of the lap
+        indexWheelPivot.rotation.x = 0; // Index at position 0 (96-tooth gear)
+        
+        // Store the home position for reference
+        machine.homePosition = {
+            armAngle: 90,  // degrees - horizontal
+            indexPosition: 0  // index gear position (0-95)
+        };
+        
+        // ===== STORE REFERENCES =====
+        machine.mesh = machineRoot;
+        machine.angleArmPivot = angleArmPivot;
+        machine.indexWheelPivot = indexWheelPivot;
+        machine.chuckPivot = chuckPivot;
+        
+        // ===== REGISTER ANIMATIONS =====
+        this.registerMachineAnimations(machine, machineType);
+        
+        // ===== CLICK INTERACTION =====
+        this.setupMachineInteraction(machine, machineRoot);
+        
         this.sceneObjects.machines.push(machineRoot);
+        
+        console.log(`🤖 Created GemBot Mini: ${machine.id} at (${gridX.toFixed(1)}, ${gridZ.toFixed(1)})`);
+    }
+    
+    /**
+     * Register animation handlers for a GemBot machine
+     */
+    registerMachineAnimations(machine, machineType) {
+        if (!this.scene || !machine.lapMesh) return;
+        
+        const speed = machineType?.speed || 1;
+        
+        // Animation state for this machine
+        machine.animState = {
+            lapSpinning: false,
+            currentAngle: 90, // Start at home (90° = parallel to lap)
+            targetAngle: 90,
+            currentIndex: 0,
+            targetIndex: 0,
+            isMoving: false
+        };
+        
+        // Main animation loop for this machine
+        this.scene.registerBeforeRender(() => {
+            if (this.isPaused) return;
+            
+            const stone = machine.currentStone;
+            const animState = machine.animState;
+            
+            // Lap spinning (when cutting/polishing)
+            if (animState.lapSpinning && machine.lapMesh) {
+                machine.lapMesh.rotation.y += 0.03 * speed;
+            }
+            
+            // Smooth angle transitions
+            if (machine.angleArmPivot && animState.currentAngle !== animState.targetAngle) {
+                const angleDiff = animState.targetAngle - animState.currentAngle;
+                const angleStep = Math.sign(angleDiff) * Math.min(Math.abs(angleDiff), 0.5);
+                animState.currentAngle += angleStep;
+                
+                // Convert to radians (0° = vertical down, 90° = horizontal)
+                const radians = (90 - animState.currentAngle) * Math.PI / 180;
+                machine.angleArmPivot.rotation.z = radians;
+            }
+            
+            // Index wheel rotation (facet positioning)
+            if (machine.indexWheelPivot && animState.currentIndex !== animState.targetIndex) {
+                const indexDiff = animState.targetIndex - animState.currentIndex;
+                const indexStep = Math.sign(indexDiff) * Math.min(Math.abs(indexDiff), 1);
+                animState.currentIndex += indexStep;
+                
+                // 96 index positions = 3.75° per position
+                const indexRadians = animState.currentIndex * (3.75 * Math.PI / 180);
+                machine.indexWheelPivot.rotation.x = indexRadians;
+            }
+            
+            // Update stone color based on current gem
+            if (stone && machine.stoneMat) {
+                const color = stone.gem?.color || '#ffffff';
+                const r = parseInt(color.slice(1, 3), 16) / 255;
+                const g = parseInt(color.slice(3, 5), 16) / 255;
+                const b = parseInt(color.slice(5, 7), 16) / 255;
+                machine.stoneMat.diffuseColor = new BABYLON.Color3(r, g, b);
+            }
+            
+            // Update status LED based on machine state
+            if (machine.statusMat) {
+                if (stone?.awaitingInteraction) {
+                    // Yellow - waiting for click
+                    machine.statusMat.emissiveColor = new BABYLON.Color3(1, 0.8, 0);
+                } else if (stone && !stone.isPaused) {
+                    // Blue - actively cutting
+                    machine.statusMat.emissiveColor = new BABYLON.Color3(0, 0.5, 1);
+                    animState.lapSpinning = true;
+                } else if (stone?.isPaused) {
+                    // Red - paused/error
+                    machine.statusMat.emissiveColor = new BABYLON.Color3(1, 0, 0);
+                    animState.lapSpinning = false;
+                } else {
+                    // Green - idle
+                    machine.statusMat.emissiveColor = new BABYLON.Color3(0, 1, 0);
+                    animState.lapSpinning = false;
+                }
+            }
+        });
+    }
+    
+    /**
+     * Setup click interaction for a machine
+     */
+    setupMachineInteraction(machine, meshRoot) {
+        if (!this.scene) return;
+        
+        // Make all child meshes pickable
+        meshRoot.getChildMeshes().forEach(mesh => {
+            mesh.isPickable = true;
+            mesh.actionManager = new BABYLON.ActionManager(this.scene);
+            
+            // Hover highlight
+            mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(
+                BABYLON.ActionManager.OnPointerOverTrigger,
+                () => {
+                    this.highlightMachine(machine, true);
+                }
+            ));
+            
+            mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(
+                BABYLON.ActionManager.OnPointerOutTrigger,
+                () => {
+                    this.highlightMachine(machine, false);
+                }
+            ));
+            
+            // Click action
+            mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(
+                BABYLON.ActionManager.OnPickTrigger,
+                () => {
+                    this.onMachineClicked(machine);
+                }
+            ));
+        });
+    }
+    
+    /**
+     * Highlight a machine (hover effect)
+     */
+    highlightMachine(machine, highlight) {
+        if (!machine.mesh) return;
+        
+        machine.mesh.getChildMeshes().forEach(mesh => {
+            if (mesh.material && mesh.material.emissiveColor) {
+                if (highlight) {
+                    mesh.material.emissiveColor = mesh.material.emissiveColor.add(
+                        new BABYLON.Color3(0.1, 0.1, 0.15)
+                    );
+                } else {
+                    mesh.material.emissiveColor = mesh.material.emissiveColor.subtract(
+                        new BABYLON.Color3(0.1, 0.1, 0.15)
+                    );
+                }
+            }
+        });
+    }
+    
+    /**
+     * Handle machine click
+     */
+    onMachineClicked(machine) {
+        console.log(`🖱️ Machine clicked: ${machine.id}`);
+        
+        const stone = machine.currentStone;
+        
+        // Check for pending interaction
+        if (stone?.awaitingInteraction) {
+            this.handleInteraction(machine.id, stone.interactionType);
+            return;
+        }
+        
+        // Check for pending interactions in the queue
+        const pending = this.state.inventory.pendingInteractions?.find(
+            p => p.machineId === machine.id
+        );
+        if (pending) {
+            this.handleInteraction(machine.id, pending.interactionType);
+            return;
+        }
+        
+        // No stone - start a new one
+        if (!stone) {
+            this.startNewStone(machine);
+            return;
+        }
+        
+        // Show machine status popup
+        this.showMachineStatus(machine);
+    }
+    
+    /**
+     * Show machine status popup
+     */
+    showMachineStatus(machine) {
+        const stone = machine.currentStone;
+        const status = {
+            machineId: machine.id,
+            type: this.machineTypes[machine.type]?.name,
+            status: stone ? 'Cutting' : 'Idle',
+            stone: stone ? {
+                gem: stone.gem?.name,
+                design: stone.design?.name,
+                stage: stone.currentStage,
+                progress: stone.stageProgress,
+                quality: stone.qualityScore,
+                roughCarats: stone.roughCarats,
+                expectedYield: stone.expectedFinishedCarats
+            } : null,
+            totalCuts: machine.totalCuts
+        };
+        
+        console.log('📊 Machine Status:', status);
+        
+        // Trigger UI callback if available
+        if (this.onMachineSelected) {
+            this.onMachineSelected(status);
+        }
+    }
+    
+    /**
+     * Update machine animation based on cutting stage
+     */
+    updateMachineAnimation(machine, stage, facetData) {
+        if (!machine.animState) return;
+        
+        // Set target angle based on stage
+        switch (stage) {
+            case 'prep':
+            case 'dopping':
+                machine.animState.targetAngle = 90; // Home position
+                machine.animState.lapSpinning = false;
+                break;
+            case 'shaping':
+            case 'preform':
+                machine.animState.targetAngle = 45; // Medium angle for rough shaping
+                machine.animState.lapSpinning = true;
+                break;
+            case 'pavilion_main':
+            case 'pavilion_break':
+            case 'pavilion_girdle':
+                machine.animState.targetAngle = 42; // Typical pavilion angle
+                machine.animState.lapSpinning = true;
+                if (facetData?.indexPosition) {
+                    machine.animState.targetIndex = facetData.indexPosition;
+                }
+                break;
+            case 'transfer':
+                machine.animState.targetAngle = 90; // Home for transfer
+                machine.animState.lapSpinning = false;
+                break;
+            case 'crown_main':
+            case 'crown_break':
+            case 'crown_star':
+            case 'crown_girdle':
+                machine.animState.targetAngle = 42; // Crown angle
+                machine.animState.lapSpinning = true;
+                if (facetData?.indexPosition) {
+                    machine.animState.targetIndex = facetData.indexPosition;
+                }
+                break;
+            case 'table':
+                machine.animState.targetAngle = 0; // Flat for table
+                machine.animState.lapSpinning = true;
+                break;
+            case 'polish_pavilion':
+            case 'polish_crown':
+            case 'polish_table':
+            case 'final_polish':
+                // Same angles but slower lap for polish
+                machine.animState.lapSpinning = true;
+                break;
+            case 'inspection':
+            case 'complete':
+                machine.animState.targetAngle = 90; // Back to home
+                machine.animState.lapSpinning = false;
+                break;
+        }
     }
     
     /**
@@ -3072,7 +3675,25 @@ class GemBotFarmGame {
      * This is a "grinding" mechanic - takes time but yields free rough
      */
     goSearching() {
+        // Check if already searching
+        if (this.state.player.isSearching) {
+            const timeRemaining = Math.max(0, (this.state.player.searchEndTime || 0) - Date.now());
+            if (timeRemaining > 0) {
+                const secondsLeft = Math.ceil(timeRemaining / 1000);
+                return { 
+                    success: false, 
+                    message: `Already searching! ${secondsLeft} seconds remaining.`,
+                    timeRemaining: timeRemaining
+                };
+            }
+        }
+        
+        // Start new search - takes 60 seconds (accelerated by timeAcceleration)
+        const searchDuration = 60000 / this.config.timeAcceleration; // 1 second real time at 60x
+        
         this.state.player.isSearching = true;
+        this.state.player.searchStartTime = Date.now();
+        this.state.player.searchEndTime = Date.now() + searchDuration;
         
         if (this.merlin) {
             this.merlinSpeak('Time to go rockhounding! This might take a while, but you might find some nice rough...');
@@ -3082,8 +3703,9 @@ class GemBotFarmGame {
         
         return { 
             success: true, 
-            message: 'Searching started! Check back in a minute for results.',
-            searchStartTime: Date.now()
+            message: `Searching started! Check back in ${Math.ceil(searchDuration / 1000)} seconds for results.`,
+            searchStartTime: Date.now(),
+            searchEndTime: this.state.player.searchEndTime
         };
     }
     
@@ -3094,6 +3716,17 @@ class GemBotFarmGame {
     completeSearch() {
         if (!this.state.player.isSearching) {
             return { success: false, message: 'Not currently searching' };
+        }
+        
+        // Check if search time is complete
+        const timeRemaining = (this.state.player.searchEndTime || 0) - Date.now();
+        if (timeRemaining > 0) {
+            const secondsLeft = Math.ceil(timeRemaining / 1000);
+            return { 
+                success: false, 
+                message: `Still searching! ${secondsLeft} seconds remaining.`,
+                timeRemaining: timeRemaining
+            };
         }
         
         const finds = [];
