@@ -3,14 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; media-src 'self' blob:; connect-src 'self' blob: indexeddb: https://cdn.jsdelivr.net https://api.qrserver.com; object-src 'none'; img-src 'self' data: blob: https://api.qrserver.com;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://www.babylonjs-playground.com; style-src 'self' 'unsafe-inline'; media-src 'self' blob:; connect-src 'self' blob: indexeddb: https://cdn.jsdelivr.net https://api.qrserver.com; object-src 'none'; img-src 'self' data: blob: https://api.qrserver.com;">
     <title>GemBot AI Control System</title>
+    
+    <!-- Babylon.js for 3D Virtual Machine -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/cannon.js"></script>
     
     <!-- QR Code Library (Primary) -->
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3"></script>
     
     <!-- QR Code Library (Fallback) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    
+    <!-- Virtual Machine 3D Module -->
+    <script src="./virtual-machine-3d.js"></script>
     
     <!-- TensorFlow.js for ML Analysis (Desktop Only) -->
     <script>
@@ -890,8 +897,30 @@
                 </div>
             </div>
 
-            <!-- CENTER: WEBCAM & ML ANALYSIS -->
+            <!-- CENTER: 3D VIRTUAL MACHINE & WEBCAM -->
             <div class="center-panel">
+                <!-- 3D Virtual Machine View -->
+                <div id="machineViewContainer" style="width: 100%; height: 400px; background: #1a1f3a; border-radius: 8px; border: 2px solid #667eea; margin-bottom: 12px; overflow: hidden;">
+                    <canvas id="babylon-canvas" style="width: 100%; height: 100%;"></canvas>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; font-size: 11px;">
+                    <div style="background: #2a3050; padding: 6px; border-radius: 4px;">
+                        <div style="color: #aaa; margin-bottom: 2px;">X-Axis</div>
+                        <div id="motorXPosition" style="color: #4affff; font-weight: bold;">0 steps</div>
+                    </div>
+                    <div style="background: #2a3050; padding: 6px; border-radius: 4px;">
+                        <div style="color: #aaa; margin-bottom: 2px;">Y-Axis</div>
+                        <div id="motorYPosition" style="color: #4affff; font-weight: bold;">0 steps</div>
+                    </div>
+                    <div style="background: #2a3050; padding: 6px; border-radius: 4px;">
+                        <div style="color: #aaa; margin-bottom: 2px;">P-Axis (Rotation)</div>
+                        <div id="motorPPosition" style="color: #4affff; font-weight: bold;">0°</div>
+                    </div>
+                    <button id="btnHomeAll" style="background: #4a7c2e; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">🏠 HOME ALL</button>
+                </div>
+                
+                <!-- Webcam & ML Analysis -->
                 <div class="camera-container">
                     <video id="cameraFeed" playsinline autoplay muted></video>
                     <canvas id="mlCanvas" class="camera-overlay"></canvas>
@@ -1008,6 +1037,87 @@
         let mobileDevices = new Map(); // Track connected mobile devices
         let networkURL = window.GEMBOT_NETWORK_URL || `http://localhost:8000`;
         let qrCodeGenerated = false;
+        
+        // ==================== VIRTUAL MACHINE 3D ====================
+        let virtualMachine = null; // Will be initialized when DOM is ready
+        
+        /**
+         * Initialize the 3D Virtual Machine
+         */
+        async function initializeVirtualMachine() {
+            try {
+                // Check if Babylon.js is loaded
+                if (typeof BABYLON === 'undefined') {
+                    console.log('Babylon.js not loaded yet, retrying...');
+                    setTimeout(initializeVirtualMachine, 100);
+                    return;
+                }
+                
+                virtualMachine = new VirtualMachine3D('babylon-canvas');
+                const success = await virtualMachine.initialize();
+                
+                if (success) {
+                    console.log('✅ Virtual Machine 3D initialized successfully');
+                    setupVirtualMachineControls();
+                } else {
+                    console.error('❌ Failed to initialize Virtual Machine 3D');
+                }
+            } catch (error) {
+                console.error('Virtual Machine initialization error:', error);
+            }
+        }
+        
+        /**
+         * Setup controls for virtual machine
+         */
+        function setupVirtualMachineControls() {
+            const homeBtn = document.getElementById('btnHomeAll');
+            if (homeBtn) {
+                homeBtn.addEventListener('click', () => {
+                    if (virtualMachine) {
+                        virtualMachine.homeAllMotors();
+                        updateMotorDisplays();
+                    }
+                });
+            }
+            
+            // Update position displays periodically
+            setInterval(updateMotorDisplays, 100);
+        }
+        
+        /**
+         * Update motor position displays
+         */
+        function updateMotorDisplays() {
+            if (!virtualMachine) return;
+            
+            const positions = virtualMachine.getMotorPositions();
+            
+            // Update X position
+            const xDisplay = document.getElementById('motorXPosition');
+            if (xDisplay) xDisplay.textContent = Math.round(positions.x) + ' steps';
+            
+            // Update Y position
+            const yDisplay = document.getElementById('motorYPosition');
+            if (yDisplay) yDisplay.textContent = Math.round(positions.y) + ' steps';
+            
+            // Update P position (rotation)
+            const pDisplay = document.getElementById('motorPPosition');
+            if (pDisplay) {
+                const rotation = (positions.p / 200) * 360; // Convert steps to degrees
+                pDisplay.textContent = Math.round(rotation) + '°';
+            }
+        }
+        
+        /**
+         * Send motor command to virtual machine
+         * @param {string} axis - 'x', 'y', or 'p'
+         * @param {number} steps - Number of steps
+         */
+        function commandVirtualMotor(axis, steps) {
+            if (!virtualMachine) return;
+            virtualMachine.moveMotor(axis, steps);
+        }
 
         // ==================== MACHINE STATE SYNCHRONIZATION ====================
         const machineGlobalState = {
@@ -9361,6 +9471,16 @@
             // Auto-scan in background (non-blocking)
             scanNetworkDevices().catch(err => console.log('Auto-scan error:', err));
         }, 2000);
+        
+        // ==================== INITIALIZE VIRTUAL MACHINE ====================
+        // Initialize virtual machine when Babylon.js and DOM are ready
+        setTimeout(() => {
+            if (typeof VirtualMachine3D !== 'undefined') {
+                initializeVirtualMachine();
+            } else {
+                console.warn('Virtual Machine 3D module not loaded');
+            }
+        }, 1000);
         
         // Merlin greeting will be given on window load, no duplicate welcome needed
     </script>
