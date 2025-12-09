@@ -14587,7 +14587,10 @@
                 
                 // Set up callbacks with Merlin integration
                 gameFarm.onGemCut = (data) => {
-                    addGameActivity(`💎 Cut ${data.gem.name}${data.perfect ? ' ⭐PERFECT!' : ''} +${data.value}`);
+                    // Enhanced callback with realistic cutting info
+                    const qualityText = data.quality >= 95 ? 'EXCELLENT' : data.quality >= 80 ? 'Good' : 'Fair';
+                    const timeText = data.cuttingTime ? ` (${data.cuttingTime.toFixed(1)}m)` : '';
+                    addGameActivity(`💎 Completed ${data.gem.name}${data.perfect ? ' ⭐PERFECT!' : ''} +${data.value} gems | ${qualityText}${timeText}`);
                     updateGameUI();
                     
                     // Merlin celebrates perfect cuts
@@ -14596,16 +14599,24 @@
                     }
                     
                     // Sync with Merlin's knowledge
-                    if (merlin && gameFarm.state.stats.totalCuts % 10 === 0) {
+                    if (merlin && gameFarm.state.stats.totalCuts % 5 === 0) {
                         merlin.updateGameStats({
                             totalGems: gameFarm.state.player.totalGemsEver,
-                            perfectCuts: gameFarm.state.stats.perfectCuts
+                            perfectCuts: gameFarm.state.stats.perfectCuts,
+                            stonesCompleted: gameFarm.state.player.stonesCompleted,
+                            stonesLost: gameFarm.state.player.stonesLost
                         });
                     }
                 };
                 
                 gameFarm.onLevelUp = (level) => {
                     addGameActivity(`🎉 LEVEL UP! Now level ${level}`);
+                    
+                    // Show what's unlocked
+                    if (level === 3) addGameActivity(`🔓 Unlocked: Topaz & Emerald stones!`);
+                    if (level === 8) addGameActivity(`🔓 Unlocked: Ruby & Sapphire (Corundum)!`);
+                    if (level === 15) addGameActivity(`🔓 Unlocked: Diamond & Alexandrite (Legendary)!`);
+                    
                     updateGameUI();
                     
                     // Merlin celebrates level ups
@@ -14714,21 +14725,28 @@
             const player = state.player;
             
             // Update stats
-            document.getElementById('gameGemCount').textContent = formatNumber(player.gems);
-            document.getElementById('gameTokenCount').textContent = formatNumber(player.tokens);
-            document.getElementById('gameLevel').textContent = player.level;
+            const gemCountEl = document.getElementById('gameGemCount');
+            const tokenCountEl = document.getElementById('gameTokenCount');
+            const levelEl = document.getElementById('gameLevel');
+            
+            if (gemCountEl) gemCountEl.textContent = formatNumber(player.gems);
+            if (tokenCountEl) tokenCountEl.textContent = formatNumber(player.tokens);
+            if (levelEl) levelEl.textContent = player.level;
             
             // XP bar
-            const xpPercent = (player.xp / player.xpToNextLevel) * 100;
-            document.getElementById('gameXpFill').style.width = xpPercent + '%';
-            document.getElementById('gameXpText').textContent = `${player.xp} / ${player.xpToNextLevel} XP`;
+            const xpFillEl = document.getElementById('gameXpFill');
+            const xpTextEl = document.getElementById('gameXpText');
+            if (xpFillEl && xpTextEl) {
+                const xpPercent = (player.xp / player.xpToNext) * 100;
+                xpFillEl.style.width = xpPercent + '%';
+                xpTextEl.textContent = `${player.xp} / ${player.xpToNext} XP`;
+            }
             
-            // Production rate
-            let totalProd = 0;
-            gameFarm.activeMachines.forEach(m => {
-                if (m.isActive) totalProd += gameFarm.calcProduction(m);
-            });
-            document.getElementById('productionRate').textContent = totalProd.toFixed(1);
+            // Production rate (count active machines)
+            const prodRateEl = document.getElementById('productionRate');
+            if (prodRateEl) {
+                prodRateEl.textContent = state.machines.length;
+            }
             
             // Real machine bonus
             const bonusEl = document.getElementById('realMachineBonus');
@@ -14741,33 +14759,73 @@
             if (mainGemDisplay) {
                 mainGemDisplay.textContent = `💎 ${formatNumber(player.gems)}`;
             }
+            
+            // Update cutting status for each machine
+            updateCuttingStatus();
         }
         
-        function renderMachinesList() {
-            if (!gameFarm) return;
+        // New function to display realistic cutting progress
+        function updateCuttingStatus() {
+            if (!gameFarm || !gameFarm.state.machines) return;
             
             const container = document.getElementById('machinesList');
             if (!container) return;
             
             let html = '';
-            gameFarm.activeMachines.forEach(m => {
-                const type = gameFarm.machineTypes[m.typeId];
-                const prod = gameFarm.calcProduction(m);
-                html += `
-                    <div class="machine-item ${m.isActive ? 'active' : ''}">
-                        <div>
-                            <strong>${type.name}</strong>
-                            <div style="font-size: 9px; color: #888;">Lvl ${m.level} • ${prod.toFixed(1)}/s</div>
+            gameFarm.state.machines.forEach((machine, index) => {
+                const machineType = gameFarm.machineTypes[machine.type];
+                const status = gameFarm.getCuttingStatus(machine);
+                
+                if (status.status === 'idle') {
+                    html += `
+                        <div class="machine-item">
+                            <div style="flex: 1;">
+                                <strong>${machineType.name}</strong>
+                                <div style="font-size: 10px; color: #888;">⏳ Waiting for rough...</div>
+                            </div>
+                            <div style="font-size: 11px; color: #666;">Cuts: ${machine.totalCuts || 0}</div>
                         </div>
-                        <button class="game-btn" style="padding: 4px 8px; font-size: 10px;" 
-                                onclick="gameFarm.upgradeMachine('${m.id}'); updateGameUI(); renderMachinesList();">
-                            ⬆️ ${formatNumber(type.upgradeCost * m.level)}
-                        </button>
-                    </div>
-                `;
+                    `;
+                } else {
+                    const progressColor = status.humanRequired ? '#ffcc00' : '#00ffcc';
+                    html += `
+                        <div class="machine-item" style="border-left: 3px solid ${status.gemColor || '#00ffcc'};">
+                            <div style="flex: 1;">
+                                <strong style="color: ${status.gemColor}">${status.gemName}</strong>
+                                <div style="font-size: 10px; color: #aaa;">${status.stage}</div>
+                                <div style="font-size: 9px; color: #666; margin-top: 2px;">
+                                    ${status.humanRequired ? '👤 Human Required' : `🔧 ${status.lapType}`}
+                                </div>
+                                <div style="background: #222; border-radius: 4px; height: 6px; margin-top: 4px; overflow: hidden;">
+                                    <div style="background: ${progressColor}; height: 100%; width: ${status.progress}%; transition: width 0.3s;"></div>
+                                </div>
+                                <div style="font-size: 8px; color: #555; margin-top: 2px;">
+                                    Stage ${status.stageIndex}/${status.totalStages} | Quality: ${status.qualityScore}%
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
             });
             
+            // Add stats summary
+            const stats = gameFarm.state.stats;
+            const player = gameFarm.state.player;
+            html += `
+                <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #333; font-size: 10px; color: #888;">
+                    <div>✅ Completed: ${player.stonesCompleted || 0}</div>
+                    <div>❌ Lost: ${player.stonesLost || 0}</div>
+                    <div>⭐ Perfect Cuts: ${stats.perfectCuts || 0}</div>
+                    <div>💔 Dop Failures: ${stats.dopFailures || 0}</div>
+                </div>
+            `;
+            
             container.innerHTML = html || '<div style="color: #666; font-size: 11px;">No machines yet</div>';
+        }
+        
+        function renderMachinesList() {
+            // Now handled by updateCuttingStatus()
+            updateCuttingStatus();
         }
         
         function renderRoomsList() {
@@ -14776,31 +14834,43 @@
             const container = document.getElementById('roomsList');
             if (!container) return;
             
+            // Display available rooms from game
             let html = '';
-            Object.values(gameFarm.rooms).forEach(room => {
-                const isUnlocked = gameFarm.player.unlockedRooms.includes(room.id);
-                const canUnlock = (!room.unlockLevel || gameFarm.player.level >= room.unlockLevel) && 
-                                  gameFarm.player.gems >= room.unlockCost;
+            Object.entries(gameFarm.roomTypes).forEach(([roomId, room]) => {
+                const isUnlocked = gameFarm.state.rooms.includes(roomId);
+                const canUnlock = gameFarm.state.player.gems >= (room.cost || 0);
                 
                 html += `
                     <div class="room-item" style="${!isUnlocked ? 'opacity: 0.5;' : ''}">
                         <div>
                             <strong>${room.name}</strong>
-                            <div style="font-size: 9px; color: #888;">${room.maxMachines} slots</div>
+                            <div style="font-size: 9px; color: #888;">${room.slots} machine slots • ${Math.round((room.bonus - 1) * 100)}% bonus</div>
                         </div>
                         ${isUnlocked 
                             ? `<span style="color: #00ff88;">✓</span>`
-                            : `<button class="game-btn" style="padding: 4px 8px; font-size: 10px;" 
-                                    onclick="gameFarm.unlockRoom('${room.id}'); updateGameUI(); renderRoomsList();"
+                            : room.cost ? `<button class="game-btn" style="padding: 4px 8px; font-size: 10px;" 
+                                    onclick="buyRoom('${roomId}')"
                                     ${!canUnlock ? 'disabled style="opacity:0.5;"' : ''}>
-                                🔓 ${formatNumber(room.unlockCost)}
-                            </button>`
+                                🔓 ${formatNumber(room.cost)}
+                            </button>` : ''
                         }
                     </div>
                 `;
             });
             
             container.innerHTML = html;
+        }
+        
+        function buyRoom(roomId) {
+            if (!gameFarm) return;
+            const room = gameFarm.roomTypes[roomId];
+            if (room && gameFarm.state.player.gems >= (room.cost || 0)) {
+                gameFarm.state.player.gems -= room.cost;
+                gameFarm.state.rooms.push(roomId);
+                addGameActivity(`🏠 Unlocked ${room.name}!`);
+                updateGameUI();
+                renderRoomsList();
+            }
         }
         
         function addGameActivity(message) {
