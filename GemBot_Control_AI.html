@@ -1947,17 +1947,49 @@
                 this.isConnected = false;
                 this.availablePorts = [];
                 this.buffer = '';
+                this.bridgeMode = false; // Flag for local bridge connection
+                this.bridgeWS = null; // WebSocket to local bridge
+                this.localBridgeURL = 'http://localhost:8001'; // Local bridge server URL
+            }
+
+            async checkLocalBridge() {
+                /**
+                 * Check if local USB bridge server is running
+                 * This allows connection when the app is hosted in the cloud
+                 */
+                try {
+                    const response = await fetch(this.localBridgeURL + '/health', {
+                        method: 'GET',
+                        timeout: 2000
+                    });
+                    const data = await response.json();
+                    console.log('✅ Local USB bridge detected:', data);
+                    return data;
+                } catch (err) {
+                    console.log('ℹ️ Local USB bridge not available:', err.message);
+                    return null;
+                }
             }
 
             async scanPorts() {
                 console.log('%c🔍 SCAN PORTS CALLED', 'color: #00ff00; font-weight: bold; font-size: 14px');
+                
+                // First, try to scan using local bridge if available
+                const bridgeStatus = await this.checkLocalBridge();
+                if (bridgeStatus && bridgeStatus.usbConnected) {
+                    console.log('📡 Using local USB bridge for ports');
+                    this.scanBridgePorts();
+                    return;
+                }
+                
+                // Fallback to direct WebSerial API
                 try {
                     if (!('serial' in navigator)) {
                         console.error('❌ Web Serial API not supported in this browser');
-                        addMessage('❌ Web Serial API not supported', 'error');
+                        addMessage('❌ Web Serial API not supported. Install local USB bridge (see Help)', 'error');
                         return;
                     }
-                    console.log('🔍 Scanning for USB ports...');
+                    console.log('🔍 Scanning for USB ports via Web Serial...');
                     addMessage('🔍 Scanning for devices...', 'system');
                     let ports = await navigator.serial.getPorts();
                     
@@ -1984,7 +2016,7 @@
                     portSelect.innerHTML = '<option value="">Select Port...</option>';
                     if (ports.length === 0) {
                         console.log('⚠️ No USB ports detected');
-                        addMessage('⚠️ No devices found', 'warning');
+                        addMessage('⚠️ No devices found. Try local USB bridge (see Help)', 'warning');
                     } else {
                         addMessage(`✅ Found ${ports.length} device(s)`, 'system');
                         ports.forEach((port, idx) => {
@@ -2004,16 +2036,52 @@
                 }
             }
 
+            async scanBridgePorts() {
+                try {
+                    const response = await fetch(this.localBridgeURL + '/ports');
+                    const data = await response.json();
+                    const ports = data.ports || [];
+                    
+                    const portSelect = document.getElementById('portSelect');
+                    portSelect.innerHTML = '<option value="">Select Port (Bridge)...</option>';
+                    
+                    if (ports.length === 0) {
+                        addMessage('⚠️ No devices found on bridge', 'warning');
+                    } else {
+                        addMessage(`✅ Found ${ports.length} device(s) on bridge`, 'system');
+                        ports.forEach((port, idx) => {
+                            const option = document.createElement('option');
+                            option.value = `bridge:${port.path}`;
+                            option.textContent = `Bridge: ${port.path} (${port.manufacturer || 'Unknown'})`;
+                            portSelect.appendChild(option);
+                        });
+                    }
+                } catch (err) {
+                    console.error('Bridge scan error:', err);
+                    addMessage('❌ Bridge scan failed: ' + err.message, 'error');
+                }
+            }
+
             async connect() {
                 console.log('%c🔌 CONNECT CALLED', 'color: #00ff00; font-weight: bold; font-size: 14px');
                 try {
                     const portSelect = document.getElementById('portSelect');
-                    const idx = portSelect.value;
-                    if (idx === '') {
+                    const selectedValue = portSelect.value;
+                    if (selectedValue === '') {
                         addMessage('⚠️ Please select a port', 'warning');
                         return;
                     }
                     
+                    // Check if this is a bridge connection
+                    if (selectedValue.startsWith('bridge:')) {
+                        const portPath = selectedValue.replace('bridge:', '');
+                        await this.connectViaLocalBridge(portPath);
+                        return;
+                    }
+                    
+                    // Direct WebSerial connection
+                    this.bridgeMode = false;
+                    const idx = selectedValue;
                     this.port = this.availablePorts[idx];
                     const info = this.port.getInfo?.() || {};
                     console.log(`📋 Port Info - VID: 0x${info.usbVendorId?.toString(16)}, PID: 0x${info.usbProductId?.toString(16)}`);
@@ -2040,7 +2108,7 @@
                             this.isConnected = true;
                             isConnected = true;
                             console.log(`✅ Connected at ${baudRate} baud!`);
-                            addMessage(`✅ Connected at ${baudRate} baud!`, 'success');
+                            addMessage(`✅ Connected at ${baudRate} baud (Direct)!`, 'success');
                             updateConnectionStatus(true);
                             document.getElementById('connectBtn').classList.add('hidden');
                             document.getElementById('disconnectBtn').classList.remove('hidden');
@@ -2049,8 +2117,6 @@
                             this.sendCommand('s1');
                             this.startReading();
                             
-                            // NOTE: Nextion sync disabled - causes unexpected motor movement
-                            // Use SYNC button manually to fetch variables when needed
                             console.log('📱 Nextion interface ready for manual sync');
                             addMessage('📱 Nextion ready - click SYNC to update variables', 'system');
                             
@@ -2076,20 +2142,120 @@
                 }
             }
 
+            async connectViaLocalBridge(portPath) {
+                /**
+                 * Connect to Arduino via local USB bridge server
+                 * This works when app is hosted in cloud (Render)
+                 */
+                console.log('🌉 Connecting via local USB bridge:', portPath);
+                addMessage('🌉 Connecting via local USB bridge...', 'system');
+                
+                try {
+                    const bridgeStatus = await this.checkLocalBridge();
+                    if (!bridgeStatus) {
+                        throw new Error('Local bridge not available');
+                    }
+
+                    // Send connect command to bridge via HTTP
+                    const response = await fetch(this.localBridgeURL + '/connect', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            port: portPath,
+                            baudRate: 115200
+                        })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`Bridge responded with ${response.status}`);
+                    }
+
+                    this.bridgeMode = true;
+                    this.isConnected = true;
+                    isConnected = true;
+                    
+                    // Connect WebSocket to receive data from bridge
+                    await this.connectBridgeWebSocket();
+                    
+                    console.log('✅ Bridge connection established!');
+                    addMessage('✅ Connected via local USB bridge!', 'success');
+                    updateConnectionStatus(true);
+                    document.getElementById('connectBtn').classList.add('hidden');
+                    document.getElementById('disconnectBtn').classList.remove('hidden');
+                    document.getElementById('portSelect').disabled = true;
+                    
+                    // Initialize
+                    this.sendCommand('s1');
+                    addMessage('📱 Nextion ready - click SYNC to update variables', 'system');
+                    
+                } catch (err) {
+                    console.error('❌ Bridge connection failed:', err);
+                    addMessage(`❌ Bridge connection failed: ${err.message}`, 'error');
+                    this.bridgeMode = false;
+                    this.isConnected = false;
+                    isConnected = false;
+                }
+            }
+
+            async connectBridgeWebSocket() {
+                return new Promise((resolve, reject) => {
+                    const wsUrl = this.localBridgeURL.replace('http://', 'ws://').replace('https://', 'wss://') + '/ws';
+                    this.bridgeWS = new WebSocket(wsUrl);
+
+                    this.bridgeWS.onopen = () => {
+                        console.log('✅ Bridge WebSocket connected');
+                        resolve();
+                    };
+
+                    this.bridgeWS.onmessage = (event) => {
+                        try {
+                            const message = JSON.parse(event.data);
+                            if (message.type === 'serial-data') {
+                                // Process serial data from Arduino
+                                this.buffer += message.data + '\n';
+                                this.processBuffer();
+                            }
+                        } catch (e) {
+                            console.error('Bridge message error:', e);
+                        }
+                    };
+
+                    this.bridgeWS.onerror = (error) => {
+                        console.error('Bridge WebSocket error:', error);
+                        reject(error);
+                    };
+
+                    this.bridgeWS.onclose = () => {
+                        console.log('Bridge WebSocket closed');
+                    };
+                });
+            }
+
             async disconnect() {
                 try {
-                    if (this.port) {
-                        // Save machine state before disconnecting
-                        machineState.saveState();
+                    // Save machine state before disconnecting
+                    machineState.saveState();
+                    
+                    if (this.bridgeMode && this.bridgeWS) {
+                        // Disconnect via bridge
+                        const response = await fetch(this.localBridgeURL + '/disconnect', { method: 'POST' });
+                        if (response.ok) {
+                            this.bridgeWS.close();
+                            this.bridgeWS = null;
+                        }
+                    } else if (this.port) {
+                        // Direct WebSerial disconnect
                         await this.port.close();
-                        this.isConnected = false;
-                        isConnected = false;
-                        addMessage('✅ Disconnected - Machine state saved', 'system');
-                        updateConnectionStatus(false);
-                        document.getElementById('connectBtn').classList.remove('hidden');
-                        document.getElementById('disconnectBtn').classList.add('hidden');
-                        document.getElementById('portSelect').disabled = false;
                     }
+                    
+                    this.isConnected = false;
+                    isConnected = false;
+                    this.bridgeMode = false;
+                    addMessage('✅ Disconnected - Machine state saved', 'system');
+                    updateConnectionStatus(false);
+                    document.getElementById('connectBtn').classList.remove('hidden');
+                    document.getElementById('disconnectBtn').classList.add('hidden');
+                    document.getElementById('portSelect').disabled = false;
                 } catch (error) {
                     addMessage(`❌ Disconnect error: ${error.message}`, 'error');
                 }
@@ -2247,32 +2413,40 @@
 
             sendCommand(cmd) {
                 try {
-                    if (!this.isConnected || !this.port?.writable) return;
+                    if (!this.isConnected) return;
                     
                     // ===== GEMFORGE COMMAND COST TRACKING =====
-                    // Track command execution for economy system
                     if (typeof merlin !== 'undefined' && merlin && merlin.userProfile?.gemForge) {
                         const machineAccess = merlin.userProfile.gemForge.machineAccess;
                         machineAccess.commandsExecuted++;
-                        
-                        // Track machine time (approximate 1 second per command)
                         machineAccess.machineTimeMinutes += 1/60;
-                        
-                        // Award small gem bonus for activity (1 gem per 10 commands)
                         if (machineAccess.commandsExecuted % 10 === 0) {
                             merlin.earnGemCoins(1, 'machine_activity', { 
                                 commands: machineAccess.commandsExecuted 
                             });
                         }
-                        
                         merlin.saveUserProfile();
                     }
                     // ===== END GEMFORGE TRACKING =====
                     
-                    const writer = this.port.writable.getWriter();
-                    console.log(`📡 TRANSMITTING: '${cmd}' (char code ${cmd.charCodeAt(0)}) + newline`);
-                    writer.write(new TextEncoder().encode(cmd + '\n'));
-                    writer.releaseLock();
+                    if (this.bridgeMode && this.bridgeWS) {
+                        // Send via bridge WebSocket
+                        if (this.bridgeWS.readyState === WebSocket.OPEN) {
+                            console.log(`📡 BRIDGE SEND: '${cmd}'`);
+                            this.bridgeWS.send(JSON.stringify({
+                                type: 'send-command',
+                                command: cmd
+                            }));
+                        } else {
+                            console.warn('⚠️ Bridge WebSocket not open');
+                        }
+                    } else if (this.port?.writable) {
+                        // Direct WebSerial send
+                        const writer = this.port.writable.getWriter();
+                        console.log(`📡 TRANSMITTING: '${cmd}' (char code ${cmd.charCodeAt(0)}) + newline`);
+                        writer.write(new TextEncoder().encode(cmd + '\n'));
+                        writer.releaseLock();
+                    }
                     
                     // Log command to session
                     sessionRecorder.logMotorCommand(cmd);
