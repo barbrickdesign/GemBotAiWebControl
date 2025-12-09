@@ -3,14 +3,21 @@
  * Integrates with real GemBot hardware for bonuses
  * MERLIN AI INTEGRATION: Merlin guides, teaches, and learns alongside the player
  * 
+ * REALISTIC TIMING SYSTEM (Based on actual GemBot machine):
+ * - Reflects real gem cutting process: prep, dop, shape, preform, cut, polish
+ * - Timing derived from Arduino code: 50ms motor intervals, 40 steps/mm removal
+ * - Lap progression: 600→800→1200 grit, then polish with 8k→14k→50k→100k→200k paste
+ * - Includes human interaction requirements and realistic hazards
+ * 
  * Features:
  * - Multiple GemBot machines in a virtual farm
  * - Cyberpunk 3D scene environment
- * - Idle gem production with manual boosts
+ * - REALISTIC gem cutting with proper timing
  * - Level progression and achievements
  * - Crypto token rewards integration
  * - Real machine connection bonuses
  * - Merlin AI assistant in-game for tips, teaching, and celebration
+ * - Educational - teaches actual faceting process
  */
 
 class GemBotFarmGame {
@@ -37,7 +44,9 @@ class GemBotFarmGame {
                 xpToNext: 100,
                 gems: 0,
                 tokens: 0,
-                totalGemsEver: 0
+                totalGemsEver: 0,
+                stonesLost: 0,        // Stones lost to accidents
+                stonesCompleted: 0    // Successfully completed stones
             },
             machines: [],
             rooms: ['starter_workshop'],
@@ -49,14 +58,18 @@ class GemBotFarmGame {
                 playTime: 0,
                 realMachineTime: 0,
                 merlinTipsReceived: 0,
-                lessonsCompleted: 0
+                lessonsCompleted: 0,
+                dopFailures: 0,       // Stones flew off dop
+                transferFailures: 0,  // Alignment failures during transfer
+                totalTimeSpentCutting: 0 // Real accumulated cutting time (seconds)
             },
             merlinInteractions: {
                 tipsGiven: 0,
                 questionsAnswered: 0,
                 celebrationsMade: 0,
                 teachingMoments: 0
-            }
+            },
+            currentStones: [] // Stones currently being cut
         };
         
         // Game configuration
@@ -65,18 +78,21 @@ class GemBotFarmGame {
             realMachineBonus: 1.5,
             merlinWisdomBonus: 1.1, // Bonus when Merlin gives tips
             maxMachinesPerRoom: 6,
-            tickRate: 1000, // 1 second
+            tickRate: 1000, // 1 second game tick
             autoSaveInterval: 30000, // 30 seconds
-            merlinTipInterval: 45000 // Merlin speaks every 45 seconds
+            merlinTipInterval: 45000, // Merlin speaks every 45 seconds
+            // Realistic timing factors (in game-seconds, accelerated from real hours)
+            timeAcceleration: 60 // 1 real second = 60 game seconds (1 min = 1 hr of cutting)
         };
         
-        // Machine types
+        // Machine types - affects cutting speed and precision
         this.machineTypes = {
             'gembot_basic': {
                 name: 'GemBot Basic',
                 cost: 0,
                 production: 1,
-                speed: 1,
+                speed: 1,        // Base speed multiplier
+                precision: 0.7,  // Lower precision = more dop failures
                 model: 'basic'
             },
             'gembot_pro': {
@@ -84,6 +100,7 @@ class GemBotFarmGame {
                 cost: 100,
                 production: 3,
                 speed: 1.5,
+                precision: 0.85,
                 model: 'pro'
             },
             'gembot_ultra': {
@@ -91,6 +108,7 @@ class GemBotFarmGame {
                 cost: 500,
                 production: 10,
                 speed: 2,
+                precision: 0.95, // High precision = fewer accidents
                 model: 'ultra'
             }
         };
@@ -116,16 +134,394 @@ class GemBotFarmGame {
             }
         };
         
-        // Gem types
+        // ==================== REALISTIC GEM CUTTING DATA ====================
+        // Based on actual faceting: hardness affects cut time, complexity affects stages
+        
+        // Mohs hardness scale affects cutting time significantly
+        // Harder stones = more time on each lap
         this.gemTypes = [
-            { name: 'Ruby', value: 5, color: '#ff0040', rarity: 'common' },
-            { name: 'Sapphire', value: 8, color: '#0080ff', rarity: 'common' },
-            { name: 'Emerald', value: 10, color: '#00ff80', rarity: 'uncommon' },
-            { name: 'Amethyst', value: 15, color: '#8000ff', rarity: 'uncommon' },
-            { name: 'Diamond', value: 25, color: '#ffffff', rarity: 'rare' },
-            { name: 'Opal', value: 40, color: '#ff80ff', rarity: 'rare' },
-            { name: 'Alexandrite', value: 100, color: '#00ffff', rarity: 'legendary' }
+            { 
+                name: 'Quartz (Amethyst)', 
+                value: 15, 
+                color: '#8000ff', 
+                rarity: 'common',
+                hardness: 7,           // Mohs scale
+                complexity: 'simple',  // 32 facets standard
+                facetCount: 32,
+                fragility: 0.1,        // 10% chance of issues
+                description: 'Good starter stone, forgiving material'
+            },
+            { 
+                name: 'Quartz (Citrine)', 
+                value: 12, 
+                color: '#ffaa00', 
+                rarity: 'common',
+                hardness: 7,
+                complexity: 'simple',
+                facetCount: 32,
+                fragility: 0.1,
+                description: 'Warm colored quartz, easy to cut'
+            },
+            { 
+                name: 'Garnet', 
+                value: 20, 
+                color: '#8b0000', 
+                rarity: 'common',
+                hardness: 7.5,
+                complexity: 'simple',
+                facetCount: 48,
+                fragility: 0.15,
+                description: 'Classic red gem, slightly harder'
+            },
+            { 
+                name: 'Topaz', 
+                value: 35, 
+                color: '#ffd700', 
+                rarity: 'uncommon',
+                hardness: 8,
+                complexity: 'medium',
+                facetCount: 57,
+                fragility: 0.2,        // Perfect cleavage = risky
+                description: 'Beautiful but has perfect cleavage - handle with care!'
+            },
+            { 
+                name: 'Emerald', 
+                value: 80, 
+                color: '#00ff80', 
+                rarity: 'uncommon',
+                hardness: 7.5,
+                complexity: 'medium',
+                facetCount: 48,
+                fragility: 0.25,       // Inclusions make it fragile
+                description: 'Precious but included - high risk of fracture'
+            },
+            { 
+                name: 'Ruby', 
+                value: 120, 
+                color: '#ff0040', 
+                rarity: 'rare',
+                hardness: 9,           // Corundum
+                complexity: 'complex',
+                facetCount: 64,
+                fragility: 0.05,       // Very durable
+                description: 'Second hardest gem - takes time but very durable'
+            },
+            { 
+                name: 'Sapphire', 
+                value: 150, 
+                color: '#0080ff', 
+                rarity: 'rare',
+                hardness: 9,
+                complexity: 'complex',
+                facetCount: 64,
+                fragility: 0.05,
+                description: 'Corundum like ruby - requires patience'
+            },
+            { 
+                name: 'Opal', 
+                value: 100, 
+                color: '#ff80ff', 
+                rarity: 'rare',
+                hardness: 5.5,         // Soft!
+                complexity: 'special', // Cabochon usually
+                facetCount: 0,         // Usually cabochon cut
+                fragility: 0.4,        // Very fragile, heat sensitive
+                description: 'Delicate! Soft, heat-sensitive, requires special care'
+            },
+            { 
+                name: 'Diamond', 
+                value: 500, 
+                color: '#ffffff', 
+                rarity: 'legendary',
+                hardness: 10,          // Hardest
+                complexity: 'master',
+                facetCount: 57,        // Brilliant cut
+                fragility: 0.08,       // Cleavage planes
+                description: 'Ultimate challenge - hardest material, cleavage planes'
+            },
+            { 
+                name: 'Alexandrite', 
+                value: 1000, 
+                color: '#00ffff', 
+                rarity: 'legendary',
+                hardness: 8.5,
+                complexity: 'master',
+                facetCount: 72,
+                fragility: 0.12,
+                description: 'Color-changing chrysoberyl - extremely rare and valuable'
+            }
         ];
+        
+        // ==================== CUTTING STAGES & TIMING ====================
+        // Based on actual GemBot process: prep → shape → cut → polish → transfer → repeat
+        // Times in game-seconds (1 game-second = 1/60 real second with acceleration)
+        
+        this.cuttingStages = {
+            // PREPARATION (Human interaction required)
+            'prep_rough': {
+                name: 'Inspect & Prep Rough',
+                description: 'Examine rough stone, plan orientation, clean material',
+                baseTime: 120,  // 2 min game time
+                humanRequired: true,
+                canFail: false
+            },
+            'dop_stone': {
+                name: 'Dop the Stone',
+                description: 'Heat dop wax, attach stone to dop stick, align properly',
+                baseTime: 180,  // 3 min game time
+                humanRequired: true,
+                canFail: true,
+                failureType: 'dop_failure',
+                failureChance: 0.02 // 2% base chance
+            },
+            'mount_chuck': {
+                name: 'Mount in Chuck',
+                description: 'Insert dop into machine chuck, verify alignment',
+                baseTime: 60,   // 1 min game time
+                humanRequired: true,
+                canFail: false
+            },
+            
+            // PREFORM PAVILION (Machine + human monitoring)
+            'preform_girdle': {
+                name: 'Preform Girdle',
+                description: 'Shape the outline at 90° using coarse lap',
+                baseTime: 300,  // 5 min - 96 index positions, rough shaping
+                humanRequired: false,
+                canFail: true,
+                failureType: 'dop_flyoff',
+                lapType: 'coarse'
+            },
+            'preform_pavilion': {
+                name: 'Preform Pavilion Point',
+                description: 'Cut pavilion to a point at ~42° angle',
+                baseTime: 240,  // 4 min
+                humanRequired: false,
+                canFail: true,
+                failureType: 'dop_flyoff',
+                lapType: 'coarse'
+            },
+            
+            // CUT PAVILION FACETS (Progressive laps)
+            'cut_pavilion_600': {
+                name: 'Cut Pavilion (600 grit)',
+                description: 'Cut main pavilion facets with 600 grit lap',
+                baseTime: 480,  // 8 min - based on 40 steps/mm, multiple angles
+                humanRequired: false,
+                canFail: true,
+                failureType: 'dop_flyoff',
+                lapType: '600_grit'
+            },
+            'cut_pavilion_800': {
+                name: 'Refine Pavilion (800 grit)',
+                description: 'Remove 600 grit scratches, refine facets',
+                baseTime: 360,  // 6 min
+                humanRequired: false,
+                canFail: true,
+                failureType: 'dop_flyoff',
+                lapType: '800_grit'
+            },
+            'cut_pavilion_1200': {
+                name: 'Pre-polish Pavilion (1200 grit)',
+                description: 'Final cutting lap, prepare for polish',
+                baseTime: 300,  // 5 min
+                humanRequired: false,
+                canFail: false,
+                lapType: '1200_grit'
+            },
+            
+            // POLISH PAVILION (Diamond paste progression)
+            'polish_pavilion_8k': {
+                name: 'Polish Pavilion (8,000 grit)',
+                description: 'Begin polish sequence with 8k diamond paste on copper lap',
+                baseTime: 420,  // 7 min
+                humanRequired: false,
+                canFail: false,
+                lapType: 'copper_8k'
+            },
+            'polish_pavilion_14k': {
+                name: 'Polish Pavilion (14,000 grit)',
+                description: 'Continue polish with 14k paste',
+                baseTime: 360,  // 6 min
+                humanRequired: false,
+                canFail: false,
+                lapType: 'copper_14k'
+            },
+            'polish_pavilion_50k': {
+                name: 'Polish Pavilion (50,000 grit)',
+                description: 'High polish with 50k paste',
+                baseTime: 300,  // 5 min
+                humanRequired: false,
+                canFail: false,
+                lapType: 'copper_50k'
+            },
+            'polish_pavilion_100k': {
+                name: 'Polish Pavilion (100,000 grit)',
+                description: 'Near-final polish with 100k paste',
+                baseTime: 300,  // 5 min
+                humanRequired: false,
+                canFail: false,
+                lapType: 'copper_100k'
+            },
+            'polish_pavilion_200k': {
+                name: 'Final Polish Pavilion (200,000 grit)',
+                description: 'Mirror finish with 200k paste',
+                baseTime: 240,  // 4 min
+                humanRequired: false,
+                canFail: false,
+                lapType: 'copper_200k'
+            },
+            
+            // TRANSFER (Critical human step - high failure risk)
+            'remove_from_machine': {
+                name: 'Remove from Machine',
+                description: 'Carefully remove dop from chuck',
+                baseTime: 60,
+                humanRequired: true,
+                canFail: false
+            },
+            'transfer_dop': {
+                name: 'Transfer to Crown Dop',
+                description: 'Heat transfer - align pavilion, attach crown dop, release old dop',
+                baseTime: 300,  // 5 min - CRITICAL STEP
+                humanRequired: true,
+                canFail: true,
+                failureType: 'transfer_failure',
+                failureChance: 0.05 // 5% base chance - this is where stones are often lost!
+            },
+            'remount_chuck': {
+                name: 'Remount for Crown',
+                description: 'Insert crown dop, verify alignment to pavilion',
+                baseTime: 120,
+                humanRequired: true,
+                canFail: true,
+                failureType: 'alignment_failure',
+                failureChance: 0.03
+            },
+            
+            // CUT CROWN (Same progression as pavilion)
+            'preform_crown': {
+                name: 'Preform Crown',
+                description: 'Shape crown angle at ~42°',
+                baseTime: 240,
+                humanRequired: false,
+                canFail: true,
+                failureType: 'dop_flyoff',
+                lapType: 'coarse'
+            },
+            'cut_table': {
+                name: 'Cut Table Facet',
+                description: 'Flatten table at 0° angle',
+                baseTime: 180,  // 3 min
+                humanRequired: false,
+                canFail: false,
+                lapType: '600_grit'
+            },
+            'cut_crown_600': {
+                name: 'Cut Crown (600 grit)',
+                description: 'Cut crown mains and star facets',
+                baseTime: 540,  // 9 min - more facets than pavilion typically
+                humanRequired: false,
+                canFail: true,
+                failureType: 'dop_flyoff',
+                lapType: '600_grit'
+            },
+            'cut_crown_800': {
+                name: 'Refine Crown (800 grit)',
+                description: 'Remove scratches from crown',
+                baseTime: 420,
+                humanRequired: false,
+                canFail: false,
+                lapType: '800_grit'
+            },
+            'cut_crown_1200': {
+                name: 'Pre-polish Crown (1200 grit)',
+                description: 'Prepare crown for polish',
+                baseTime: 360,
+                humanRequired: false,
+                canFail: false,
+                lapType: '1200_grit'
+            },
+            
+            // POLISH CROWN
+            'polish_crown_8k': {
+                name: 'Polish Crown (8,000 grit)',
+                description: 'Begin crown polish with 8k paste',
+                baseTime: 480,
+                humanRequired: false,
+                canFail: false,
+                lapType: 'copper_8k'
+            },
+            'polish_crown_14k': {
+                name: 'Polish Crown (14,000 grit)',
+                description: 'Continue with 14k paste',
+                baseTime: 420,
+                humanRequired: false,
+                canFail: false,
+                lapType: 'copper_14k'
+            },
+            'polish_crown_50k': {
+                name: 'Polish Crown (50,000 grit)',
+                description: 'High polish crown',
+                baseTime: 360,
+                humanRequired: false,
+                canFail: false,
+                lapType: 'copper_50k'
+            },
+            'polish_crown_100k': {
+                name: 'Polish Crown (100,000 grit)',
+                description: 'Near-final crown polish',
+                baseTime: 300,
+                humanRequired: false,
+                canFail: false,
+                lapType: 'copper_100k'
+            },
+            'polish_crown_200k': {
+                name: 'Final Polish Crown (200,000 grit)',
+                description: 'Mirror finish on crown',
+                baseTime: 240,
+                humanRequired: false,
+                canFail: false,
+                lapType: 'copper_200k'
+            },
+            
+            // COMPLETION
+            'final_remove': {
+                name: 'Remove Finished Stone',
+                description: 'Heat dop, carefully remove completed gemstone',
+                baseTime: 180,
+                humanRequired: true,
+                canFail: true,
+                failureType: 'removal_chip',
+                failureChance: 0.01 // 1% chance of chipping on removal
+            },
+            'clean_inspect': {
+                name: 'Clean & Inspect',
+                description: 'Clean stone, inspect for quality, grade the cut',
+                baseTime: 120,
+                humanRequired: true,
+                canFail: false
+            }
+        };
+        
+        // Stage order for complete cut
+        this.stageOrder = [
+            'prep_rough', 'dop_stone', 'mount_chuck',
+            'preform_girdle', 'preform_pavilion',
+            'cut_pavilion_600', 'cut_pavilion_800', 'cut_pavilion_1200',
+            'polish_pavilion_8k', 'polish_pavilion_14k', 'polish_pavilion_50k', 
+            'polish_pavilion_100k', 'polish_pavilion_200k',
+            'remove_from_machine', 'transfer_dop', 'remount_chuck',
+            'preform_crown', 'cut_table',
+            'cut_crown_600', 'cut_crown_800', 'cut_crown_1200',
+            'polish_crown_8k', 'polish_crown_14k', 'polish_crown_50k',
+            'polish_crown_100k', 'polish_crown_200k',
+            'final_remove', 'clean_inspect'
+        ];
+        
+        // Calculate total base time for a simple stone (in game-seconds)
+        // Sum of all stages = ~7200 game-seconds = 2 hours real time (accelerated)
+        // With 60x acceleration = ~2 minutes real time for a simple stone
         
         // 3D scene objects
         this.sceneObjects = {
@@ -668,7 +1064,7 @@ class GemBotFarmGame {
     }
     
     /**
-     * Game tick - process production
+     * Game tick - process production with REALISTIC TIMING
      */
     tick() {
         const now = Date.now();
@@ -678,15 +1074,12 @@ class GemBotFarmGame {
         // Update play time
         this.state.stats.playTime += deltaTime;
         
-        // Process each machine
+        // Calculate game time passed (accelerated)
+        const gameTimePassed = deltaTime * this.config.timeAcceleration;
+        
+        // Process each machine's current stone
         this.state.machines.forEach(machine => {
-            const timeSinceLastCut = (now - machine.lastCut) / 1000;
-            const cutInterval = 1 / (machine.speed * this.getProductionMultiplier());
-            
-            if (timeSinceLastCut >= cutInterval) {
-                this.processCut(machine);
-                machine.lastCut = now;
-            }
+            this.processRealisticCutting(machine, gameTimePassed);
         });
         
         // Check for level up
@@ -697,41 +1090,333 @@ class GemBotFarmGame {
     }
     
     /**
-     * Process a gem cut
+     * Process realistic gem cutting with stages, timing, and hazards
      */
-    processCut(machine) {
-        // Select random gem type based on level
+    processRealisticCutting(machine, gameTimePassed) {
+        const machineType = this.machineTypes[machine.type];
+        
+        // If machine has no current stone, start a new one
+        if (!machine.currentStone) {
+            this.startNewStone(machine);
+            return;
+        }
+        
+        const stone = machine.currentStone;
+        const stage = this.cuttingStages[stone.currentStage];
+        
+        if (!stage) {
+            console.error('Invalid stage:', stone.currentStage);
+            return;
+        }
+        
+        // Calculate time for this stage based on gem properties
+        const stageTime = this.calculateStageTime(stone, stage, machineType);
+        
+        // Progress the stage
+        stone.stageProgress += gameTimePassed * machineType.speed;
+        
+        // Update accumulated cutting time
+        this.state.stats.totalTimeSpentCutting += gameTimePassed / this.config.timeAcceleration;
+        
+        // Check for stage completion
+        if (stone.stageProgress >= stageTime) {
+            // Stage complete - check for failure
+            if (stage.canFail) {
+                const failureResult = this.checkForFailure(stone, stage, machineType);
+                if (failureResult.failed) {
+                    this.handleCuttingFailure(machine, stone, failureResult);
+                    return;
+                }
+            }
+            
+            // Move to next stage
+            this.advanceToNextStage(machine, stone);
+        }
+        
+        // Update machine visuals based on current stage
+        this.updateMachineVisuals(machine, stone, stage);
+    }
+    
+    /**
+     * Start cutting a new stone on a machine
+     */
+    startNewStone(machine) {
+        // Select gem type based on player level
         const availableGems = this.gemTypes.filter(gem => {
-            if (gem.rarity === 'legendary') return this.state.player.level >= 10;
-            if (gem.rarity === 'rare') return this.state.player.level >= 5;
-            if (gem.rarity === 'uncommon') return this.state.player.level >= 2;
+            if (gem.rarity === 'legendary') return this.state.player.level >= 15;
+            if (gem.rarity === 'rare') return this.state.player.level >= 8;
+            if (gem.rarity === 'uncommon') return this.state.player.level >= 3;
             return true;
         });
         
         const gem = availableGems[Math.floor(Math.random() * availableGems.length)];
         
-        // Calculate value with bonuses
-        let value = gem.value * machine.production;
-        const isPerfect = Math.random() < 0.1; // 10% chance for perfect cut
+        // Create stone cutting record
+        machine.currentStone = {
+            id: 'stone_' + Date.now(),
+            gem: gem,
+            currentStage: this.stageOrder[0], // Start with prep
+            stageIndex: 0,
+            stageProgress: 0,
+            startTime: Date.now(),
+            perfectBonus: 1, // Increases with good execution
+            qualityScore: 100, // Decreases with issues
+            isPaused: false,  // For human interaction stages
+            failureLog: []
+        };
         
+        // Notify of new stone
+        if (this.merlin) {
+            this.merlinSpeak(`Starting a ${gem.name} - ${gem.description}`);
+        }
+        
+        console.log(`💎 Started cutting: ${gem.name} (Hardness: ${gem.hardness}, Facets: ${gem.facetCount})`);
+    }
+    
+    /**
+     * Calculate time required for a stage based on gem properties
+     */
+    calculateStageTime(stone, stage, machineType) {
+        const gem = stone.gem;
+        let time = stage.baseTime;
+        
+        // Hardness multiplier: harder stones take longer to cut
+        // Base is hardness 7 (quartz), scale from there
+        const hardnessMultiplier = Math.pow(gem.hardness / 7, 1.5);
+        time *= hardnessMultiplier;
+        
+        // Complexity multiplier: more facets = more time
+        const facetMultiplier = gem.facetCount > 0 ? (gem.facetCount / 32) : 1;
+        if (stage.name.includes('Cut') || stage.name.includes('Polish')) {
+            time *= facetMultiplier;
+        }
+        
+        // Special handling for soft stones (opal)
+        if (gem.hardness < 6) {
+            // Soft stones need gentler (slower) cutting on machine stages
+            if (!stage.humanRequired) {
+                time *= 1.5;
+            }
+        }
+        
+        return time;
+    }
+    
+    /**
+     * Check if a failure occurs during a stage
+     */
+    checkForFailure(stone, stage, machineType) {
+        const gem = stone.gem;
+        let failureChance = stage.failureChance || 0.02;
+        
+        // Gem fragility affects failure chance
+        failureChance += gem.fragility * 0.1;
+        
+        // Machine precision reduces failure chance
+        failureChance *= (1 - machineType.precision);
+        
+        // Player skill (level) reduces failure
+        const skillReduction = Math.min(this.state.player.level * 0.01, 0.3);
+        failureChance *= (1 - skillReduction);
+        
+        // Roll for failure
+        if (Math.random() < failureChance) {
+            return {
+                failed: true,
+                type: stage.failureType || 'unknown',
+                recoverable: stage.failureType !== 'dop_flyoff' // Some failures can be recovered
+            };
+        }
+        
+        return { failed: false };
+    }
+    
+    /**
+     * Handle a cutting failure
+     */
+    handleCuttingFailure(machine, stone, failureResult) {
+        const gem = stone.gem;
+        
+        stone.failureLog.push({
+            stage: stone.currentStage,
+            type: failureResult.type,
+            time: Date.now()
+        });
+        
+        switch (failureResult.type) {
+            case 'dop_flyoff':
+                // Stone flew off the dop - catastrophic loss
+                this.state.stats.dopFailures++;
+                this.state.player.stonesLost++;
+                machine.currentStone = null;
+                
+                if (this.merlin) {
+                    const messages = [
+                        `Oh no! The ${gem.name} flew off the dop! This is why we always check our dop wax temperature.`,
+                        `The stone escaped! Remember: proper dop adhesion is critical. The ${gem.name} is lost.`,
+                        `Disaster! The ${gem.name} launched from the dop. Always ensure firm adhesion before cutting.`
+                    ];
+                    this.merlinSpeak(messages[Math.floor(Math.random() * messages.length)]);
+                }
+                console.log(`❌ STONE LOST: ${gem.name} flew off dop at ${stone.currentStage}`);
+                break;
+                
+            case 'dop_failure':
+                // Dop didn't hold during mounting - restart
+                this.state.stats.dopFailures++;
+                stone.stageIndex = 0;
+                stone.currentStage = this.stageOrder[0];
+                stone.stageProgress = 0;
+                stone.qualityScore -= 5;
+                
+                if (this.merlin) {
+                    this.merlinSpeak(`The dop wax didn't hold. Let's try mounting the ${gem.name} again. Heat management is key!`);
+                }
+                break;
+                
+            case 'transfer_failure':
+                // Transfer failed - stone may be damaged but not lost
+                this.state.stats.transferFailures++;
+                stone.qualityScore -= 20;
+                stone.perfectBonus *= 0.8;
+                
+                // Go back to try transfer again
+                stone.stageProgress = 0;
+                
+                if (stone.qualityScore < 50) {
+                    // Too damaged, lose the stone
+                    this.state.player.stonesLost++;
+                    machine.currentStone = null;
+                    if (this.merlin) {
+                        this.merlinSpeak(`The ${gem.name} couldn't survive the transfer. Alignment is everything in gem cutting.`);
+                    }
+                } else {
+                    if (this.merlin) {
+                        this.merlinSpeak(`Transfer misaligned! The ${gem.name} is damaged but salvageable. Quality reduced.`);
+                    }
+                }
+                break;
+                
+            case 'alignment_failure':
+                // Crown alignment issue - reduces quality
+                stone.qualityScore -= 15;
+                stone.perfectBonus *= 0.9;
+                stone.stageProgress = 0;
+                
+                if (this.merlin) {
+                    this.merlinSpeak(`Crown misaligned with pavilion. This affects brilliance. Re-mounting...`);
+                }
+                break;
+                
+            case 'removal_chip':
+                // Chipped during removal - partial loss
+                stone.qualityScore -= 25;
+                stone.perfectBonus *= 0.7;
+                
+                if (this.merlin) {
+                    this.merlinSpeak(`Ouch! A small chip occurred during removal. The ${gem.name} loses some value.`);
+                }
+                break;
+        }
+    }
+    
+    /**
+     * Advance stone to next cutting stage
+     */
+    advanceToNextStage(machine, stone) {
+        const prevStage = stone.currentStage;
+        stone.stageIndex++;
+        stone.stageProgress = 0;
+        
+        // Check if stone is complete
+        if (stone.stageIndex >= this.stageOrder.length) {
+            this.completeStone(machine, stone);
+            return;
+        }
+        
+        stone.currentStage = this.stageOrder[stone.stageIndex];
+        const newStage = this.cuttingStages[stone.currentStage];
+        
+        // Log stage transition
+        console.log(`🔧 ${stone.gem.name}: ${prevStage} → ${stone.currentStage}`);
+        
+        // Merlin commentary on important stages
+        if (this.merlin && Math.random() < 0.3) { // 30% chance to comment
+            this.giveStageTip(stone, newStage);
+        }
+    }
+    
+    /**
+     * Complete a stone - calculate final value
+     */
+    completeStone(machine, stone) {
+        const gem = stone.gem;
+        const machineType = this.machineTypes[machine.type];
+        
+        // Base value
+        let value = gem.value;
+        
+        // Quality modifier (0-100 becomes 0.5-1.5)
+        const qualityMod = 0.5 + (stone.qualityScore / 100);
+        value *= qualityMod;
+        
+        // Perfect bonus
+        value *= stone.perfectBonus;
+        
+        // Machine production bonus
+        value *= machineType.production;
+        
+        // Room bonus
+        const room = this.roomTypes[machine.room];
+        if (room) {
+            value *= room.bonus;
+        }
+        
+        // Real machine connection bonus
+        if (this.realMachineConnected) {
+            value *= this.config.realMachineBonus;
+        }
+        
+        // Determine if perfect cut
+        const isPerfect = stone.qualityScore >= 95 && stone.perfectBonus >= 1;
         if (isPerfect) {
-            value *= 2;
+            value *= 1.5;
             this.state.stats.perfectCuts++;
         }
         
-        // Apply production multiplier
-        value *= this.getProductionMultiplier();
         value = Math.floor(value);
         
-        // Add to player
+        // Calculate cutting time in real minutes
+        const cuttingTime = (Date.now() - stone.startTime) / 1000 / 60;
+        
+        // Award rewards
         this.state.player.gems += value;
         this.state.player.totalGemsEver += value;
-        this.state.player.xp += Math.floor(value / 2);
+        this.state.player.xp += Math.floor(value / 2) + Math.floor(cuttingTime * 10);
         this.state.stats.totalCuts++;
+        this.state.player.stonesCompleted++;
         machine.totalCuts++;
         
-        // Visual feedback
+        // Visual effect
         this.showCutEffect(machine, gem, isPerfect);
+        
+        // Merlin celebration
+        if (this.merlin) {
+            if (isPerfect) {
+                this.merlinCelebrate('perfect_cut', { gemName: gem.name });
+            } else if (gem.rarity === 'legendary' || gem.rarity === 'rare') {
+                this.merlinCelebrate('rare_gem', { gemName: gem.name });
+            } else {
+                const messages = [
+                    `The ${gem.name} is complete! ${value} gems earned. Quality: ${stone.qualityScore}%`,
+                    `Excellent! Finished a ${gem.name} worth ${value} gems in ${cuttingTime.toFixed(1)} minutes.`,
+                    `Another ${gem.name} joins your collection! That's ${this.state.player.stonesCompleted} stones cut.`
+                ];
+                this.merlinSpeak(messages[Math.floor(Math.random() * messages.length)]);
+            }
+        }
+        
+        console.log(`✅ COMPLETED: ${gem.name} | Value: ${value} | Quality: ${stone.qualityScore}% | Time: ${cuttingTime.toFixed(1)}m | Perfect: ${isPerfect}`);
         
         // Callback
         if (this.onGemCut) {
@@ -739,9 +1424,121 @@ class GemBotFarmGame {
                 machine,
                 gem,
                 value,
-                perfect: isPerfect
+                perfect: isPerfect,
+                quality: stone.qualityScore,
+                cuttingTime
             });
         }
+        
+        // Clear current stone
+        machine.currentStone = null;
+    }
+    
+    /**
+     * Give Merlin tip about current stage
+     */
+    giveStageTip(stone, stage) {
+        const tips = {
+            'prep_rough': [
+                'Always examine the rough for inclusions before starting. They can cause fractures!',
+                'Orientation matters - find the best axis for color and brilliance.',
+                'Clean your rough thoroughly. Dirt can scratch your laps.'
+            ],
+            'dop_stone': [
+                'Temperature is key! Too hot and the wax burns, too cold and it won\'t bond.',
+                'Center the stone carefully - misalignment compounds through every stage.',
+                'Let the dop cool slowly. Quick cooling can stress the stone.'
+            ],
+            'transfer_dop': [
+                'This is the riskiest moment! Heat both dops evenly for a clean transfer.',
+                'Alignment here determines final symmetry. Take your time.',
+                'Keep the pavilion supported while releasing. One moment of carelessness...'
+            ],
+            'cut_pavilion_600': [
+                'The 600 grit removes material quickly. Check your angles frequently.',
+                'Each facet must meet precisely at the culet. Patience!',
+                'Watch your depth - too deep and you lose size, too shallow and no brilliance.'
+            ],
+            'polish_pavilion_50k': [
+                'We\'re in the high polish range now. Any scratch here will show.',
+                'Keep your laps clean! One contaminated lap ruins hours of work.',
+                'The sound changes when you reach a true polish. Listen carefully.'
+            ],
+            'cut_crown_600': [
+                'Crown angles affect fire and brilliance. Each degree matters.',
+                'Star facets should touch precisely at the table edge.',
+                'Check your meet points after each facet. Cumulative errors are unforgiving.'
+            ],
+            'cut_table': [
+                'A perfectly flat table is harder than it looks. Check with a loupe.',
+                'The table should be parallel to the girdle. Any tilt shows immediately.',
+                'Size matters - too large loses brilliance, too small looks odd.'
+            ]
+        };
+        
+        const stageTips = tips[stage.name?.toLowerCase().replace(/[()]/g, '')] || tips[stone.currentStage];
+        if (stageTips) {
+            this.merlinSpeak(stageTips[Math.floor(Math.random() * stageTips.length)]);
+        }
+    }
+    
+    /**
+     * Update machine visuals based on cutting progress
+     */
+    updateMachineVisuals(machine, stone, stage) {
+        if (!machine.statusMat) return;
+        
+        // Update status light color based on stage type
+        if (stage.humanRequired) {
+            // Yellow for human interaction needed
+            machine.statusMat.emissiveColor = new BABYLON.Color3(1, 0.8, 0);
+        } else if (stage.lapType?.includes('polish')) {
+            // Cyan for polishing
+            machine.statusMat.emissiveColor = new BABYLON.Color3(0, 1, 1);
+        } else if (stage.lapType?.includes('grit')) {
+            // Blue for cutting
+            machine.statusMat.emissiveColor = new BABYLON.Color3(0, 0.5, 1);
+        } else {
+            // Green for normal operation
+            machine.statusMat.emissiveColor = new BABYLON.Color3(0, 1, 0);
+        }
+    }
+    
+    /**
+     * Get current cutting status for UI display
+     */
+    getCuttingStatus(machine) {
+        if (!machine.currentStone) {
+            return { status: 'idle', message: 'Waiting for rough...' };
+        }
+        
+        const stone = machine.currentStone;
+        const stage = this.cuttingStages[stone.currentStage];
+        const stageTime = this.calculateStageTime(stone, stage, this.machineTypes[machine.type]);
+        const progress = Math.min(100, (stone.stageProgress / stageTime) * 100);
+        
+        return {
+            status: 'cutting',
+            gemName: stone.gem.name,
+            gemColor: stone.gem.color,
+            stage: stage.name,
+            stageDescription: stage.description,
+            progress: progress,
+            qualityScore: stone.qualityScore,
+            humanRequired: stage.humanRequired,
+            stageIndex: stone.stageIndex + 1,
+            totalStages: this.stageOrder.length,
+            lapType: stage.lapType || 'N/A'
+        };
+    }
+    
+    /**
+     * Legacy processCut method for compatibility - redirects to realistic system
+     */
+    processCut(machine) {
+        // This method is now handled by processRealisticCutting
+        // Kept for backward compatibility with any external calls
+        this.processRealisticCutting(machine, this.config.timeAcceleration);
     }
     
     /**
@@ -1262,61 +2059,108 @@ class GemBotFarmGame {
     }
     
     /**
-     * Get tips relevant to current game state
+     * Get tips relevant to current game state - REALISTIC GEM CUTTING EDUCATION
      */
     getContextualTips() {
         const player = this.state.player;
         const machines = this.state.machines;
         const tips = [];
         
-        // Level-based tips
+        // ==================== BEGINNER TIPS (Level 1-3) ====================
         if (player.level < 3) {
-            tips.push('Each machine cuts gems automatically. More machines means faster production!');
-            tips.push('Watch for the golden glow - that means a PERFECT cut! Double value!');
-            tips.push('Your level increases with XP. Higher levels unlock rarer gem types.');
+            // Basic process tips
+            tips.push('Gem cutting starts with examining the rough - look for inclusions, cracks, and color orientation.');
+            tips.push('The dop is a metal stick that holds your stone. Proper dopping is CRITICAL to success!');
+            tips.push('Dop wax melts at around 150°F. Too hot burns the stone, too cold won\'t bond properly.');
+            tips.push('Watch the stage indicator - yellow means human interaction is needed!');
+            tips.push('Every stone goes through: Prep → Pavilion → Transfer → Crown → Polish');
         }
         
-        if (player.level >= 3 && player.level < 7) {
-            tips.push('The Pro GemBot costs 100 gems but produces 3x faster. A worthy investment!');
-            tips.push('Connect a REAL GemBot machine for a 50% production bonus!');
-            tips.push('Rare gems like Diamond and Opal are unlocked at higher levels.');
+        // ==================== INTERMEDIATE TIPS (Level 3-7) ====================
+        if (player.level >= 3 && player.level < 8) {
+            // Process understanding
+            tips.push('The pavilion is cut first because it\'s easier to transfer to than a finished crown.');
+            tips.push('The girdle is the widest part of the stone - it determines your final size.');
+            tips.push('Transfer is the riskiest moment! The stone moves from pavilion dop to crown dop.');
+            tips.push('Laps progress from rough (600 grit) to fine (1200 grit) before polishing.');
+            tips.push('Polish uses diamond paste: 8k → 14k → 50k → 100k → 200k for mirror finish.');
+            
+            // Hazard warnings
+            tips.push('If the dop wax is too cold, the stone can fly off at high speed. DANGEROUS!');
+            tips.push('Always let the dop cool naturally. Rapid cooling stresses both stone and bond.');
+            tips.push('The copper lap for polishing must be charged with only ONE grit at a time.');
         }
         
-        if (player.level >= 7) {
-            tips.push('The Ultra GemBot is the pinnacle of gem cutting technology!');
-            tips.push('Legendary Alexandrite appears only for master cutters like yourself.');
-            tips.push('Your mastery grows. Soon, no gem shall be beyond your skill.');
+        // ==================== ADVANCED TIPS (Level 8+) ====================
+        if (player.level >= 8) {
+            // Precision techniques
+            tips.push('Diamond (Mohs 10) requires patience - expect 3-4x the cutting time of quartz.');
+            tips.push('Corundum (Ruby/Sapphire at Mohs 9) is second hardest - good practice for diamond.');
+            tips.push('Opal (Mohs 5.5) is soft AND heat sensitive - never let it get warm from friction!');
+            tips.push('Topaz has perfect cleavage - one wrong tap and it splits along crystal planes.');
+            tips.push('Emerald is included by nature - these inclusions create fracture risks.');
+            
+            // Pro techniques
+            tips.push('Master cutters pre-polish pavilion facets before transfer to check angles.');
+            tips.push('The 42° pavilion angle is standard for maximum brilliance in most stones.');
+            tips.push('Crown angles affect fire (rainbow dispersion) - shallower = more fire.');
+            tips.push('Table size affects brilliance vs fire trade-off. Typically 50-60% of girdle width.');
         }
         
-        // Machine-based tips
+        // ==================== MACHINE-SPECIFIC TIPS ====================
         if (machines.length === 1) {
-            tips.push('A single machine works hard, but two would double your output!');
+            tips.push('One machine means mastering basics before scaling. Learn the rhythm of cutting.');
         }
         
         if (machines.length >= 3) {
-            tips.push('Your workshop bustles with activity! Consider upgrading to the Neon Factory for more slots.');
+            tips.push('With multiple machines, watch for transfer stages - they all need attention!');
+            tips.push('Pro tip: Stagger your stones so transfers don\'t happen simultaneously.');
         }
         
-        // Economy tips
-        if (player.gems > 200 && machines.length < 3) {
-            tips.push('You have gems to spare. Perhaps invest in another machine?');
+        // ==================== REAL GemBot PROCESS TIPS ====================
+        // These reflect the actual GemBot machine operation
+        tips.push('On real GemBot: X-axis moves the stone in/out, Y-axis moves up/down to lap.');
+        tips.push('The P-axis (Index) rotates the stone to each facet position. 96-tooth gear = 96 positions.');
+        tips.push('Speed control is crucial - fast for rough cutting, slow for precision finishing.');
+        tips.push('Step mode gives precise control: each click = exact number of motor steps.');
+        tips.push('The limit switches protect your stone from crashing into the lap.');
+        tips.push('Motor timeout (60 seconds) is a safety feature - prevents runaway operations.');
+        
+        // ==================== MATERIAL SCIENCE TIPS ====================
+        tips.push('Mohs hardness is relative, not linear. Diamond (10) is ~4x harder than corundum (9).');
+        tips.push('Quartz family (amethyst, citrine) are ideal learner stones - hard enough, forgiving.');
+        tips.push('Garnet is slightly harder than quartz and comes in every color except blue.');
+        tips.push('Heat damages many stones. Opal cracks, topaz changes color, some emeralds fracture.');
+        
+        // ==================== FAILURE EDUCATION ====================
+        if (this.state.stats.dopFailures > 0) {
+            tips.push('Dop failures happen to everyone. Check: wax temp, stone cleanliness, bond time.');
         }
         
-        if (player.tokens > 0) {
-            tips.push('Tokens earned here can be used in the main GemForge economy!');
+        if (this.state.stats.transferFailures > 0) {
+            tips.push('Transfer takes practice. Support the stone, heat evenly, align precisely.');
         }
         
-        // Teaching moments
-        tips.push('In real gem cutting, the angle of the facet determines how light dances within the stone.');
-        tips.push('The lap spins at thousands of RPM. Patience and precision are the cutter\'s virtues.');
-        tips.push('Each gem type has unique hardness. Diamond is hardest, but Opal requires the gentlest touch.');
-        tips.push('A perfect cut maximizes brilliance - the light that returns to your eye.');
+        if (this.state.player.stonesLost > 0) {
+            tips.push(`You've lost ${this.state.player.stonesLost} stones. Every loss teaches a lesson!`);
+        }
         
-        // Real machine integration tips
+        // ==================== PROGRESS TIPS ====================
+        if (player.stonesCompleted > 10) {
+            tips.push(`${player.stonesCompleted} stones completed! You're developing real skill.`);
+        }
+        
+        if (player.gems > 500 && machines.length < 3) {
+            tips.push('Consider expanding - the Pro GemBot has better precision, fewer failures.');
+        }
+        
+        // ==================== REAL MACHINE INTEGRATION ====================
         if (this.realMachineConnected) {
-            tips.push('Your real GemBot is connected! The virtual farm learns from your actual cuts.');
+            tips.push('Real GemBot connected! The game simulates what your machine can actually do.');
+            tips.push('Use the game to plan cuts before committing real rough - practice virtually!');
         } else {
-            tips.push('Connect your physical GemBot to earn bonus gems and sync your learning!');
+            tips.push('Connect your physical GemBot to see real motor positions reflected in the game!');
+            tips.push('The virtual GemBot teaches the process - apply it to your real machine.');
         }
         
         return tips;
@@ -1389,21 +2233,42 @@ class GemBotFarmGame {
     }
     
     /**
-     * Get advice from Merlin about a specific topic
+     * Get advice from Merlin about a specific topic - DETAILED GEM CUTTING EDUCATION
      */
     askMerlin(topic) {
         this.state.merlinInteractions.questionsAnswered++;
         
         const advice = {
-            'gems': 'Each gem has unique properties. Harder gems like Diamond require slower, more precise cuts. Softer gems like Opal need gentle treatment.',
-            'machines': 'Your machines work tirelessly. Upgrade to Pro for speed, or Ultra for maximum production. Each has its purpose.',
-            'strategy': 'Balance is key. Invest in machines early, then let production compound. Patience builds empires.',
-            'real_machine': 'The virtual farm teaches concepts, but true mastery comes from the physical machine. The two work in harmony.',
-            'levels': 'Higher levels unlock rarer gems. Focus on consistent production and perfect cuts to advance quickly.',
-            'tokens': 'Tokens earned here have value in the broader GemForge ecosystem. They represent your proven skill.'
+            'gems': 'Each gem has unique properties defined by Mohs hardness: Quartz=7, Topaz=8, Corundum (Ruby/Sapphire)=9, Diamond=10. Harder stones take longer to cut but polish beautifully. Softer stones like Opal (5.5) require gentle treatment and can\'t handle heat.',
+            
+            'machines': 'GemBot machines control 3 axes: X (in/out toward lap), Y (up/down), and Index (rotation). Step mode gives precise single-step control. Continuous mode for roughing. Higher quality machines have better precision = fewer dop failures.',
+            
+            'strategy': 'Start with Quartz family stones (Amethyst, Citrine) - they\'re forgiving and teach the process. Master the transfer before tackling valuable stones. One lost ruby teaches expensive lessons!',
+            
+            'real_machine': 'The virtual game teaches the EXACT process used by physical GemBot: mount rough, preform shape, cut pavilion through progressive laps (600→800→1200), polish with paste (8k→14k→50k→100k→200k), transfer, cut crown, final polish.',
+            
+            'process': 'Full cut process: 1) Prep rough, 2) Dop to stick, 3) Mount in chuck, 4) Preform girdle & pavilion, 5) Cut pavilion facets through grits, 6) Polish pavilion, 7) TRANSFER to crown dop, 8) Cut crown & table, 9) Polish crown, 10) Remove & clean.',
+            
+            'laps': 'Cutting laps: 600 grit (rough shaping, fast removal), 800 grit (remove 600 scratches), 1200 grit (pre-polish). Polish laps: Copper charged with diamond paste - 8k to 200k for mirror finish. NEVER mix grit sizes on one lap!',
+            
+            'dopping': 'Dop wax temperature is critical - around 150°F. Stone must be clean and warm. Press firmly, center precisely, let cool SLOWLY. Rapid cooling = weak bond = flying stones. Re-dop if ANY doubt about bond strength!',
+            
+            'transfer': 'The riskiest step! Heat BOTH dops (old pavilion dop AND new crown dop). Apply crown dop to table, align precisely with pavilion center. Heat old dop to release. SUPPORT THE STONE during entire process!',
+            
+            'failures': 'Common failures: Dop flyoff (cold wax, dirty stone, quick cool), Transfer loss (misalignment, uneven heat), Chipping (hard landing on lap, bad angles). Each failure teaches something!',
+            
+            'hardness': 'Mohs scale: Diamond=10 (takes FOREVER to cut, needs special laps), Corundum=9 (Ruby/Sapphire, patient work), Topaz=8 (perfect cleavage risk!), Quartz=7 (ideal learning), Opal=5.5 (soft, heat sensitive).',
+            
+            'angles': 'Standard pavilion: ~42° for maximum brilliance. Crown mains: ~42°. Star facets: lower angle. Table: 0° (flat). The index gear has 96 teeth = 3.75° per tooth for precise facet placement.',
+            
+            'levels': 'Higher levels unlock harder gems that take longer but pay more. Level 3: Topaz/Emerald. Level 8: Ruby/Sapphire. Level 15: Diamond/Alexandrite. Master the basics before tackling precious stones!',
+            
+            'tokens': 'Tokens represent proven skill in gem cutting. Earned through completing stones, especially perfect cuts and difficult materials. Use them to unlock upgrades and prove your mastery.',
+            
+            'safety': 'The GemBot has limit switches on all axes to prevent crashes. Emergency stop releases all motors. Motor timeout (60 seconds) stops runaway operations. Respect these safety systems!'
         };
         
-        const response = advice[topic] || 'Hmm, ask me about gems, machines, strategy, or levels, and I shall enlighten you.';
+        const response = advice[topic] || 'Ask me about: gems, machines, strategy, process, laps, dopping, transfer, failures, hardness, angles, levels, tokens, or safety - and I shall enlighten you with the wisdom of the ages!';
         this.merlinSpeak(response);
         return response;
     }
