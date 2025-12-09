@@ -3993,14 +3993,90 @@
                 // "How" questions (procedural)
                 if (/how/.test(lowerQuery)) {
                     if (/start|begin|first|initial|learn/.test(lowerQuery)) {
-                        this.highlightButtons(['connectBtn', 'homeBtn']);
-                        return `GETTING STARTED: (1) CONNECT Arduino via USB. (2) Tell me your stone type. (3) Click HOME. (4) Use STEP mode with speed 1-3. (5) Practice positioning. (6) Watch camera feed for guidance.`;
+                        this.highlightButtons(['scanBtn', 'connectBtn', 'homeBtn', 'cameraStartBtn']);
+                        return `GETTING STARTED - STEP BY STEP:\n\n` +
+                               `🔌 ARDUINO CONNECTION:\n` +
+                               `  1. Click 🔍 SCAN to find Arduino\n` +
+                               `  2. Select port from dropdown\n` +
+                               `  3. Click 🔌 CONNECT\n` +
+                               `  4. Check status indicator (top-left) - should be 🟢 GREEN\n\n` +
+                               `📱 CAMERA SETUP (Choose One):\n` +
+                               `  A) LOCAL CAMERA: Click 📷 START CAMERA (needs webcam)\n` +
+                               `  B) MOBILE CAMERA: Open app on iPhone/Android → 🔗 Link to Desktop\n` +
+                               `     Then on desktop: Select 📲 Mobile Device Camera → 📷 START CAMERA\n\n` +
+                               `⚙️ MACHINE SETUP:\n` +
+                               `  5. Click HOME to reset position to zero\n` +
+                               `  6. Tell me your stone type\n` +
+                               `  7. Use STEP mode, speed 1-3 to position stone\n` +
+                               `  8. Begin cutting!\n\n` +
+                               `Need help with any step? Ask away!`;
+                    }
+                    if (/connect|arduino|usb/.test(lowerQuery)) {
+                        this.highlightButtons(['scanBtn', 'connectBtn']);
+                        return `CONNECTING YOUR ARDUINO:\n\n` +
+                               `📍 METHOD 1 - Direct USB (Chrome/Edge Only):\n` +
+                               `  1. Plug Arduino into USB port\n` +
+                               `  2. Click 🔍 SCAN\n` +
+                               `  3. Select the Arduino port\n` +
+                               `  4. Click 🔌 CONNECT\n` +
+                               `  5. Status should turn 🟢 GREEN\n\n` +
+                               `☁️ METHOD 2 - Cloud + Local Bridge (Render Hosting):\n` +
+                               `  1. Download & run: node local-usb-bridge.js\n` +
+                               `  2. Bridge will show ports from your desktop\n` +
+                               `  3. On web app: Click 🔍 SCAN\n` +
+                               `  4. Select "🌉 Bridge: [port]"\n` +
+                               `  5. Click 🔌 CONNECT\n` +
+                               `  📖 Full setup: Check LOCAL_USB_BRIDGE_SETUP.md\n\n` +
+                               `💡 Pro Tip: If Arduino doesn't appear, try:\n` +
+                               `  • Different USB cable\n` +
+                               `  • Different USB port\n` +
+                               `  • Unplug and replug`;
+                    }
+                    if (/camera|video|view|see/.test(lowerQuery)) {
+                        this.highlightButtons(['cameraStartBtn', 'cameraSourceSelect']);
+                        return `SETTING UP YOUR CAMERA:\n\n` +
+                               `🖥️ DESKTOP COMPUTER:\n` +
+                               `  1. If you have a USB webcam:\n` +
+                               `     • Plug in webcam\n` +
+                               `     • Click 📷 START CAMERA\n` +
+                               `     • Select "🖥️ Rear/External Camera" if needed\n` +
+                               `  2. No webcam? Use mobile instead (see below)\n\n` +
+                               `📱 MOBILE DEVICE (iPhone/Android):\n` +
+                               `  ON YOUR PHONE:\n` +
+                               `  1. Open this app on your iPhone or Android\n` +
+                               `  2. Click 🔗 LINK TO DESKTOP\n` +
+                               `  3. Wait for connection (shows "📤 Streaming camera to desktop")\n\n` +
+                               `ON YOUR DESKTOP:\n` +
+                               `  4. Select 📲 Mobile Device Camera from dropdown\n` +
+                               `  5. Click 📷 START CAMERA\n` +
+                               `  6. Your phone's camera appears on desktop!\n\n` +
+                               `✅ BEST SETUP: Mobile captures the work, desktop shows full view`;
+                    }
+                    if (/mobile|phone|link|device/.test(lowerQuery)) {
+                        this.highlightButtons(['cameraConnectBtn', 'cameraSourceSelect']);
+                        return `LINKING MOBILE DEVICE TO DESKTOP:\n\n` +
+                               `ON YOUR PHONE (iPhone/Android):\n` +
+                               `  1. Open this same web app URL on your phone\n` +
+                               `  2. In the header, click 🔗 LINK TO DESKTOP\n` +
+                               `  3. Grant camera permission when asked\n` +
+                               `  4. Wait for message: "📤 Streaming camera to desktop..."\n` +
+                               `  5. Phone camera now streaming!\n\n` +
+                               `ON YOUR DESKTOP:\n` +
+                               `  6. You'll see "📱 Mobile Device Connected" message\n` +
+                               `  7. In camera selector, choose 📲 Mobile Device Camera\n` +
+                               `  8. Click 📷 START CAMERA\n` +
+                               `  9. Mobile's view appears on desktop!\n\n` +
+                               `📸 NOW YOU CAN:\n` +
+                               `  • Control machine from desktop\n` +
+                               `  • See mobile camera on desktop\n` +
+                               `  • Merlin analyzes mobile camera for guidance\n` +
+                               `  • No USB webcam needed!`;
                     }
                     if (/switch|change.*stone|exchange|replace/.test(lowerQuery)) {
                         this.highlightButtons(['homeBtn']);
                         return `CHANGING STONE: (1) Click HOME. (2) Carefully remove current stone. (3) Position new stone on lap. (4) Use STEP mode, speed 1-3. (5) Fine-tune position. (6) Proceed with cutting phase.`;
                     }
-                    return `Tell me specifically: Are you asking about positioning? Cutting? Changing stones? Connecting? Speed control? I'll give detailed step-by-step guidance.`;
+                    return `Tell me specifically: connecting? camera? mobile device? positioning? I'll give detailed step-by-step guidance.`;
                 }
                 
                 // "Why" or explanation questions
@@ -4200,8 +4276,20 @@
                             `${machineState.visionData.visualState}. ` +
                             `${machineState.visionData.recommendations.length > 0 ? machineState.visionData.recommendations[0] : 'Conditions look good.'}`;
                     } else {
-                        response += `Camera is not running. Click START CAMERA to see your workspace. ` +
-                        `The camera helps with positioning and visibility, but isn't required for cutting.`;
+                        response += `📷 CAMERA SETUP GUIDE:\n\n` +
+                            `OPTION A: Desktop Webcam\n` +
+                            `1. Plug USB webcam into desktop\n` +
+                            `2. Click 📷 START CAMERA\n` +
+                            `3. Grant camera permission\n` +
+                            `4. Video should appear above\n\n` +
+                            `OPTION B: Mobile Device (NO WEBCAM NEEDED!)\n` +
+                            `1. Open this app on iPhone/Android\n` +
+                            `2. Click 🔗 LINK TO DESKTOP\n` +
+                            `3. Wait for "📤 Streaming camera..."\n` +
+                            `4. On desktop: Select 📲 Mobile Device Camera\n` +
+                            `5. Click 📷 START CAMERA\n` +
+                            `6. Mobile's view appears on desktop!\n\n` +
+                            `💡 Camera isn't required to cut, but helps with positioning. Pick whichever works for you!`;
                     }
                 }
                 else if (context.keywords.includes('cutting') && context.isQuestion) {
@@ -4212,11 +4300,26 @@
                 }
                 else if (context.keywords.includes('connection')) {
                     if (isConnected) {
-                        response += `Connection is ACTIVE (see green indicator at top). ` +
+                        response += `Connection is ACTIVE (see 🟢 green indicator at top). ` +
                             `You have full control of the machine. Motors should respond to commands immediately.`;
                     } else {
-                        response += `Connection is INACTIVE. Click SCAN → select port → CONNECT. ` +
-                            `If it fails: try different USB port, restart software, or power cycle the machine.`;
+                        response += `CONNECTION TROUBLESHOOTING:\n\n` +
+                            `🔴 STATUS SHOWS RED?\n` +
+                            `1. Check: Is Arduino plugged into USB?\n` +
+                            `2. Try: Click 🔍 SCAN again\n` +
+                            `3. Try: Select port, click 🔌 CONNECT\n` +
+                            `4. Check: Different USB port or cable\n` +
+                            `5. Restart: Close app, restart browser\n\n` +
+                            `⚠️ NO PORTS SHOWING?\n` +
+                            `1. Unplug Arduino\n` +
+                            `2. Wait 2 seconds\n` +
+                            `3. Plug back in\n` +
+                            `4. Click 🔍 SCAN again\n\n` +
+                            `☁️ USING RENDER (CLOUD)?\n` +
+                            `→ Start Local USB Bridge on desktop\n` +
+                            `→ See "🌉 Bridge: [port]" option\n` +
+                            `→ See LOCAL_USB_BRIDGE_SETUP.md for details\n\n` +
+                            `Still stuck? Try: Different browser (Chrome/Edge) or different USB port.`;
                     }
                 }
                 else if (context.type === 'unknown' && context.isQuestion) {
