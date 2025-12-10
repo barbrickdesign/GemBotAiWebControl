@@ -20888,16 +20888,18 @@
                     html = '<div class="shop-section">';
                     shop.rough.forEach(item => {
                         const rarityClass = `rarity-${item.rarity}`;
-                        const canBuy = item.canBuy && gameFarm.state.player.gems >= item.price;
+                        // Use pricePerCarat or examplePrice (for ~2.5ct stone)
+                        const displayPrice = item.examplePrice || Math.ceil(item.pricePerCarat * 2.5);
+                        const canBuy = item.canBuy && gameFarm.state.player.gems >= displayPrice;
                         html += `
                             <div class="shop-item" style="${!item.canBuy ? 'opacity: 0.5;' : ''}">
                                 <div class="shop-item-info">
                                     <div class="shop-item-name ${rarityClass}">${item.name}</div>
                                     <div class="shop-item-desc">
-                                        ${item.canBuy ? `Level ${item.levelRequired}+ • In Stock` : `Requires Level ${item.levelRequired}`}
+                                        ${item.canBuy ? `Level ${item.levelRequired}+ • ${item.pricePerCarat}/ct` : `Requires Level ${item.levelRequired}`}
                                     </div>
                                 </div>
-                                <span class="shop-item-price">💎 ${item.price}</span>
+                                <span class="shop-item-price">💎 ~${displayPrice}</span>
                                 <button class="game-btn" style="padding: 4px 10px; font-size: 10px;" 
                                     onclick="buyRoughStone('${item.name}')"
                                     ${!canBuy ? 'disabled style="opacity:0.5;"' : ''}>
