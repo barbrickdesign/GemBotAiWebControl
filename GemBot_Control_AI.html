@@ -2377,6 +2377,109 @@
             margin-bottom: 12px;
         }
 
+        /* ==================== 3D WORLD EXPLORATION MODE ==================== */
+        #gembot-3d-world {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3a 50%, #0a1a2a 100%);
+            z-index: 99997;
+            overflow: hidden;
+        }
+        
+        #gembot-3d-world.hidden {
+            display: none;
+        }
+        
+        .world-loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 10;
+        }
+        
+        .loading-gem {
+            font-size: 60px;
+            animation: gemPulse 1.5s infinite ease-in-out;
+        }
+        
+        @keyframes gemPulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+        }
+        
+        .loading-text {
+            color: #4affff;
+            font-size: 18px;
+            margin-top: 12px;
+        }
+        
+        .world-hud {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1100;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-width: 150px;
+        }
+        
+        .hud-level {
+            color: #4affff;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .hud-xp-bar {
+            height: 8px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 4px;
+            overflow: hidden;
+            border: 1px solid #4affff;
+        }
+        
+        .hud-xp-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4affff, #00ff88);
+            transition: width 0.3s ease;
+        }
+        
+        .world-minimap {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 150px;
+            height: 150px;
+            background: rgba(0,0,0,0.7);
+            border: 2px solid #4affff;
+            border-radius: 8px;
+            z-index: 1100;
+        }
+        
+        .world-close-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1100;
+            padding: 12px 20px;
+            background: rgba(255, 0, 0, 0.2);
+            border: 1px solid #ff4444;
+            border-radius: 8px;
+            color: #fff;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        .world-close-btn:hover {
+            background: rgba(255, 0, 0, 0.4);
+        }
+
         /* ==================== GEMBOT FARM GAME MODE ==================== */
         .game-mode-overlay {
             position: fixed;
@@ -5562,19 +5665,7 @@
         <!-- Room content rendered dynamically by gembot-3d-world.js -->
         
         <!-- Close button -->
-        <button class="world-close-btn" onclick="close3DWorld()" style="
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            z-index: 1100;
-            padding: 12px 20px;
-            background: rgba(255, 0, 0, 0.2);
-            border: 1px solid #ff4444;
-            border-radius: 8px;
-            color: #fff;
-            cursor: pointer;
-            font-size: 14px;
-        ">✕ Exit World</button>
+        <button class="world-close-btn" onclick="close3DWorld()">✕ Exit World</button>
         
         <!-- HUD -->
         <div class="world-hud">
