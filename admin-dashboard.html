@@ -656,6 +656,194 @@
         
         .badge-admin { background: rgba(255, 0, 255, 0.2); color: var(--accent-magenta); }
         .badge-user { background: rgba(0, 255, 255, 0.2); color: var(--accent-cyan); }
+        
+        /* Enhanced Editor Styles */
+        .editor-toolbar {
+            display: flex;
+            gap: 10px;
+            padding: 10px 20px;
+            background: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            border-radius: 12px 12px 0 0;
+            margin-bottom: -1px;
+            align-items: center;
+        }
+        
+        .toolbar-btn {
+            padding: 6px 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+        
+        .toolbar-btn:hover {
+            color: var(--accent-cyan);
+            border-color: var(--accent-cyan);
+        }
+        
+        .editor-status {
+            margin-left: auto;
+            color: var(--accent-green);
+            font-size: 12px;
+        }
+        
+        .file-search {
+            padding: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .file-search input {
+            width: 100%;
+            padding: 8px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            color: var(--text-primary);
+            font-size: 12px;
+        }
+        
+        .file-category {
+            padding: 8px 15px;
+            font-size: 11px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-top: 1px solid var(--border-color);
+            margin-top: 5px;
+        }
+        
+        .file-category:first-child {
+            border-top: none;
+            margin-top: 0;
+        }
+        
+        .file-size {
+            margin-left: auto;
+            font-size: 10px;
+            color: var(--text-secondary);
+        }
+        
+        .file-tree-footer {
+            padding: 10px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 5px;
+        }
+        
+        .action-btn.small {
+            padding: 6px 10px;
+            font-size: 11px;
+            flex: 1;
+        }
+        
+        .editor-tabs {
+            display: flex;
+            gap: 2px;
+            overflow-x: auto;
+            flex: 1;
+        }
+        
+        .editor-tab {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: var(--bg-card);
+            border-radius: 6px 6px 0 0;
+            font-size: 12px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        
+        .editor-tab.active {
+            background: var(--bg-input);
+            color: var(--accent-cyan);
+        }
+        
+        .tab-close {
+            font-size: 14px;
+            opacity: 0.5;
+            cursor: pointer;
+        }
+        
+        .tab-close:hover {
+            opacity: 1;
+            color: var(--accent-red);
+        }
+        
+        .editor-info-bar {
+            display: flex;
+            gap: 20px;
+            padding: 5px 15px;
+            background: var(--bg-input);
+            border-bottom: 1px solid var(--border-color);
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+        
+        .editor-modified {
+            color: var(--accent-yellow);
+            font-size: 12px;
+            margin-right: 10px;
+        }
+        
+        /* Scene Editor Styles */
+        .scene-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .scene-control-group {
+            background: var(--bg-card);
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .scene-control-group h4 {
+            margin-bottom: 15px;
+            color: var(--accent-cyan);
+            font-size: 14px;
+        }
+        
+        .control-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .control-row label {
+            min-width: 120px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        
+        .control-row input[type="range"] {
+            flex: 1;
+            accent-color: var(--accent-cyan);
+        }
+        
+        .control-row select {
+            flex: 1;
+            padding: 8px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            color: var(--text-primary);
+        }
+        
+        .control-row span {
+            min-width: 50px;
+            text-align: right;
+            color: var(--accent-cyan);
+            font-family: 'JetBrains Mono', monospace;
+        }
     </style>
 </head>
 <body>
@@ -745,18 +933,47 @@
             <section id="section-editor" class="section">
                 <h2 style="margin-bottom: 20px;">Live Code Editor</h2>
                 
+                <div class="editor-toolbar">
+                    <button class="toolbar-btn" onclick="searchInFile()" title="Search (Ctrl+F)">🔍 Find</button>
+                    <button class="toolbar-btn" onclick="goToLine()" title="Go to Line">📍 Go to Line</button>
+                    <button class="toolbar-btn" onclick="formatCode()" title="Format Code">✨ Format</button>
+                    <button class="toolbar-btn" onclick="toggleWordWrap()" title="Toggle Word Wrap">↩️ Wrap</button>
+                    <button class="toolbar-btn" onclick="previewChanges()" title="Preview in new tab">👁️ Preview</button>
+                    <span class="editor-status" id="editorStatus">Ready</span>
+                </div>
+                
                 <div class="editor-container">
                     <div class="file-tree">
                         <div class="file-tree-header">📁 Project Files</div>
+                        <div class="file-search">
+                            <input type="text" id="fileSearch" placeholder="Search files..." onkeyup="filterFiles()">
+                        </div>
                         <div class="file-list" id="fileList">
+                            <!-- Core Files -->
+                            <div class="file-category">🎮 Core Application</div>
                             <div class="file-item active" onclick="loadFile('GemBot_Control_AI.html')">
                                 <span class="file-icon">📄</span>
                                 <span>GemBot_Control_AI.html</span>
+                                <span class="file-size" id="size-GemBot_Control_AI.html"></span>
                             </div>
+                            <div class="file-item" onclick="loadFile('index.html')">
+                                <span class="file-icon">📄</span>
+                                <span>index.html</span>
+                            </div>
+                            
+                            <!-- Game Files -->
+                            <div class="file-category">🎰 Game System</div>
                             <div class="file-item" onclick="loadFile('gembot-farm-game.js')">
                                 <span class="file-icon">📜</span>
                                 <span>gembot-farm-game.js</span>
                             </div>
+                            <div class="file-item" onclick="loadFile('gembot-3d-world.js')">
+                                <span class="file-icon">📜</span>
+                                <span>gembot-3d-world.js</span>
+                            </div>
+                            
+                            <!-- UI Files -->
+                            <div class="file-category">🎨 UI Components</div>
                             <div class="file-item" onclick="loadFile('cube-ui.js')">
                                 <span class="file-icon">📜</span>
                                 <span>cube-ui.js</span>
@@ -765,23 +982,103 @@
                                 <span class="file-icon">🎨</span>
                                 <span>cube-ui.css</span>
                             </div>
+                            
+                            <!-- Admin Files -->
+                            <div class="file-category">⚙️ Admin & Config</div>
                             <div class="file-item" onclick="loadFile('admin-dashboard.html')">
                                 <span class="file-icon">📄</span>
                                 <span>admin-dashboard.html</span>
                             </div>
+                            
+                            <!-- Documentation -->
+                            <div class="file-category">📚 Documentation</div>
+                            <div class="file-item" onclick="loadFile('README.md')">
+                                <span class="file-icon">📝</span>
+                                <span>README.md</span>
+                            </div>
+                        </div>
+                        
+                        <div class="file-tree-footer">
+                            <button class="action-btn small" onclick="refreshFileList()">🔄 Refresh</button>
+                            <button class="action-btn small" onclick="createNewFile()">➕ New File</button>
                         </div>
                     </div>
                     
                     <div class="editor-panel">
                         <div class="editor-header">
-                            <span class="editor-filename" id="currentFileName">GemBot_Control_AI.html</span>
+                            <div class="editor-tabs" id="editorTabs">
+                                <div class="editor-tab active" data-file="GemBot_Control_AI.html">
+                                    <span>GemBot_Control_AI.html</span>
+                                    <span class="tab-close" onclick="closeTab(event, 'GemBot_Control_AI.html')">×</span>
+                                </div>
+                            </div>
                             <div class="editor-actions">
+                                <span class="editor-modified" id="modifiedIndicator" style="display:none;">● Modified</span>
                                 <button class="editor-btn btn-revert" onclick="revertFile()">↩️ Revert</button>
                                 <button class="editor-btn btn-save" onclick="saveAndPush()">💾 Save & Push</button>
                             </div>
                         </div>
+                        <div class="editor-info-bar">
+                            <span id="cursorPosition">Ln 1, Col 1</span>
+                            <span id="fileMode">HTML</span>
+                            <span id="fileEncoding">UTF-8</span>
+                        </div>
                         <div class="editor-wrapper">
                             <textarea id="codeEditor"></textarea>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Live Scene Editor Panel -->
+                <div class="panel" style="margin-top: 20px;">
+                    <div class="panel-header">
+                        <h3 class="panel-title">🎬 Live Scene Editor</h3>
+                        <button class="action-btn" onclick="toggleSceneEditor()">Toggle</button>
+                    </div>
+                    <div class="panel-body scene-editor-body" id="sceneEditorBody" style="display:none;">
+                        <div class="scene-controls">
+                            <div class="scene-control-group">
+                                <h4>📷 Camera Settings (gembot-farm-game.js)</h4>
+                                <div class="control-row">
+                                    <label>Player Height:</label>
+                                    <input type="range" id="scenePlayerHeight" min="1.5" max="3.0" step="0.1" value="2.2">
+                                    <span id="playerHeightValue">2.2m</span>
+                                </div>
+                                <div class="control-row">
+                                    <label>Movement Speed:</label>
+                                    <input type="range" id="sceneMovementSpeed" min="0.1" max="2.0" step="0.1" value="0.8">
+                                    <span id="movementSpeedValue">0.8</span>
+                                </div>
+                                <div class="control-row">
+                                    <label>Camera Sensitivity:</label>
+                                    <input type="range" id="sceneCameraSensitivity" min="500" max="3000" step="100" value="1500">
+                                    <span id="cameraSensitivityValue">1500</span>
+                                </div>
+                            </div>
+                            
+                            <div class="scene-control-group">
+                                <h4>🏠 Room Configuration</h4>
+                                <div class="control-row">
+                                    <label>Starter Room:</label>
+                                    <select id="sceneStarterRoom">
+                                        <option value="home_desk">Home Desk (1 slot)</option>
+                                        <option value="home_workshop">Home Workshop (4 slots)</option>
+                                        <option value="home_studio">Home Studio (8 slots)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="scene-control-group">
+                                <h4>💡 Environment</h4>
+                                <div class="control-row">
+                                    <label>Ambient Light:</label>
+                                    <input type="range" id="sceneAmbientLight" min="0" max="1" step="0.05" value="0.3">
+                                    <span id="ambientLightValue">0.3</span>
+                                </div>
+                            </div>
+                            
+                            <button class="action-btn" onclick="applySceneChanges()">🚀 Apply & Push Changes</button>
+                            <p class="form-hint">Changes will be written to the source files and pushed to GitHub for live updates.</p>
                         </div>
                     </div>
                 </div>
@@ -970,12 +1267,19 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/htmlmixed/htmlmixed.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/css/css.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/xml/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/edit/closebrackets.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/edit/matchbrackets.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/search/search.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/search/searchcursor.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/dialog/dialog.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/dialog/dialog.min.css">
     
     <script>
         // ==================== ADMIN CONFIGURATION ====================
-        // IMPORTANT: Change this hash before deploying!
-        // This is SHA-256 hash of your admin password
-        // Default password: "gembot_admin_2025" (CHANGE THIS!)
+        // Primary admin email - full access
+        const ADMIN_EMAIL = 'barbrickdesign@gmail.com';
+        
+        // SHA-256 hash of your admin password (default: 'gembot_admin_2025')
         const ADMIN_PASSWORD_HASH = '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918'; // 'admin' for testing
         
         // Store for session
@@ -984,6 +1288,8 @@
         let currentFile = 'GemBot_Control_AI.html';
         let originalFileContent = '';
         let activityLog = [];
+        let openTabs = ['GemBot_Control_AI.html'];
+        let fileContents = {}; // Cache for open files
         
         // GitHub config (stored in localStorage)
         let githubConfig = {
@@ -992,6 +1298,18 @@
             repo: 'GemBotAiWebControl',
             branch: 'main'
         };
+        
+        // Project file list for dynamic loading
+        const projectFiles = [
+            { name: 'GemBot_Control_AI.html', category: 'core', icon: '📄' },
+            { name: 'index.html', category: 'core', icon: '📄' },
+            { name: 'gembot-farm-game.js', category: 'game', icon: '📜' },
+            { name: 'gembot-3d-world.js', category: 'game', icon: '📜' },
+            { name: 'cube-ui.js', category: 'ui', icon: '📜' },
+            { name: 'cube-ui.css', category: 'ui', icon: '🎨' },
+            { name: 'admin-dashboard.html', category: 'admin', icon: '📄' },
+            { name: 'README.md', category: 'docs', icon: '📝' }
+        ];
         
         // ==================== AUTHENTICATION ====================
         async function hashPassword(password) {
@@ -1068,8 +1386,19 @@
                 matchBrackets: true,
                 indentUnit: 4,
                 tabSize: 4,
-                lineWrapping: true
+                lineWrapping: true,
+                extraKeys: {
+                    'Ctrl-S': function(cm) { saveAndPush(); },
+                    'Ctrl-F': function(cm) { CodeMirror.commands.find(cm); },
+                    'Ctrl-G': function(cm) { goToLine(); }
+                }
             });
+            
+            // Track cursor position
+            editor.on('cursorActivity', updateCursorPosition);
+            
+            // Track modifications
+            editor.on('change', updateModifiedIndicator);
             
             // Load initial file
             loadFile('GemBot_Control_AI.html');
@@ -1077,7 +1406,12 @@
         
         async function loadFile(filename) {
             currentFile = filename;
-            document.getElementById('currentFileName').textContent = filename;
+            
+            // Add to tabs if not already open
+            if (!openTabs.includes(filename)) {
+                openTabs.push(filename);
+            }
+            renderTabs();
             
             // Update file list selection
             document.querySelectorAll('.file-item').forEach(item => {
@@ -1089,20 +1423,35 @@
             
             // Set editor mode based on file type
             let mode = 'htmlmixed';
-            if (filename.endsWith('.js')) mode = 'javascript';
-            else if (filename.endsWith('.css')) mode = 'css';
+            let modeName = 'HTML';
+            if (filename.endsWith('.js')) { mode = 'javascript'; modeName = 'JavaScript'; }
+            else if (filename.endsWith('.css')) { mode = 'css'; modeName = 'CSS'; }
+            else if (filename.endsWith('.md')) { mode = 'markdown'; modeName = 'Markdown'; }
+            else if (filename.endsWith('.json')) { mode = 'javascript'; modeName = 'JSON'; }
             
             editor.setOption('mode', mode);
+            document.getElementById('fileMode').textContent = modeName;
+            
+            // Check if we have cached content
+            if (fileContents[filename]) {
+                editor.setValue(fileContents[filename]);
+                originalFileContent = fileContents[filename];
+                showToast(`Loaded ${filename} from cache`, 'info');
+                return;
+            }
             
             // Try to load from GitHub
             try {
-                showToast('Loading file...', 'info');
+                document.getElementById('editorStatus').textContent = 'Loading...';
                 const content = await fetchFileFromGitHub(filename);
                 editor.setValue(content);
                 originalFileContent = content;
+                fileContents[filename] = content;
+                document.getElementById('editorStatus').textContent = 'Ready';
                 showToast(`Loaded ${filename}`, 'success');
                 addLog(`Loaded file: ${filename}`, 'info');
             } catch (error) {
+                document.getElementById('editorStatus').textContent = 'Error';
                 showToast('Failed to load file. Check GitHub config.', 'error');
                 editor.setValue(`// Failed to load ${filename}\n// Error: ${error.message}\n\n// Make sure GitHub token is configured in Settings`);
             }
@@ -1518,9 +1867,205 @@
             }, 4000);
         }
         
+        // ==================== ENHANCED EDITOR FUNCTIONS ====================
+        function filterFiles() {
+            const search = document.getElementById('fileSearch').value.toLowerCase();
+            const items = document.querySelectorAll('.file-item');
+            items.forEach(item => {
+                const name = item.textContent.toLowerCase();
+                item.style.display = name.includes(search) ? '' : 'none';
+            });
+        }
+        
+        function searchInFile() {
+            if (editor) {
+                CodeMirror.commands.find(editor);
+            }
+        }
+        
+        function goToLine() {
+            const line = prompt('Go to line number:');
+            if (line && editor) {
+                const lineNum = parseInt(line) - 1;
+                editor.setCursor(lineNum, 0);
+                editor.focus();
+            }
+        }
+        
+        function formatCode() {
+            if (!editor) return;
+            const content = editor.getValue();
+            // Simple auto-indent
+            editor.execCommand('selectAll');
+            editor.execCommand('indentAuto');
+            showToast('Code formatted', 'success');
+        }
+        
+        function toggleWordWrap() {
+            if (editor) {
+                const current = editor.getOption('lineWrapping');
+                editor.setOption('lineWrapping', !current);
+                showToast(`Word wrap ${!current ? 'enabled' : 'disabled'}`, 'info');
+            }
+        }
+        
+        function previewChanges() {
+            const content = editor.getValue();
+            const blob = new Blob([content], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            window.open(url, '_blank');
+        }
+        
+        function updateCursorPosition() {
+            if (editor) {
+                const cursor = editor.getCursor();
+                document.getElementById('cursorPosition').textContent = `Ln ${cursor.line + 1}, Col ${cursor.ch + 1}`;
+            }
+        }
+        
+        function updateModifiedIndicator() {
+            const modified = editor.getValue() !== originalFileContent;
+            document.getElementById('modifiedIndicator').style.display = modified ? '' : 'none';
+            document.getElementById('editorStatus').textContent = modified ? 'Modified' : 'Ready';
+            document.getElementById('editorStatus').style.color = modified ? 'var(--accent-yellow)' : 'var(--accent-green)';
+        }
+        
+        function openTab(filename) {
+            if (!openTabs.includes(filename)) {
+                openTabs.push(filename);
+                renderTabs();
+            }
+            loadFile(filename);
+        }
+        
+        function closeTab(event, filename) {
+            event.stopPropagation();
+            const index = openTabs.indexOf(filename);
+            if (index > -1) {
+                openTabs.splice(index, 1);
+                delete fileContents[filename];
+                
+                if (currentFile === filename && openTabs.length > 0) {
+                    loadFile(openTabs[openTabs.length - 1]);
+                }
+                renderTabs();
+            }
+        }
+        
+        function renderTabs() {
+            const container = document.getElementById('editorTabs');
+            container.innerHTML = openTabs.map(file => `
+                <div class="editor-tab ${file === currentFile ? 'active' : ''}" onclick="loadFile('${file}')">
+                    <span>${file}</span>
+                    <span class="tab-close" onclick="closeTab(event, '${file}')">×</span>
+                </div>
+            `).join('');
+        }
+        
+        function refreshFileList() {
+            showToast('Refreshing file list from GitHub...', 'info');
+            // Could fetch repo contents from GitHub API here
+            addLog('File list refreshed', 'info');
+        }
+        
+        function createNewFile() {
+            const filename = prompt('Enter new filename:');
+            if (filename) {
+                openTabs.push(filename);
+                fileContents[filename] = '';
+                renderTabs();
+                loadFile(filename);
+                showToast(`Created new file: ${filename}`, 'success');
+                addLog(`Created new file: ${filename}`, 'info');
+            }
+        }
+        
+        // ==================== SCENE EDITOR FUNCTIONS ====================
+        function toggleSceneEditor() {
+            const body = document.getElementById('sceneEditorBody');
+            body.style.display = body.style.display === 'none' ? '' : 'none';
+        }
+        
+        // Initialize scene editor sliders
+        function initSceneEditor() {
+            const sliders = {
+                'scenePlayerHeight': 'playerHeightValue',
+                'sceneMovementSpeed': 'movementSpeedValue',
+                'sceneCameraSensitivity': 'cameraSensitivityValue',
+                'sceneAmbientLight': 'ambientLightValue'
+            };
+            
+            Object.entries(sliders).forEach(([sliderId, displayId]) => {
+                const slider = document.getElementById(sliderId);
+                const display = document.getElementById(displayId);
+                if (slider && display) {
+                    slider.addEventListener('input', () => {
+                        let value = slider.value;
+                        if (sliderId === 'scenePlayerHeight') value += 'm';
+                        display.textContent = value;
+                    });
+                }
+            });
+        }
+        
+        async function applySceneChanges() {
+            const playerHeight = document.getElementById('scenePlayerHeight').value;
+            const movementSpeed = document.getElementById('sceneMovementSpeed').value;
+            const cameraSensitivity = document.getElementById('sceneCameraSensitivity').value;
+            const starterRoom = document.getElementById('sceneStarterRoom').value;
+            
+            showToast('Applying scene changes...', 'info');
+            
+            try {
+                // Load gembot-farm-game.js
+                let gameContent = await fetchFileFromGitHub('gembot-farm-game.js');
+                
+                // Replace camera height
+                gameContent = gameContent.replace(
+                    /new BABYLON\.Vector3\(0,\s*[\d.]+,\s*6\)/g,
+                    `new BABYLON.Vector3(0, ${playerHeight}, 6)`
+                );
+                
+                // Replace camera speed
+                gameContent = gameContent.replace(
+                    /this\.camera\.speed\s*=\s*[\d.]+/g,
+                    `this.camera.speed = ${movementSpeed}`
+                );
+                
+                // Replace camera sensitivity
+                gameContent = gameContent.replace(
+                    /this\.camera\.angularSensibility\s*=\s*[\d.]+/g,
+                    `this.camera.angularSensibility = ${cameraSensitivity}`
+                );
+                
+                // Replace locked Y position
+                gameContent = gameContent.replace(
+                    /this\.camera\.position\.y\s*=\s*[\d.]+;\s*\/\/ Lock Y/g,
+                    `this.camera.position.y = ${playerHeight}; // Lock Y`
+                );
+                
+                // Replace starter room
+                gameContent = gameContent.replace(
+                    /rooms:\s*\['[^']+'\]/g,
+                    `rooms: ['${starterRoom}']`
+                );
+                
+                // Push changes
+                await pushFileToGitHub('gembot-farm-game.js', gameContent);
+                
+                showToast('✅ Scene changes applied and pushed!', 'success');
+                addLog(`Scene updated: height=${playerHeight}m, speed=${movementSpeed}, room=${starterRoom}`, 'success');
+                
+            } catch (error) {
+                showToast(`Failed: ${error.message}`, 'error');
+                addLog(`Scene update failed: ${error.message}`, 'error');
+            }
+        }
+        
         // ==================== INITIALIZATION ====================
         document.addEventListener('DOMContentLoaded', () => {
             checkAuth();
+            initSceneEditor();
             
             // Handle Enter key on login
             document.getElementById('adminPassword').addEventListener('keypress', (e) => {

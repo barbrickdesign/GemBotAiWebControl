@@ -138,7 +138,7 @@ class GemBotFarmGame {
             // Tracks what machines need human interaction clicks
             pendingInteractions: [],  // Array of { machineId, interactionType, description }
             machines: [],
-            rooms: ['home_workshop'],  // Start with home workshop (4 slots)
+            rooms: ['home_desk'],  // Start with home desk (1 slot) - proper beginner experience
             upgrades: {},
             achievements: [],
             stats: {
@@ -1227,7 +1227,7 @@ class GemBotFarmGame {
             
             // Ensure player has at least one machine
             if (this.state.machines.length === 0) {
-                this.addMachine('gembot_basic', 'home_workshop');
+                this.addMachine('gembot_basic', 'home_desk');
             }
             
             // Initialize Merlin AI integration
@@ -1251,10 +1251,10 @@ class GemBotFarmGame {
         // Dark cyberpunk background
         this.scene.clearColor = new BABYLON.Color4(0.02, 0.02, 0.05, 1);
         
-        // First-person camera - player starts inside the room
+        // First-person camera - player stands at proper height to see workbench
         this.camera = new BABYLON.UniversalCamera(
             'firstPersonCam',
-            new BABYLON.Vector3(0, 1.7, 8),  // Eye height, inside room
+            new BABYLON.Vector3(0, 2.2, 6),  // Higher eye level (2.2m) to see tables clearly
             this.scene
         );
         this.camera.attachControl(this.canvas, true);
@@ -1265,10 +1265,10 @@ class GemBotFarmGame {
         this.camera.keysLeft = [65, 37];     // A, Left
         this.camera.keysRight = [68, 39];    // D, Right
         
-        // Camera settings for indoor exploration
-        this.camera.speed = 0.3;
-        this.camera.angularSensibility = 2000;
-        this.camera.inertia = 0.7;
+        // Camera settings - FASTER movement for better feel
+        this.camera.speed = 0.8;  // Much faster movement
+        this.camera.angularSensibility = 1500;  // More responsive look
+        this.camera.inertia = 0.5;  // Less floaty
         this.camera.minZ = 0.1;
         
         // Look at the work area
@@ -1449,7 +1449,7 @@ class GemBotFarmGame {
     updateMovementFromControls() {
         if (!this.camera || !this.movementState) return;
         
-        const speed = 0.12;
+        const speed = 0.35;  // Much faster on-screen control movement
         const forward = this.camera.getDirection(BABYLON.Vector3.Forward());
         const right = this.camera.getDirection(BABYLON.Vector3.Right());
         
@@ -1476,7 +1476,7 @@ class GemBotFarmGame {
         const bounds = { minX: -6, maxX: 6, minZ: -6, maxZ: 10 };
         this.camera.position.x = Math.max(bounds.minX, Math.min(bounds.maxX, this.camera.position.x));
         this.camera.position.z = Math.max(bounds.minZ, Math.min(bounds.maxZ, this.camera.position.z));
-        this.camera.position.y = 1.7; // Lock to eye height
+        this.camera.position.y = 2.2; // Lock to proper eye height above tables
     }
     
     /**
