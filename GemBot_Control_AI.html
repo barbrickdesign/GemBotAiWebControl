@@ -3148,6 +3148,428 @@
             .game-stat.xp-bar { width: 80px; }
         }
 
+        /* ==================== MACHINE INTERACTION PANEL STYLES ==================== */
+        .machine-modal {
+            max-width: 550px !important;
+            width: 95%;
+        }
+        
+        .machine-header {
+            background: linear-gradient(135deg, #1a2347 0%, #0d1020 100%) !important;
+        }
+        
+        .machine-header-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .machine-icon {
+            font-size: 28px;
+        }
+        
+        .machine-status-badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .machine-status-badge.idle { background: rgba(0,255,136,0.2); color: #00ff88; }
+        .machine-status-badge.cutting { background: rgba(0,136,255,0.2); color: #0088ff; }
+        .machine-status-badge.waiting { background: rgba(255,170,0,0.2); color: #ffaa00; }
+        .machine-status-badge.error { background: rgba(255,68,68,0.2); color: #ff4444; }
+        
+        .machine-tabs {
+            display: flex;
+            gap: 6px;
+            padding: 10px;
+            background: rgba(0,0,0,0.3);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .machine-tab {
+            flex: 1;
+            padding: 8px 12px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 6px;
+            color: #aaa;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .machine-tab:hover { background: rgba(255,255,255,0.1); color: #fff; }
+        .machine-tab.active { 
+            background: linear-gradient(135deg, #0088ff, #00ccff);
+            color: #fff;
+            border-color: #0088ff;
+        }
+        
+        .machine-modal-content {
+            padding: 15px;
+            max-height: 45vh;
+            overflow-y: auto;
+        }
+        
+        .machine-tab-content { display: none; }
+        .machine-tab-content.active { display: block; }
+        
+        .machine-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .stat-card {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+        }
+        
+        .stat-card-label {
+            font-size: 10px;
+            color: #888;
+            margin-bottom: 4px;
+        }
+        
+        .stat-card-value {
+            font-size: 16px;
+            font-weight: bold;
+            color: #00ffff;
+        }
+        
+        .machine-preview {
+            background: rgba(0,0,0,0.4);
+            border-radius: 10px;
+            padding: 15px;
+        }
+        
+        .preview-title {
+            font-size: 11px;
+            color: #888;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .machine-anim-display {
+            min-height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .machine-visual {
+            position: relative;
+            width: 120px;
+            height: 100px;
+        }
+        
+        .lap-visual {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 15px;
+            background: linear-gradient(135deg, #8b4513, #a0522d);
+            border-radius: 50% 50% 50% 50% / 100% 100% 0% 0%;
+            box-shadow: 0 -3px 10px rgba(255,215,0,0.2);
+        }
+        
+        .lap-spinning .lap-visual::before {
+            content: '';
+            position: absolute;
+            inset: 2px;
+            background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+            animation: lapSpin 0.5s linear infinite;
+        }
+        
+        @keyframes lapSpin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .stone-visual {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 16px;
+            height: 16px;
+            background: linear-gradient(135deg, #9b30ff, #7b1fa2);
+            clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+            box-shadow: 0 0 10px rgba(155,48,255,0.5);
+        }
+        
+        .status-led {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #00ff88;
+            box-shadow: 0 0 8px #00ff88;
+        }
+        
+        .status-led.cutting { background: #0088ff; box-shadow: 0 0 8px #0088ff; }
+        .status-led.waiting { background: #ffaa00; box-shadow: 0 0 8px #ffaa00; animation: ledBlink 1s infinite; }
+        .status-led.error { background: #ff4444; box-shadow: 0 0 8px #ff4444; }
+        
+        @keyframes ledBlink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        
+        /* Stone Info Panel */
+        .stone-info-panel {
+            min-height: 200px;
+        }
+        
+        .no-stone-msg {
+            text-align: center;
+            padding: 30px;
+            color: #888;
+        }
+        
+        .no-stone-msg .emoji-large {
+            font-size: 48px;
+            display: block;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+        
+        .stone-details {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .stone-display {
+            text-align: center;
+            padding: 15px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+        }
+        
+        .stone-gem-visual {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 10px;
+            background: linear-gradient(135deg, #9b30ff, #7b1fa2);
+            clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+            box-shadow: 0 0 20px rgba(155,48,255,0.5);
+        }
+        
+        .stone-gem-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #fff;
+        }
+        
+        .stone-progress {
+            padding: 10px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+        }
+        
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            margin-bottom: 6px;
+            color: #ccc;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #0088ff, #00ffff);
+            transition: width 0.3s;
+        }
+        
+        .stone-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+        
+        .stone-stat {
+            text-align: center;
+            padding: 8px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 6px;
+        }
+        
+        .stone-stat .label {
+            display: block;
+            font-size: 9px;
+            color: #888;
+            margin-bottom: 4px;
+        }
+        
+        .stone-stat .value {
+            font-size: 14px;
+            font-weight: bold;
+            color: #00ff88;
+        }
+        
+        .interaction-alert {
+            margin-top: 12px;
+            padding: 12px;
+            background: rgba(255,170,0,0.15);
+            border: 1px solid rgba(255,170,0,0.3);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .interaction-alert .alert-icon {
+            font-size: 24px;
+        }
+        
+        /* Lap Options */
+        .lap-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-top: 12px;
+        }
+        
+        .lap-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 12px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #fff;
+            font-size: 11px;
+        }
+        
+        .lap-option:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(0,255,255,0.5);
+        }
+        
+        .lap-option.active {
+            background: rgba(0,255,136,0.15);
+            border-color: #00ff88;
+        }
+        
+        .lap-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+        }
+        
+        .lap-color.coarse { background: linear-gradient(135deg, #5c3d2e, #8b6914); }
+        .lap-color.medium { background: linear-gradient(135deg, #4a6785, #2d4a5c); }
+        .lap-color.fine { background: linear-gradient(135deg, #606060, #3a3a3a); }
+        .lap-color.ultra { background: linear-gradient(135deg, #2d2d2d, #1a1a1a); }
+        .lap-color.polish { background: linear-gradient(135deg, #ffd700, #ff8c00); }
+        
+        /* Controls */
+        .controls-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .control-group {
+            padding: 12px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+        }
+        
+        .control-group label {
+            display: block;
+            font-size: 11px;
+            color: #888;
+            margin-bottom: 8px;
+        }
+        
+        .angle-controls, .index-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .control-btn {
+            padding: 8px 12px;
+            background: rgba(0,136,255,0.2);
+            border: 1px solid rgba(0,136,255,0.4);
+            border-radius: 6px;
+            color: #00ccff;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 12px;
+        }
+        
+        .control-btn:hover {
+            background: rgba(0,136,255,0.4);
+            color: #fff;
+        }
+        
+        .angle-value, .index-value {
+            padding: 8px 16px;
+            background: rgba(0,0,0,0.4);
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #00ffff;
+            min-width: 60px;
+            text-align: center;
+        }
+        
+        .control-group input[type="range"] {
+            width: 100%;
+            margin-top: 8px;
+        }
+        
+        .control-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .game-btn-success {
+            background: linear-gradient(135deg, #00cc66, #00aa55) !important;
+        }
+        
+        .game-btn-warning {
+            background: linear-gradient(135deg, #ffaa00, #ff8800) !important;
+        }
+        
+        .game-btn-danger {
+            background: linear-gradient(135deg, #ff4444, #cc3333) !important;
+        }
+        
+        .machine-modal-footer {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 15px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            background: rgba(0,0,0,0.3);
+        }
+
         /* ==================== GLOBAL LEADERBOARD & ACTIVITY LOG ==================== */
         .leaderboard-overlay {
             position: fixed;
@@ -5852,6 +6274,206 @@
                             <button id="designBackBtn" class="game-btn" onclick="designPanelBack()" style="display:none;">← Back</button>
                             <div id="designSelectionSummary" class="design-summary"></div>
                             <button id="designNextBtn" class="game-btn game-btn-primary" onclick="designPanelNext()" disabled>Next →</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- ==================== MACHINE INTERACTION PANEL ==================== -->
+                <div id="machineInteractionPanel" class="game-modal-overlay hidden">
+                    <div class="game-modal machine-modal">
+                        <div class="game-modal-header machine-header">
+                            <div class="machine-header-info">
+                                <span class="machine-icon">🤖</span>
+                                <h2 id="machineModalTitle">GemBot #1</h2>
+                                <span id="machineModalStatus" class="machine-status-badge">Idle</span>
+                            </div>
+                            <button onclick="closeMachinePanel()" class="modal-close-btn">✕</button>
+                        </div>
+                        
+                        <!-- Machine Tabs -->
+                        <div class="machine-tabs">
+                            <button class="machine-tab active" onclick="showMachineTab('status')">📊 Status</button>
+                            <button class="machine-tab" onclick="showMachineTab('stone')">💎 Stone</button>
+                            <button class="machine-tab" onclick="showMachineTab('laps')">🔧 Laps</button>
+                            <button class="machine-tab" onclick="showMachineTab('controls')">🎮 Controls</button>
+                        </div>
+                        
+                        <!-- Machine Content -->
+                        <div class="machine-modal-content">
+                            <!-- Status Tab -->
+                            <div id="machineTabStatus" class="machine-tab-content active">
+                                <div class="machine-stats-grid">
+                                    <div class="stat-card">
+                                        <div class="stat-card-label">Type</div>
+                                        <div id="machineTypeDisplay" class="stat-card-value">GemBot Basic</div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <div class="stat-card-label">Total Cuts</div>
+                                        <div id="machineCutsDisplay" class="stat-card-value">0</div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <div class="stat-card-label">Current Lap</div>
+                                        <div id="machineCurrentLap" class="stat-card-value">180 Coarse</div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <div class="stat-card-label">Angle</div>
+                                        <div id="machineAngleDisplay" class="stat-card-value">45°</div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Machine Animation Preview -->
+                                <div class="machine-preview">
+                                    <div class="preview-title">Machine Status</div>
+                                    <div id="machineAnimPreview" class="machine-anim-display">
+                                        <div class="machine-visual">
+                                            <div class="lap-visual" id="lapVisual">
+                                                <div class="lap-spinning"></div>
+                                            </div>
+                                            <div class="stone-visual" id="stoneVisual"></div>
+                                            <div class="status-led" id="statusLed"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Stone Tab -->
+                            <div id="machineTabStone" class="machine-tab-content">
+                                <div id="machineStoneInfo" class="stone-info-panel">
+                                    <div class="no-stone-msg" id="noStoneMsg">
+                                        <span class="emoji-large">💎</span>
+                                        <p>No stone loaded</p>
+                                        <button class="game-btn game-btn-primary" onclick="loadStoneOnMachine()">
+                                            Load Stone
+                                        </button>
+                                    </div>
+                                    
+                                    <div id="stoneDetails" class="stone-details hidden">
+                                        <div class="stone-display">
+                                            <div class="stone-gem-visual" id="stoneGemVisual"></div>
+                                            <div class="stone-gem-name" id="stoneGemName">Amethyst</div>
+                                        </div>
+                                        
+                                        <div class="stone-progress">
+                                            <div class="progress-label">
+                                                <span id="stoneStage">Prep</span>
+                                                <span id="stoneProgress">0%</span>
+                                            </div>
+                                            <div class="progress-bar">
+                                                <div id="stoneProgressFill" class="progress-fill" style="width: 0%"></div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="stone-stats">
+                                            <div class="stone-stat">
+                                                <span class="label">Quality</span>
+                                                <span id="stoneQuality" class="value">100%</span>
+                                            </div>
+                                            <div class="stone-stat">
+                                                <span class="label">Rough Carats</span>
+                                                <span id="stoneRoughCarats" class="value">5.2ct</span>
+                                            </div>
+                                            <div class="stone-stat">
+                                                <span class="label">Expected Yield</span>
+                                                <span id="stoneExpectedYield" class="value">2.1ct</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Interaction Required Alert -->
+                                        <div id="stoneInteractionAlert" class="interaction-alert hidden">
+                                            <span class="alert-icon">⚠️</span>
+                                            <span id="interactionMessage">Action Required!</span>
+                                            <button class="game-btn game-btn-accent" id="interactionBtn" onclick="handleMachineInteraction()">
+                                                Perform Action
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Laps Tab -->
+                            <div id="machineTabLaps" class="machine-tab-content">
+                                <div class="laps-grid" id="availableLaps">
+                                    <!-- Populated by JS -->
+                                </div>
+                                <div class="lap-change-preview">
+                                    <p>Click a lap to change:</p>
+                                    <div class="lap-options">
+                                        <button class="lap-option" onclick="changeMachineLap('coarse')">
+                                            <span class="lap-color coarse"></span>
+                                            <span>180 Coarse</span>
+                                        </button>
+                                        <button class="lap-option" onclick="changeMachineLap('medium')">
+                                            <span class="lap-color medium"></span>
+                                            <span>600 Medium</span>
+                                        </button>
+                                        <button class="lap-option" onclick="changeMachineLap('fine')">
+                                            <span class="lap-color fine"></span>
+                                            <span>1200 Fine</span>
+                                        </button>
+                                        <button class="lap-option" onclick="changeMachineLap('ultra')">
+                                            <span class="lap-color ultra"></span>
+                                            <span>3000 Ultra</span>
+                                        </button>
+                                        <button class="lap-option" onclick="changeMachineLap('polish')">
+                                            <span class="lap-color polish"></span>
+                                            <span>Polish</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Controls Tab -->
+                            <div id="machineTabControls" class="machine-tab-content">
+                                <div class="controls-grid">
+                                    <div class="control-group">
+                                        <label>Angle Adjustment</label>
+                                        <div class="angle-controls">
+                                            <button class="control-btn" onclick="adjustMachineAngle(-5)">-5°</button>
+                                            <button class="control-btn" onclick="adjustMachineAngle(-1)">-1°</button>
+                                            <span id="currentAngleDisplay" class="angle-value">45°</span>
+                                            <button class="control-btn" onclick="adjustMachineAngle(1)">+1°</button>
+                                            <button class="control-btn" onclick="adjustMachineAngle(5)">+5°</button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="control-group">
+                                        <label>Index Position (96 tooth)</label>
+                                        <div class="index-controls">
+                                            <button class="control-btn" onclick="adjustMachineIndex(-1)">-1</button>
+                                            <span id="currentIndexDisplay" class="index-value">0</span>
+                                            <button class="control-btn" onclick="adjustMachineIndex(1)">+1</button>
+                                            <button class="control-btn" onclick="adjustMachineIndex(8)">+8</button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="control-group">
+                                        <label>Lap Speed</label>
+                                        <input type="range" id="lapSpeedSlider" min="1" max="10" value="5" 
+                                               onchange="setMachineLapSpeed(this.value)">
+                                        <span id="lapSpeedDisplay">5 RPM</span>
+                                    </div>
+                                    
+                                    <div class="control-buttons">
+                                        <button class="game-btn game-btn-success" onclick="startMachineCutting()">
+                                            ▶️ Start Cutting
+                                        </button>
+                                        <button class="game-btn game-btn-warning" onclick="pauseMachineCutting()">
+                                            ⏸️ Pause
+                                        </button>
+                                        <button class="game-btn game-btn-danger" onclick="emergencyStop()">
+                                            ⛔ Emergency Stop
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Modal Footer -->
+                        <div class="machine-modal-footer">
+                            <button class="game-btn" onclick="closeMachinePanel()">Close</button>
+                            <button class="game-btn game-btn-primary" onclick="openDesignPanel()">
+                                ✨ Start New Stone
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -20483,6 +21105,11 @@
                     updateGameUI();
                 };
                 
+                // Machine Selected Callback - Opens interaction panel
+                gameFarm.onMachineSelected = (machineStatus) => {
+                    openMachinePanel(machineStatus);
+                };
+                
                 // Initialize the game
                 const success = await gameFarm.initialize('game-canvas');
                 if (success) {
@@ -21515,6 +22142,296 @@
         
         function closeDesignPanel() {
             document.getElementById('designPanelOverlay').style.display = 'none';
+        }
+        
+        // ==================== MACHINE INTERACTION PANEL ====================
+        let currentMachineStatus = null;
+        let currentMachineId = null;
+        
+        function openMachinePanel(machineStatus) {
+            currentMachineStatus = machineStatus;
+            currentMachineId = machineStatus.machineId;
+            
+            // Update panel content
+            document.getElementById('machineModalTitle').textContent = `GemBot #${machineStatus.machineId.split('_')[1] || '1'}`;
+            document.getElementById('machineTypeDisplay').textContent = machineStatus.type || 'GemBot Basic';
+            document.getElementById('machineCutsDisplay').textContent = machineStatus.totalCuts || 0;
+            
+            // Update status badge
+            const statusBadge = document.getElementById('machineModalStatus');
+            statusBadge.className = 'machine-status-badge';
+            if (machineStatus.stone?.awaitingInteraction) {
+                statusBadge.textContent = 'Waiting';
+                statusBadge.classList.add('waiting');
+            } else if (machineStatus.status === 'Cutting') {
+                statusBadge.textContent = 'Cutting';
+                statusBadge.classList.add('cutting');
+            } else {
+                statusBadge.textContent = 'Idle';
+                statusBadge.classList.add('idle');
+            }
+            
+            // Update stone info
+            updateMachineStoneInfo(machineStatus.stone);
+            
+            // Update lap info from game state
+            if (gameFarm) {
+                const machine = gameFarm.state.machines.find(m => m.id === currentMachineId);
+                if (machine) {
+                    const lapName = getLapName(machine.currentLapType || 'coarse');
+                    document.getElementById('machineCurrentLap').textContent = lapName;
+                    if (machine.animState) {
+                        document.getElementById('machineAngleDisplay').textContent = `${machine.animState.currentAngle}°`;
+                        document.getElementById('currentAngleDisplay').textContent = `${machine.animState.currentAngle}°`;
+                        document.getElementById('currentIndexDisplay').textContent = machine.animState.currentIndex;
+                    }
+                }
+            }
+            
+            // Update status LED
+            updateMachineStatusLED(machineStatus);
+            
+            // Show panel
+            document.getElementById('machineInteractionPanel').classList.remove('hidden');
+            
+            // Show first tab
+            showMachineTab('status');
+            
+            console.log('🤖 Machine panel opened:', machineStatus);
+        }
+        
+        function closeMachinePanel() {
+            document.getElementById('machineInteractionPanel').classList.add('hidden');
+            currentMachineStatus = null;
+            currentMachineId = null;
+        }
+        
+        function showMachineTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.machine-tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.machine-tab').forEach(t => t.classList.remove('active'));
+            
+            // Show selected tab
+            document.getElementById(`machineTab${tabName.charAt(0).toUpperCase() + tabName.slice(1)}`).classList.add('active');
+            document.querySelector(`.machine-tab[onclick="showMachineTab('${tabName}')"]`)?.classList.add('active');
+        }
+        
+        function updateMachineStoneInfo(stone) {
+            const noStoneMsg = document.getElementById('noStoneMsg');
+            const stoneDetails = document.getElementById('stoneDetails');
+            const interactionAlert = document.getElementById('stoneInteractionAlert');
+            
+            if (!stone) {
+                noStoneMsg.classList.remove('hidden');
+                stoneDetails.classList.add('hidden');
+                return;
+            }
+            
+            noStoneMsg.classList.add('hidden');
+            stoneDetails.classList.remove('hidden');
+            
+            // Update stone visual color
+            const gemVisual = document.getElementById('stoneGemVisual');
+            if (gemVisual && stone.gem?.color) {
+                gemVisual.style.background = `linear-gradient(135deg, ${stone.gem.color}, ${adjustColor(stone.gem.color, -30)})`;
+            }
+            
+            // Update name and stats
+            document.getElementById('stoneGemName').textContent = stone.gem?.name || 'Unknown';
+            document.getElementById('stoneStage').textContent = stone.stage || 'Prep';
+            document.getElementById('stoneProgress').textContent = `${Math.round(stone.progress || 0)}%`;
+            document.getElementById('stoneProgressFill').style.width = `${stone.progress || 0}%`;
+            document.getElementById('stoneQuality').textContent = `${Math.round(stone.quality || 100)}%`;
+            document.getElementById('stoneRoughCarats').textContent = `${(stone.roughCarats || 0).toFixed(2)}ct`;
+            document.getElementById('stoneExpectedYield').textContent = `${(stone.expectedYield || 0).toFixed(2)}ct`;
+            
+            // Show interaction alert if needed
+            if (stone.awaitingInteraction) {
+                interactionAlert.classList.remove('hidden');
+                document.getElementById('interactionMessage').textContent = getInteractionMessage(stone.interactionType);
+                document.getElementById('interactionBtn').textContent = getInteractionButtonText(stone.interactionType);
+            } else {
+                interactionAlert.classList.add('hidden');
+            }
+        }
+        
+        function updateMachineStatusLED(status) {
+            const led = document.getElementById('statusLed');
+            if (!led) return;
+            
+            led.className = 'status-led';
+            if (status?.stone?.awaitingInteraction) {
+                led.classList.add('waiting');
+            } else if (status?.status === 'Cutting') {
+                led.classList.add('cutting');
+            } else if (status?.stone?.isPaused) {
+                led.classList.add('error');
+            }
+        }
+        
+        function getInteractionMessage(type) {
+            const messages = {
+                'lap_change': '🔄 Lap change required',
+                'angle_adjustment': '📐 Adjust cutting angle',
+                'index_change': '🎯 Index position change needed',
+                'water_refill': '💧 Water tank low - refill needed',
+                'quality_check': '👁️ Quality check required',
+                'final_polish': '✨ Ready for final polish'
+            };
+            return messages[type] || 'Action required';
+        }
+        
+        function getInteractionButtonText(type) {
+            const buttons = {
+                'lap_change': '🔄 Change Lap',
+                'angle_adjustment': '📐 Adjust Angle',
+                'index_change': '🎯 Set Index',
+                'water_refill': '💧 Refill Water',
+                'quality_check': '✅ Confirm Quality',
+                'final_polish': '✨ Apply Polish'
+            };
+            return buttons[type] || 'Perform Action';
+        }
+        
+        function getLapName(lapType) {
+            const lapNames = {
+                'coarse': '180 Coarse',
+                'medium': '600 Medium',
+                'fine': '1200 Fine',
+                'ultra': '3000 Ultra',
+                'polish': 'Polish'
+            };
+            return lapNames[lapType] || lapType;
+        }
+        
+        function handleMachineInteraction() {
+            if (!gameFarm || !currentMachineId) return;
+            
+            const machine = gameFarm.state.machines.find(m => m.id === currentMachineId);
+            if (!machine?.currentStone) return;
+            
+            const interactionType = machine.currentStone.interactionType;
+            
+            // Handle the interaction
+            gameFarm.handleInteraction(currentMachineId, interactionType);
+            
+            // Update the panel
+            setTimeout(() => {
+                if (gameFarm.onMachineSelected) {
+                    const status = {
+                        machineId: machine.id,
+                        type: gameFarm.machineTypes[machine.type]?.name,
+                        status: machine.currentStone ? 'Cutting' : 'Idle',
+                        stone: machine.currentStone ? {
+                            gem: machine.currentStone.gem,
+                            stage: machine.currentStone.currentStage,
+                            progress: machine.currentStone.stageProgress,
+                            quality: machine.currentStone.qualityScore,
+                            roughCarats: machine.currentStone.roughCarats,
+                            expectedYield: machine.currentStone.expectedFinishedCarats,
+                            awaitingInteraction: machine.currentStone.awaitingInteraction,
+                            interactionType: machine.currentStone.interactionType
+                        } : null,
+                        totalCuts: machine.totalCuts
+                    };
+                    updateMachineStoneInfo(status.stone);
+                    updateMachineStatusLED(status);
+                }
+            }, 500);
+            
+            addGameActivity(`✅ Action completed on GemBot #${currentMachineId.split('_')[1] || '1'}`);
+        }
+        
+        function loadStoneOnMachine() {
+            closeMachinePanel();
+            openDesignPanel();
+        }
+        
+        function changeMachineLap(lapType) {
+            if (!gameFarm || !currentMachineId) return;
+            
+            const machine = gameFarm.state.machines.find(m => m.id === currentMachineId);
+            if (!machine) return;
+            
+            // Animate lap change
+            gameFarm.animateLapChange(machine, lapType, () => {
+                document.getElementById('machineCurrentLap').textContent = getLapName(lapType);
+                addGameActivity(`🔄 Changed lap to ${getLapName(lapType)} on GemBot #${currentMachineId.split('_')[1] || '1'}`);
+            });
+        }
+        
+        function adjustMachineAngle(delta) {
+            if (!gameFarm || !currentMachineId) return;
+            
+            const machine = gameFarm.state.machines.find(m => m.id === currentMachineId);
+            if (!machine?.animState) return;
+            
+            const newAngle = Math.max(0, Math.min(90, machine.animState.currentAngle + delta));
+            machine.animState.targetAngle = newAngle;
+            
+            document.getElementById('machineAngleDisplay').textContent = `${newAngle}°`;
+            document.getElementById('currentAngleDisplay').textContent = `${newAngle}°`;
+        }
+        
+        function adjustMachineIndex(delta) {
+            if (!gameFarm || !currentMachineId) return;
+            
+            const machine = gameFarm.state.machines.find(m => m.id === currentMachineId);
+            if (!machine?.animState) return;
+            
+            const newIndex = (machine.animState.currentIndex + delta + 96) % 96;
+            machine.animState.targetIndex = newIndex;
+            
+            document.getElementById('currentIndexDisplay').textContent = newIndex;
+        }
+        
+        function setMachineLapSpeed(speed) {
+            document.getElementById('lapSpeedDisplay').textContent = `${speed} RPM`;
+            // Future: Actually adjust machine speed if connected to real hardware
+        }
+        
+        function startMachineCutting() {
+            if (!gameFarm || !currentMachineId) return;
+            
+            const machine = gameFarm.state.machines.find(m => m.id === currentMachineId);
+            if (machine?.animState) {
+                machine.animState.lapSpinning = true;
+            }
+            
+            addGameActivity(`▶️ Started cutting on GemBot #${currentMachineId.split('_')[1] || '1'}`);
+        }
+        
+        function pauseMachineCutting() {
+            if (!gameFarm || !currentMachineId) return;
+            
+            const machine = gameFarm.state.machines.find(m => m.id === currentMachineId);
+            if (machine?.animState) {
+                machine.animState.lapSpinning = false;
+            }
+            
+            addGameActivity(`⏸️ Paused cutting on GemBot #${currentMachineId.split('_')[1] || '1'}`);
+        }
+        
+        function emergencyStop() {
+            if (!gameFarm || !currentMachineId) return;
+            
+            const machine = gameFarm.state.machines.find(m => m.id === currentMachineId);
+            if (machine?.animState) {
+                machine.animState.lapSpinning = false;
+                machine.animState.targetAngle = 90; // Return to home
+            }
+            
+            addGameActivity(`⛔ EMERGENCY STOP on GemBot #${currentMachineId.split('_')[1] || '1'}`);
+        }
+        
+        // Helper function to adjust color brightness
+        function adjustColor(hex, percent) {
+            const num = parseInt(hex.replace('#', ''), 16);
+            const amt = Math.round(2.55 * percent);
+            const R = Math.max(0, Math.min(255, (num >> 16) + amt));
+            const G = Math.max(0, Math.min(255, ((num >> 8) & 0x00FF) + amt));
+            const B = Math.max(0, Math.min(255, (num & 0x0000FF) + amt));
+            return '#' + (0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1);
         }
         
         function updateDesignStepIndicators() {
