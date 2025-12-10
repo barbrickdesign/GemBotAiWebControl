@@ -151,6 +151,93 @@
                 return null;
             }
         };
+        // ==================== BASIC AUTH UI HANDLER ====================
+        window.authUI = {
+            switchTab(tab) {
+                document.getElementById('loginForm').classList.add('hidden');
+                document.getElementById('registerForm').classList.add('hidden');
+                document.getElementById('linkDeviceForm').classList.add('hidden');
+                document.getElementById('loginTab').classList.remove('active');
+                document.getElementById('registerTab').classList.remove('active');
+                document.getElementById('linkDeviceTab').classList.remove('active');
+                if (tab === 'login') {
+                    document.getElementById('loginForm').classList.remove('hidden');
+                    document.getElementById('loginTab').classList.add('active');
+                } else if (tab === 'register') {
+                    document.getElementById('registerForm').classList.remove('hidden');
+                    document.getElementById('registerTab').classList.add('active');
+                } else if (tab === 'linkDevice') {
+                    document.getElementById('linkDeviceForm').classList.remove('hidden');
+                    document.getElementById('linkDeviceTab').classList.add('active');
+                }
+                document.getElementById('authError').textContent = '';
+            },
+            async login(event) {
+                event.preventDefault();
+                const email = document.getElementById('loginEmail').value;
+                const password = document.getElementById('loginPassword').value;
+                try {
+                    await authSystem.login(email, password);
+                } catch (err) {
+                    document.getElementById('authError').textContent = err.message || 'Login failed.';
+                }
+            },
+            async register(event) {
+                event.preventDefault();
+                const username = document.getElementById('registerUsername').value;
+                const email = document.getElementById('registerEmail').value;
+                const password = document.getElementById('registerPassword').value;
+                const confirm = document.getElementById('registerConfirm').value;
+                if (password !== confirm) {
+                    document.getElementById('authError').textContent = 'Passwords do not match.';
+                    return;
+                }
+                try {
+                    await authSystem.register(username, email, password);
+                } catch (err) {
+                    document.getElementById('authError').textContent = err.message || 'Registration failed.';
+                }
+            },
+            async linkDevice(event) {
+                event.preventDefault();
+                const code = document.getElementById('linkAccessCode').value;
+                const email = document.getElementById('linkEmail').value;
+                const password = document.getElementById('linkPassword').value;
+                try {
+                    await authSystem.linkDeviceWithCode(code, email, password);
+                } catch (err) {
+                    document.getElementById('authError').textContent = err.message || 'Device link failed.';
+                }
+            },
+            async joinWithCode() {
+                const code = document.getElementById('guestCode').value;
+                try {
+                    await authSystem.joinWithCode(code);
+                } catch (err) {
+                    document.getElementById('authError').textContent = err.message || 'Join failed.';
+                }
+            },
+            continueAsGuest() {
+                authSystem.continueAsGuest();
+            },
+            toggleUserMenu() {
+                // Basic stub: toggle user menu visibility
+                const menu = document.getElementById('userMenu');
+                if (menu) menu.classList.toggle('hidden');
+            },
+            showProfile() {
+                alert('Profile view not implemented.');
+            },
+            showShareAccess() {
+                alert('Share Access not implemented.');
+            },
+            showMachineSettings() {
+                alert('Machine Settings not implemented.');
+            },
+            logout() {
+                authSystem.logout();
+            }
+        };
     </script>
     
     <style>
@@ -169,6 +256,93 @@
 
         /* ROTATE OVERLAY - Hidden by default on all devices */
         /* Only shown via JS on actual mobile portrait */
+            // ==================== BASIC AUTH UI HANDLER ====================
+            window.authUI = {
+                switchTab(tab) {
+                    document.getElementById('loginForm').classList.add('hidden');
+                    document.getElementById('registerForm').classList.add('hidden');
+                    document.getElementById('linkDeviceForm').classList.add('hidden');
+                    document.getElementById('loginTab').classList.remove('active');
+                    document.getElementById('registerTab').classList.remove('active');
+                    document.getElementById('linkDeviceTab').classList.remove('active');
+                    if (tab === 'login') {
+                        document.getElementById('loginForm').classList.remove('hidden');
+                        document.getElementById('loginTab').classList.add('active');
+                    } else if (tab === 'register') {
+                        document.getElementById('registerForm').classList.remove('hidden');
+                        document.getElementById('registerTab').classList.add('active');
+                    } else if (tab === 'linkDevice') {
+                        document.getElementById('linkDeviceForm').classList.remove('hidden');
+                        document.getElementById('linkDeviceTab').classList.add('active');
+                    }
+                    document.getElementById('authError').textContent = '';
+                },
+                async login(event) {
+                    event.preventDefault();
+                    const email = document.getElementById('loginEmail').value;
+                    const password = document.getElementById('loginPassword').value;
+                    try {
+                        await authSystem.login(email, password);
+                    } catch (err) {
+                        document.getElementById('authError').textContent = err.message || 'Login failed.';
+                    }
+                },
+                async register(event) {
+                    event.preventDefault();
+                    const username = document.getElementById('registerUsername').value;
+                    const email = document.getElementById('registerEmail').value;
+                    const password = document.getElementById('registerPassword').value;
+                    const confirm = document.getElementById('registerConfirm').value;
+                    if (password !== confirm) {
+                        document.getElementById('authError').textContent = 'Passwords do not match.';
+                        return;
+                    }
+                    try {
+                        await authSystem.register(username, email, password);
+                    } catch (err) {
+                        document.getElementById('authError').textContent = err.message || 'Registration failed.';
+                    }
+                },
+                async linkDevice(event) {
+                    event.preventDefault();
+                    const code = document.getElementById('linkAccessCode').value;
+                    const email = document.getElementById('linkEmail').value;
+                    const password = document.getElementById('linkPassword').value;
+                    try {
+                        await authSystem.linkDeviceWithCode(code, email, password);
+                    } catch (err) {
+                        document.getElementById('authError').textContent = err.message || 'Device link failed.';
+                    }
+                },
+                async joinWithCode() {
+                    const code = document.getElementById('guestCode').value;
+                    try {
+                        await authSystem.joinWithCode(code);
+                    } catch (err) {
+                        document.getElementById('authError').textContent = err.message || 'Join failed.';
+                    }
+                },
+                continueAsGuest() {
+                    authSystem.continueAsGuest();
+                },
+                toggleUserMenu() {
+                    // Basic stub: toggle user menu visibility
+                    const menu = document.getElementById('userMenu');
+                    if (menu) menu.classList.toggle('hidden');
+                },
+                showProfile() {
+                    alert('Profile view not implemented.');
+                },
+                showShareAccess() {
+                    alert('Share Access not implemented.');
+                },
+                showMachineSettings() {
+                    alert('Machine Settings not implemented.');
+                },
+                logout() {
+                    authSystem.logout();
+                }
+            };
         .rotate-device-overlay {
             display: none !important;
         }
