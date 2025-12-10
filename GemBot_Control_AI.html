@@ -8825,11 +8825,14 @@
                         break;
                         
                     case 'game':
-                        // Open the farm game / marketplace
-                        if (typeof openMarketplace === 'function') {
-                            openMarketplace();
-                        } else if (typeof GemBotFarmGame !== 'undefined' && GemBotFarmGame.showMarketplace) {
-                            GemBotFarmGame.showMarketplace();
+                        // Open the farm game overlay
+                        if (typeof openGameMode === 'function') {
+                            openGameMode();
+                        } else {
+                            console.warn('openGameMode not available, trying marketplace...');
+                            if (typeof openMarketplace === 'function') {
+                                openMarketplace();
+                            }
                         }
                         // Keep current view
                         break;

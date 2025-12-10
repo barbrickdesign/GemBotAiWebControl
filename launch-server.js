@@ -70,6 +70,34 @@ const server = http.createServer((req, res) => {
     filePath = path.join(__dirname, req.url);
   }
 
+  // Determine content type based on file extension
+  const ext = path.extname(filePath).toLowerCase();
+  const mimeTypes = {
+    '.html': 'text/html; charset=utf-8',
+    '.js': 'application/javascript; charset=utf-8',
+    '.css': 'text/css; charset=utf-8',
+    '.json': 'application/json; charset=utf-8',
+    '.png': 'image/png',
+    '.jpg': 'image/jpeg',
+    '.jpeg': 'image/jpeg',
+    '.gif': 'image/gif',
+    '.svg': 'image/svg+xml',
+    '.ico': 'image/x-icon',
+    '.glb': 'model/gltf-binary',
+    '.gltf': 'model/gltf+json',
+    '.woff': 'font/woff',
+    '.woff2': 'font/woff2',
+    '.mp3': 'audio/mpeg',
+    '.wav': 'audio/wav',
+    '.mp4': 'video/mp4',
+    '.webm': 'video/webm',
+    '.txt': 'text/plain; charset=utf-8',
+    '.md': 'text/markdown; charset=utf-8'
+  };
+  
+  const contentType = mimeTypes[ext] || 'application/octet-stream';
+  const isBinary = ['.glb', '.png', '.jpg', '.jpeg', '.gif', '.ico', '.woff', '.woff2', '.mp3', '.wav', '.mp4', '.webm'].includes(ext);
+  
   fs.readFile(filePath, (err, content) => {
     if (err) {
       res.writeHead(404, { 'Content-Type': 'text/html' });
@@ -77,18 +105,23 @@ const server = http.createServer((req, res) => {
       return;
     }
     
-    // Inject network URL into HTML as a global variable
-    let html = content.toString();
-    html = html.replace(
-      '</head>', 
-      `<script>
-        window.GEMBOT_NETWORK_URL = '${networkURL}';
-        console.log('✅ Network URL injected:', window.GEMBOT_NETWORK_URL);
-      </script></head>`
-    );
-    
-    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-    res.end(html);
+    // Only inject network URL into HTML files
+    if (ext === '.html') {
+      let html = content.toString();
+      html = html.replace(
+        '</head>', 
+        `<script>
+          window.GEMBOT_NETWORK_URL = '${networkURL}';
+          console.log('✅ Network URL injected:', window.GEMBOT_NETWORK_URL);
+        </script></head>`
+      );
+      res.writeHead(200, { 'Content-Type': contentType });
+      res.end(html);
+    } else {
+      // Serve other files as-is with proper content type
+      res.writeHead(200, { 'Content-Type': contentType });
+      res.end(content);
+    }
   });
 });
 
