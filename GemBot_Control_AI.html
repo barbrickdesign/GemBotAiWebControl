@@ -785,11 +785,21 @@
                 box-sizing: border-box;
             }
 
+            html {
+                height: 100%;
+                overflow: hidden;
+            }
+
             body {
                 padding: 0;
                 margin: 0;
                 overflow: hidden;
                 background: #0a0e27;
+                height: 100%;
+                /* Prevent iOS bounce scroll */
+                position: fixed;
+                width: 100%;
+                -webkit-overflow-scrolling: touch;
             }
 
             /* LANDSCAPE ORIENTATION PROMPT - Only shows on MOBILE portrait */
@@ -855,11 +865,13 @@
                 display: grid;
                 grid-template-rows: 60px 1fr 50px;
                 grid-template-columns: 1fr;
-                height: 100vh;
-                width: 100vw;
+                height: 100%;
+                height: 100dvh; /* Dynamic viewport height for mobile browsers */
+                width: 100%;
                 gap: 0;
                 padding: 0;
                 overflow: hidden;
+                position: relative;
             }
 
             /* HEADER - Compact and Professional */
@@ -965,9 +977,15 @@
                 gap: 8px;
                 padding: 8px;
                 overflow-y: auto;
+                overflow-x: hidden;
+                overscroll-behavior: contain;
                 -webkit-overflow-scrolling: touch;
                 width: 100%;
                 background: #0a0e27;
+                /* Enable momentum scrolling on iOS */
+                scroll-behavior: smooth;
+                /* Prevent content from overflowing */
+                min-height: 0;
             }
 
             .main-content::-webkit-scrollbar {
@@ -1624,6 +1642,110 @@
 
             .joystick-btn {
                 padding: 8px;
+                font-size: 14px;
+            }
+
+            /* Better chat input on small screens */
+            .chat-input-area {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .chat-input-area input {
+                width: 100%;
+            }
+
+            .chat-input-area button {
+                width: 100%;
+            }
+
+            /* Smaller panels for tiny screens */
+            .left-panel, .right-panel {
+                max-height: 100px;
+            }
+
+            .panel-header {
+                font-size: 11px;
+            }
+        }
+
+        /* EXTRA SMALL MOBILE (360px and below) */
+        @media (max-width: 360px) {
+            .app-container {
+                grid-template-rows: 50px 1fr 45px;
+            }
+
+            .header-panel {
+                padding: 6px 8px;
+                max-height: 50px;
+            }
+
+            .header-title {
+                font-size: 12px;
+            }
+
+            .btn-primary, .btn-scan, .btn-danger {
+                padding: 4px 8px;
+                font-size: 10px;
+                height: 28px;
+            }
+
+            .status-badge {
+                font-size: 9px;
+                padding: 2px 4px;
+                height: 20px;
+            }
+
+            .main-content {
+                padding: 6px;
+                gap: 4px;
+            }
+
+            .footer-nav {
+                padding: 6px;
+            }
+
+            .nav-btn {
+                padding: 6px 8px;
+                font-size: 16px;
+                min-width: 32px;
+            }
+
+            .message {
+                font-size: 11px;
+                padding: 6px 8px;
+            }
+        }
+
+        /* ULTRA WIDE MOBILE (landscape phones) */
+        @media (max-height: 500px) and (orientation: landscape) {
+            .app-container {
+                grid-template-rows: 45px 1fr 40px;
+            }
+
+            .header-panel {
+                max-height: 45px;
+                padding: 4px 8px;
+            }
+
+            .header-title {
+                font-size: 12px;
+            }
+
+            .main-content {
+                padding: 4px 8px;
+            }
+
+            .left-panel, .right-panel {
+                max-height: 80px;
+            }
+
+            .footer-nav {
+                padding: 4px;
+            }
+
+            .nav-btn {
+                padding: 4px 6px;
                 font-size: 14px;
             }
         }
@@ -10280,6 +10402,861 @@
         
         // Initialize Merlin AFTER the class is fully defined
         merlin = new MerlinPersonality();
+        
+        // ==================== MERLIN SCREEN AWARENESS SYSTEM ====================
+        // This makes Merlin aware of EVERYTHING happening on screen
+        class MerlinScreenContext {
+            constructor() {
+                this.isWatching = true;
+                this.screenData = {
+                    viewport: { width: 0, height: 0, orientation: 'landscape' },
+                    visiblePanels: [],
+                    activePanel: null,
+                    currentMode: 'control', // control, game, chat, settings
+                    connectionState: 'disconnected',
+                    lastUpdate: Date.now()
+                };
+                
+                // Comprehensive interaction log
+                this.interactionLog = [];
+                this.maxLogSize = 500; // Keep last 500 interactions
+                
+                // Real-time element tracking
+                this.focusedElement = null;
+                this.hoveredElement = null;
+                this.lastClickedElement = null;
+                
+                // Pattern recognition
+                this.patterns = {
+                    clickSequences: [],
+                    navigationPaths: [],
+                    timeOnPanels: {},
+                    repeatActions: {},
+                    errorEncounters: [],
+                    helpRequests: []
+                };
+                
+                // User behavior analysis
+                this.behavior = {
+                    clickSpeed: [],  // Time between clicks
+                    scrollPatterns: [],
+                    idleTime: 0,
+                    lastActivityTime: Date.now(),
+                    frustrationType: null, // rapid-clicking, back-forth, etc.
+                    expertiseIndicators: []
+                };
+                
+                // Session metrics
+                this.sessionMetrics = {
+                    startTime: Date.now(),
+                    totalClicks: 0,
+                    totalScrolls: 0,
+                    panelSwitches: 0,
+                    errorsEncountered: 0,
+                    commandsSent: 0,
+                    messagesReceived: 0
+                };
+                
+                this.init();
+            }
+            
+            init() {
+                this.updateViewport();
+                this.setupGlobalListeners();
+                this.startWatching();
+                console.log('🔮 Merlin Screen Awareness System ACTIVE');
+            }
+            
+            // Update viewport info
+            updateViewport() {
+                this.screenData.viewport = {
+                    width: window.innerWidth,
+                    height: window.innerHeight,
+                    orientation: window.innerWidth > window.innerHeight ? 'landscape' : 'portrait',
+                    deviceType: this.detectDeviceType(),
+                    pixelRatio: window.devicePixelRatio || 1
+                };
+            }
+            
+            detectDeviceType() {
+                const w = window.innerWidth;
+                if (w <= 480) return 'mobile-small';
+                if (w <= 768) return 'mobile';
+                if (w <= 1024) return 'tablet';
+                if (w <= 1400) return 'desktop';
+                return 'desktop-large';
+            }
+            
+            // Setup comprehensive global listeners
+            setupGlobalListeners() {
+                // Capture ALL clicks with detailed info
+                document.addEventListener('click', (e) => this.logClick(e), true);
+                document.addEventListener('touchstart', (e) => this.logTouch(e), true);
+                
+                // Track scrolling
+                document.addEventListener('scroll', (e) => this.logScroll(e), true);
+                
+                // Track focus changes
+                document.addEventListener('focusin', (e) => this.logFocus(e), true);
+                document.addEventListener('focusout', (e) => this.logBlur(e), true);
+                
+                // Track mouse movement for hover analysis
+                document.addEventListener('mouseover', (e) => this.logHover(e), { passive: true });
+                
+                // Track keyboard input
+                document.addEventListener('keydown', (e) => this.logKeypress(e), true);
+                
+                // Track viewport changes
+                window.addEventListener('resize', () => this.handleResize());
+                window.addEventListener('orientationchange', () => this.handleOrientationChange());
+                
+                // Track visibility changes
+                document.addEventListener('visibilitychange', () => this.logVisibilityChange());
+                
+                // Track errors
+                window.addEventListener('error', (e) => this.logError(e));
+            }
+            
+            // Log comprehensive click data
+            logClick(e) {
+                const target = e.target;
+                const now = Date.now();
+                
+                // Calculate click speed
+                if (this.behavior.clickSpeed.length > 0) {
+                    const lastClick = this.behavior.clickSpeed[this.behavior.clickSpeed.length - 1];
+                    const timeDiff = now - lastClick.timestamp;
+                    this.behavior.clickSpeed.push({ timestamp: now, interval: timeDiff });
+                    
+                    // Detect frustration (rapid clicking)
+                    if (timeDiff < 200) {
+                        this.behavior.frustrationType = 'rapid-clicking';
+                        this.notifyMerlin('frustration', { type: 'rapid-clicking', element: this.getElementInfo(target) });
+                    }
+                } else {
+                    this.behavior.clickSpeed.push({ timestamp: now, interval: 0 });
+                }
+                
+                // Keep last 50 click speeds
+                if (this.behavior.clickSpeed.length > 50) {
+                    this.behavior.clickSpeed.shift();
+                }
+                
+                const clickData = {
+                    type: 'click',
+                    timestamp: now,
+                    element: this.getElementInfo(target),
+                    position: { x: e.clientX, y: e.clientY, pageX: e.pageX, pageY: e.pageY },
+                    context: this.getCurrentContext(),
+                    button: e.button,
+                    isCtrl: e.ctrlKey,
+                    isShift: e.shiftKey,
+                    path: this.getElementPath(target)
+                };
+                
+                this.addToLog(clickData);
+                this.sessionMetrics.totalClicks++;
+                this.behavior.lastActivityTime = now;
+                this.lastClickedElement = target;
+                
+                // Update patterns
+                this.updateClickPatterns(clickData);
+                
+                // Also call the existing recordUserAction
+                if (window.merlin && merlin.recordUserAction) {
+                    merlin.recordUserAction('click', true, {
+                        element: clickData.element.id || clickData.element.className || clickData.element.tagName,
+                        text: clickData.element.text?.substring(0, 50),
+                        context: clickData.context.mode
+                    });
+                }
+            }
+            
+            // Log touch events for mobile
+            logTouch(e) {
+                if (e.touches.length === 0) return;
+                const touch = e.touches[0];
+                const target = e.target;
+                
+                const touchData = {
+                    type: 'touch',
+                    timestamp: Date.now(),
+                    element: this.getElementInfo(target),
+                    position: { x: touch.clientX, y: touch.clientY },
+                    context: this.getCurrentContext(),
+                    touchCount: e.touches.length
+                };
+                
+                this.addToLog(touchData);
+                this.behavior.lastActivityTime = Date.now();
+            }
+            
+            // Log scroll events
+            logScroll(e) {
+                const now = Date.now();
+                const target = e.target;
+                
+                const scrollData = {
+                    type: 'scroll',
+                    timestamp: now,
+                    element: this.getElementInfo(target),
+                    scrollTop: target.scrollTop || window.scrollY,
+                    scrollLeft: target.scrollLeft || window.scrollX,
+                    context: this.getCurrentContext()
+                };
+                
+                // Debounce scroll logging (only log every 200ms)
+                if (!this._lastScrollLog || now - this._lastScrollLog > 200) {
+                    this.addToLog(scrollData);
+                    this.sessionMetrics.totalScrolls++;
+                    this._lastScrollLog = now;
+                }
+                
+                this.behavior.lastActivityTime = now;
+            }
+            
+            // Log focus changes
+            logFocus(e) {
+                this.focusedElement = e.target;
+                const focusData = {
+                    type: 'focus',
+                    timestamp: Date.now(),
+                    element: this.getElementInfo(e.target),
+                    context: this.getCurrentContext()
+                };
+                this.addToLog(focusData);
+            }
+            
+            logBlur(e) {
+                const blurData = {
+                    type: 'blur',
+                    timestamp: Date.now(),
+                    element: this.getElementInfo(e.target),
+                    context: this.getCurrentContext()
+                };
+                this.addToLog(blurData);
+            }
+            
+            // Log hover (lightweight)
+            logHover(e) {
+                this.hoveredElement = e.target;
+                // Don't log every hover - too noisy
+            }
+            
+            // Log key presses (for chat input detection)
+            logKeypress(e) {
+                const isTypingInInput = e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA';
+                
+                if (isTypingInInput) {
+                    // Only log that typing is happening, not the actual keys (privacy)
+                    const keyData = {
+                        type: 'typing',
+                        timestamp: Date.now(),
+                        element: this.getElementInfo(e.target),
+                        context: this.getCurrentContext()
+                    };
+                    
+                    // Debounce typing logs
+                    if (!this._lastTypeLog || Date.now() - this._lastTypeLog > 1000) {
+                        this.addToLog(keyData);
+                        this._lastTypeLog = Date.now();
+                    }
+                }
+                
+                // Log special keys like Enter, Escape
+                if (e.key === 'Enter' || e.key === 'Escape') {
+                    this.addToLog({
+                        type: 'specialKey',
+                        timestamp: Date.now(),
+                        key: e.key,
+                        context: this.getCurrentContext()
+                    });
+                }
+                
+                this.behavior.lastActivityTime = Date.now();
+            }
+            
+            // Handle resize
+            handleResize() {
+                this.updateViewport();
+                this.addToLog({
+                    type: 'resize',
+                    timestamp: Date.now(),
+                    viewport: { ...this.screenData.viewport }
+                });
+            }
+            
+            // Handle orientation change
+            handleOrientationChange() {
+                setTimeout(() => {
+                    this.updateViewport();
+                    this.addToLog({
+                        type: 'orientationChange',
+                        timestamp: Date.now(),
+                        orientation: this.screenData.viewport.orientation
+                    });
+                }, 100);
+            }
+            
+            // Log visibility changes (tab switching)
+            logVisibilityChange() {
+                this.addToLog({
+                    type: 'visibility',
+                    timestamp: Date.now(),
+                    hidden: document.hidden,
+                    context: this.getCurrentContext()
+                });
+            }
+            
+            // Log JavaScript errors
+            logError(e) {
+                this.patterns.errorEncounters.push({
+                    timestamp: Date.now(),
+                    message: e.message,
+                    filename: e.filename,
+                    lineno: e.lineno
+                });
+                this.sessionMetrics.errorsEncountered++;
+                
+                // Notify Merlin of error
+                this.notifyMerlin('error', { message: e.message });
+            }
+            
+            // Get detailed element info
+            getElementInfo(el) {
+                if (!el) return { tagName: 'unknown' };
+                
+                return {
+                    tagName: el.tagName?.toLowerCase() || 'unknown',
+                    id: el.id || null,
+                    className: el.className?.toString() || null,
+                    text: (el.textContent || el.innerText || '')?.substring(0, 100).trim(),
+                    href: el.href || null,
+                    type: el.type || null,
+                    name: el.name || null,
+                    value: el.type === 'password' ? '[hidden]' : (el.value?.substring(0, 50) || null),
+                    dataset: el.dataset ? { ...el.dataset } : null,
+                    isButton: el.tagName === 'BUTTON' || el.type === 'button' || el.type === 'submit',
+                    isInput: el.tagName === 'INPUT' || el.tagName === 'TEXTAREA',
+                    isLink: el.tagName === 'A'
+                };
+            }
+            
+            // Get element path (for debugging)
+            getElementPath(el) {
+                const path = [];
+                while (el && el !== document.body && path.length < 5) {
+                    let selector = el.tagName?.toLowerCase() || '';
+                    if (el.id) selector += `#${el.id}`;
+                    else if (el.className) selector += `.${el.className.toString().split(' ')[0]}`;
+                    path.unshift(selector);
+                    el = el.parentElement;
+                }
+                return path.join(' > ');
+            }
+            
+            // Get current UI context
+            getCurrentContext() {
+                const gameMode = document.getElementById('gameModeContainer');
+                const authOverlay = document.querySelector('.auth-overlay');
+                const leaderboard = document.getElementById('leaderboardOverlay');
+                
+                // Detect visible panels
+                const visiblePanels = [];
+                const leftPanel = document.querySelector('.left-panel');
+                const centerPanel = document.querySelector('.center-panel');
+                const rightPanel = document.querySelector('.right-panel');
+                
+                if (leftPanel && leftPanel.offsetParent) visiblePanels.push('left');
+                if (centerPanel && centerPanel.offsetParent) visiblePanels.push('center');
+                if (rightPanel && rightPanel.offsetParent) visiblePanels.push('right');
+                
+                // Determine current mode
+                let mode = 'control';
+                if (gameMode && gameMode.style.display !== 'none') mode = 'game';
+                else if (authOverlay && authOverlay.style.display !== 'none') mode = 'auth';
+                else if (leaderboard && leaderboard.style.display !== 'none') mode = 'leaderboard';
+                
+                // Check connection status
+                const connectionStatus = window.isConnected ? 'connected' : 'disconnected';
+                
+                return {
+                    mode: mode,
+                    visiblePanels: visiblePanels,
+                    viewport: this.screenData.viewport,
+                    connectionStatus: connectionStatus,
+                    timestamp: Date.now()
+                };
+            }
+            
+            // Update click patterns for analysis
+            updateClickPatterns(clickData) {
+                // Track click sequences
+                this.patterns.clickSequences.push({
+                    element: clickData.element.id || clickData.element.className || clickData.element.tagName,
+                    timestamp: clickData.timestamp
+                });
+                
+                // Keep last 20 click sequences
+                if (this.patterns.clickSequences.length > 20) {
+                    this.patterns.clickSequences.shift();
+                }
+                
+                // Track repeated actions
+                const actionKey = clickData.element.id || clickData.element.text?.substring(0, 20) || clickData.element.tagName;
+                this.patterns.repeatActions[actionKey] = (this.patterns.repeatActions[actionKey] || 0) + 1;
+                
+                // Detect back-forth navigation (frustration indicator)
+                if (this.patterns.clickSequences.length >= 4) {
+                    const last4 = this.patterns.clickSequences.slice(-4);
+                    if (last4[0].element === last4[2].element && last4[1].element === last4[3].element) {
+                        this.behavior.frustrationType = 'back-forth-navigation';
+                        this.notifyMerlin('frustration', { type: 'back-forth', sequence: last4 });
+                    }
+                }
+            }
+            
+            // Add to interaction log
+            addToLog(data) {
+                this.interactionLog.push(data);
+                
+                // Keep log size manageable
+                if (this.interactionLog.length > this.maxLogSize) {
+                    this.interactionLog.shift();
+                }
+            }
+            
+            // Notify Merlin of important events
+            notifyMerlin(eventType, data) {
+                if (window.merlinScreenContext?.isWatching) {
+                    // Store notification for Merlin to access
+                    if (!this.pendingNotifications) this.pendingNotifications = [];
+                    this.pendingNotifications.push({
+                        type: eventType,
+                        data: data,
+                        timestamp: Date.now()
+                    });
+                    
+                    // Keep only last 10 notifications
+                    if (this.pendingNotifications.length > 10) {
+                        this.pendingNotifications.shift();
+                    }
+                }
+            }
+            
+            // Start watching mode
+            startWatching() {
+                this.isWatching = true;
+                
+                // Periodic context update
+                this._watchInterval = setInterval(() => {
+                    // Update idle time
+                    const idleTime = Date.now() - this.behavior.lastActivityTime;
+                    this.behavior.idleTime = idleTime;
+                    
+                    // Detect extended idle (potential confusion)
+                    if (idleTime > 30000 && idleTime < 31000) {
+                        this.notifyMerlin('idle', { duration: idleTime });
+                    }
+                    
+                    // Update screen data
+                    this.screenData.lastUpdate = Date.now();
+                }, 1000);
+            }
+            
+            // Stop watching
+            stopWatching() {
+                this.isWatching = false;
+                if (this._watchInterval) {
+                    clearInterval(this._watchInterval);
+                }
+            }
+            
+            // Get summary for Merlin
+            getSummary() {
+                const sessionDuration = Date.now() - this.sessionMetrics.startTime;
+                const recentActions = this.interactionLog.slice(-10);
+                
+                return {
+                    session: {
+                        duration: Math.round(sessionDuration / 1000), // seconds
+                        totalClicks: this.sessionMetrics.totalClicks,
+                        totalScrolls: this.sessionMetrics.totalScrolls,
+                        errorsEncountered: this.sessionMetrics.errorsEncountered
+                    },
+                    currentState: this.getCurrentContext(),
+                    viewport: this.screenData.viewport,
+                    behavior: {
+                        idleTime: this.behavior.idleTime,
+                        frustrationIndicator: this.behavior.frustrationType,
+                        recentActions: recentActions.map(a => ({ type: a.type, element: a.element?.id || a.element?.tagName }))
+                    },
+                    patterns: {
+                        mostClickedElements: this.getMostClicked(),
+                        navigationPath: this.patterns.clickSequences.slice(-5).map(c => c.element)
+                    },
+                    pendingNotifications: this.pendingNotifications || []
+                };
+            }
+            
+            // Get most clicked elements
+            getMostClicked() {
+                const sorted = Object.entries(this.patterns.repeatActions)
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, 5);
+                return sorted.map(([element, count]) => ({ element, count }));
+            }
+            
+            // Get real-time screen state for Merlin
+            getScreenState() {
+                return {
+                    viewport: this.screenData.viewport,
+                    context: this.getCurrentContext(),
+                    lastClicked: this.lastClickedElement ? this.getElementInfo(this.lastClickedElement) : null,
+                    focused: this.focusedElement ? this.getElementInfo(this.focusedElement) : null,
+                    idleSeconds: Math.round(this.behavior.idleTime / 1000),
+                    sessionClicks: this.sessionMetrics.totalClicks
+                };
+            }
+        }
+        
+        // Initialize global screen context
+        window.merlinScreenContext = new MerlinScreenContext();
+        
+        // ==================== MERLIN ADAPTIVE AI SYSTEM ====================
+        // This makes Merlin proactive, intelligent, and truly helpful
+        class MerlinAdaptiveAI {
+            constructor() {
+                this.isActive = true;
+                this.lastProactiveTip = 0;
+                this.tipCooldown = 60000; // 1 minute between proactive tips
+                this.userExpertise = 'novice';
+                this.watchMode = true;
+                
+                // Contextual tips based on user actions
+                this.contextualTips = {
+                    // Connection tips
+                    'btn-primary_Connect': {
+                        novice: "💡 If connection fails, make sure your GemBot is powered on and the USB cable is connected.",
+                        intermediate: "💡 Connection issues? Check that no other program is using the serial port.",
+                        advanced: null // Experts don't need this tip
+                    },
+                    'btn-scan_Scan': {
+                        novice: "💡 Scanning will find all available serial ports. Select the one that says 'USB' or 'Arduino'.",
+                        intermediate: null,
+                        advanced: null
+                    },
+                    // Navigation tips
+                    'nav-btn_💬': {
+                        novice: "💬 This opens the chat panel. You can ask me anything about gem cutting!",
+                        intermediate: null,
+                        advanced: null
+                    },
+                    'nav-btn_🎮': {
+                        novice: "🎮 Welcome to GemBot Farm! This is our simulation mode where you can practice cutting virtual gems.",
+                        intermediate: null,
+                        advanced: null
+                    },
+                    // Control tips
+                    'joystick-btn_▲': {
+                        novice: "⬆️ This moves the index wheel. Start slow until you learn the feel.",
+                        intermediate: null,
+                        advanced: null
+                    },
+                    'joystick-btn_◀': {
+                        novice: "⬅️ This rotates your stone to the next facet position.",
+                        intermediate: null,
+                        advanced: null
+                    }
+                };
+                
+                // Frustration response tips
+                this.frustrationResponses = {
+                    'rapid-clicking': [
+                        "I notice you're clicking quickly. Take a breath - I'm here to help if you're stuck!",
+                        "It seems like something isn't working as expected. Can I help troubleshoot?",
+                        "Remember, the machine needs time to respond. Would you like me to explain how this works?"
+                    ],
+                    'back-forth': [
+                        "I see you're navigating back and forth. Looking for something specific?",
+                        "Seems like you might be searching for a feature. What are you trying to do?",
+                        "If the interface is confusing, just ask me and I'll guide you!"
+                    ]
+                };
+                
+                // Proactive tips based on idle time
+                this.idleTips = {
+                    30: [ // 30 seconds idle
+                        "💭 Need help? I'm watching and ready to assist anytime!",
+                        "💭 Tip: You can ask me about any button or feature.",
+                        "💭 Taking a moment? That's good - precision requires patience."
+                    ],
+                    120: [ // 2 minutes idle
+                        "🔮 I'm still here if you need guidance. Just type a question!",
+                        "🔮 Want to learn something new about gem cutting? Ask away!",
+                        "🔮 While you think, remember: the best cuts come from careful planning."
+                    ]
+                };
+                
+                // Start the adaptive system
+                this.init();
+            }
+            
+            init() {
+                // Update expertise level from user profile
+                this.updateExpertiseLevel();
+                
+                // Start monitoring for proactive assistance
+                this.startMonitoring();
+                
+                console.log('🧙 Merlin Adaptive AI System ACTIVE');
+            }
+            
+            // Update expertise level based on user profile
+            updateExpertiseLevel() {
+                if (window.merlin && merlin.userProfile) {
+                    const interactions = merlin.userProfile.totalInteractions || 0;
+                    const topicsLearned = (merlin.userProfile.topicsLearned || []).length;
+                    
+                    if (interactions > 500 && topicsLearned > 10) {
+                        this.userExpertise = 'advanced';
+                    } else if (interactions > 100 && topicsLearned > 5) {
+                        this.userExpertise = 'intermediate';
+                    } else {
+                        this.userExpertise = 'novice';
+                    }
+                }
+            }
+            
+            // Start monitoring user behavior
+            startMonitoring() {
+                // Check for proactive assistance opportunities
+                this._monitorInterval = setInterval(() => {
+                    if (!this.isActive || !this.watchMode) return;
+                    
+                    const screenContext = window.merlinScreenContext;
+                    if (!screenContext) return;
+                    
+                    // Check for frustration
+                    this.checkForFrustration(screenContext);
+                    
+                    // Check for idle users
+                    this.checkForIdleUser(screenContext);
+                    
+                    // Check pending notifications
+                    this.processPendingNotifications(screenContext);
+                    
+                }, 5000); // Check every 5 seconds
+            }
+            
+            // Check for user frustration indicators
+            checkForFrustration(screenContext) {
+                const summary = screenContext.getSummary();
+                const frustration = summary.behavior.frustrationIndicator;
+                
+                if (frustration && Date.now() - this.lastProactiveTip > this.tipCooldown) {
+                    const responses = this.frustrationResponses[frustration] || [];
+                    if (responses.length > 0) {
+                        const tip = responses[Math.floor(Math.random() * responses.length)];
+                        this.showProactiveTip(tip, 'frustration');
+                        this.lastProactiveTip = Date.now();
+                        
+                        // Clear frustration indicator
+                        screenContext.behavior.frustrationType = null;
+                    }
+                }
+            }
+            
+            // Check for idle users
+            checkForIdleUser(screenContext) {
+                const idleSeconds = Math.round(screenContext.behavior.idleTime / 1000);
+                
+                // Find appropriate idle tip
+                for (const [threshold, tips] of Object.entries(this.idleTips)) {
+                    const thresholdSec = parseInt(threshold);
+                    if (idleSeconds >= thresholdSec && idleSeconds < thresholdSec + 5) {
+                        if (Date.now() - this.lastProactiveTip > this.tipCooldown) {
+                            const tip = tips[Math.floor(Math.random() * tips.length)];
+                            this.showProactiveTip(tip, 'idle');
+                            this.lastProactiveTip = Date.now();
+                        }
+                        break;
+                    }
+                }
+            }
+            
+            // Process pending notifications from screen context
+            processPendingNotifications(screenContext) {
+                const notifications = screenContext.pendingNotifications || [];
+                
+                notifications.forEach(notification => {
+                    if (notification.type === 'error') {
+                        this.handleErrorNotification(notification.data);
+                    }
+                });
+                
+                // Clear processed notifications
+                screenContext.pendingNotifications = [];
+            }
+            
+            // Handle error notifications
+            handleErrorNotification(errorData) {
+                // Log error for Merlin's awareness
+                console.log('🧙 Merlin noticed an error:', errorData.message);
+                
+                // Could show a helpful tip about the error
+                if (this.userExpertise === 'novice') {
+                    // Don't overwhelm novices with error details
+                }
+            }
+            
+            // Show proactive tip to user
+            showProactiveTip(tip, type = 'general') {
+                // Only show tips if user is actively on the page
+                if (document.hidden) return;
+                
+                // Add tip to chat as Merlin message (subtle)
+                if (typeof addMessage === 'function') {
+                    // Use a subtle format for proactive tips
+                    const formattedTip = `*${tip}*`;
+                    
+                    // Only add if in chat mode or appropriate context
+                    const context = window.merlinScreenContext?.getCurrentContext();
+                    if (context && context.visiblePanels.includes('center')) {
+                        // Don't interrupt during game mode
+                        if (context.mode !== 'game') {
+                            addMessage(formattedTip, 'merlin');
+                        }
+                    }
+                }
+                
+                console.log(`🧙 Merlin proactive tip (${type}):`, tip);
+            }
+            
+            // Get contextual help for a specific element
+            getContextualHelp(elementInfo) {
+                // Build key from element info
+                const className = elementInfo.className?.split(' ')[0] || '';
+                const text = elementInfo.text?.substring(0, 20) || '';
+                const key = `${className}_${text}`;
+                
+                const tipSet = this.contextualTips[key];
+                if (tipSet) {
+                    return tipSet[this.userExpertise] || null;
+                }
+                
+                return null;
+            }
+            
+            // Analyze user patterns and predict next action
+            predictNextAction() {
+                const screenContext = window.merlinScreenContext;
+                if (!screenContext) return null;
+                
+                const summary = screenContext.getSummary();
+                const navigationPath = summary.patterns.navigationPath;
+                
+                // Simple pattern matching for predictions
+                if (navigationPath.length >= 2) {
+                    const lastTwo = navigationPath.slice(-2);
+                    
+                    // If user went to scan then connect
+                    if (lastTwo[0]?.includes('scan') && lastTwo[1]?.includes('connect')) {
+                        return { action: 'will_test_connection', confidence: 0.8 };
+                    }
+                    
+                    // If user is in chat panel
+                    if (lastTwo.some(p => p?.includes('chat'))) {
+                        return { action: 'asking_question', confidence: 0.7 };
+                    }
+                }
+                
+                return null;
+            }
+            
+            // Generate adaptive response based on context
+            getAdaptiveResponse(baseResponse) {
+                const screenContext = window.merlinScreenContext;
+                if (!screenContext) return baseResponse;
+                
+                const state = screenContext.getScreenState();
+                
+                // Adjust response based on expertise
+                let response = baseResponse;
+                
+                if (this.userExpertise === 'novice') {
+                    // Add more explanation for novices
+                    if (!response.includes('💡')) {
+                        response += '\n\n💡 Need more help? Just ask me to explain any part in more detail!';
+                    }
+                } else if (this.userExpertise === 'advanced') {
+                    // Keep responses concise for experts
+                    // Could summarize or skip basic explanations
+                }
+                
+                // Add device-specific tips
+                if (state.viewport.deviceType === 'mobile' || state.viewport.deviceType === 'mobile-small') {
+                    // Mobile-specific advice
+                    if (response.includes('click')) {
+                        response = response.replace(/click/gi, 'tap');
+                    }
+                }
+                
+                return response;
+            }
+            
+            // Get comprehensive Merlin insight report
+            getMerlinInsight() {
+                const screenContext = window.merlinScreenContext;
+                if (!screenContext) return 'Screen context not available.';
+                
+                const summary = screenContext.getSummary();
+                const state = screenContext.getScreenState();
+                
+                let insight = '🔮 **Merlin\'s Insight Report**\n\n';
+                
+                insight += `**Session Overview:**\n`;
+                insight += `• Duration: ${Math.round(summary.session.duration / 60)} minutes\n`;
+                insight += `• Total Interactions: ${summary.session.totalClicks} clicks, ${summary.session.totalScrolls} scrolls\n`;
+                insight += `• Current Mode: ${state.context.mode}\n`;
+                insight += `• Device: ${state.viewport.deviceType} (${state.viewport.width}x${state.viewport.height})\n\n`;
+                
+                insight += `**User Expertise:** ${this.userExpertise.toUpperCase()}\n\n`;
+                
+                insight += `**Most Used Features:**\n`;
+                summary.patterns.mostClickedElements.forEach((item, i) => {
+                    insight += `${i + 1}. ${item.element} (${item.count} times)\n`;
+                });
+                
+                insight += `\n**Recent Navigation:**\n`;
+                insight += summary.patterns.navigationPath.join(' → ') || 'None recorded';
+                
+                if (summary.session.errorsEncountered > 0) {
+                    insight += `\n\n⚠️ **Errors Detected:** ${summary.session.errorsEncountered}`;
+                }
+                
+                return insight;
+            }
+            
+            // Toggle watch mode
+            setWatchMode(enabled) {
+                this.watchMode = enabled;
+                console.log(`🧙 Merlin Watch Mode: ${enabled ? 'ACTIVE' : 'PAUSED'}`);
+            }
+        }
+        
+        // Initialize adaptive AI
+        window.merlinAdaptiveAI = new MerlinAdaptiveAI();
+        
+        // Add console command for insight
+        window.merlinInsight = () => {
+            const insight = window.merlinAdaptiveAI?.getMerlinInsight();
+            console.log(insight);
+            if (typeof addMessage === 'function') {
+                addMessage(insight, 'merlin');
+            }
+            return insight;
+        };
         
         // Initialize machine state manager (MUST be global for access at line 10197)
         window.machineState = new MachineStateManager();
