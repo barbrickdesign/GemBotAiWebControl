@@ -2795,10 +2795,11 @@ class GemBotFarmGame {
         const machineType = this.machineTypes[machine.type];
         const roomType = this.roomTypes[machine.room];
         
-        // Scale: 1 unit = ~2 inches, GemBot Mini is ~18" wide = 9 units
+        // Scale: Machine reduced to 1/4 size to fit on table properly
         // Each GemBot needs a full table (about 10x8 units)
-        const scale = 1.0;
+        const scale = 0.25;
         const tableSpacing = 10; // Each table is 10 units apart
+        const tableHeight = 1.0; // Height of table surface
         
         // Position based on room layout - one GemBot per table
         const roomDims = roomType?.dimensions || { width: 12, depth: 10 };
@@ -2806,9 +2807,9 @@ class GemBotFarmGame {
         const gridX = (index % slotsPerRow) * tableSpacing - (roomDims.width / 2) + tableSpacing / 2;
         const gridZ = Math.floor(index / slotsPerRow) * tableSpacing - (roomDims.depth / 2) + tableSpacing / 2;
         
-        // Create machine root
+        // Create machine root - position on table surface
         const machineRoot = new BABYLON.TransformNode(machine.id, this.scene);
-        machineRoot.position = new BABYLON.Vector3(gridX, 0, gridZ);
+        machineRoot.position = new BABYLON.Vector3(gridX, tableHeight, gridZ);
         
         // Store animation targets
         machine.animationTargets = {};
@@ -3523,12 +3524,12 @@ class GemBotFarmGame {
         if (!machine) return;
         
         // Get available laps from inventory
-        const availableLaps = Object.entries(this.state.inventory.laps)
+        const availableLaps = Object.entries(this.state.laps)
             .filter(([key, lap]) => lap.owned && lap.condition > 0)
             .map(([key]) => key);
         
         // Add polishing laps if paste is available
-        Object.entries(this.state.inventory.paste).forEach(([grit, amount]) => {
+        Object.entries(this.state.paste).forEach(([grit, amount]) => {
             if (amount > 0) {
                 availableLaps.push(`copper_${grit}`);
             }
@@ -3678,8 +3679,8 @@ class GemBotFarmGame {
             if (stage.name.includes('Polish') && lapType === 'copper') {
                 const requiredPaste = this.getRequiredPaste(stone.currentStage);
                 if (requiredPaste) {
-                    const pasteLevel = this.state.inventory.paste[requiredPaste] || 0;
-                    const copperCharges = this.state.inventory.laps.copper.charges || 0;
+                    const pasteLevel = this.state.paste[requiredPaste] || 0;
+                    const copperCharges = this.state.laps.copper?.charges || 0;
                     
                     if (copperCharges <= 0) {
                         stone.awaitingInteraction = true;
