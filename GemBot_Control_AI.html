@@ -5568,6 +5568,11 @@
                     <div class="status-indicator" id="statusIndicator"></div>
                     <span id="connectionStatus" class="text-small">OFFLINE</span>
                 </div>
+                
+                <!-- Login Button (shown when not logged in) -->
+                <button id="headerLoginBtn" class="btn-primary btn-compact" onclick="authSystem.showAuthOverlay()" title="Sign In">
+                    🔐 Login
+                </button>
 
                 <!-- User Badge (after login) -->
                 <div id="userBadgeContainer" class="user-badge-container hidden">
@@ -6533,9 +6538,11 @@
                 const badge = document.getElementById('userBadgeContainer');
                 const avatar = document.getElementById('userAvatar');
                 const name = document.getElementById('userName');
+                const loginBtn = document.getElementById('headerLoginBtn');
                 
                 if (this.currentUser) {
-                    if (badge) badge.style.display = 'block';
+                    if (badge) badge.classList.remove('hidden');
+                    if (loginBtn) loginBtn.style.display = 'none';
                     if (avatar) avatar.textContent = this.currentUser.username.charAt(0).toUpperCase();
                     if (name) {
                         name.textContent = this.currentUser.username;
@@ -6547,7 +6554,8 @@
                         }
                     }
                 } else {
-                    if (badge) badge.style.display = 'none';
+                    if (badge) badge.classList.add('hidden');
+                    if (loginBtn) loginBtn.style.display = 'inline-flex';
                 }
             }
         };
@@ -20441,6 +20449,7 @@
         function openShopPanel() {
             const overlay = document.getElementById('shopPanelOverlay');
             if (overlay) {
+                overlay.classList.remove('hidden');
                 overlay.style.display = 'flex';
                 showShopTab('rough');
             } else {
@@ -20451,34 +20460,13 @@
         
         function closeShopPanel() {
             const overlay = document.getElementById('shopPanelOverlay');
-            if (overlay) overlay.style.display = 'none';
-        }
-        
-        // Inventory panel functions
-        function openInventoryPanel() {
-            if (gameFarm && typeof gameFarm.showInventory === 'function') {
-                gameFarm.showInventory();
-            } else {
-                // Fallback: show in chat
-                addMessage('📦 **Inventory**\nYour inventory is being loaded...', 'system');
-                if (gameFarm && gameFarm.state) {
-                    const inv = gameFarm.state.inventory;
-                    let msg = '📦 **Your Inventory:**\n\n';
-                    msg += '**Rough Stones:**\n';
-                    for (const [gem, pieces] of Object.entries(inv.rough || {})) {
-                        if (pieces.length > 0) {
-                            msg += `• ${gem}: ${pieces.length} pieces\n`;
-                        }
-                    }
-                    msg += '\n**Supplies:**\n';
-                    msg += `• Dop Wax: ${inv.consumables?.dopWax || 0}\n`;
-                    msg += `• Polishing Compound: ${inv.consumables?.polishingCompound || 0}\n`;
-                    addMessage(msg, 'assistant');
-                }
+            if (overlay) {
+                overlay.classList.add('hidden');
+                overlay.style.display = 'none';
             }
         }
         
-        // Maintenance panel functions
+        // Maintenance panel functions (inventory functions are defined later in file)
         function openMaintenancePanel() {
             if (gameFarm && typeof gameFarm.showMaintenance === 'function') {
                 gameFarm.showMaintenance();
