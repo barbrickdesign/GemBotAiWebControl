@@ -2462,12 +2462,12 @@ class GemBotFarmGame {
      * Show unlock dialog for locked doors
      */
     showUnlockDialog(config) {
-        const canAfford = this.state.coins >= config.cost;
-        const meetsLevel = this.state.level >= config.unlockLevel;
+        const canAfford = this.state.player.gems >= config.cost;
+        const meetsLevel = this.state.player.level >= config.unlockLevel;
         
         let message = `🚪 ${config.label}\n\n`;
-        message += `Required Level: ${config.unlockLevel} ${meetsLevel ? '✅' : '❌ (You: ' + this.state.level + ')'}\n`;
-        message += `Cost: ${config.cost} coins ${canAfford ? '✅' : '❌ (You: ' + this.state.coins + ')'}\n\n`;
+        message += `Required Level: ${config.unlockLevel} ${meetsLevel ? '✅' : '❌ (You: ' + this.state.player.level + ')'}\n`;
+        message += `Cost: ${config.cost} gems ${canAfford ? '✅' : '❌ (You: ' + this.state.player.gems + ')'}\n\n`;
         
         if (meetsLevel && canAfford) {
             if (confirm(message + 'Unlock this room?')) {
@@ -2486,7 +2486,7 @@ class GemBotFarmGame {
             this.state.unlockedRooms = [];
         }
         
-        this.state.coins -= config.cost;
+        this.state.player.gems -= config.cost;
         this.state.unlockedRooms.push(config.targetRoom);
         
         // Give the key
@@ -3680,9 +3680,10 @@ class GemBotFarmGame {
                 const requiredPaste = this.getRequiredPaste(stone.currentStage);
                 if (requiredPaste) {
                     const pasteLevel = this.state.paste[requiredPaste] || 0;
-                    const copperCharges = this.state.laps.copper?.charges || 0;
+                    const copperPaste = this.state.laps.copper?.currentPaste;
                     
-                    if (copperCharges <= 0) {
+                    // Check if copper lap has correct paste charged
+                    if (!copperPaste || copperPaste !== requiredPaste) {
                         stone.awaitingInteraction = true;
                         stone.interactionType = 'charge_paste';
                         this.addPendingInteraction(machine.id, 'charge_paste', 
@@ -3731,8 +3732,9 @@ class GemBotFarmGame {
         // Calculate time for this stage based on gem properties AND design
         const stageTime = this.calculateStageTime(stone, stage, machineType);
         
-        // Apply machine condition speed modifier
-        const effectiveSpeed = machineType.speed * (machineStatus.speedMultiplier || 1);
+        // Apply machine condition speed modifier AND active speed boosts
+        const boostMultiplier = this.getCurrentSpeedMultiplier ? this.getCurrentSpeedMultiplier() : 1;
+        const effectiveSpeed = machineType.speed * (machineStatus.speedMultiplier || 1) * boostMultiplier;
         
         // Progress the stage
         stone.stageProgress += gameTimePassed * effectiveSpeed;
@@ -4533,11 +4535,20 @@ class GemBotFarmGame {
             valuePerCarat *= this.config.realMachineBonus;
         }
         
-        // Determine if perfect cut
-        const isPerfect = stone.qualityScore >= 95 && stone.perfectBonus >= 1;
+        // Apply luck boost to quality threshold for perfect
+        const luckMult = this.getCurrentLuckMultiplier ? this.getCurrentLuckMultiplier() : 1;
+        const perfectThreshold = luckMult > 1 ? 90 : 95; // Lower threshold when luck active
+        
+        // Determine if perfect cut (luck boost makes it easier!)
+        const isPerfect = stone.qualityScore >= perfectThreshold && stone.perfectBonus >= 1;
         if (isPerfect) {
             valuePerCarat *= gemValue.perfectBonus;
             this.state.stats.perfectCuts++;
+        }
+        
+        // Luck boost also gives value bonus
+        if (luckMult > 1) {
+            valuePerCarat *= luckMult;
         }
         
         // Final value calculation
@@ -4760,13 +4771,15 @@ class GemBotFarmGame {
     showCutEffect(machine, gem, isPerfect) {
         if (!this.scene || !machine.mesh) return;
         
+        const machinePos = machine.mesh.position || new BABYLON.Vector3(0, 0, 0);
+        
         // Create floating gem
         const gemMesh = BABYLON.MeshBuilder.CreatePolyhedron(
             'cutGem',
-            { type: 2, size: 0.3 },
+            { type: 2, size: isPerfect ? 0.4 : 0.3 },
             this.scene
         );
-        gemMesh.position = machine.mesh.position.clone();
+        gemMesh.position = machinePos.clone();
         gemMesh.position.y += 3;
         
         const gemMat = new BABYLON.StandardMaterial('cutGemMat', this.scene);
@@ -4774,12 +4787,22 @@ class GemBotFarmGame {
         gemMat.diffuseColor = BABYLON.Color3.FromHexString(gem.color);
         gemMesh.material = gemMat;
         
+        // Perfect cut gets sparkle particles
+        if (isPerfect) {
+            this.createSparkleEffect(machinePos.clone(), gem.color);
+        }
+        
         // Animate up and fade
         let frame = 0;
         const animation = () => {
             if (frame < 60) {
-                gemMesh.position.y += 0.05;
-                gemMesh.rotation.y += 0.1;
+                gemMesh.position.y += isPerfect ? 0.08 : 0.05;
+                gemMesh.rotation.y += isPerfect ? 0.15 : 0.1;
+                gemMesh.scaling = new BABYLON.Vector3(
+                    1 + Math.sin(frame * 0.2) * 0.1,
+                    1 + Math.sin(frame * 0.2) * 0.1,
+                    1 + Math.sin(frame * 0.2) * 0.1
+                );
                 gemMat.alpha = 1 - (frame / 60);
                 frame++;
             } else {
@@ -4799,8 +4822,64 @@ class GemBotFarmGame {
                 if (machine.statusMat) {
                     machine.statusMat.emissiveColor = new BABYLON.Color3(0, 1, 0);
                 }
-            }, 200);
+            }, isPerfect ? 500 : 200);
         }
+        
+        // Show floating text
+        this.showFloatingText(machinePos.clone(), isPerfect ? '★ PERFECT! ★' : 'Complete!', gem.color);
+    }
+    
+    /**
+     * Create sparkle particle effect for perfect cuts
+     */
+    createSparkleEffect(position, color) {
+        if (!this.scene) return;
+        
+        for (let i = 0; i < 12; i++) {
+            const sparkle = BABYLON.MeshBuilder.CreateSphere('sparkle', { diameter: 0.08 }, this.scene);
+            sparkle.position = position.clone();
+            sparkle.position.y += 3;
+            
+            const mat = new BABYLON.StandardMaterial('sparkleMat', this.scene);
+            mat.emissiveColor = Math.random() > 0.5 
+                ? BABYLON.Color3.FromHexString(color)
+                : new BABYLON.Color3(1, 1, 1);
+            sparkle.material = mat;
+            
+            // Random velocity
+            const vx = (Math.random() - 0.5) * 0.3;
+            const vy = Math.random() * 0.2 + 0.1;
+            const vz = (Math.random() - 0.5) * 0.3;
+            
+            let frame = 0;
+            const animate = () => {
+                if (frame < 40) {
+                    sparkle.position.x += vx;
+                    sparkle.position.y += vy - frame * 0.01;
+                    sparkle.position.z += vz;
+                    mat.alpha = 1 - (frame / 40);
+                    sparkle.scaling = new BABYLON.Vector3(
+                        1 - frame * 0.02,
+                        1 - frame * 0.02,
+                        1 - frame * 0.02
+                    );
+                    frame++;
+                } else {
+                    sparkle.dispose();
+                    this.scene.unregisterBeforeRender(animate);
+                }
+            };
+            this.scene.registerBeforeRender(animate);
+        }
+    }
+    
+    /**
+     * Show floating text effect
+     */
+    showFloatingText(position, text, color) {
+        // This is a simplified version - full implementation would use GUI
+        // For now we just log it and rely on Merlin's speech
+        console.log(`✨ ${text}`);
     }
     
     /**
@@ -4827,7 +4906,7 @@ class GemBotFarmGame {
     }
     
     /**
-     * Check and process level up
+     * Check and process level up with unlocks and rewards
      */
     checkLevelUp() {
         while (this.state.player.xp >= this.state.player.xpToNext) {
@@ -4835,16 +4914,352 @@ class GemBotFarmGame {
             this.state.player.level++;
             this.state.player.xpToNext = Math.floor(100 * Math.pow(1.5, this.state.player.level - 1));
             
-            // Award tokens on level up
+            // Award tokens on level up (scales with level)
             const tokenReward = this.state.player.level * 5;
             this.state.player.tokens += tokenReward;
+            
+            // Award gem bonus on level up
+            const gemBonus = Math.floor(this.state.player.level * 10);
+            this.state.player.gems += gemBonus;
+            
+            // Check for new unlocks at this level
+            this.checkLevelUnlocks(this.state.player.level);
             
             if (this.onLevelUp) {
                 this.onLevelUp(this.state.player.level);
             }
             
-            console.log(`🎉 Level up! Now level ${this.state.player.level}, earned ${tokenReward} tokens`);
+            // Merlin announces level up with details
+            if (this.merlin) {
+                this.merlinSpeak(`🎉 LEVEL ${this.state.player.level}! +${tokenReward} tokens, +${gemBonus} gems! ${this.getLevelUnlockMessage(this.state.player.level)}`);
+            }
+            
+            console.log(`🎉 Level up! Now level ${this.state.player.level}, earned ${tokenReward} tokens + ${gemBonus} gems`);
         }
+        
+        // Check for milestone achievements
+        this.checkAchievements();
+    }
+    
+    /**
+     * Check and unlock features at specific levels
+     */
+    checkLevelUnlocks(level) {
+        const levelUnlocks = {
+            2: { designs: ['standard_round_brilliant'], message: 'Standard Round Brilliant design unlocked!' },
+            3: { shapes: ['oval'], message: 'Oval shape unlocked!' },
+            4: { shapes: ['square'], message: 'Square shape unlocked!' },
+            5: { shapes: ['pear', 'cushion'], message: 'Pear and Cushion shapes unlocked!' },
+            6: { shapes: ['trillion'], designs: ['trillion_brilliant'], message: 'Trillion shape & design unlocked!' },
+            7: { shapes: ['marquise'], message: 'Marquise shape unlocked!' },
+            8: { shapes: ['emerald_cut'], designs: ['emerald_step', 'portuguese_round'], message: 'Emerald Cut & Portuguese designs unlocked!' },
+            10: { shapes: ['heart'], message: 'Heart shape unlocked! The ultimate romantic cut.' },
+            15: { message: 'Legendary gems now available in shop!' }
+        };
+        
+        const unlock = levelUnlocks[level];
+        if (unlock) {
+            // Unlock shapes
+            if (unlock.shapes) {
+                unlock.shapes.forEach(shape => {
+                    if (!this.state.unlockedShapes.includes(shape)) {
+                        this.state.unlockedShapes.push(shape);
+                    }
+                });
+            }
+            // Unlock designs
+            if (unlock.designs) {
+                unlock.designs.forEach(design => {
+                    if (!this.state.unlockedDesigns.includes(design)) {
+                        this.state.unlockedDesigns.push(design);
+                    }
+                });
+            }
+        }
+    }
+    
+    /**
+     * Get unlock message for a level
+     */
+    getLevelUnlockMessage(level) {
+        const messages = {
+            2: '🔓 Standard Round Brilliant unlocked!',
+            3: '🔓 Oval shape unlocked! + Uncommon gems in shop!',
+            4: '🔓 Square shape unlocked!',
+            5: '🔓 Pear & Cushion shapes unlocked! + Home Studio available!',
+            6: '🔓 Trillion shape & design unlocked!',
+            7: '🔓 Marquise shape unlocked!',
+            8: '🔓 Emerald & Portuguese cuts! + Rare gems in shop! + Small Shop unlocked!',
+            10: '🔓 Heart shape unlocked! The most difficult cut!',
+            12: '🔓 Brick & Mortar store unlocked!',
+            15: '🔓 LEGENDARY GEMS available! Diamond & Alexandrite!',
+            18: '🔓 Boutique Factory unlocked!',
+            25: '🔓 Small Warehouse unlocked! Industrial scale!',
+            50: '🔓 Large Warehouse unlocked! Major production!',
+            75: '🔓 MEGA FACTORY! 1000 GemBot capacity!',
+            100: '🔓 Industrial Complex! 2500 machines!',
+            150: '🔓 GEMBOT EMPIRE! Ultimate achievement!'
+        };
+        return messages[level] || 'Keep cutting, more unlocks ahead!';
+    }
+    
+    /**
+     * Check and award achievements
+     */
+    checkAchievements() {
+        const achievements = [
+            { id: 'first_cut', name: 'First Cut', desc: 'Complete your first gem', check: () => this.state.stats.totalCuts >= 1, reward: 10 },
+            { id: 'apprentice', name: 'Apprentice', desc: 'Cut 10 gems', check: () => this.state.stats.totalCuts >= 10, reward: 50 },
+            { id: 'journeyman', name: 'Journeyman', desc: 'Cut 50 gems', check: () => this.state.stats.totalCuts >= 50, reward: 200 },
+            { id: 'master_cutter', name: 'Master Cutter', desc: 'Cut 100 gems', check: () => this.state.stats.totalCuts >= 100, reward: 500 },
+            { id: 'legend', name: 'Legendary Cutter', desc: 'Cut 500 gems', check: () => this.state.stats.totalCuts >= 500, reward: 2000 },
+            { id: 'first_perfect', name: 'Perfectionist', desc: 'Cut a perfect gem', check: () => this.state.stats.perfectCuts >= 1, reward: 25 },
+            { id: 'perfect_ten', name: 'Ten Perfects', desc: 'Cut 10 perfect gems', check: () => this.state.stats.perfectCuts >= 10, reward: 100 },
+            { id: 'carat_king', name: 'Carat King', desc: 'Cut 100 total carats', check: () => this.state.player.totalCaratsCut >= 100, reward: 150 },
+            { id: 'diamond_cutter', name: 'Diamond Cutter', desc: 'Complete a diamond', check: () => (this.state.gemBalance['Diamond']?.length || 0) >= 1, reward: 300 },
+            { id: 'alex_master', name: 'Alexandrite Master', desc: 'Complete an alexandrite', check: () => (this.state.gemBalance['Alexandrite']?.length || 0) >= 1, reward: 500 },
+            { id: 'millionaire', name: 'Gem Millionaire', desc: 'Earn 1,000,000 gems', check: () => this.state.player.totalGemsEver >= 1000000, reward: 5000 },
+            { id: 'token_hoarder', name: 'Token Hoarder', desc: 'Accumulate 1000 tokens', check: () => this.state.player.tokens >= 1000, reward: 100 },
+            { id: 'survivor', name: 'Survivor', desc: 'Lose a stone to failure', check: () => this.state.player.stonesLost >= 1, reward: 5 },
+            { id: 'resilient', name: 'Resilient', desc: 'Lose 10 stones and keep going', check: () => this.state.player.stonesLost >= 10, reward: 50 },
+            { id: 'water_wise', name: 'Water Wise', desc: 'Refill water 50 times', check: () => this.state.stats.waterRefills >= 50, reward: 30 },
+            { id: 'lap_master', name: 'Lap Master', desc: 'Replace 20 laps', check: () => this.state.stats.lapsReplaced >= 20, reward: 75 }
+        ];
+        
+        achievements.forEach(achievement => {
+            if (!this.state.achievements.includes(achievement.id) && achievement.check()) {
+                // Award achievement
+                this.state.achievements.push(achievement.id);
+                this.state.player.gems += achievement.reward;
+                this.state.player.tokens += Math.floor(achievement.reward / 10);
+                
+                console.log(`🏆 ACHIEVEMENT: ${achievement.name} - ${achievement.desc} (+${achievement.reward} gems)`);
+                
+                if (this.merlin) {
+                    this.merlinCelebrate('milestone', { name: achievement.name, desc: achievement.desc, reward: achievement.reward });
+                }
+                
+                if (this.onAchievement) {
+                    this.onAchievement(achievement);
+                }
+            }
+        });
+    }
+    
+    /**
+     * Get list of all achievements with unlock status
+     */
+    getAchievementList() {
+        const achievements = [
+            { id: 'first_cut', name: 'First Cut', desc: 'Complete your first gem', reward: 10 },
+            { id: 'apprentice', name: 'Apprentice', desc: 'Cut 10 gems', reward: 50 },
+            { id: 'journeyman', name: 'Journeyman', desc: 'Cut 50 gems', reward: 200 },
+            { id: 'master_cutter', name: 'Master Cutter', desc: 'Cut 100 gems', reward: 500 },
+            { id: 'legend', name: 'Legendary Cutter', desc: 'Cut 500 gems', reward: 2000 },
+            { id: 'first_perfect', name: 'Perfectionist', desc: 'Cut a perfect gem', reward: 25 },
+            { id: 'perfect_ten', name: 'Ten Perfects', desc: 'Cut 10 perfect gems', reward: 100 },
+            { id: 'carat_king', name: 'Carat King', desc: 'Cut 100 total carats', reward: 150 },
+            { id: 'diamond_cutter', name: 'Diamond Cutter', desc: 'Complete a diamond', reward: 300 },
+            { id: 'alex_master', name: 'Alexandrite Master', desc: 'Complete an alexandrite', reward: 500 },
+            { id: 'millionaire', name: 'Gem Millionaire', desc: 'Earn 1,000,000 gems', reward: 5000 },
+            { id: 'token_hoarder', name: 'Token Hoarder', desc: 'Accumulate 1000 tokens', reward: 100 },
+            { id: 'survivor', name: 'Survivor', desc: 'Lose a stone to failure', reward: 5 },
+            { id: 'resilient', name: 'Resilient', desc: 'Lose 10 stones and keep going', reward: 50 },
+            { id: 'water_wise', name: 'Water Wise', desc: 'Refill water 50 times', reward: 30 },
+            { id: 'lap_master', name: 'Lap Master', desc: 'Replace 20 laps', reward: 75 }
+        ];
+        
+        return achievements.map(a => ({
+            ...a,
+            unlocked: this.state.achievements.includes(a.id)
+        }));
+    }
+    
+    // ==================== SPECIAL ABILITIES & POWER-UPS ====================
+    
+    /**
+     * Use speed boost ability - 2x cutting speed for 60 seconds
+     * Costs 50 tokens
+     */
+    useSpeedBoost() {
+        const cost = 50;
+        if (this.state.player.tokens < cost) {
+            return { success: false, message: `Need ${cost} tokens! You have ${this.state.player.tokens}` };
+        }
+        
+        if (this.activeBoosts?.speed) {
+            return { success: false, message: 'Speed boost already active!' };
+        }
+        
+        this.state.player.tokens -= cost;
+        if (!this.activeBoosts) this.activeBoosts = {};
+        this.activeBoosts.speed = {
+            multiplier: 2,
+            expiresAt: Date.now() + 60000
+        };
+        
+        console.log('⚡ SPEED BOOST ACTIVATED! 2x speed for 60 seconds!');
+        if (this.merlin) {
+            this.merlinSpeak('⚡ SPEED BOOST! The machines whir with enhanced power! 2x cutting speed for 1 minute!');
+        }
+        
+        setTimeout(() => {
+            if (this.activeBoosts) delete this.activeBoosts.speed;
+            console.log('⚡ Speed boost expired');
+            if (this.merlin) {
+                this.merlinSpeak('Speed boost has worn off. Normal cutting speed resumed.');
+            }
+        }, 60000);
+        
+        return { success: true, message: 'Speed boost activated!' };
+    }
+    
+    /**
+     * Use luck boost - Increases quality bonus for 5 minutes
+     * Costs 100 tokens
+     */
+    useLuckBoost() {
+        const cost = 100;
+        if (this.state.player.tokens < cost) {
+            return { success: false, message: `Need ${cost} tokens! You have ${this.state.player.tokens}` };
+        }
+        
+        if (this.activeBoosts?.luck) {
+            return { success: false, message: 'Luck boost already active!' };
+        }
+        
+        this.state.player.tokens -= cost;
+        if (!this.activeBoosts) this.activeBoosts = {};
+        this.activeBoosts.luck = {
+            multiplier: 1.5,
+            expiresAt: Date.now() + 300000
+        };
+        
+        console.log('🍀 LUCK BOOST ACTIVATED! +50% quality bonus for 5 minutes!');
+        if (this.merlin) {
+            this.merlinSpeak('🍀 FORTUNE FAVORS YOU! Increased chance of perfect cuts for 5 minutes!');
+        }
+        
+        setTimeout(() => {
+            if (this.activeBoosts) delete this.activeBoosts.luck;
+            console.log('🍀 Luck boost expired');
+            if (this.merlin) {
+                this.merlinSpeak('Fortune returns to normal. The luck boost has faded.');
+            }
+        }, 300000);
+        
+        return { success: true, message: 'Luck boost activated!' };
+    }
+    
+    /**
+     * Auto-complete current stage (skip wait time)
+     * Costs 25 tokens per use
+     */
+    skipCurrentStage(machineId) {
+        const cost = 25;
+        const machine = this.state.machines.find(m => m.id === machineId);
+        
+        if (!machine || !machine.currentStone) {
+            return { success: false, message: 'No active stone on this machine' };
+        }
+        
+        if (this.state.player.tokens < cost) {
+            return { success: false, message: `Need ${cost} tokens! You have ${this.state.player.tokens}` };
+        }
+        
+        const stone = machine.currentStone;
+        const stage = this.cuttingStages[stone.currentStage];
+        
+        // Can't skip human interaction stages
+        if (stone.awaitingInteraction) {
+            return { success: false, message: 'Complete the interaction first!' };
+        }
+        
+        this.state.player.tokens -= cost;
+        
+        // Complete current stage
+        const stageTime = this.calculateStageTime(stone, stage, this.machineTypes[machine.type]);
+        stone.stageProgress = stageTime;
+        
+        console.log(`⏩ Skipped stage: ${stage.name}`);
+        if (this.merlin) {
+            this.merlinSpeak(`⏩ Time warp! ${stage.name} completed instantly!`);
+        }
+        
+        return { success: true, message: `Skipped ${stage.name}!` };
+    }
+    
+    /**
+     * Instant refill all consumables
+     * Costs 30 tokens
+     */
+    instantRefillAll() {
+        const cost = 30;
+        if (this.state.player.tokens < cost) {
+            return { success: false, message: `Need ${cost} tokens! You have ${this.state.player.tokens}` };
+        }
+        
+        this.state.player.tokens -= cost;
+        this.state.inventory.consumables.water = 100;
+        this.state.inventory.consumables.dopWax += 50;
+        this.state.inventory.consumables.lubricant = 100;
+        
+        console.log('🔄 All consumables refilled!');
+        if (this.merlin) {
+            this.merlinSpeak('🔄 Supplies restocked! Water, dop wax, and lubricant all topped up!');
+        }
+        
+        return { success: true, message: 'All consumables refilled!' };
+    }
+    
+    /**
+     * Get active boosts status
+     */
+    getActiveBoosts() {
+        const now = Date.now();
+        const boosts = [];
+        
+        if (this.activeBoosts?.speed && this.activeBoosts.speed.expiresAt > now) {
+            boosts.push({
+                name: 'Speed Boost',
+                icon: '⚡',
+                multiplier: this.activeBoosts.speed.multiplier,
+                remainingTime: Math.ceil((this.activeBoosts.speed.expiresAt - now) / 1000)
+            });
+        }
+        
+        if (this.activeBoosts?.luck && this.activeBoosts.luck.expiresAt > now) {
+            boosts.push({
+                name: 'Luck Boost',
+                icon: '🍀',
+                multiplier: this.activeBoosts.luck.multiplier,
+                remainingTime: Math.ceil((this.activeBoosts.luck.expiresAt - now) / 1000)
+            });
+        }
+        
+        return boosts;
+    }
+    
+    /**
+     * Get current speed multiplier including active boosts
+     */
+    getCurrentSpeedMultiplier() {
+        let mult = 1;
+        if (this.activeBoosts?.speed && this.activeBoosts.speed.expiresAt > Date.now()) {
+            mult *= this.activeBoosts.speed.multiplier;
+        }
+        return mult;
+    }
+    
+    /**
+     * Get current luck multiplier including active boosts
+     */
+    getCurrentLuckMultiplier() {
+        let mult = 1;
+        if (this.activeBoosts?.luck && this.activeBoosts.luck.expiresAt > Date.now()) {
+            mult *= this.activeBoosts.luck.multiplier;
+        }
+        return mult;
     }
     
     // ==================== SHOP & INVENTORY SYSTEM ====================
@@ -7004,9 +7419,14 @@ class GemBotFarmGame {
                 'Another faithful machine to serve your vision!'
             ],
             'milestone': [
-                `${data.count} gems cut! A milestone worthy of celebration!`,
-                'You have carved your name into gem cutting history!',
-                'The ancients would be proud of such achievement!'
+                `🏆 ACHIEVEMENT UNLOCKED: ${data.name}! ${data.desc} (+${data.reward} gems)`,
+                `🏆 ${data.name}! ${data.desc} Your reward: ${data.reward} gems!`,
+                `🏆 Incredible! You earned "${data.name}"! +${data.reward} gems!`
+            ],
+            'unlock': [
+                `🔓 NEW UNLOCK: ${data.name}! ${data.desc}`,
+                `🔓 ${data.name} is now available! ${data.desc}`,
+                `🔓 Congratulations! You've unlocked ${data.name}!`
             ]
         };
         
