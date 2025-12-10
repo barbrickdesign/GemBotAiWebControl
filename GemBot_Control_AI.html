@@ -5871,7 +5871,7 @@
             <div class="leaderboard-tabs">
                 <button class="leaderboard-tab active" onclick="leaderboardUI.switchTab('rankings')">🏆 Rankings</button>
                 <button class="leaderboard-tab" onclick="leaderboardUI.switchTab('mystats')">📊 My Stats</button>
-                <button class="leaderboard-tab" onclick="leaderboardUI.switchTab('inventory')">💎 Inventory</button>
+                <button class="leaderboard-tab" onclick="leaderboardUI.switchTab('collection')">💎 Collection</button>
                 <button class="leaderboard-tab" onclick="leaderboardUI.switchTab('achievements')">🎖️ Achievements</button>
                 <button class="leaderboard-tab" onclick="leaderboardUI.switchTab('activity')">📜 Activity Log</button>
                 <button class="leaderboard-tab" onclick="leaderboardUI.switchTab('marketplace')">🏪 Marketplace</button>
@@ -7151,7 +7151,7 @@
                     switch(tab) {
                         case 'rankings': content.innerHTML = this.renderRankings(); break;
                         case 'mystats': content.innerHTML = this.renderMyStats(); break;
-                        case 'inventory': content.innerHTML = this.renderInventory(); break;
+                        case 'collection': content.innerHTML = this.renderCollection(); break;
                         case 'achievements': content.innerHTML = this.renderAchievements(); break;
                         case 'activity': content.innerHTML = this.renderActivityLog(); break;
                         case 'marketplace': content.innerHTML = this.renderMarketplace(); break;
@@ -7430,10 +7430,10 @@
                 `;
             },
             
-            // Render inventory tab
-            renderInventory() {
+            // Render collection tab (stone mastery and badges)
+            renderCollection() {
                 if (!merlin?.userProfile?.gemForge) {
-                    return '<div style="text-align: center; padding: 40px; color: #888;">Please log in to view your inventory</div>';
+                    return '<div style="text-align: center; padding: 40px; color: #888;">Please log in to view your collection</div>';
                 }
                 
                 const gf = merlin.userProfile.gemForge;
@@ -20707,6 +20707,24 @@
             updateCuttingStatus();
         }
         
+        // Handle machine interaction clicks (human required actions)
+        function handleMachineInteraction(machineId, interactionType) {
+            if (!gameFarm) return;
+            
+            console.log(`🖱️ Handling interaction: ${interactionType} on ${machineId}`);
+            
+            // Call the game's interaction handler
+            const result = gameFarm.handleInteraction(machineId, interactionType);
+            
+            if (result && result.success) {
+                addGameActivity(`✅ ${result.message || 'Action completed!'}`);
+            } else if (result) {
+                addGameActivity(`⚠️ ${result.message || 'Action failed'}`);
+            }
+            
+            updateGameUI();
+        }
+        
         // New function to display realistic cutting progress
         function updateCuttingStatus() {
             if (!gameFarm || !gameFarm.state.machines) return;
@@ -20714,30 +20732,42 @@
             const container = document.getElementById('machinesList');
             if (!container) return;
             
+            // Get pending interactions
+            const pendingInteractions = gameFarm.state.pendingInteractions || [];
+            
             let html = '';
             gameFarm.state.machines.forEach((machine, index) => {
                 const machineType = gameFarm.machineTypes[machine.type];
                 const status = gameFarm.getCuttingStatus(machine);
+                const pending = pendingInteractions.find(i => i.machineId === machine.id);
                 
                 if (status.status === 'idle') {
                     html += `
                         <div class="machine-item">
                             <div style="flex: 1;">
                                 <strong>${machineType.name}</strong>
-                                <div style="font-size: 10px; color: #888;">⏳ Waiting for rough...</div>
+                                <div style="font-size: 10px; color: #888;">⏳ Ready for cutting</div>
                             </div>
-                            <div style="font-size: 11px; color: #666;">Cuts: ${machine.totalCuts || 0}</div>
+                            <button class="game-btn game-btn-small" style="padding: 4px 8px; font-size: 9px;" 
+                                onclick="openDesignPanel()">✨ Cut Stone</button>
                         </div>
                     `;
                 } else {
-                    const progressColor = status.humanRequired ? '#ffcc00' : '#00ffcc';
+                    const progressColor = pending ? '#ffcc00' : '#00ffcc';
+                    const interactionButton = pending ? `
+                        <button class="game-btn game-btn-accent" style="padding: 6px 12px; font-size: 10px; margin-top: 6px; width: 100%; animation: pulse 1s infinite;" 
+                            onclick="handleMachineInteraction('${machine.id}', '${pending.interactionType}')">
+                            👆 ${getInteractionLabel(pending.interactionType)}
+                        </button>
+                    ` : '';
+                    
                     html += `
                         <div class="machine-item" style="border-left: 3px solid ${status.gemColor || '#00ffcc'};">
                             <div style="flex: 1;">
                                 <strong style="color: ${status.gemColor}">${status.gemName}</strong>
                                 <div style="font-size: 10px; color: #aaa;">${status.stage}</div>
                                 <div style="font-size: 9px; color: #666; margin-top: 2px;">
-                                    ${status.humanRequired ? '👤 Human Required' : `🔧 ${status.lapType}`}
+                                    ${pending ? `👤 ${pending.description}` : `🔧 ${status.lapType || 'Auto'}`}
                                 </div>
                                 <div style="background: #222; border-radius: 4px; height: 6px; margin-top: 4px; overflow: hidden;">
                                     <div style="background: ${progressColor}; height: 100%; width: ${status.progress}%; transition: width 0.3s;"></div>
@@ -20745,6 +20775,7 @@
                                 <div style="font-size: 8px; color: #555; margin-top: 2px;">
                                     Stage ${status.stageIndex}/${status.totalStages} | Quality: ${status.qualityScore}%
                                 </div>
+                                ${interactionButton}
                             </div>
                         </div>
                     `;
@@ -20764,6 +20795,25 @@
             `;
             
             container.innerHTML = html || '<div style="color: #666; font-size: 11px;">No machines yet</div>';
+        }
+        
+        // Get human-readable label for interaction type
+        function getInteractionLabel(interactionType) {
+            const labels = {
+                'start_prep': 'Start Prep',
+                'dopping': 'Mount Stone',
+                'index_cut': 'Cut Facet',
+                'polish_facet': 'Polish Facet',
+                'transfer': 'Transfer Stone',
+                'check_alignment': 'Check Alignment',
+                'change_lap': 'Change Lap',
+                'charge_paste': 'Charge Paste',
+                'refill_water': 'Refill Water',
+                'inspect': 'Inspect Stone',
+                'final_polish': 'Final Polish',
+                'complete': 'Complete Cut'
+            };
+            return labels[interactionType] || interactionType;
         }
         
         function renderMachinesList() {

@@ -2833,6 +2833,13 @@ class GemBotFarmGame {
     }
     
     /**
+     * Alias for handleMachineInteraction (called from internal code)
+     */
+    handleInteraction(machineId, interactionType) {
+        return this.handleMachineInteraction(machineId);
+    }
+    
+    /**
      * Handle user click on a machine to complete interaction
      */
     handleMachineInteraction(machineId) {
