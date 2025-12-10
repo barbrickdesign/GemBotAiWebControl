@@ -1243,42 +1243,70 @@ class GemBotFarmGame {
     }
     
     /**
-     * Create the cyberpunk game scene
+     * Create the cyberpunk game scene with first-person camera
      */
     async createScene() {
         this.scene = new BABYLON.Scene(this.engine);
         
-        // Cyberpunk color scheme
+        // Dark cyberpunk background
         this.scene.clearColor = new BABYLON.Color4(0.02, 0.02, 0.05, 1);
         
-        // Camera
-        this.camera = new BABYLON.ArcRotateCamera(
-            'camera',
-            Math.PI / 4,
-            Math.PI / 3,
-            40,
-            new BABYLON.Vector3(0, 5, 0),
+        // First-person camera - player starts inside the room
+        this.camera = new BABYLON.UniversalCamera(
+            'firstPersonCam',
+            new BABYLON.Vector3(0, 1.7, 8),  // Eye height, inside room
             this.scene
         );
         this.camera.attachControl(this.canvas, true);
-        this.camera.lowerRadiusLimit = 15;
-        this.camera.upperRadiusLimit = 80;
-        this.camera.wheelPrecision = 20;
         
-        // Cyberpunk lighting
+        // WASD + Arrow keys for movement
+        this.camera.keysUp = [87, 38];       // W, Up
+        this.camera.keysDown = [83, 40];     // S, Down
+        this.camera.keysLeft = [65, 37];     // A, Left
+        this.camera.keysRight = [68, 39];    // D, Right
+        
+        // Camera settings for indoor exploration
+        this.camera.speed = 0.3;
+        this.camera.angularSensibility = 2000;
+        this.camera.inertia = 0.7;
+        this.camera.minZ = 0.1;
+        
+        // Look at the work area
+        this.camera.setTarget(new BABYLON.Vector3(0, 1.5, 0));
+        
+        // Enable gravity and collision for proper indoor movement
+        this.scene.gravity = new BABYLON.Vector3(0, -0.15, 0);
+        this.camera.applyGravity = true;
+        this.camera.ellipsoid = new BABYLON.Vector3(0.5, 0.9, 0.5);
+        this.camera.checkCollisions = true;
+        this.scene.collisionsEnabled = true;
+        
+        // Store movement state for on-screen controls
+        this.movementState = {
+            forward: false,
+            backward: false,
+            left: false,
+            right: false
+        };
+        
+        // Create on-screen movement controls
+        this.createMovementControls();
+        
+        // Cyberpunk lighting - ambient
         const mainLight = new BABYLON.HemisphericLight(
             'mainLight',
             new BABYLON.Vector3(0, 1, 0),
             this.scene
         );
-        mainLight.intensity = 0.5;
+        mainLight.intensity = 0.4;
         mainLight.diffuse = new BABYLON.Color3(0.8, 0.8, 1);
-        mainLight.groundColor = new BABYLON.Color3(0.2, 0, 0.3);
+        mainLight.groundColor = new BABYLON.Color3(0.1, 0, 0.15);
         
-        // Neon accent lights
-        this.createNeonLight('neon1', -15, 8, -10, new BABYLON.Color3(1, 0, 0.5));
-        this.createNeonLight('neon2', 15, 8, -10, new BABYLON.Color3(0, 1, 1));
-        this.createNeonLight('neon3', 0, 8, 15, new BABYLON.Color3(0.5, 0, 1));
+        // Neon accent lights inside the room
+        this.createNeonLight('neon1', -5, 2.5, 4, new BABYLON.Color3(1, 0, 0.5));
+        this.createNeonLight('neon2', 5, 2.5, 4, new BABYLON.Color3(0, 1, 1));
+        this.createNeonLight('neon3', -5, 2.5, -4, new BABYLON.Color3(0.5, 0, 1));
+        this.createNeonLight('neon4', 5, 2.5, -4, new BABYLON.Color3(1, 0.5, 0));
         
         // Create environment
         await this.createEnvironment();
@@ -1288,6 +1316,167 @@ class GemBotFarmGame {
         
         // Add particle effects
         this.createAmbientParticles();
+        
+        // Handle on-screen control updates in render loop
+        this.scene.registerBeforeRender(() => {
+            this.updateMovementFromControls();
+        });
+        
+        console.log('🎨 First-person scene created');
+    }
+    
+    /**
+     * Create on-screen movement controls (arrow buttons)
+     */
+    createMovementControls() {
+        // Create control container
+        const controlsDiv = document.createElement('div');
+        controlsDiv.id = 'movement-controls';
+        controlsDiv.innerHTML = `
+            <style>
+                #movement-controls {
+                    position: absolute;
+                    bottom: 100px;
+                    left: 20px;
+                    z-index: 1000;
+                    user-select: none;
+                    touch-action: none;
+                }
+                .move-btn-row {
+                    display: flex;
+                    justify-content: center;
+                    gap: 5px;
+                    margin: 3px 0;
+                }
+                .move-btn {
+                    width: 50px;
+                    height: 50px;
+                    background: rgba(0, 255, 255, 0.2);
+                    border: 2px solid rgba(0, 255, 255, 0.6);
+                    border-radius: 8px;
+                    color: #0ff;
+                    font-size: 24px;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    transition: all 0.15s;
+                }
+                .move-btn:hover, .move-btn.active {
+                    background: rgba(0, 255, 255, 0.4);
+                    box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+                }
+                .move-btn:active, .move-btn.pressed {
+                    background: rgba(0, 255, 255, 0.6);
+                    transform: scale(0.95);
+                }
+                .move-spacer {
+                    width: 50px;
+                    height: 50px;
+                }
+                #look-hint {
+                    position: absolute;
+                    bottom: -50px;
+                    left: 0;
+                    color: rgba(0, 255, 255, 0.7);
+                    font-size: 11px;
+                    font-family: monospace;
+                    white-space: nowrap;
+                }
+            </style>
+            <div class="move-btn-row">
+                <div class="move-spacer"></div>
+                <button class="move-btn" id="btn-forward">▲</button>
+                <div class="move-spacer"></div>
+            </div>
+            <div class="move-btn-row">
+                <button class="move-btn" id="btn-left">◄</button>
+                <button class="move-btn" id="btn-backward">▼</button>
+                <button class="move-btn" id="btn-right">►</button>
+            </div>
+            <div id="look-hint">🖱️ Drag to look | WASD to move</div>
+        `;
+        
+        // Append to game canvas parent
+        const canvasParent = this.canvas.parentElement;
+        if (canvasParent) {
+            canvasParent.style.position = 'relative';
+            canvasParent.appendChild(controlsDiv);
+        }
+        
+        // Bind button events after DOM is ready
+        setTimeout(() => {
+            this.bindMovementButton('btn-forward', 'forward');
+            this.bindMovementButton('btn-backward', 'backward');
+            this.bindMovementButton('btn-left', 'left');
+            this.bindMovementButton('btn-right', 'right');
+        }, 100);
+    }
+    
+    /**
+     * Bind movement button to state
+     */
+    bindMovementButton(buttonId, direction) {
+        const btn = document.getElementById(buttonId);
+        if (!btn) return;
+        
+        const startMove = (e) => {
+            e.preventDefault();
+            this.movementState[direction] = true;
+            btn.classList.add('pressed');
+        };
+        
+        const stopMove = (e) => {
+            e.preventDefault();
+            this.movementState[direction] = false;
+            btn.classList.remove('pressed');
+        };
+        
+        // Mouse events
+        btn.addEventListener('mousedown', startMove);
+        btn.addEventListener('mouseup', stopMove);
+        btn.addEventListener('mouseleave', stopMove);
+        
+        // Touch events for mobile
+        btn.addEventListener('touchstart', startMove);
+        btn.addEventListener('touchend', stopMove);
+        btn.addEventListener('touchcancel', stopMove);
+    }
+    
+    /**
+     * Update camera movement from on-screen controls
+     */
+    updateMovementFromControls() {
+        if (!this.camera || !this.movementState) return;
+        
+        const speed = 0.12;
+        const forward = this.camera.getDirection(BABYLON.Vector3.Forward());
+        const right = this.camera.getDirection(BABYLON.Vector3.Right());
+        
+        // Zero out Y component for horizontal movement only
+        forward.y = 0;
+        forward.normalize();
+        right.y = 0;
+        right.normalize();
+        
+        if (this.movementState.forward) {
+            this.camera.position.addInPlace(forward.scale(speed));
+        }
+        if (this.movementState.backward) {
+            this.camera.position.addInPlace(forward.scale(-speed));
+        }
+        if (this.movementState.left) {
+            this.camera.position.addInPlace(right.scale(-speed));
+        }
+        if (this.movementState.right) {
+            this.camera.position.addInPlace(right.scale(speed));
+        }
+        
+        // Keep player inside room bounds
+        const bounds = { minX: -6, maxX: 6, minZ: -6, maxZ: 10 };
+        this.camera.position.x = Math.max(bounds.minX, Math.min(bounds.maxX, this.camera.position.x));
+        this.camera.position.z = Math.max(bounds.minZ, Math.min(bounds.maxZ, this.camera.position.z));
+        this.camera.position.y = 1.7; // Lock to eye height
     }
     
     /**
@@ -1315,28 +1504,35 @@ class GemBotFarmGame {
     }
     
     /**
-     * Create the game environment
+     * Create the game environment - enclosed workshop room
      */
     async createEnvironment() {
-        // Ground with grid texture
-        const ground = BABYLON.MeshBuilder.CreateGround(
-            'ground',
-            { width: 60, height: 60 },
+        // Room dimensions
+        const roomWidth = 14;
+        const roomDepth = 14;
+        const roomHeight = 4;
+        
+        // Floor with cyberpunk grid pattern
+        const floor = BABYLON.MeshBuilder.CreateGround(
+            'floor',
+            { width: roomWidth, height: roomDepth },
             this.scene
         );
+        floor.position.y = 0;
+        floor.checkCollisions = true;
         
-        const groundMat = new BABYLON.StandardMaterial('groundMat', this.scene);
-        groundMat.diffuseColor = new BABYLON.Color3(0.05, 0.05, 0.1);
-        groundMat.specularColor = new BABYLON.Color3(0.2, 0.2, 0.3);
+        const floorMat = new BABYLON.StandardMaterial('floorMat', this.scene);
+        floorMat.diffuseColor = new BABYLON.Color3(0.08, 0.08, 0.12);
+        floorMat.specularColor = new BABYLON.Color3(0.15, 0.15, 0.2);
         
-        // Create grid texture procedurally
+        // Create grid texture for floor
         const gridTexture = new BABYLON.DynamicTexture('gridTex', 512, this.scene);
         const ctx = gridTexture.getContext();
-        ctx.fillStyle = '#0a0a15';
+        ctx.fillStyle = '#101018';
         ctx.fillRect(0, 0, 512, 512);
         ctx.strokeStyle = '#00ffff';
         ctx.lineWidth = 1;
-        
+        ctx.globalAlpha = 0.3;
         for (let i = 0; i <= 512; i += 32) {
             ctx.beginPath();
             ctx.moveTo(i, 0);
@@ -1348,188 +1544,267 @@ class GemBotFarmGame {
             ctx.stroke();
         }
         gridTexture.update();
+        floorMat.diffuseTexture = gridTexture;
+        floor.material = floorMat;
         
-        groundMat.diffuseTexture = gridTexture;
-        ground.material = groundMat;
+        // Ceiling
+        const ceiling = BABYLON.MeshBuilder.CreateGround(
+            'ceiling',
+            { width: roomWidth, height: roomDepth },
+            this.scene
+        );
+        ceiling.position.y = roomHeight;
+        ceiling.rotation.x = Math.PI;
         
-        // Create workshop building
-        this.createWorkshopBuilding();
+        const ceilingMat = new BABYLON.StandardMaterial('ceilingMat', this.scene);
+        ceilingMat.diffuseColor = new BABYLON.Color3(0.05, 0.05, 0.08);
+        ceilingMat.backFaceCulling = false;
+        ceiling.material = ceilingMat;
         
-        // Try to load cyberpunk scene
-        await this.tryLoadCyberpunkScene();
+        // Create walls
+        this.createWalls(roomWidth, roomDepth, roomHeight);
+        
+        // Create workbench with GemBot tables in center
+        this.createWorkbench(roomWidth, roomDepth);
+        
+        // Create computer stations along walls
+        this.createComputerStations(roomWidth, roomDepth);
+        
+        // Neon strips on walls
+        this.createNeonStrips(roomWidth, roomDepth, roomHeight);
+        
+        // Overhead lighting
+        this.createOverheadLights(roomWidth, roomDepth);
+        
+        // Holographic title
+        this.createHolographicText();
+        
+        console.log('🏠 Workshop room created');
     }
     
     /**
-     * Try to load the cyberpunk GLB scene
+     * Create room walls with windows/panels
      */
-    async tryLoadCyberpunkScene() {
-        try {
-            const result = await BABYLON.SceneLoader.ImportMeshAsync(
-                '',
-                './',
-                'cyberpunk_game_scene.glb',
-                this.scene
-            );
-            
-            if (result.meshes.length > 0) {
-                console.log('✅ Cyberpunk scene loaded');
-                
-                // Position and scale the scene
-                const root = result.meshes[0];
-                root.position = new BABYLON.Vector3(0, 0, -30);
-                root.scaling = new BABYLON.Vector3(0.5, 0.5, 0.5);
-                
-                this.sceneObjects.environment = root;
-            }
-        } catch (error) {
-            console.log('⚠️ Cyberpunk scene not available, using procedural environment');
+    createWalls(roomWidth, roomDepth, roomHeight) {
+        const wallThickness = 0.2;
+        const wallMat = new BABYLON.StandardMaterial('wallMat', this.scene);
+        wallMat.diffuseColor = new BABYLON.Color3(0.1, 0.1, 0.15);
+        wallMat.specularColor = new BABYLON.Color3(0.05, 0.05, 0.08);
+        
+        // Back wall (negative Z)
+        const backWall = BABYLON.MeshBuilder.CreateBox('backWall', {
+            width: roomWidth, height: roomHeight, depth: wallThickness
+        }, this.scene);
+        backWall.position = new BABYLON.Vector3(0, roomHeight/2, -roomDepth/2);
+        backWall.material = wallMat;
+        backWall.checkCollisions = true;
+        
+        // Front wall (positive Z) - with door opening
+        const frontWallLeft = BABYLON.MeshBuilder.CreateBox('frontWallLeft', {
+            width: roomWidth/2 - 1, height: roomHeight, depth: wallThickness
+        }, this.scene);
+        frontWallLeft.position = new BABYLON.Vector3(-roomWidth/4 - 0.5, roomHeight/2, roomDepth/2);
+        frontWallLeft.material = wallMat;
+        frontWallLeft.checkCollisions = true;
+        
+        const frontWallRight = BABYLON.MeshBuilder.CreateBox('frontWallRight', {
+            width: roomWidth/2 - 1, height: roomHeight, depth: wallThickness
+        }, this.scene);
+        frontWallRight.position = new BABYLON.Vector3(roomWidth/4 + 0.5, roomHeight/2, roomDepth/2);
+        frontWallRight.material = wallMat;
+        frontWallRight.checkCollisions = true;
+        
+        // Door frame top
+        const doorTop = BABYLON.MeshBuilder.CreateBox('doorTop', {
+            width: 2, height: roomHeight - 2.5, depth: wallThickness
+        }, this.scene);
+        doorTop.position = new BABYLON.Vector3(0, roomHeight - (roomHeight - 2.5)/2, roomDepth/2);
+        doorTop.material = wallMat;
+        doorTop.checkCollisions = true;
+        
+        // Left wall
+        const leftWall = BABYLON.MeshBuilder.CreateBox('leftWall', {
+            width: wallThickness, height: roomHeight, depth: roomDepth
+        }, this.scene);
+        leftWall.position = new BABYLON.Vector3(-roomWidth/2, roomHeight/2, 0);
+        leftWall.material = wallMat;
+        leftWall.checkCollisions = true;
+        
+        // Right wall
+        const rightWall = BABYLON.MeshBuilder.CreateBox('rightWall', {
+            width: wallThickness, height: roomHeight, depth: roomDepth
+        }, this.scene);
+        rightWall.position = new BABYLON.Vector3(roomWidth/2, roomHeight/2, 0);
+        rightWall.material = wallMat;
+        rightWall.checkCollisions = true;
+        
+        // Add window panels on back wall
+        this.createWindowPanels(roomWidth, roomDepth, roomHeight);
+    }
+    
+    /**
+     * Create glowing window panels
+     */
+    createWindowPanels(roomWidth, roomDepth, roomHeight) {
+        const windowMat = new BABYLON.StandardMaterial('windowMat', this.scene);
+        windowMat.diffuseColor = new BABYLON.Color3(0.1, 0.2, 0.3);
+        windowMat.emissiveColor = new BABYLON.Color3(0.05, 0.1, 0.15);
+        windowMat.alpha = 0.8;
+        
+        // Three windows on back wall
+        for (let i = -1; i <= 1; i++) {
+            const window = BABYLON.MeshBuilder.CreateBox(`window_${i}`, {
+                width: 2.5, height: 1.5, depth: 0.05
+            }, this.scene);
+            window.position = new BABYLON.Vector3(i * 4, 2.5, -roomDepth/2 + 0.15);
+            window.material = windowMat;
         }
     }
     
     /**
-     * Create procedural workshop building with proper tables for GemBots
+     * Create central workbench with GemBot placement areas
      */
-    createWorkshopBuilding() {
-        const currentRoom = this.roomTypes[this.state.rooms?.[0] || 'home_workshop'];
-        const roomWidth = currentRoom?.dimensions?.width || 12;
-        const roomDepth = currentRoom?.dimensions?.depth || 10;
+    createWorkbench(roomWidth, roomDepth) {
+        // Main workbench table in center
+        const benchWidth = 8;
+        const benchDepth = 3;
+        const benchHeight = 0.9;
         
-        // Main workshop floor
-        const floor = BABYLON.MeshBuilder.CreateBox(
-            'floor',
-            { width: roomWidth + 10, height: 0.3, depth: roomDepth + 10 },
-            this.scene
-        );
-        floor.position = new BABYLON.Vector3(0, 0.15, 0);
+        const bench = BABYLON.MeshBuilder.CreateBox('workbench', {
+            width: benchWidth, height: 0.1, depth: benchDepth
+        }, this.scene);
+        bench.position = new BABYLON.Vector3(0, benchHeight, 0);
         
-        const floorMat = new BABYLON.StandardMaterial('floorMat', this.scene);
-        floorMat.diffuseColor = new BABYLON.Color3(0.15, 0.12, 0.1); // Warm concrete
-        floorMat.specularColor = new BABYLON.Color3(0.1, 0.1, 0.1);
-        floor.material = floorMat;
+        const benchMat = new BABYLON.StandardMaterial('benchMat', this.scene);
+        benchMat.diffuseColor = new BABYLON.Color3(0.2, 0.18, 0.15);
+        benchMat.specularColor = new BABYLON.Color3(0.3, 0.3, 0.3);
+        bench.material = benchMat;
         
-        // Create tables for GemBots
-        this.createWorkTables(currentRoom);
+        // Bench legs
+        const legPositions = [
+            {x: -benchWidth/2 + 0.2, z: -benchDepth/2 + 0.2},
+            {x: benchWidth/2 - 0.2, z: -benchDepth/2 + 0.2},
+            {x: -benchWidth/2 + 0.2, z: benchDepth/2 - 0.2},
+            {x: benchWidth/2 - 0.2, z: benchDepth/2 - 0.2}
+        ];
         
-        // Add better ambient lighting
-        const ambientLight = new BABYLON.HemisphericLight(
-            'ambientLight',
-            new BABYLON.Vector3(0, 1, 0),
-            this.scene
-        );
-        ambientLight.intensity = 0.6;
-        ambientLight.diffuse = new BABYLON.Color3(1, 0.95, 0.9); // Warm white
-        ambientLight.groundColor = new BABYLON.Color3(0.3, 0.25, 0.2);
+        const legMat = new BABYLON.StandardMaterial('legMat', this.scene);
+        legMat.diffuseColor = new BABYLON.Color3(0.15, 0.15, 0.18);
         
-        // Overhead work lights
-        this.createOverheadLights(roomWidth, roomDepth);
+        legPositions.forEach((pos, i) => {
+            const leg = BABYLON.MeshBuilder.CreateBox(`benchLeg_${i}`, {
+                width: 0.1, height: benchHeight, depth: 0.1
+            }, this.scene);
+            leg.position = new BABYLON.Vector3(pos.x, benchHeight/2, pos.z);
+            leg.material = legMat;
+        });
         
-        // Main workshop platform/raised area
-        const platform = BABYLON.MeshBuilder.CreateBox(
-            'platform',
-            { width: roomWidth + 4, height: 0.2, depth: roomDepth + 4 },
-            this.scene
-        );
-        platform.position = new BABYLON.Vector3(0, 0.4, 0);
+        // GemBot slot indicators on the bench (where machines go)
+        const slotCount = 4;
+        const slotSpacing = benchWidth / (slotCount + 1);
         
-        const platformMat = new BABYLON.StandardMaterial('platformMat', this.scene);
-        platformMat.diffuseColor = new BABYLON.Color3(0.2, 0.18, 0.15);
-        platformMat.specularColor = new BABYLON.Color3(0.1, 0.1, 0.1);
-        platform.material = platformMat;
-        
-        // Neon edge strips
-        this.createNeonStrip(-14.5, 1.1, 0, 0.3, 20, new BABYLON.Color3(1, 0, 0.5));
-        this.createNeonStrip(14.5, 1.1, 0, 0.3, 20, new BABYLON.Color3(0, 1, 1));
-        this.createNeonStrip(0, 1.1, -9.5, 30, 0.3, new BABYLON.Color3(0.5, 0, 1));
-        this.createNeonStrip(0, 1.1, 9.5, 30, 0.3, new BABYLON.Color3(0.5, 0, 1));
-        
-        // Holographic title
-        this.createHolographicText();
+        for (let i = 0; i < slotCount; i++) {
+            const x = -benchWidth/2 + slotSpacing * (i + 1);
+            
+            // Slot platform
+            const slot = BABYLON.MeshBuilder.CreateBox(`machineSlot_${i}`, {
+                width: 1.2, height: 0.05, depth: 1.2
+            }, this.scene);
+            slot.position = new BABYLON.Vector3(x, benchHeight + 0.08, 0);
+            
+            const slotMat = new BABYLON.StandardMaterial(`slotMat_${i}`, this.scene);
+            slotMat.diffuseColor = new BABYLON.Color3(0.1, 0.1, 0.12);
+            slotMat.emissiveColor = new BABYLON.Color3(0, 0.3, 0.3);
+            slot.material = slotMat;
+            
+            // Indicator light
+            const indicator = BABYLON.MeshBuilder.CreateBox(`indicator_${i}`, {
+                width: 0.3, height: 0.03, depth: 0.3
+            }, this.scene);
+            indicator.position = new BABYLON.Vector3(x, benchHeight + 0.12, 0);
+            
+            const indicatorMat = new BABYLON.StandardMaterial(`indicatorMat_${i}`, this.scene);
+            indicatorMat.emissiveColor = new BABYLON.Color3(0.2, 0.8, 0.2);
+            indicator.material = indicatorMat;
+        }
     }
     
     /**
-     * Create neon strip
+     * Create computer stations along walls
      */
-    createNeonStrip(x, y, z, width, depth, color) {
+    createComputerStations(roomWidth, roomDepth) {
+        const deskMat = new BABYLON.StandardMaterial('deskMat', this.scene);
+        deskMat.diffuseColor = new BABYLON.Color3(0.12, 0.12, 0.15);
+        
+        const screenMat = new BABYLON.StandardMaterial('screenMat', this.scene);
+        screenMat.diffuseColor = new BABYLON.Color3(0.05, 0.1, 0.15);
+        screenMat.emissiveColor = new BABYLON.Color3(0.1, 0.2, 0.3);
+        
+        // Desks along left and right walls
+        const sides = [{x: -roomWidth/2 + 1.5, rotY: Math.PI/2}, {x: roomWidth/2 - 1.5, rotY: -Math.PI/2}];
+        
+        sides.forEach((side, sideIdx) => {
+            for (let i = 0; i < 3; i++) {
+                const z = -roomDepth/2 + 3 + i * 4;
+                
+                // Desk
+                const desk = BABYLON.MeshBuilder.CreateBox(`desk_${sideIdx}_${i}`, {
+                    width: 2, height: 0.05, depth: 1
+                }, this.scene);
+                desk.position = new BABYLON.Vector3(side.x, 0.75, z);
+                desk.material = deskMat;
+                
+                // Monitor
+                const monitor = BABYLON.MeshBuilder.CreateBox(`monitor_${sideIdx}_${i}`, {
+                    width: 1.2, height: 0.8, depth: 0.05
+                }, this.scene);
+                monitor.position = new BABYLON.Vector3(side.x + (sideIdx === 0 ? 0.3 : -0.3), 1.2, z);
+                monitor.rotation.y = side.rotY;
+                monitor.material = screenMat;
+            }
+        });
+    }
+    
+    /**
+     * Create neon light strips along walls
+     */
+    createNeonStrips(roomWidth, roomDepth, roomHeight) {
+        const neonMat = new BABYLON.StandardMaterial('neonMat', this.scene);
+        neonMat.emissiveColor = new BABYLON.Color3(0, 1, 1);
+        neonMat.diffuseColor = new BABYLON.Color3(0, 0.5, 0.5);
+        
+        // Bottom edge neon strips
+        const stripPositions = [
+            {x: 0, y: 0.1, z: -roomDepth/2 + 0.15, w: roomWidth - 1, h: 0.05, d: 0.05},
+            {x: 0, y: 0.1, z: roomDepth/2 - 0.15, w: roomWidth - 1, h: 0.05, d: 0.05},
+            {x: -roomWidth/2 + 0.15, y: 0.1, z: 0, w: 0.05, h: 0.05, d: roomDepth - 1},
+            {x: roomWidth/2 - 0.15, y: 0.1, z: 0, w: 0.05, h: 0.05, d: roomDepth - 1}
+        ];
+        
+        stripPositions.forEach((strip, i) => {
+            const neonStrip = BABYLON.MeshBuilder.CreateBox(`neonStrip_${i}`, {
+                width: strip.w, height: strip.h, depth: strip.d
+            }, this.scene);
+            neonStrip.position = new BABYLON.Vector3(strip.x, strip.y, strip.z);
+            neonStrip.material = neonMat;
+        });
+    }
+    
+    /**
+     * Create neon strip (helper for old calls)
+     */
+    createNeonStripOld(x, y, z, width, depth, color) {
         const strip = BABYLON.MeshBuilder.CreateBox(
-            'neonStrip',
+            'neonStripOld',
             { width, height: 0.1, depth },
             this.scene
         );
         strip.position = new BABYLON.Vector3(x, y, z);
         
-        const mat = new BABYLON.StandardMaterial('neonMat', this.scene);
+        const mat = new BABYLON.StandardMaterial('neonMatOld', this.scene);
         mat.emissiveColor = color;
         mat.diffuseColor = color;
         strip.material = mat;
-    }
-    
-    /**
-     * Create work tables for GemBot machines
-     */
-    createWorkTables(roomConfig) {
-        const tableCount = roomConfig?.machineSlots || 4;
-        const tableWidth = 2.5;
-        const tableDepth = 1.8;
-        const tableHeight = 0.9;
-        const spacing = 3.5;
-        
-        // Calculate layout - 2 rows
-        const tablesPerRow = Math.ceil(tableCount / 2);
-        const startX = -((tablesPerRow - 1) * spacing) / 2;
-        
-        for (let i = 0; i < tableCount; i++) {
-            const row = Math.floor(i / tablesPerRow);
-            const col = i % tablesPerRow;
-            const x = startX + col * spacing;
-            const z = row === 0 ? -2 : 2;
-            
-            // Table top
-            const tableTop = BABYLON.MeshBuilder.CreateBox(
-                `workTable_${i}`,
-                { width: tableWidth, height: 0.1, depth: tableDepth },
-                this.scene
-            );
-            tableTop.position = new BABYLON.Vector3(x, tableHeight, z);
-            
-            const tableMat = new BABYLON.StandardMaterial(`tableMat_${i}`, this.scene);
-            tableMat.diffuseColor = new BABYLON.Color3(0.3, 0.3, 0.35);
-            tableMat.specularColor = new BABYLON.Color3(0.2, 0.2, 0.2);
-            tableTop.material = tableMat;
-            
-            // Table legs
-            const legPositions = [
-                { x: x - tableWidth/2 + 0.15, z: z - tableDepth/2 + 0.15 },
-                { x: x + tableWidth/2 - 0.15, z: z - tableDepth/2 + 0.15 },
-                { x: x - tableWidth/2 + 0.15, z: z + tableDepth/2 - 0.15 },
-                { x: x + tableWidth/2 - 0.15, z: z + tableDepth/2 - 0.15 }
-            ];
-            
-            legPositions.forEach((pos, legIndex) => {
-                const leg = BABYLON.MeshBuilder.CreateBox(
-                    `tableLeg_${i}_${legIndex}`,
-                    { width: 0.1, height: tableHeight - 0.05, depth: 0.1 },
-                    this.scene
-                );
-                leg.position = new BABYLON.Vector3(pos.x, (tableHeight - 0.05) / 2, pos.z);
-                
-                const legMat = new BABYLON.StandardMaterial(`legMat_${i}_${legIndex}`, this.scene);
-                legMat.diffuseColor = new BABYLON.Color3(0.2, 0.2, 0.25);
-                leg.material = legMat;
-            });
-            
-            // Slot indicator light (shows if machine is placed)
-            const indicator = BABYLON.MeshBuilder.CreateBox(
-                `slotIndicator_${i}`,
-                { width: 0.3, height: 0.05, depth: 0.3 },
-                this.scene
-            );
-            indicator.position = new BABYLON.Vector3(x, tableHeight + 0.08, z);
-            
-            const indicatorMat = new BABYLON.StandardMaterial(`indicatorMat_${i}`, this.scene);
-            indicatorMat.emissiveColor = new BABYLON.Color3(0.2, 0.8, 0.2); // Green = available
-            indicatorMat.diffuseColor = new BABYLON.Color3(0.1, 0.4, 0.1);
-            indicator.material = indicatorMat;
-        }
     }
     
     /**
