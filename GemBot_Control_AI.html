@@ -21508,13 +21508,17 @@
                                           designPanelState.selectedStone.name === gemName && 
                                           designPanelState.selectedStone.pieceIndex === index;
                         
+                        // Handle both object format {carats, quality} and legacy {roughCarats, roughQuality}
+                        const carats = piece.roughCarats || piece.carats || 1.0;
+                        const quality = piece.roughQuality || piece.quality || 'standard';
+                        
                         html += `
                             <div class="stone-card ${isSelected ? 'selected' : ''}" 
-                                 onclick="selectStone('${gemName}', ${index}, ${piece.roughCarats}, '${piece.roughQuality}')">
+                                 onclick="selectStone('${gemName}', ${index}, ${carats}, '${quality}')">
                                 <div style="font-size: 24px; margin-bottom: 6px;">${gem?.icon || '💎'}</div>
                                 <div style="color: ${gem?.color || '#fff'}; font-weight: bold; font-size: 12px;">${gemName}</div>
-                                <div style="color: #ffd700; font-size: 11px;">${piece.roughCarats.toFixed(2)}ct</div>
-                                <div style="color: #888; font-size: 9px;">${piece.roughQuality || 'standard'} quality</div>
+                                <div style="color: #ffd700; font-size: 11px;">${carats.toFixed(2)}ct</div>
+                                <div style="color: #888; font-size: 9px;">${quality} quality</div>
                                 <div style="color: #00ffff; font-size: 9px;">Hardness: ${gem?.hardness || '?'}</div>
                             </div>
                         `;

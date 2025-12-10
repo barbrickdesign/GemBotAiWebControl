@@ -4881,6 +4881,71 @@ class GemBotFarmGame {
     }
     
     /**
+     * Create a clean copy of state that can be serialized to JSON
+     * Removes Babylon.js mesh objects and circular references
+     */
+    createSaveableState() {
+        const cleanState = {
+            player: { ...this.state.player },
+            inventory: JSON.parse(JSON.stringify(this.state.inventory)),
+            laps: {},
+            paste: { ...this.state.paste },
+            upgradeLevels: { ...this.state.upgradeLevels },
+            unlockedShapes: [...this.state.unlockedShapes],
+            unlockedDesigns: [...this.state.unlockedDesigns],
+            rooms: this.state.rooms.map(r => ({
+                id: r.id,
+                name: r.name,
+                unlocked: r.unlocked,
+                machineSlots: r.machineSlots
+            })),
+            machines: this.state.machines.map(m => ({
+                id: m.id,
+                type: m.type,
+                room: m.room,
+                condition: m.condition,
+                isDown: m.isDown,
+                hardwareIssue: m.hardwareIssue,
+                currentStone: m.currentStone ? {
+                    id: m.currentStone.id,
+                    designId: m.currentStone.designId,
+                    roughCarats: m.currentStone.roughCarats,
+                    roughQuality: m.currentStone.roughQuality,
+                    expectedFinishedCarats: m.currentStone.expectedFinishedCarats,
+                    currentStage: m.currentStone.currentStage,
+                    stageIndex: m.currentStone.stageIndex,
+                    stageProgress: m.currentStone.stageProgress,
+                    currentFacetIndex: m.currentStone.currentFacetIndex,
+                    qualityScore: m.currentStone.qualityScore,
+                    perfectBonus: m.currentStone.perfectBonus,
+                    awaitingInteraction: m.currentStone.awaitingInteraction,
+                    interactionType: m.currentStone.interactionType,
+                    gem: m.currentStone.gem ? {
+                        name: m.currentStone.gem.name,
+                        color: m.currentStone.gem.color,
+                        hardness: m.currentStone.gem.hardness,
+                        rarity: m.currentStone.gem.rarity
+                    } : null
+                } : null
+            })),
+            pendingInteractions: this.state.pendingInteractions ? [...this.state.pendingInteractions] : [],
+            stats: { ...this.state.stats },
+            currentRoom: this.state.currentRoom
+        };
+        
+        // Copy laps (clean of any mesh refs)
+        Object.entries(this.state.laps).forEach(([key, lap]) => {
+            cleanState.laps[key] = {
+                type: lap.type,
+                condition: lap.condition,
+                currentPaste: lap.currentPaste
+            };
+        });
+        
+        return cleanState;
+    }
+    
+    /**
      * Save game state
      */
     save() {
@@ -4895,14 +4960,33 @@ class GemBotFarmGame {
             // Record last play time for offline calculations
             this.state.player.lastPlayTime = Date.now();
             
-            // Clean up non-serializable properties from machines
-            const saveData = JSON.parse(JSON.stringify(this.state));
-            saveData.machines.forEach(m => {
-                delete m.mesh;
-                delete m.lapMesh;
-                delete m.statusMesh;
-                delete m.statusMat;
-            });
+            // Create clean copy without Babylon.js objects (they cause circular reference errors)
+            const saveData = this.createSaveableState();
+            
+            // Double-check machines are clean
+            if (saveData.machines) {
+                saveData.machines.forEach(m => {
+                    delete m.mesh;
+                    delete m.lapMesh;
+                    delete m.statusMesh;
+                    delete m.statusMat;
+                    delete m.particleSystem;
+                    // Clean currentStone of any mesh refs
+                    if (m.currentStone) {
+                        delete m.currentStone.mesh;
+                        delete m.currentStone.material;
+                        // Clean gem object too
+                        if (m.currentStone.gem) {
+                            m.currentStone.gem = {
+                                name: m.currentStone.gem.name,
+                                color: m.currentStone.gem.color,
+                                hardness: m.currentStone.gem.hardness,
+                                rarity: m.currentStone.gem.rarity
+                            };
+                        }
+                    }
+                });
+            }
             
             // Add save metadata
             saveData._saveVersion = 2;
