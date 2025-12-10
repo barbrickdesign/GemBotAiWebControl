@@ -138,7 +138,7 @@ class GemBotFarmGame {
             // Tracks what machines need human interaction clicks
             pendingInteractions: [],  // Array of { machineId, interactionType, description }
             machines: [],
-            rooms: ['starter_workshop'],
+            rooms: ['home_workshop'],  // Start with home workshop (4 slots)
             upgrades: {},
             achievements: [],
             stats: {
@@ -644,10 +644,10 @@ class GemBotFarmGame {
                 tier: 1,
                 slots: 4,
                 bonus: 1.05,
-                cost: 100,
-                description: 'Dedicated space in your garage or spare room',
+                cost: 0,  // Free - this is the starter room
+                description: 'Your dedicated workshop space - 4 GemBot capacity',
                 dimensions: { width: 8, depth: 6 },
-                unlockLevel: 3
+                unlockLevel: 1
             },
             'home_studio': {
                 name: 'Home Studio',
@@ -1227,7 +1227,7 @@ class GemBotFarmGame {
             
             // Ensure player has at least one machine
             if (this.state.machines.length === 0) {
-                this.addMachine('gembot_basic', 'starter_workshop');
+                this.addMachine('gembot_basic', 'home_workshop');
             }
             
             // Initialize Merlin AI integration
