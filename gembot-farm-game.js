@@ -6,7 +6,7 @@
  * REALISTIC TIMING SYSTEM (Based on actual GemBot machine):
  * - Reflects real gem cutting process: prep, dop, shape, preform, cut, polish
  * - Timing derived from Arduino code: 50ms motor intervals, 40 steps/mm removal
- * - Lap progression: 600→800→1200 grit, then polish with 8k→14k→50k→100k→200k paste
+ * - Lap progression: 600â800â1200 grit, then polish with 8kâ14kâ50kâ100kâ200k paste
  * - Includes human interaction requirements and realistic hazards
  * 
  * Features:
@@ -226,7 +226,7 @@ class GemBotFarmGame {
         // Rough prices are PER CARAT
         this.shopPrices = {
             // Rough stone costs PER CARAT (by gem name)
-            // Prices reflect real-world wholesale rough market (1 gem ≈ $1 USD)
+            // Prices reflect real-world wholesale rough market (1 gem â $1 USD)
             // These are mid-grade material prices for lapidary practice
             roughPerCarat: {
                 'Quartz (Amethyst)': 2,      // $2/ct - common practice material
@@ -271,7 +271,7 @@ class GemBotFarmGame {
         };
         
         // ==================== CUT GEM VALUES (per carat finished weight) ====================
-        // Prices reflect real-world wholesale cut gem prices (1 gem ≈ $1 USD)
+        // Prices reflect real-world wholesale cut gem prices (1 gem â $1 USD)
         // Perfect cuts command significant premiums in real market
         this.gemValues = {
             'Quartz (Amethyst)': { base: 15, perfectBonus: 1.8 },     // $15/ct cut, $27/ct perfect
@@ -372,7 +372,7 @@ class GemBotFarmGame {
         
         // ==================== SHAPE & DESIGN LIBRARY ====================
         // Each design has specific facet tiers with angles and index positions
-        // Based on 96-tooth index gear (3.75° per step)
+        // Based on 96-tooth index gear (3.75Â° per step)
         
         this.shapes = {
             'round': {
@@ -881,7 +881,7 @@ class GemBotFarmGame {
         ];
         
         // ==================== CUTTING STAGES & TIMING ====================
-        // Based on actual GemBot process: prep → shape → cut → polish → transfer → repeat
+        // Based on actual GemBot process: prep â shape â cut â polish â transfer â repeat
         // Times in game-seconds (1 game-second = 1/60 real second with acceleration)
         
         this.cuttingStages = {
@@ -913,7 +913,7 @@ class GemBotFarmGame {
             // PREFORM PAVILION (Machine + human monitoring)
             'preform_girdle': {
                 name: 'Preform Girdle',
-                description: 'Shape the outline at 90° using coarse lap',
+                description: 'Shape the outline at 90Â° using coarse lap',
                 baseTime: 300,  // 5 min - 96 index positions, rough shaping
                 humanRequired: false,
                 canFail: true,
@@ -922,7 +922,7 @@ class GemBotFarmGame {
             },
             'preform_pavilion': {
                 name: 'Preform Pavilion Point',
-                description: 'Cut pavilion to a point at ~42° angle',
+                description: 'Cut pavilion to a point at ~42Â° angle',
                 baseTime: 240,  // 4 min
                 humanRequired: false,
                 canFail: true,
@@ -1030,7 +1030,7 @@ class GemBotFarmGame {
             // CUT CROWN (Same progression as pavilion)
             'preform_crown': {
                 name: 'Preform Crown',
-                description: 'Shape crown angle at ~42°',
+                description: 'Shape crown angle at ~42Â°',
                 baseTime: 240,
                 humanRequired: false,
                 canFail: true,
@@ -1039,7 +1039,7 @@ class GemBotFarmGame {
             },
             'cut_table': {
                 name: 'Cut Table Facet',
-                description: 'Flatten table at 0° angle',
+                description: 'Flatten table at 0Â° angle',
                 baseTime: 180,  // 3 min
                 humanRequired: false,
                 canFail: false,
@@ -1181,7 +1181,7 @@ class GemBotFarmGame {
      */
     async initialize(canvasId = 'game-canvas') {
         try {
-            console.log('🎮 Initializing GemBot Farm...');
+            console.log('ð® Initializing GemBot Farm...');
             
             this.canvas = document.getElementById(canvasId);
             if (!this.canvas) {
@@ -1233,7 +1233,7 @@ class GemBotFarmGame {
             // Initialize Merlin AI integration
             this.initializeMerlin();
             
-            console.log('✅ GemBot Farm ready!');
+            console.log('â GemBot Farm ready!');
             return true;
             
         } catch (error) {
@@ -1322,7 +1322,7 @@ class GemBotFarmGame {
             this.updateMovementFromControls();
         });
         
-        console.log('🎨 First-person scene created');
+        console.log('ð¨ First-person scene created');
     }
     
     /**
@@ -1386,15 +1386,15 @@ class GemBotFarmGame {
             </style>
             <div class="move-btn-row">
                 <div class="move-spacer"></div>
-                <button class="move-btn" id="btn-forward">▲</button>
+                <button class="move-btn" id="btn-forward">â²</button>
                 <div class="move-spacer"></div>
             </div>
             <div class="move-btn-row">
-                <button class="move-btn" id="btn-left">◄</button>
-                <button class="move-btn" id="btn-backward">▼</button>
-                <button class="move-btn" id="btn-right">►</button>
+                <button class="move-btn" id="btn-left">â</button>
+                <button class="move-btn" id="btn-backward">â¼</button>
+                <button class="move-btn" id="btn-right">âº</button>
             </div>
-            <div id="look-hint">🖱️ Drag to look | WASD to move</div>
+            <div id="look-hint">ð±ï¸ Drag to look | WASD to move</div>
         `;
         
         // Append to game canvas parent
@@ -1582,7 +1582,7 @@ class GemBotFarmGame {
         // Holographic title
         this.createHolographicText();
         
-        console.log('🏠 Workshop room created');
+        console.log('ð  Workshop room created');
     }
     
     /**
@@ -1915,7 +1915,7 @@ class GemBotFarmGame {
         });
         
         this.sceneObjects.waterStation = stationRoot;
-        console.log('💧 Created water refill station');
+        console.log('ð§ Created water refill station');
     }
     
     /**
@@ -1944,7 +1944,7 @@ class GemBotFarmGame {
         ctx.font = 'bold 14px Arial';
         ctx.fillStyle = borderColor;
         ctx.textAlign = 'center';
-        ctx.fillText(`💧 ${Math.round(waterLevel)}%`, 64, 22);
+        ctx.fillText(`ð§ ${Math.round(waterLevel)}%`, 64, 22);
         
         // Hint text
         ctx.font = '10px Arial';
@@ -1962,7 +1962,7 @@ class GemBotFarmGame {
         const maxWater = 100 + (this.state.inventory.upgradelevels?.water_tank || 0) * 50;
         
         if (currentWater >= maxWater) {
-            console.log('💧 Water tank is full!');
+            console.log('ð§ Water tank is full!');
             this.showWaterNotification('Tank Full!', '#00ff88');
             return;
         }
@@ -1973,7 +1973,7 @@ class GemBotFarmGame {
         this.state.inventory.consumables.water = newLevel;
         this.state.stats.waterRefills = (this.state.stats.waterRefills || 0) + 1;
         
-        console.log(`💧 Water refilled: ${currentWater}% → ${newLevel}%`);
+        console.log(`ð§ Water refilled: ${currentWater}% â ${newLevel}%`);
         
         // Update visuals
         this.updateWaterTankVisual();
@@ -2117,13 +2117,13 @@ class GemBotFarmGame {
         // Define interactive screens with their functions
         const screenConfigs = [
             // Left wall screens
-            { side: 0, idx: 0, icon: '🛒', label: 'SHOP', action: 'openShopPanel', color: new BABYLON.Color3(0.1, 0.4, 0.1) },
-            { side: 0, idx: 1, icon: '📦', label: 'INVENTORY', action: 'openInventoryPanel', color: new BABYLON.Color3(0.1, 0.2, 0.4) },
-            { side: 0, idx: 2, icon: '🏪', label: 'MARKETPLACE', action: 'openMarketplace', color: new BABYLON.Color3(0.4, 0.2, 0.1) },
+            { side: 0, idx: 0, icon: 'ð', label: 'SHOP', action: 'openShopPanel', color: new BABYLON.Color3(0.1, 0.4, 0.1) },
+            { side: 0, idx: 1, icon: 'ð¦', label: 'INVENTORY', action: 'openInventoryPanel', color: new BABYLON.Color3(0.1, 0.2, 0.4) },
+            { side: 0, idx: 2, icon: 'ðª', label: 'MARKETPLACE', action: 'openMarketplace', color: new BABYLON.Color3(0.4, 0.2, 0.1) },
             // Right wall screens
-            { side: 1, idx: 0, icon: '🤖', label: 'GEMBOT', action: 'closeGameMode', color: new BABYLON.Color3(0, 0.3, 0.4) },
-            { side: 1, idx: 1, icon: '📊', label: 'STATS', action: 'showGameStats', color: new BABYLON.Color3(0.3, 0.1, 0.3) },
-            { side: 1, idx: 2, icon: '🏠', label: 'ROOMS', action: 'showRoomsPanel', color: new BABYLON.Color3(0.2, 0.3, 0.1) }
+            { side: 1, idx: 0, icon: 'ð¤', label: 'GEMBOT', action: 'closeGameMode', color: new BABYLON.Color3(0, 0.3, 0.4) },
+            { side: 1, idx: 1, icon: 'ð', label: 'STATS', action: 'showGameStats', color: new BABYLON.Color3(0.3, 0.1, 0.3) },
+            { side: 1, idx: 2, icon: 'ð ', label: 'ROOMS', action: 'showRoomsPanel', color: new BABYLON.Color3(0.2, 0.3, 0.1) }
         ];
         
         // Store interactive meshes for raycasting
@@ -2230,7 +2230,7 @@ class GemBotFarmGame {
      * Handle computer screen click
      */
     handleScreenClick(action, label) {
-        console.log(`🖥️ Screen clicked: ${label}`);
+        console.log(`ð¥ï¸ Screen clicked: ${label}`);
         
         // Call the appropriate function in the main app
         switch(action) {
@@ -2261,7 +2261,7 @@ class GemBotFarmGame {
      */
     showStatsOverlay() {
         const stats = this.state;
-        alert(`📊 GemBot Stats\n\nLevel: ${stats.level}\nXP: ${stats.xp}\nCoins: ${stats.coins}\nGems Cut: ${stats.gemsCut || 0}\nMachines: ${stats.machines.length}`);
+        alert(`ð GemBot Stats\n\nLevel: ${stats.level}\nXP: ${stats.xp}\nCoins: ${stats.coins}\nGems Cut: ${stats.gemsCut || 0}\nMachines: ${stats.machines.length}`);
     }
     
     /**
@@ -2272,7 +2272,7 @@ class GemBotFarmGame {
             .filter(([key, room]) => room.unlockLevel <= this.state.level)
             .map(([key, room]) => `${room.name} (${room.slots} slots) - ${room.cost === 0 ? 'FREE' : room.cost + ' coins'}`)
             .join('\n');
-        alert(`🏠 Available Rooms\n\n${rooms}`);
+        alert(`ð  Available Rooms\n\n${rooms}`);
     }
     
     /**
@@ -2372,9 +2372,9 @@ class GemBotFarmGame {
             ctx.font = '12px Arial';
             ctx.fillStyle = '#aaaaaa';
             if (!isUnlocked && config.unlockLevel) {
-                ctx.fillText(`🔒 Lvl ${config.unlockLevel} | ${config.cost} coins`, 100, 48);
+                ctx.fillText(`ð Lvl ${config.unlockLevel} | ${config.cost} coins`, 100, 48);
             } else {
-                ctx.fillText(isUnlocked ? '[ CLICK TO ENTER ]' : '🔒 LOCKED', 100, 48);
+                ctx.fillText(isUnlocked ? '[ CLICK TO ENTER ]' : 'ð LOCKED', 100, 48);
             }
             signTex.update();
             
@@ -2439,7 +2439,7 @@ class GemBotFarmGame {
      * Handle door click - unlock or enter room
      */
     handleDoorClick(config, isUnlocked) {
-        console.log(`🚪 Door clicked: ${config.label}`);
+        console.log(`ðª Door clicked: ${config.label}`);
         
         if (config.name === 'main_entrance') {
             // Exit to main GemBot controller
@@ -2465,9 +2465,9 @@ class GemBotFarmGame {
         const canAfford = this.state.player.gems >= config.cost;
         const meetsLevel = this.state.player.level >= config.unlockLevel;
         
-        let message = `🚪 ${config.label}\n\n`;
-        message += `Required Level: ${config.unlockLevel} ${meetsLevel ? '✅' : '❌ (You: ' + this.state.player.level + ')'}\n`;
-        message += `Cost: ${config.cost} gems ${canAfford ? '✅' : '❌ (You: ' + this.state.player.gems + ')'}\n\n`;
+        let message = `ðª ${config.label}\n\n`;
+        message += `Required Level: ${config.unlockLevel} ${meetsLevel ? 'â' : 'â (You: ' + this.state.player.level + ')'}\n`;
+        message += `Cost: ${config.cost} gems ${canAfford ? 'â' : 'â (You: ' + this.state.player.gems + ')'}\n\n`;
         
         if (meetsLevel && canAfford) {
             if (confirm(message + 'Unlock this room?')) {
@@ -2498,7 +2498,7 @@ class GemBotFarmGame {
         this.saveState();
         
         // Refresh the scene to update door status
-        this.addActivityMessage(`🔑 Unlocked ${config.label}!`);
+        this.addActivityMessage(`ð Unlocked ${config.label}!`);
         
         // Rebuild doors to show updated status
         this.rebuildDoors();
@@ -2534,8 +2534,8 @@ class GemBotFarmGame {
             return;
         }
         
-        console.log(`🏠 Entering room: ${room.name}`);
-        this.addActivityMessage(`🏠 Entered ${room.name}`);
+        console.log(`ð  Entering room: ${room.name}`);
+        this.addActivityMessage(`ð  Entered ${room.name}`);
         
         // Update current room
         this.currentRoom = roomKey;
@@ -2550,7 +2550,7 @@ class GemBotFarmGame {
         this.saveState();
         
         // For now, show confirmation - full room transition would rebuild the scene
-        alert(`🏠 Welcome to ${room.name}!\n\nSlots: ${room.slots}\nBonus: ${Math.round((room.bonus - 1) * 100)}%\n\n(Full room transitions coming soon!)`);
+        alert(`ð  Welcome to ${room.name}!\n\nSlots: ${room.slots}\nBonus: ${Math.round((room.bonus - 1) * 100)}%\n\n(Full room transitions coming soon!)`);
     }
     
     /**
@@ -2766,7 +2766,7 @@ class GemBotFarmGame {
         // Create 3D representation
         this.createMachineMesh(machine, roomMachines.length);
         
-        console.log(`✅ Added ${machineType.name} to ${roomId}`);
+        console.log(`â Added ${machineType.name} to ${roomId}`);
         
         if (this.onUIUpdate) this.onUIUpdate(this.state);
         
@@ -2786,7 +2786,7 @@ class GemBotFarmGame {
      * - Dop Stick (wax attachment for stone)
      * - Stone (the gem being cut)
      * 
-     * Home position: Arm at 90° (parallel to lap), positioned up on Y and right on X
+     * Home position: Arm at 90Â° (parallel to lap), positioned up on Y and right on X
      * Scale: ~18" x 12" x 10" real size - one GemBot fills a standard workbench
      */
     createMachineMesh(machine, index) {
@@ -3038,10 +3038,10 @@ class GemBotFarmGame {
         machine.statusMat = statusMat;
         
         // ===== 10. SET HOME POSITION =====
-        // Home: Arm at 90° (horizontal, parallel to lap surface)
+        // Home: Arm at 90Â° (horizontal, parallel to lap surface)
         // The arm extends from the mast to the right (+X direction)
         // Stone should be UP on Y axis and to the RIGHT on X axis
-        angleArmPivot.rotation.z = 0; // 0 radians = horizontal arm (90° from vertical)
+        angleArmPivot.rotation.z = 0; // 0 radians = horizontal arm (90Â° from vertical)
         
         // Position the stone above and to the side of the lap (home/park position)
         // When angle is 0 (horizontal), stone is positioned to the side of the lap
@@ -3067,7 +3067,7 @@ class GemBotFarmGame {
         
         this.sceneObjects.machines.push(machineRoot);
         
-        console.log(`🤖 Created GemBot Mini: ${machine.id} at (${gridX.toFixed(1)}, ${gridZ.toFixed(1)})`);
+        console.log(`ð¤ Created GemBot Mini: ${machine.id} at (${gridX.toFixed(1)}, ${gridZ.toFixed(1)})`);
     }
     
     /**
@@ -3081,7 +3081,7 @@ class GemBotFarmGame {
         // Animation state for this machine
         machine.animState = {
             lapSpinning: false,
-            currentAngle: 90, // Start at home (90° = parallel to lap)
+            currentAngle: 90, // Start at home (90Â° = parallel to lap)
             targetAngle: 90,
             currentIndex: 0,
             targetIndex: 0,
@@ -3106,7 +3106,7 @@ class GemBotFarmGame {
                 const angleStep = Math.sign(angleDiff) * Math.min(Math.abs(angleDiff), 0.5);
                 animState.currentAngle += angleStep;
                 
-                // Convert to radians (0° = vertical down, 90° = horizontal)
+                // Convert to radians (0Â° = vertical down, 90Â° = horizontal)
                 const radians = (90 - animState.currentAngle) * Math.PI / 180;
                 machine.angleArmPivot.rotation.z = radians;
             }
@@ -3117,7 +3117,7 @@ class GemBotFarmGame {
                 const indexStep = Math.sign(indexDiff) * Math.min(Math.abs(indexDiff), 1);
                 animState.currentIndex += indexStep;
                 
-                // 96 index positions = 3.75° per position
+                // 96 index positions = 3.75Â° per position
                 const indexRadians = animState.currentIndex * (3.75 * Math.PI / 180);
                 machine.indexWheelPivot.rotation.x = indexRadians;
             }
@@ -3214,7 +3214,7 @@ class GemBotFarmGame {
      * Handle machine click
      */
     onMachineClicked(machine) {
-        console.log(`🖱️ Machine clicked: ${machine.id}`);
+        console.log(`ð±ï¸ Machine clicked: ${machine.id}`);
         
         const stone = machine.currentStone;
         
@@ -3278,7 +3278,7 @@ class GemBotFarmGame {
             totalCuts: machine.totalCuts
         };
         
-        console.log('📊 Machine Status:', status);
+        console.log('ð Machine Status:', status);
         
         // Trigger UI callback if available
         if (this.onMachineSelected) {
@@ -3384,7 +3384,7 @@ class GemBotFarmGame {
             return;
         }
         
-        console.log(`🔄 Changing lap: ${machine.currentLapType} → ${newLapType}`);
+        console.log(`ð Changing lap: ${machine.currentLapType} â ${newLapType}`);
         
         const lapMesh = machine.lapMesh;
         const lapMat = machine.lapMat;
@@ -3443,7 +3443,7 @@ class GemBotFarmGame {
                 lapMesh.position.y = baseY;
                 lapMat.alpha = 1;
                 machine.currentLapType = newLapType;
-                console.log(`✅ Lap changed to: ${newLapColor.name}`);
+                console.log(`â Lap changed to: ${newLapColor.name}`);
                 
                 // Show floating text notification
                 this.showLapChangeNotification(machine, newLapColor.name);
@@ -3487,7 +3487,7 @@ class GemBotFarmGame {
         ctx.font = 'bold 16px Arial';
         ctx.fillStyle = '#00ffff';
         ctx.textAlign = 'center';
-        ctx.fillText('🔄 ' + lapName, 128, 40);
+        ctx.fillText('ð ' + lapName, 128, 40);
         
         texture.update();
         
@@ -3722,7 +3722,7 @@ class GemBotFarmGame {
             this.addPendingInteraction(machine.id, stone.interactionType, 
                 `${stage.name} - ${stage.description}. Click when ready.`);
             
-            console.log(`👤 Human stage: ${stage.name} - awaiting click`);
+            console.log(`ð¤ Human stage: ${stage.name} - awaiting click`);
             return;
         }
         
@@ -3941,7 +3941,7 @@ class GemBotFarmGame {
             this.merlinSpeak(`${selectedRough.roughCarats.toFixed(2)}ct ${gem.name} (${selectedRough.roughQuality} quality) ready! Expected ${expectedFinishedCarats.toFixed(2)}ct finished. ${selectedDesign.totalFacets} facets. Click to begin!`);
         }
         
-        console.log(`💎 Started cutting: ${selectedRough.roughCarats.toFixed(2)}ct ${gem.name} (${selectedRough.roughQuality}) → Expected ${expectedFinishedCarats.toFixed(2)}ct with ${selectedDesign.name}`);
+        console.log(`ð Started cutting: ${selectedRough.roughCarats.toFixed(2)}ct ${gem.name} (${selectedRough.roughQuality}) â Expected ${expectedFinishedCarats.toFixed(2)}ct with ${selectedDesign.name}`);
     }
     
     /**
@@ -4044,7 +4044,7 @@ class GemBotFarmGame {
             this.merlinSpeak(`${piece.carats.toFixed(2)}ct ${gem.name} ready for ${design.name}! ${design.totalFacets} facets. Click to begin!`);
         }
         
-        console.log(`💎 Player selected: ${piece.carats.toFixed(2)}ct ${gem.name} → ${design.name} (${design.totalFacets} facets)`);
+        console.log(`ð Player selected: ${piece.carats.toFixed(2)}ct ${gem.name} â ${design.name} (${design.totalFacets} facets)`);
         
         return { 
             success: true, 
@@ -4110,7 +4110,7 @@ class GemBotFarmGame {
             addedAt: Date.now()
         });
         
-        console.log(`⏸️ Awaiting interaction on ${machineId}: ${interactionType}`);
+        console.log(`â¸ï¸ Awaiting interaction on ${machineId}: ${interactionType}`);
     }
     
     /**
@@ -4155,7 +4155,7 @@ class GemBotFarmGame {
         // Handle specific interaction types
         switch(interactionType) {
             case 'start_prep':
-                console.log('✅ start_prep handled, stageProgress now:', stone.stageProgress);
+                console.log('â start_prep handled, stageProgress now:', stone.stageProgress);
                 if (this.merlin) {
                     this.merlinSpeak('Examining the rough... looking for inclusions and best orientation.');
                 }
@@ -4217,7 +4217,7 @@ class GemBotFarmGame {
                 break;
         }
         
-        console.log(`✅ Interaction completed: ${interactionType} on ${machineId}`);
+        console.log(`â Interaction completed: ${interactionType} on ${machineId}`);
         
         return { success: true, message: `Completed: ${interactionType}` };
     }
@@ -4360,7 +4360,7 @@ class GemBotFarmGame {
                     ];
                     this.merlinSpeak(messages[Math.floor(Math.random() * messages.length)]);
                 }
-                console.log(`❌ STONE LOST: ${gem.name} flew off dop at ${stone.currentStage}`);
+                console.log(`â STONE LOST: ${gem.name} flew off dop at ${stone.currentStage}`);
                 break;
                 
             case 'dop_failure':
@@ -4440,20 +4440,20 @@ class GemBotFarmGame {
         const newStage = this.cuttingStages[stone.currentStage];
         
         // Log stage transition
-        console.log(`🔧 ${stone.gem.name}: ${prevStage} → ${stone.currentStage}`);
+        console.log(`ð§ ${stone.gem.name}: ${prevStage} â ${stone.currentStage}`);
         
         // ===== CHECK IF ENTERING A HUMAN REQUIRED STAGE =====
         if (newStage.humanRequired) {
             // This stage needs human interaction - will be caught in processRealisticCutting
-            console.log(`👤 Entering human stage: ${newStage.name}`);
+            console.log(`ð¤ Entering human stage: ${newStage.name}`);
         }
         
-        // ===== CHECK FOR PHASE TRANSITION (pavilion → crown) =====
+        // ===== CHECK FOR PHASE TRANSITION (pavilion â crown) =====
         if (stone.currentStage === 'transfer') {
             // Transfer stage - switching from pavilion to crown
             stone.cuttingPhase = 'crown';
             stone.currentFacetIndex = 0;
-            console.log(`🔄 Phase transition: pavilion → crown`);
+            console.log(`ð Phase transition: pavilion â crown`);
         }
         
         // ===== CHECK IF LAP CHANGE NEEDED FOR NEW STAGE =====
@@ -4493,7 +4493,7 @@ class GemBotFarmGame {
         const qualityYieldMod = 0.8 + (stone.qualityScore / 100) * 0.4; // 80-120%
         let finishedCarats = stone.expectedFinishedCarats * qualityYieldMod;
         
-        // Random variance (±5%)
+        // Random variance (Â±5%)
         finishedCarats *= 0.95 + (Math.random() * 0.1);
         finishedCarats = Math.max(0.01, finishedCarats); // Minimum 0.01ct
         
@@ -4627,12 +4627,12 @@ class GemBotFarmGame {
             // Occasionally remind about crypto conversion
             if (this.state.player.tokens >= 100 && Math.random() < 0.1) {
                 setTimeout(() => {
-                    this.merlinSpeak(`💎 You have ${this.state.player.tokens} tokens! Remember, these can be converted to real crypto rewards for your time invested!`);
+                    this.merlinSpeak(`ð You have ${this.state.player.tokens} tokens! Remember, these can be converted to real crypto rewards for your time invested!`);
                 }, 3000);
             }
         }
         
-        console.log(`✅ COMPLETED: ${finishedCarats.toFixed(2)}ct ${gem.name} | Value: ${totalValue} (${Math.round(valuePerCarat)}/ct) | Quality: ${stone.qualityScore}% | Yield: ${Math.round((finishedCarats/stone.roughCarats)*100)}% | Perfect: ${isPerfect} | +${tokensEarned} tokens`);
+        console.log(`â COMPLETED: ${finishedCarats.toFixed(2)}ct ${gem.name} | Value: ${totalValue} (${Math.round(valuePerCarat)}/ct) | Quality: ${stone.qualityScore}% | Yield: ${Math.round((finishedCarats/stone.roughCarats)*100)}% | Perfect: ${isPerfect} | +${tokensEarned} tokens`);
         
         // Callback
         if (this.onGemCut) {
@@ -4826,7 +4826,7 @@ class GemBotFarmGame {
         }
         
         // Show floating text
-        this.showFloatingText(machinePos.clone(), isPerfect ? '★ PERFECT! ★' : 'Complete!', gem.color);
+        this.showFloatingText(machinePos.clone(), isPerfect ? 'â PERFECT! â' : 'Complete!', gem.color);
     }
     
     /**
@@ -4879,7 +4879,7 @@ class GemBotFarmGame {
     showFloatingText(position, text, color) {
         // This is a simplified version - full implementation would use GUI
         // For now we just log it and rely on Merlin's speech
-        console.log(`✨ ${text}`);
+        console.log(`â¨ ${text}`);
     }
     
     /**
@@ -4931,10 +4931,10 @@ class GemBotFarmGame {
             
             // Merlin announces level up with details
             if (this.merlin) {
-                this.merlinSpeak(`🎉 LEVEL ${this.state.player.level}! +${tokenReward} tokens, +${gemBonus} gems! ${this.getLevelUnlockMessage(this.state.player.level)}`);
+                this.merlinSpeak(`ð LEVEL ${this.state.player.level}! +${tokenReward} tokens, +${gemBonus} gems! ${this.getLevelUnlockMessage(this.state.player.level)}`);
             }
             
-            console.log(`🎉 Level up! Now level ${this.state.player.level}, earned ${tokenReward} tokens + ${gemBonus} gems`);
+            console.log(`ð Level up! Now level ${this.state.player.level}, earned ${tokenReward} tokens + ${gemBonus} gems`);
         }
         
         // Check for milestone achievements
@@ -4983,22 +4983,22 @@ class GemBotFarmGame {
      */
     getLevelUnlockMessage(level) {
         const messages = {
-            2: '🔓 Standard Round Brilliant unlocked!',
-            3: '🔓 Oval shape unlocked! + Uncommon gems in shop!',
-            4: '🔓 Square shape unlocked!',
-            5: '🔓 Pear & Cushion shapes unlocked! + Home Studio available!',
-            6: '🔓 Trillion shape & design unlocked!',
-            7: '🔓 Marquise shape unlocked!',
-            8: '🔓 Emerald & Portuguese cuts! + Rare gems in shop! + Small Shop unlocked!',
-            10: '🔓 Heart shape unlocked! The most difficult cut!',
-            12: '🔓 Brick & Mortar store unlocked!',
-            15: '🔓 LEGENDARY GEMS available! Diamond & Alexandrite!',
-            18: '🔓 Boutique Factory unlocked!',
-            25: '🔓 Small Warehouse unlocked! Industrial scale!',
-            50: '🔓 Large Warehouse unlocked! Major production!',
-            75: '🔓 MEGA FACTORY! 1000 GemBot capacity!',
-            100: '🔓 Industrial Complex! 2500 machines!',
-            150: '🔓 GEMBOT EMPIRE! Ultimate achievement!'
+            2: 'ð Standard Round Brilliant unlocked!',
+            3: 'ð Oval shape unlocked! + Uncommon gems in shop!',
+            4: 'ð Square shape unlocked!',
+            5: 'ð Pear & Cushion shapes unlocked! + Home Studio available!',
+            6: 'ð Trillion shape & design unlocked!',
+            7: 'ð Marquise shape unlocked!',
+            8: 'ð Emerald & Portuguese cuts! + Rare gems in shop! + Small Shop unlocked!',
+            10: 'ð Heart shape unlocked! The most difficult cut!',
+            12: 'ð Brick & Mortar store unlocked!',
+            15: 'ð LEGENDARY GEMS available! Diamond & Alexandrite!',
+            18: 'ð Boutique Factory unlocked!',
+            25: 'ð Small Warehouse unlocked! Industrial scale!',
+            50: 'ð Large Warehouse unlocked! Major production!',
+            75: 'ð MEGA FACTORY! 1000 GemBot capacity!',
+            100: 'ð Industrial Complex! 2500 machines!',
+            150: 'ð GEMBOT EMPIRE! Ultimate achievement!'
         };
         return messages[level] || 'Keep cutting, more unlocks ahead!';
     }
@@ -5033,7 +5033,7 @@ class GemBotFarmGame {
                 this.state.player.gems += achievement.reward;
                 this.state.player.tokens += Math.floor(achievement.reward / 10);
                 
-                console.log(`🏆 ACHIEVEMENT: ${achievement.name} - ${achievement.desc} (+${achievement.reward} gems)`);
+                console.log(`ð ACHIEVEMENT: ${achievement.name} - ${achievement.desc} (+${achievement.reward} gems)`);
                 
                 if (this.merlin) {
                     this.merlinCelebrate('milestone', { name: achievement.name, desc: achievement.desc, reward: achievement.reward });
@@ -5098,14 +5098,14 @@ class GemBotFarmGame {
             expiresAt: Date.now() + 60000
         };
         
-        console.log('⚡ SPEED BOOST ACTIVATED! 2x speed for 60 seconds!');
+        console.log('â¡ SPEED BOOST ACTIVATED! 2x speed for 60 seconds!');
         if (this.merlin) {
-            this.merlinSpeak('⚡ SPEED BOOST! The machines whir with enhanced power! 2x cutting speed for 1 minute!');
+            this.merlinSpeak('â¡ SPEED BOOST! The machines whir with enhanced power! 2x cutting speed for 1 minute!');
         }
         
         setTimeout(() => {
             if (this.activeBoosts) delete this.activeBoosts.speed;
-            console.log('⚡ Speed boost expired');
+            console.log('â¡ Speed boost expired');
             if (this.merlin) {
                 this.merlinSpeak('Speed boost has worn off. Normal cutting speed resumed.');
             }
@@ -5135,14 +5135,14 @@ class GemBotFarmGame {
             expiresAt: Date.now() + 300000
         };
         
-        console.log('🍀 LUCK BOOST ACTIVATED! +50% quality bonus for 5 minutes!');
+        console.log('ð LUCK BOOST ACTIVATED! +50% quality bonus for 5 minutes!');
         if (this.merlin) {
-            this.merlinSpeak('🍀 FORTUNE FAVORS YOU! Increased chance of perfect cuts for 5 minutes!');
+            this.merlinSpeak('ð FORTUNE FAVORS YOU! Increased chance of perfect cuts for 5 minutes!');
         }
         
         setTimeout(() => {
             if (this.activeBoosts) delete this.activeBoosts.luck;
-            console.log('🍀 Luck boost expired');
+            console.log('ð Luck boost expired');
             if (this.merlin) {
                 this.merlinSpeak('Fortune returns to normal. The luck boost has faded.');
             }
@@ -5181,9 +5181,9 @@ class GemBotFarmGame {
         const stageTime = this.calculateStageTime(stone, stage, this.machineTypes[machine.type]);
         stone.stageProgress = stageTime;
         
-        console.log(`⏩ Skipped stage: ${stage.name}`);
+        console.log(`â© Skipped stage: ${stage.name}`);
         if (this.merlin) {
-            this.merlinSpeak(`⏩ Time warp! ${stage.name} completed instantly!`);
+            this.merlinSpeak(`â© Time warp! ${stage.name} completed instantly!`);
         }
         
         return { success: true, message: `Skipped ${stage.name}!` };
@@ -5204,9 +5204,9 @@ class GemBotFarmGame {
         this.state.inventory.consumables.dopWax += 50;
         this.state.inventory.consumables.lubricant = 100;
         
-        console.log('🔄 All consumables refilled!');
+        console.log('ð All consumables refilled!');
         if (this.merlin) {
-            this.merlinSpeak('🔄 Supplies restocked! Water, dop wax, and lubricant all topped up!');
+            this.merlinSpeak('ð Supplies restocked! Water, dop wax, and lubricant all topped up!');
         }
         
         return { success: true, message: 'All consumables refilled!' };
@@ -5222,7 +5222,7 @@ class GemBotFarmGame {
         if (this.activeBoosts?.speed && this.activeBoosts.speed.expiresAt > now) {
             boosts.push({
                 name: 'Speed Boost',
-                icon: '⚡',
+                icon: 'â¡',
                 multiplier: this.activeBoosts.speed.multiplier,
                 remainingTime: Math.ceil((this.activeBoosts.speed.expiresAt - now) / 1000)
             });
@@ -5231,7 +5231,7 @@ class GemBotFarmGame {
         if (this.activeBoosts?.luck && this.activeBoosts.luck.expiresAt > now) {
             boosts.push({
                 name: 'Luck Boost',
-                icon: '🍀',
+                icon: 'ð',
                 multiplier: this.activeBoosts.luck.multiplier,
                 remainingTime: Math.ceil((this.activeBoosts.luck.expiresAt - now) / 1000)
             });
@@ -5332,7 +5332,7 @@ class GemBotFarmGame {
         });
         
         const totalCarats = purchasedStones.reduce((sum, s) => sum + s.carats, 0).toFixed(2);
-        console.log(`🛒 Bought ${quantity}x ${gemName} rough (${totalCarats}ct total) for ${totalCost} gems`);
+        console.log(`ð Bought ${quantity}x ${gemName} rough (${totalCarats}ct total) for ${totalCost} gems`);
         if (this.merlin) {
             this.merlinSpeak(`Excellent purchase! ${quantity} ${gemName} rough (${totalCarats}ct) added to your inventory.`);
         }
@@ -5363,7 +5363,7 @@ class GemBotFarmGame {
         // Remove from gem balance
         this.state.gemBalance[gemName].splice(stoneIndex, 1);
         
-        console.log(`💰 Sold ${stone.caratWeight}ct ${gemName} (${stone.quality}% quality) for ${salePrice} gems`);
+        console.log(`ð° Sold ${stone.caratWeight}ct ${gemName} (${stone.quality}% quality) for ${salePrice} gems`);
         if (this.merlin) {
             if (stone.isPerfect) {
                 this.merlinSpeak(`A masterpiece sold! ${salePrice} gems for that perfect ${stone.caratWeight}ct ${gemName}!`);
@@ -5397,7 +5397,7 @@ class GemBotFarmGame {
         this.state.stats.totalSalesValue += totalValue;
         this.state.gemBalance[gemName] = [];
         
-        console.log(`💰 Sold all ${gemName}: ${count} stones (${totalCarats.toFixed(2)}ct) for ${totalValue} gems!`);
+        console.log(`ð° Sold all ${gemName}: ${count} stones (${totalCarats.toFixed(2)}ct) for ${totalValue} gems!`);
         if (this.merlin) {
             this.merlinSpeak(`${count} ${gemName} stones (${totalCarats.toFixed(2)} total carats) sold for ${totalValue} gems!`);
         }
@@ -5438,9 +5438,9 @@ class GemBotFarmGame {
             this.state.gemBalance[gemName] = [];
         });
         
-        console.log(`💰 MEGA SALE: ${totalCount} stones (${totalCarats.toFixed(2)}ct) for ${totalValue} gems!`);
+        console.log(`ð° MEGA SALE: ${totalCount} stones (${totalCarats.toFixed(2)}ct) for ${totalValue} gems!`);
         if (this.merlin) {
-            this.merlinSpeak(`💎 MASSIVE SALE! ${totalCount} gems totaling ${totalCarats.toFixed(2)} carats sold for ${totalValue} gems! You're building wealth!`);
+            this.merlinSpeak(`ð MASSIVE SALE! ${totalCount} gems totaling ${totalCarats.toFixed(2)} carats sold for ${totalValue} gems! You're building wealth!`);
         }
         
         this.saveState();
@@ -5506,7 +5506,7 @@ class GemBotFarmGame {
             purchasePrice: totalPrice
         });
         
-        console.log(`💎 Purchased ${carats}ct ${gemName} rough (${quality}) for ${totalPrice} gems`);
+        console.log(`ð Purchased ${carats}ct ${gemName} rough (${quality}) for ${totalPrice} gems`);
         if (this.merlin && Math.random() < 0.3) {
             const messages = [
                 `${carats}ct of ${gemName} rough acquired! ${quality} quality should yield nicely.`,
@@ -5545,10 +5545,10 @@ class GemBotFarmGame {
         this.state.player.tokens -= tokenAmount;
         this.state.player.cryptoEarned += netCrypto;
         
-        console.log(`🪙 Converted ${tokenAmount} tokens → ${netCrypto.toFixed(4)} crypto (${(conversionFee * 100)}% fee)`);
+        console.log(`ðª Converted ${tokenAmount} tokens â ${netCrypto.toFixed(4)} crypto (${(conversionFee * 100)}% fee)`);
         
         if (this.merlin) {
-            this.merlinSpeak(`💰 Tokens converted to crypto! ${tokenAmount} tokens = ${netCrypto.toFixed(4)} crypto. Your time in the gem workshop has real value!`);
+            this.merlinSpeak(`ð° Tokens converted to crypto! ${tokenAmount} tokens = ${netCrypto.toFixed(4)} crypto. Your time in the gem workshop has real value!`);
         }
         
         this.saveState();
@@ -5673,7 +5673,7 @@ class GemBotFarmGame {
             this.merlinSpeak('Time to go rockhounding! This might take a while, but you might find some nice rough...');
         }
         
-        console.log('🔍 Started searching for rough...');
+        console.log('ð Started searching for rough...');
         
         return { 
             success: true, 
@@ -5774,13 +5774,13 @@ class GemBotFarmGame {
         
         // Report findings
         if (finds.length > 0) {
-            console.log(`🔍 Search complete! Found:`, finds);
+            console.log(`ð Search complete! Found:`, finds);
             if (this.merlin) {
                 const findList = finds.map(f => `${f.carats}ct ${f.gemName} (${f.quality})`).join(', ');
                 this.merlinSpeak(`Great finds! You discovered: ${findList}. Time to get cutting!`);
             }
         } else {
-            console.log('🔍 Search complete - nothing found this time');
+            console.log('ð Search complete - nothing found this time');
             if (this.merlin) {
                 this.merlinSpeak('No luck this time. Keep searching or buy some rough from the shop!');
             }
@@ -5829,7 +5829,7 @@ class GemBotFarmGame {
         }
         this.state.stats.lapsReplaced++;
         
-        console.log(`🔧 Purchased new ${lapType} lap for ${price} gems`);
+        console.log(`ð§ Purchased new ${lapType} lap for ${price} gems`);
         if (this.merlin) {
             this.merlinSpeak(`Fresh ${lapType} lap installed! 100% cutting efficiency restored.`);
         }
@@ -5854,7 +5854,7 @@ class GemBotFarmGame {
         this.state.player.gems -= totalCost;
         this.state.paste[grit] = (this.state.paste[grit] || 0) + (quantity * 10); // Buy in units of 10
         
-        console.log(`🧴 Bought ${quantity * 10} units of ${grit} paste for ${totalCost} gems`);
+        console.log(`ð§´ Bought ${quantity * 10} units of ${grit} paste for ${totalCost} gems`);
         
         return { success: true, message: `Purchased ${grit} diamond paste` };
     }
@@ -5877,7 +5877,7 @@ class GemBotFarmGame {
         this.state.paste[grit] -= required;
         this.state.laps.copper.currentPaste = grit;
         
-        console.log(`✨ Copper lap charged with ${grit} diamond paste`);
+        console.log(`â¨ Copper lap charged with ${grit} diamond paste`);
         if (this.merlin) {
             this.merlinSpeak(`Copper lap charged with ${grit} paste. Ready for polishing!`);
         }
@@ -5924,7 +5924,7 @@ class GemBotFarmGame {
             this.state.inventory.consumables.lubricant = Math.min(100, this.state.inventory.consumables.lubricant + amount);
         }
         
-        console.log(`🛒 Purchased ${type}: +${amount}`);
+        console.log(`ð Purchased ${type}: +${amount}`);
         
         return { success: true, message: `Purchased ${type}` };
     }
@@ -6249,7 +6249,7 @@ class GemBotFarmGame {
                 machine.isDown = false;
                 machine.downUntil = null;
                 machine.hardwareIssue = null;
-                console.log(`🔧 Machine ${machine.id} is back online!`);
+                console.log(`ð§ Machine ${machine.id} is back online!`);
                 if (this.merlin) {
                     this.merlinSpeak('Machine repairs complete! Back to cutting gems.');
                 }
@@ -6319,7 +6319,7 @@ class GemBotFarmGame {
         machine.isDown = true;
         machine.downUntil = Date.now() + (failure.downtimeMinutes * 60000 / this.config.timeAcceleration);
         
-        console.log(`⚠️ HARDWARE FAILURE on ${machine.id}: ${failure.name}`);
+        console.log(`â ï¸ HARDWARE FAILURE on ${machine.id}: ${failure.name}`);
         if (this.merlin) {
             this.merlinSpeak(`Oh no! ${failure.name} on the machine! ${failure.description}`);
         }
@@ -6339,7 +6339,7 @@ class GemBotFarmGame {
                 machine.needsCleaning = false;
                 machine.condition = Math.min(100, machine.condition + this.maintenanceConfig.cleaning.conditionBoost);
                 this.state.stats.maintenancePerformed++;
-                console.log(`🧹 Cleaned machine ${machineId}`);
+                console.log(`ð§¹ Cleaned machine ${machineId}`);
                 if (this.merlin) {
                     this.merlinSpeak('Machine cleaned! Smooth operation restored.');
                 }
@@ -6354,7 +6354,7 @@ class GemBotFarmGame {
                 machine.needsLubrication = false;
                 machine.condition = Math.min(100, machine.condition + this.maintenanceConfig.lubrication.conditionBoost);
                 this.state.stats.maintenancePerformed++;
-                console.log(`🛢️ Lubricated machine ${machineId}`);
+                console.log(`ð¢ï¸ Lubricated machine ${machineId}`);
                 return { success: true, message: 'Machine lubricated!' };
                 
             case 'repair':
@@ -6368,7 +6368,7 @@ class GemBotFarmGame {
                 machine.isDown = false;
                 machine.downUntil = null;
                 this.state.stats.maintenancePerformed++;
-                console.log(`🔧 Repaired machine ${machineId}`);
+                console.log(`ð§ Repaired machine ${machineId}`);
                 if (this.merlin) {
                     this.merlinSpeak('Full repair complete! Machine is good as new.');
                 }
@@ -6400,7 +6400,7 @@ class GemBotFarmGame {
         machine.downUntil = null;
         machine.condition = Math.min(100, machine.condition + 25);
         
-        console.log(`🔧 Fixed ${issueName} on ${machineId} for ${repairCost} gems`);
+        console.log(`ð§ Fixed ${issueName} on ${machineId} for ${repairCost} gems`);
         if (this.merlin) {
             this.merlinSpeak(`${issueName} fixed! The machine hums with renewed vigor.`);
         }
@@ -6555,7 +6555,7 @@ class GemBotFarmGame {
      */
     onRealMachineConnected() {
         this.realMachineConnected = true;
-        console.log('🔌 Real GemBot connected - 50% bonus active!');
+        console.log('ð Real GemBot connected - 50% bonus active!');
     }
     
     /**
@@ -6563,7 +6563,7 @@ class GemBotFarmGame {
      */
     onRealMachineDisconnected() {
         this.realMachineConnected = false;
-        console.log('🔌 Real GemBot disconnected');
+        console.log('ð Real GemBot disconnected');
     }
     
     /**
@@ -6708,7 +6708,7 @@ class GemBotFarmGame {
             const backupKey = `gembot_backup_${new Date().toISOString().split('T')[0]}`;
             localStorage.setItem(backupKey, JSON.stringify(saveData));
             
-            console.log('💾 Game saved successfully!', {
+            console.log('ð¾ Game saved successfully!', {
                 gems: this.state.player.gems,
                 tokens: this.state.player.tokens,
                 level: this.state.player.level,
@@ -6778,7 +6778,7 @@ class GemBotFarmGame {
                 
                 // Report offline progress
                 if (offlineMinutes > 1) {
-                    console.log(`📂 Game loaded! You were away for ${offlineMinutes} minutes.`);
+                    console.log(`ð Game loaded! You were away for ${offlineMinutes} minutes.`);
                     
                     // Show welcome back message
                     if (this.merlin) {
@@ -6788,7 +6788,7 @@ class GemBotFarmGame {
                     }
                 }
                 
-                console.log('📂 Game loaded successfully!', {
+                console.log('ð Game loaded successfully!', {
                     gems: this.state.player.gems,
                     tokens: this.state.player.tokens,
                     level: this.state.player.level,
@@ -6829,7 +6829,7 @@ class GemBotFarmGame {
      * Migrate old rough inventory (counts) to new format (array of pieces with carats)
      */
     migrateRoughInventory() {
-        console.log('🔄 Migrating rough inventory to carat-based system...');
+        console.log('ð Migrating rough inventory to carat-based system...');
         
         const oldRough = this.state.inventory.rough;
         const newRough = {};
@@ -6853,7 +6853,7 @@ class GemBotFarmGame {
         });
         
         this.state.inventory.rough = newRough;
-        console.log('✅ Rough inventory migrated:', Object.entries(newRough).filter(([k,v]) => v.length > 0).map(([k,v]) => `${k}: ${v.length} pieces`));
+        console.log('â Rough inventory migrated:', Object.entries(newRough).filter(([k,v]) => v.length > 0).map(([k,v]) => `${k}: ${v.length} pieces`));
     }
     
     /**
@@ -6865,7 +6865,7 @@ class GemBotFarmGame {
         saveData._version = 2;
         
         const exportString = btoa(JSON.stringify(saveData));
-        console.log('📤 Save exported! Length:', exportString.length);
+        console.log('ð¤ Save exported! Length:', exportString.length);
         
         return exportString;
     }
@@ -6901,7 +6901,7 @@ class GemBotFarmGame {
         localStorage.removeItem(this.config.saveKey);
         localStorage.removeItem('gembot_farm_save');
         
-        console.log('🔄 Game reset! Refresh to start fresh.');
+        console.log('ð Game reset! Refresh to start fresh.');
         return { success: true, message: 'Game reset. Refresh the page.' };
     }
     
@@ -6973,7 +6973,7 @@ class GemBotFarmGame {
         this.merlin = window.merlin || null;
         
         if (this.merlin) {
-            console.log('🧙 Merlin AI connected to GemBot Farm');
+            console.log('ð§ Merlin AI connected to GemBot Farm');
             
             // Create Merlin's avatar in the 3D scene
             this.createMerlinAvatar();
@@ -6987,7 +6987,7 @@ class GemBotFarmGame {
             // Sync game progress with Merlin's knowledge
             this.syncWithMerlin();
         } else {
-            console.log('⚠️ Merlin AI not available, game will function without AI guidance');
+            console.log('â ï¸ Merlin AI not available, game will function without AI guidance');
         }
     }
     
@@ -7205,7 +7205,7 @@ class GemBotFarmGame {
         
         // Also display in game activity feed if available
         if (typeof addGameActivity === 'function') {
-            addGameActivity(`🧙 Merlin: "${message}"`);
+            addGameActivity(`ð§ Merlin: "${message}"`);
         }
         
         // Use text-to-speech if Merlin's voice is enabled
@@ -7213,7 +7213,7 @@ class GemBotFarmGame {
             this.speakWithVoice(message);
         }
         
-        console.log(`🧙 Merlin says: "${message}"`);
+        console.log(`ð§ Merlin says: "${message}"`);
     }
     
     /**
@@ -7296,9 +7296,9 @@ class GemBotFarmGame {
             // Basic process tips
             tips.push('Gem cutting starts with examining the rough - look for inclusions, cracks, and color orientation.');
             tips.push('The dop is a metal stick that holds your stone. Proper dopping is CRITICAL to success!');
-            tips.push('Dop wax melts at around 150°F. Too hot burns the stone, too cold won\'t bond properly.');
+            tips.push('Dop wax melts at around 150Â°F. Too hot burns the stone, too cold won\'t bond properly.');
             tips.push('Watch the stage indicator - yellow means human interaction is needed!');
-            tips.push('Every stone goes through: Prep → Pavilion → Transfer → Crown → Polish');
+            tips.push('Every stone goes through: Prep â Pavilion â Transfer â Crown â Polish');
         }
         
         // ==================== INTERMEDIATE TIPS (Level 3-7) ====================
@@ -7308,7 +7308,7 @@ class GemBotFarmGame {
             tips.push('The girdle is the widest part of the stone - it determines your final size.');
             tips.push('Transfer is the riskiest moment! The stone moves from pavilion dop to crown dop.');
             tips.push('Laps progress from rough (600 grit) to fine (1200 grit) before polishing.');
-            tips.push('Polish uses diamond paste: 8k → 14k → 50k → 100k → 200k for mirror finish.');
+            tips.push('Polish uses diamond paste: 8k â 14k â 50k â 100k â 200k for mirror finish.');
             
             // Hazard warnings
             tips.push('If the dop wax is too cold, the stone can fly off at high speed. DANGEROUS!');
@@ -7327,7 +7327,7 @@ class GemBotFarmGame {
             
             // Pro techniques
             tips.push('Master cutters pre-polish pavilion facets before transfer to check angles.');
-            tips.push('The 42° pavilion angle is standard for maximum brilliance in most stones.');
+            tips.push('The 42Â° pavilion angle is standard for maximum brilliance in most stones.');
             tips.push('Crown angles affect fire (rainbow dispersion) - shallower = more fire.');
             tips.push('Table size affects brilliance vs fire trade-off. Typically 50-60% of girdle width.');
         }
@@ -7419,14 +7419,14 @@ class GemBotFarmGame {
                 'Another faithful machine to serve your vision!'
             ],
             'milestone': [
-                `🏆 ACHIEVEMENT UNLOCKED: ${data.name}! ${data.desc} (+${data.reward} gems)`,
-                `🏆 ${data.name}! ${data.desc} Your reward: ${data.reward} gems!`,
-                `🏆 Incredible! You earned "${data.name}"! +${data.reward} gems!`
+                `ð ACHIEVEMENT UNLOCKED: ${data.name}! ${data.desc} (+${data.reward} gems)`,
+                `ð ${data.name}! ${data.desc} Your reward: ${data.reward} gems!`,
+                `ð Incredible! You earned "${data.name}"! +${data.reward} gems!`
             ],
             'unlock': [
-                `🔓 NEW UNLOCK: ${data.name}! ${data.desc}`,
-                `🔓 ${data.name} is now available! ${data.desc}`,
-                `🔓 Congratulations! You've unlocked ${data.name}!`
+                `ð NEW UNLOCK: ${data.name}! ${data.desc}`,
+                `ð ${data.name} is now available! ${data.desc}`,
+                `ð Congratulations! You've unlocked ${data.name}!`
             ]
         };
         
@@ -7475,13 +7475,13 @@ class GemBotFarmGame {
             
             'strategy': 'Start with Quartz family stones (Amethyst, Citrine) - they\'re forgiving and teach the process. Master the transfer before tackling valuable stones. One lost ruby teaches expensive lessons!',
             
-            'real_machine': 'The virtual game teaches the EXACT process used by physical GemBot: mount rough, preform shape, cut pavilion through progressive laps (600→800→1200), polish with paste (8k→14k→50k→100k→200k), transfer, cut crown, final polish.',
+            'real_machine': 'The virtual game teaches the EXACT process used by physical GemBot: mount rough, preform shape, cut pavilion through progressive laps (600â800â1200), polish with paste (8kâ14kâ50kâ100kâ200k), transfer, cut crown, final polish.',
             
             'process': 'Full cut process: 1) Prep rough, 2) Dop to stick, 3) Mount in chuck, 4) Preform girdle & pavilion, 5) Cut pavilion facets through grits, 6) Polish pavilion, 7) TRANSFER to crown dop, 8) Cut crown & table, 9) Polish crown, 10) Remove & clean.',
             
             'laps': 'Cutting laps: 600 grit (rough shaping, fast removal), 800 grit (remove 600 scratches), 1200 grit (pre-polish). Polish laps: Copper charged with diamond paste - 8k to 200k for mirror finish. NEVER mix grit sizes on one lap!',
             
-            'dopping': 'Dop wax temperature is critical - around 150°F. Stone must be clean and warm. Press firmly, center precisely, let cool SLOWLY. Rapid cooling = weak bond = flying stones. Re-dop if ANY doubt about bond strength!',
+            'dopping': 'Dop wax temperature is critical - around 150Â°F. Stone must be clean and warm. Press firmly, center precisely, let cool SLOWLY. Rapid cooling = weak bond = flying stones. Re-dop if ANY doubt about bond strength!',
             
             'transfer': 'The riskiest step! Heat BOTH dops (old pavilion dop AND new crown dop). Apply crown dop to table, align precisely with pavilion center. Heat old dop to release. SUPPORT THE STONE during entire process!',
             
@@ -7489,7 +7489,7 @@ class GemBotFarmGame {
             
             'hardness': 'Mohs scale: Diamond=10 (takes FOREVER to cut, needs special laps), Corundum=9 (Ruby/Sapphire, patient work), Topaz=8 (perfect cleavage risk!), Quartz=7 (ideal learning), Opal=5.5 (soft, heat sensitive).',
             
-            'angles': 'Standard pavilion: ~42° for maximum brilliance. Crown mains: ~42°. Star facets: lower angle. Table: 0° (flat). The index gear has 96 teeth = 3.75° per tooth for precise facet placement.',
+            'angles': 'Standard pavilion: ~42Â° for maximum brilliance. Crown mains: ~42Â°. Star facets: lower angle. Table: 0Â° (flat). The index gear has 96 teeth = 3.75Â° per tooth for precise facet placement.',
             
             'levels': 'Higher levels unlock harder gems that take longer but pay more. Level 3: Topaz/Emerald. Level 8: Ruby/Sapphire. Level 15: Diamond/Alexandrite. Master the basics before tackling precious stones!',
             
@@ -7506,4 +7506,4 @@ class GemBotFarmGame {
 
 // Export for global access
 window.GemBotFarmGame = GemBotFarmGame;
-console.log('🎮 GemBot Farm Game module loaded (with Merlin AI integration)');
+console.log('ð® GemBot Farm Game module loaded (with Merlin AI integration)');
