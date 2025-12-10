@@ -1758,6 +1758,352 @@ class GemBotFarmGame {
             indicatorMat.emissiveColor = new BABYLON.Color3(0.2, 0.8, 0.2);
             indicator.material = indicatorMat;
         }
+        
+        // ===== WATER STATION (on the right side of bench) =====
+        this.createWaterStation(benchWidth/2 + 1.5, 0, benchDepth/2);
+    }
+    
+    /**
+     * Create interactive water refill station
+     * Includes faucet, water tank/reservoir, and auto-refill upgrade slot
+     */
+    createWaterStation(x, y, z) {
+        const stationRoot = new BABYLON.TransformNode('waterStation', this.scene);
+        stationRoot.position = new BABYLON.Vector3(x, y, z);
+        
+        // ===== SINK BASIN =====
+        const basinMat = new BABYLON.StandardMaterial('basinMat', this.scene);
+        basinMat.diffuseColor = new BABYLON.Color3(0.7, 0.7, 0.72);
+        basinMat.specularColor = new BABYLON.Color3(0.9, 0.9, 0.95);
+        
+        const basin = BABYLON.MeshBuilder.CreateBox('sinkBasin', {
+            width: 1.2, height: 0.3, depth: 0.8
+        }, this.scene);
+        basin.parent = stationRoot;
+        basin.position.y = 0.85;
+        basin.material = basinMat;
+        
+        // Basin interior (darker)
+        const basinInner = BABYLON.MeshBuilder.CreateBox('sinkInner', {
+            width: 1.0, height: 0.25, depth: 0.6
+        }, this.scene);
+        basinInner.parent = stationRoot;
+        basinInner.position.y = 0.9;
+        const innerMat = new BABYLON.StandardMaterial('basinInnerMat', this.scene);
+        innerMat.diffuseColor = new BABYLON.Color3(0.3, 0.3, 0.32);
+        basinInner.material = innerMat;
+        
+        // ===== FAUCET =====
+        // Faucet stem
+        const faucetStem = BABYLON.MeshBuilder.CreateCylinder('faucetStem', {
+            height: 0.5, diameter: 0.08
+        }, this.scene);
+        faucetStem.parent = stationRoot;
+        faucetStem.position = new BABYLON.Vector3(-0.3, 1.25, -0.2);
+        
+        const faucetMat = new BABYLON.StandardMaterial('faucetMat', this.scene);
+        faucetMat.diffuseColor = new BABYLON.Color3(0.75, 0.75, 0.8);
+        faucetMat.specularColor = new BABYLON.Color3(1, 1, 1);
+        faucetMat.specularPower = 64;
+        faucetStem.material = faucetMat;
+        
+        // Faucet spout (curved pipe)
+        const spout = BABYLON.MeshBuilder.CreateTorus('faucetSpout', {
+            diameter: 0.3, thickness: 0.04, arc: 0.5
+        }, this.scene);
+        spout.parent = stationRoot;
+        spout.position = new BABYLON.Vector3(-0.3, 1.5, -0.05);
+        spout.rotation.x = Math.PI / 2;
+        spout.rotation.z = Math.PI;
+        spout.material = faucetMat;
+        
+        // Faucet handle
+        const handle = BABYLON.MeshBuilder.CreateBox('faucetHandle', {
+            width: 0.15, height: 0.05, depth: 0.03
+        }, this.scene);
+        handle.parent = stationRoot;
+        handle.position = new BABYLON.Vector3(-0.3, 1.55, -0.2);
+        handle.material = faucetMat;
+        
+        // ===== WATER RESERVOIR TANK (transparent with water level) =====
+        const tankMat = new BABYLON.StandardMaterial('tankMat', this.scene);
+        tankMat.diffuseColor = new BABYLON.Color3(0.4, 0.5, 0.6);
+        tankMat.alpha = 0.4;
+        tankMat.specularColor = new BABYLON.Color3(0.8, 0.8, 0.9);
+        
+        const tank = BABYLON.MeshBuilder.CreateCylinder('waterTank', {
+            height: 1.0, diameter: 0.6
+        }, this.scene);
+        tank.parent = stationRoot;
+        tank.position = new BABYLON.Vector3(0.4, 1.4, 0);
+        tank.material = tankMat;
+        
+        // Water level inside tank (dynamic height based on inventory)
+        const waterLevel = this.state.inventory.consumables.water / 100;
+        const waterMat = new BABYLON.StandardMaterial('waterMat', this.scene);
+        waterMat.diffuseColor = new BABYLON.Color3(0.2, 0.5, 0.8);
+        waterMat.alpha = 0.7;
+        waterMat.emissiveColor = new BABYLON.Color3(0.1, 0.2, 0.4);
+        
+        const water = BABYLON.MeshBuilder.CreateCylinder('waterInTank', {
+            height: 0.9 * waterLevel, diameter: 0.55
+        }, this.scene);
+        water.parent = stationRoot;
+        water.position = new BABYLON.Vector3(0.4, 0.95 + (0.45 * waterLevel), 0);
+        water.material = waterMat;
+        
+        // Store reference for updating water level
+        this.waterTankMesh = water;
+        this.waterTankMat = waterMat;
+        this.waterStationRoot = stationRoot;
+        
+        // ===== WATER LEVEL INDICATOR =====
+        // Create label above tank
+        const labelPlane = BABYLON.MeshBuilder.CreatePlane('waterLabel', {
+            width: 0.8, height: 0.3
+        }, this.scene);
+        labelPlane.parent = stationRoot;
+        labelPlane.position = new BABYLON.Vector3(0.4, 2.1, 0);
+        labelPlane.billboardMode = BABYLON.Mesh.BILLBOARDMODE_ALL;
+        
+        const labelTex = new BABYLON.DynamicTexture('waterLabelTex', { width: 128, height: 48 }, this.scene);
+        this.updateWaterLabel(labelTex);
+        
+        const labelMat = new BABYLON.StandardMaterial('waterLabelMat', this.scene);
+        labelMat.diffuseTexture = labelTex;
+        labelMat.emissiveTexture = labelTex;
+        labelMat.opacityTexture = labelTex;
+        labelMat.backFaceCulling = false;
+        labelPlane.material = labelMat;
+        
+        this.waterLabelTex = labelTex;
+        
+        // ===== CLICK INTERACTION =====
+        // Make faucet and tank clickable
+        [faucetStem, spout, handle, tank, basin].forEach(mesh => {
+            mesh.isPickable = true;
+            mesh.actionManager = new BABYLON.ActionManager(this.scene);
+            
+            // Hover glow
+            mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(
+                BABYLON.ActionManager.OnPointerOverTrigger,
+                () => {
+                    if (faucetMat.emissiveColor) {
+                        faucetMat.emissiveColor = new BABYLON.Color3(0.2, 0.4, 0.5);
+                    }
+                    this.updateWaterLabel(this.waterLabelTex, true); // Show "Click to refill"
+                }
+            ));
+            
+            mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(
+                BABYLON.ActionManager.OnPointerOutTrigger,
+                () => {
+                    if (faucetMat.emissiveColor) {
+                        faucetMat.emissiveColor = new BABYLON.Color3(0, 0, 0);
+                    }
+                    this.updateWaterLabel(this.waterLabelTex, false);
+                }
+            ));
+            
+            // Click to refill
+            mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(
+                BABYLON.ActionManager.OnPickTrigger,
+                () => {
+                    this.onWaterStationClicked();
+                }
+            ));
+        });
+        
+        this.sceneObjects.waterStation = stationRoot;
+        console.log('💧 Created water refill station');
+    }
+    
+    /**
+     * Update water level label texture
+     */
+    updateWaterLabel(texture, showHint = false) {
+        if (!texture) return;
+        
+        const ctx = texture.getContext();
+        const waterLevel = this.state.inventory.consumables.water || 0;
+        
+        // Clear
+        ctx.clearRect(0, 0, 128, 48);
+        
+        // Background
+        ctx.fillStyle = 'rgba(0, 30, 50, 0.8)';
+        ctx.fillRect(0, 0, 128, 48);
+        
+        // Border
+        const borderColor = waterLevel < 25 ? '#ff4444' : waterLevel < 50 ? '#ffaa00' : '#00ffff';
+        ctx.strokeStyle = borderColor;
+        ctx.lineWidth = 2;
+        ctx.strokeRect(2, 2, 124, 44);
+        
+        // Water level text
+        ctx.font = 'bold 14px Arial';
+        ctx.fillStyle = borderColor;
+        ctx.textAlign = 'center';
+        ctx.fillText(`💧 ${Math.round(waterLevel)}%`, 64, 22);
+        
+        // Hint text
+        ctx.font = '10px Arial';
+        ctx.fillStyle = showHint ? '#ffffff' : 'rgba(255,255,255,0.5)';
+        ctx.fillText(showHint ? 'Click to refill!' : 'Water Tank', 64, 40);
+        
+        texture.update();
+    }
+    
+    /**
+     * Handle water station click - refill water tank
+     */
+    onWaterStationClicked() {
+        const currentWater = this.state.inventory.consumables.water || 0;
+        const maxWater = 100 + (this.state.inventory.upgradelevels?.water_tank || 0) * 50;
+        
+        if (currentWater >= maxWater) {
+            console.log('💧 Water tank is full!');
+            this.showWaterNotification('Tank Full!', '#00ff88');
+            return;
+        }
+        
+        // Refill cost (free basic refill for now, costs scale with upgrades later)
+        const refillAmount = 25;
+        const newLevel = Math.min(currentWater + refillAmount, maxWater);
+        this.state.inventory.consumables.water = newLevel;
+        this.state.stats.waterRefills = (this.state.stats.waterRefills || 0) + 1;
+        
+        console.log(`💧 Water refilled: ${currentWater}% → ${newLevel}%`);
+        
+        // Update visuals
+        this.updateWaterTankVisual();
+        this.updateWaterLabel(this.waterLabelTex);
+        this.showWaterNotification(`+${refillAmount}% Water`, '#00aaff');
+        
+        // Animate faucet water flow
+        this.animateWaterFlow();
+    }
+    
+    /**
+     * Update the water tank visual based on current level
+     */
+    updateWaterTankVisual() {
+        if (!this.waterTankMesh || !this.waterStationRoot) return;
+        
+        const waterLevel = (this.state.inventory.consumables.water || 0) / 100;
+        const maxLevel = 1 + ((this.state.inventory.upgradelevels?.water_tank || 0) * 0.5);
+        const normalizedLevel = Math.min(waterLevel / maxLevel, 1);
+        
+        // Recreate water mesh with new height
+        this.waterTankMesh.dispose();
+        
+        const water = BABYLON.MeshBuilder.CreateCylinder('waterInTank', {
+            height: 0.9 * normalizedLevel, diameter: 0.55
+        }, this.scene);
+        water.parent = this.waterStationRoot;
+        water.position = new BABYLON.Vector3(0.4, 0.95 + (0.45 * normalizedLevel), 0);
+        water.material = this.waterTankMat;
+        
+        this.waterTankMesh = water;
+    }
+    
+    /**
+     * Animate water flowing from faucet
+     */
+    animateWaterFlow() {
+        if (!this.scene || !this.waterStationRoot) return;
+        
+        // Create water drop particles
+        const emitter = new BABYLON.Vector3(
+            this.waterStationRoot.position.x - 0.15,
+            this.waterStationRoot.position.y + 1.4,
+            this.waterStationRoot.position.z - 0.05
+        );
+        
+        // Create simple water drops
+        for (let i = 0; i < 10; i++) {
+            setTimeout(() => {
+                const drop = BABYLON.MeshBuilder.CreateSphere('waterDrop_' + i, {
+                    diameter: 0.05
+                }, this.scene);
+                drop.position = emitter.clone();
+                drop.position.x += (Math.random() - 0.5) * 0.1;
+                
+                const dropMat = new BABYLON.StandardMaterial('dropMat_' + i, this.scene);
+                dropMat.diffuseColor = new BABYLON.Color3(0.3, 0.6, 0.9);
+                dropMat.alpha = 0.8;
+                drop.material = dropMat;
+                
+                // Animate drop falling
+                let vy = 0;
+                const gravity = 0.005;
+                const animate = () => {
+                    vy += gravity;
+                    drop.position.y -= vy;
+                    
+                    if (drop.position.y > 0.9) {
+                        requestAnimationFrame(animate);
+                    } else {
+                        drop.dispose();
+                        dropMat.dispose();
+                    }
+                };
+                requestAnimationFrame(animate);
+            }, i * 50);
+        }
+    }
+    
+    /**
+     * Show floating notification for water actions
+     */
+    showWaterNotification(text, color) {
+        if (!this.scene || !this.waterStationRoot) return;
+        
+        const plane = BABYLON.MeshBuilder.CreatePlane('waterNotify_' + Date.now(), {
+            width: 1.5, height: 0.4
+        }, this.scene);
+        plane.position = this.waterStationRoot.position.clone();
+        plane.position.y += 2.5;
+        plane.billboardMode = BABYLON.Mesh.BILLBOARDMODE_ALL;
+        
+        const tex = new BABYLON.DynamicTexture('waterNotifyTex', { width: 192, height: 48 }, this.scene);
+        const ctx = tex.getContext();
+        
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+        ctx.fillRect(0, 0, 192, 48);
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2;
+        ctx.strokeRect(2, 2, 188, 44);
+        
+        ctx.font = 'bold 20px Arial';
+        ctx.fillStyle = color;
+        ctx.textAlign = 'center';
+        ctx.fillText(text, 96, 32);
+        tex.update();
+        
+        const mat = new BABYLON.StandardMaterial('waterNotifyMat', this.scene);
+        mat.diffuseTexture = tex;
+        mat.emissiveTexture = tex;
+        mat.opacityTexture = tex;
+        mat.backFaceCulling = false;
+        plane.material = mat;
+        
+        // Float up and fade
+        let alpha = 1;
+        const floatUp = () => {
+            plane.position.y += 0.02;
+            alpha -= 0.015;
+            mat.alpha = alpha;
+            
+            if (alpha > 0) {
+                requestAnimationFrame(floatUp);
+            } else {
+                plane.dispose();
+                tex.dispose();
+                mat.dispose();
+            }
+        };
+        requestAnimationFrame(floatUp);
     }
     
     /**
