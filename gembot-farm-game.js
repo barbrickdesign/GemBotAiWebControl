@@ -226,60 +226,64 @@ class GemBotFarmGame {
         // Rough prices are PER CARAT
         this.shopPrices = {
             // Rough stone costs PER CARAT (by gem name)
+            // Prices reflect real-world wholesale rough market (1 gem ≈ $1 USD)
+            // These are mid-grade material prices for lapidary practice
             roughPerCarat: {
-                'Quartz (Amethyst)': 3,
-                'Quartz (Citrine)': 2,
-                'Garnet': 5,
-                'Topaz': 15,
-                'Emerald': 40,
-                'Ruby': 75,
-                'Sapphire': 90,
-                'Opal': 50,
-                'Diamond': 250,
-                'Alexandrite': 500
+                'Quartz (Amethyst)': 2,      // $2/ct - common practice material
+                'Quartz (Citrine)': 3,       // $3/ct - heat-treated amethyst is common
+                'Garnet': 8,                 // $8/ct - almandine/pyrope rough
+                'Topaz': 15,                 // $15/ct - blue topaz rough (irradiated)
+                'Emerald': 75,               // $75/ct - commercial grade Colombian
+                'Ruby': 150,                 // $150/ct - mid-grade Burmese/Thai
+                'Sapphire': 120,             // $120/ct - mid-grade Ceylon/Australian
+                'Opal': 50,                  // $50/ct - Ethiopian/Australian rough
+                'Diamond': 500,              // $500/ct - rough industrial to gem-grade
+                'Alexandrite': 2000          // $2000/ct - extremely rare, Brazil/Russia
             },
-            // Lap costs (new replacement)
+            // Lap costs (new replacement) - reflects real lap prices
             laps: {
-                coarse: 25,
-                '600_grit': 30,
-                '800_grit': 35,
-                '1200_grit': 40,
-                copper: 50
+                coarse: 45,       // ~$45 for coarse diamond lap
+                '600_grit': 55,   // ~$55 for 600 grit
+                '800_grit': 60,   // ~$60 for 800 grit
+                '1200_grit': 70,  // ~$70 for 1200 grit
+                copper: 85        // ~$85 for copper charging lap
             },
             // Polishing paste (per unit, ~5 lap charges each)
             paste: {
-                '8k': 5,
-                '14k': 8,
-                '50k': 15,
-                '100k': 25,
-                '200k': 40
+                '8k': 8,          // ~$8 per unit
+                '14k': 12,        // ~$12 per unit
+                '50k': 20,        // ~$20 per unit
+                '100k': 35,       // ~$35 per unit
+                '200k': 50        // ~$50 per unit
             },
             // Consumables
             consumables: {
-                dopWax: 2,        // Per 10 units
-                water: 1,         // Per 25% tank refill
-                lubricant: 5      // Per 25% refill
+                dopWax: 5,        // Per 10 units (~$5)
+                water: 2,         // Per 25% tank refill
+                lubricant: 8      // Per 25% refill
             },
             // Machine repairs
             repairs: {
-                minor: 20,        // Quick fix (restores 25% condition)
-                major: 50,        // Full service (restores 50% condition)
-                overhaul: 150     // Complete rebuild (restores 100%)
+                minor: 35,        // Quick fix (restores 25% condition)
+                major: 100,       // Full service (restores 50% condition)
+                overhaul: 300     // Complete rebuild (restores 100%)
             }
         };
         
         // ==================== CUT GEM VALUES (per carat finished weight) ====================
+        // Prices reflect real-world wholesale cut gem prices (1 gem ≈ $1 USD)
+        // Perfect cuts command significant premiums in real market
         this.gemValues = {
-            'Quartz (Amethyst)': { base: 10, perfectBonus: 1.5 },
-            'Quartz (Citrine)': { base: 8, perfectBonus: 1.5 },
-            'Garnet': { base: 15, perfectBonus: 1.6 },
-            'Topaz': { base: 35, perfectBonus: 1.7 },
-            'Emerald': { base: 100, perfectBonus: 2.0 },
-            'Ruby': { base: 200, perfectBonus: 2.2 },
-            'Sapphire': { base: 250, perfectBonus: 2.2 },
-            'Opal': { base: 150, perfectBonus: 1.8 },
-            'Diamond': { base: 800, perfectBonus: 3.0 },
-            'Alexandrite': { base: 1500, perfectBonus: 3.5 }
+            'Quartz (Amethyst)': { base: 15, perfectBonus: 1.8 },     // $15/ct cut, $27/ct perfect
+            'Quartz (Citrine)': { base: 18, perfectBonus: 1.8 },     // $18/ct cut, $32/ct perfect
+            'Garnet': { base: 35, perfectBonus: 2.0 },               // $35/ct cut, $70/ct perfect
+            'Topaz': { base: 60, perfectBonus: 2.0 },                // $60/ct cut, $120/ct perfect
+            'Emerald': { base: 300, perfectBonus: 2.5 },             // $300/ct cut, $750/ct perfect
+            'Ruby': { base: 600, perfectBonus: 3.0 },                // $600/ct cut, $1800/ct perfect
+            'Sapphire': { base: 500, perfectBonus: 3.0 },            // $500/ct cut, $1500/ct perfect
+            'Opal': { base: 200, perfectBonus: 2.2 },                // $200/ct cut, $440/ct perfect
+            'Diamond': { base: 2500, perfectBonus: 4.0 },            // $2500/ct cut, $10000/ct perfect
+            'Alexandrite': { base: 8000, perfectBonus: 4.0 }         // $8000/ct cut, $32000/ct perfect
         };
         
         // ==================== RESOURCE CONSUMPTION RATES ====================
@@ -3328,17 +3332,13 @@ class GemBotFarmGame {
     
     /**
      * Buy rough stones from the shop
+     * Uses roughPerCarat pricing with random carat weight per piece
      */
     buyRough(gemName, quantity = 1) {
-        const price = this.shopPrices.rough[gemName];
-        if (!price) {
+        const pricePerCarat = this.shopPrices.roughPerCarat[gemName];
+        if (!pricePerCarat) {
             console.error(`Unknown gem type: ${gemName}`);
             return { success: false, message: 'Unknown gem type' };
-        }
-        
-        const totalCost = price * quantity;
-        if (this.state.player.gems < totalCost) {
-            return { success: false, message: `Not enough gems! Need ${totalCost}, have ${this.state.player.gems}` };
         }
         
         // Check if player level allows this gem
@@ -3355,16 +3355,56 @@ class GemBotFarmGame {
             }
         }
         
-        // Deduct cost and add to inventory
-        this.state.player.gems -= totalCost;
-        this.state.inventory.rough[gemName] = (this.state.inventory.rough[gemName] || 0) + quantity;
+        // Check storage capacity
+        const currentRoughCount = Object.values(this.state.inventory.rough)
+            .reduce((sum, arr) => sum + (Array.isArray(arr) ? arr.length : 0), 0);
+        const maxRough = this.inventoryUpgrades?.rough_storage?.levels?.[this.state.upgradelevels?.rough_storage || 0]?.maxRough || 20;
         
-        console.log(`🛒 Bought ${quantity}x ${gemName} rough for ${totalCost} gems`);
-        if (this.merlin) {
-            this.merlinSpeak(`Excellent purchase! ${quantity} ${gemName} rough added to your inventory.`);
+        if (currentRoughCount + quantity > maxRough) {
+            return { success: false, message: `Rough storage full! (${currentRoughCount}/${maxRough})` };
         }
         
-        return { success: true, message: `Purchased ${quantity}x ${gemName}`, cost: totalCost };
+        // Calculate total cost (random carat weight per piece, 1-3ct range for shop purchases)
+        let totalCost = 0;
+        const purchasedStones = [];
+        
+        for (let i = 0; i < quantity; i++) {
+            const carats = Math.round((1 + Math.random() * 2) * 100) / 100; // 1-3ct, rounded to 2 decimals
+            const stoneCost = Math.ceil(pricePerCarat * carats);
+            totalCost += stoneCost;
+            purchasedStones.push({ carats, cost: stoneCost });
+        }
+        
+        if (this.state.player.gems < totalCost) {
+            return { success: false, message: `Not enough gems! Need ${totalCost}, have ${this.state.player.gems}` };
+        }
+        
+        // Deduct cost
+        this.state.player.gems -= totalCost;
+        
+        // Ensure array exists for this gem type
+        if (!Array.isArray(this.state.inventory.rough[gemName])) {
+            this.state.inventory.rough[gemName] = [];
+        }
+        
+        // Add stones to inventory
+        purchasedStones.forEach(stone => {
+            this.state.inventory.rough[gemName].push({
+                carats: stone.carats,
+                quality: 'good',
+                purchasedAt: Date.now(),
+                purchasePrice: stone.cost
+            });
+        });
+        
+        const totalCarats = purchasedStones.reduce((sum, s) => sum + s.carats, 0).toFixed(2);
+        console.log(`🛒 Bought ${quantity}x ${gemName} rough (${totalCarats}ct total) for ${totalCost} gems`);
+        if (this.merlin) {
+            this.merlinSpeak(`Excellent purchase! ${quantity} ${gemName} rough (${totalCarats}ct) added to your inventory.`);
+        }
+        
+        this.saveState();
+        return { success: true, message: `Purchased ${quantity}x ${gemName} (${totalCarats}ct)`, cost: totalCost };
     }
     
     /**
@@ -3474,9 +3514,9 @@ class GemBotFarmGame {
     }
     
     /**
-     * Buy rough stone with specific carat weight
+     * Buy rough stone with specific carat weight (advanced purchase)
      */
-    buyRough(gemName, carats = null, quality = 'good') {
+    buyRoughWithCarats(gemName, carats = null, quality = 'good') {
         const pricePerCarat = this.shopPrices.roughPerCarat[gemName];
         if (!pricePerCarat) {
             return { success: false, message: 'Unknown gem type' };
@@ -3511,7 +3551,7 @@ class GemBotFarmGame {
         // Check storage capacity
         const currentRoughCount = Object.values(this.state.inventory.rough)
             .reduce((sum, arr) => sum + (Array.isArray(arr) ? arr.length : 0), 0);
-        const maxRough = this.inventoryUpgrades.rough_storage.levels[this.state.upgradelevels?.rough_storage || 0]?.maxRough || 20;
+        const maxRough = this.inventoryUpgrades?.rough_storage?.levels?.[this.state.upgradelevels?.rough_storage || 0]?.maxRough || 20;
         
         if (currentRoughCount >= maxRough) {
             return { success: false, message: `Rough storage full! Upgrade or use some stones. (${currentRoughCount}/${maxRough})` };

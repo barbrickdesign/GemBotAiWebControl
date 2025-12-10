@@ -8559,8 +8559,14 @@
             },
             
             isMobile() {
-                return /iPhone|iPad|iPod|Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
-                       (window.innerWidth <= 768 && 'ontouchstart' in window);
+                // STRICT mobile detection - must be a real mobile device
+                const userAgent = navigator.userAgent.toLowerCase();
+                const isTrueMobile = (
+                    (/iphone|ipad|ipod|android|webos|blackberry|iemobile|opera mini/i.test(userAgent)) &&
+                    ('ontouchstart' in window || navigator.maxTouchPoints > 0) &&
+                    !(/windows nt|macintosh|linux(?!.*android)/i.test(userAgent)) // Exclude desktop OS
+                );
+                return isTrueMobile;
             },
             
             async tryLockLandscape() {
@@ -8643,9 +8649,15 @@
 
         // Initialize mobile orientation handler when DOM is ready
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => mobileOrientationHandler.init());
+            document.addEventListener('DOMContentLoaded', () => {
+                mobileOrientationHandler.init();
+                // SAFETY: Always run orientation check to ensure desktop overlay is hidden
+                mobileOrientationHandler.handleOrientationChange();
+            });
         } else {
             mobileOrientationHandler.init();
+            // SAFETY: Always run orientation check to ensure desktop overlay is hidden
+            mobileOrientationHandler.handleOrientationChange();
         }
 
         // ==================== GLOBAL STATE ====================
@@ -11009,6 +11021,31 @@
                 
                 // Extract stone information if mentioned
                 this.detectStoneType(query);
+
+                // ===== ENHANCED MERLIN MARKETPLACE/GEMSTONE RESPONSES =====
+                // Check if this is a marketplace or gemstone question - use enhanced responses
+                const isMarketplaceQuery = /marketplace|market|buy|sell|purchase|forge|forging|metal|gold|silver|\$gembot|token|crypto|wallet|trade|trading|price|cost|convert|real jewelry|earth art/i.test(lowerQuery);
+                const isGemstoneQuery = /price|value|worth|recut|re-cut|bond|set stone|permanent|arya|akhavan|slingin|andy|acker|gemstone lab|mineral/i.test(lowerQuery);
+                
+                if ((isMarketplaceQuery || isGemstoneQuery) && typeof window.MerlinEnhancedResponses !== 'undefined') {
+                    try {
+                        let enhancedResponse;
+                        if (isMarketplaceQuery) {
+                            enhancedResponse = window.MerlinEnhancedResponses.answerMarketplaceQuestion(query);
+                            console.log('🏪 Using MerlinEnhancedResponses for marketplace query');
+                        } else if (isGemstoneQuery) {
+                            enhancedResponse = window.MerlinEnhancedResponses.answerGemstoneQuestion(query);
+                            console.log('💎 Using MerlinEnhancedResponses for gemstone query');
+                        }
+                        if (enhancedResponse && enhancedResponse.length > 20) {
+                            addMessage(enhancedResponse, 'assistant');
+                            this.trackUserLearning(lowerQuery);
+                            return;
+                        }
+                    } catch (e) {
+                        console.warn('⚠️ MerlinEnhancedResponses failed:', e);
+                    }
+                }
 
                 // ===== GEMFORGE ECONOMY QUERIES =====
                 // Check for economy/gamification related queries first
@@ -13389,19 +13426,64 @@
                 this.userProfile.sessionCount++;
                 this.userProfile.lastSessionDate = new Date().toISOString();
                 
-                // Generate intelligent, context-aware greeting based on user history
-                let greeting = this.generateAdaptiveGreeting();
+                // ===== ENHANCED MERLIN RESPONSE INTEGRATION =====
+                // Use MerlinEnhancedResponses for varied, never-duplicate greetings
+                let greeting;
+                if (typeof window.MerlinEnhancedResponses !== 'undefined') {
+                    try {
+                        greeting = window.MerlinEnhancedResponses.generateGreeting({
+                            userName: this.userProfile.userName || 'seeker',
+                            title: this.userProfile.skillLevel || 'apprentice',
+                            isFirstTime: this.userProfile.sessionCount === 1,
+                            sessionCount: this.userProfile.sessionCount,
+                            lastTopic: this.userProfile.questionsAsked?.length > 0 ? 
+                                this.userProfile.questionsAsked[this.userProfile.questionsAsked.length - 1]?.topic : null,
+                            daysSinceLastVisit: this.calculateDaysSinceLastVisit(),
+                            isMilestone: this.userProfile.sessionCount % 10 === 0
+                        });
+                        console.log('🧙 Using MerlinEnhancedResponses for greeting');
+                    } catch (e) {
+                        console.warn('⚠️ MerlinEnhancedResponses greeting failed, using fallback:', e);
+                        greeting = this.generateAdaptiveGreeting();
+                    }
+                } else {
+                    // Fallback to original greeting if enhanced responses not available
+                    greeting = this.generateAdaptiveGreeting();
+                    console.log('📝 Using standard greeting (enhanced responses not loaded)');
+                }
                 
                 addMessage(greeting, 'assistant');
                 this.greetingGiven = true;
                 
-                // Add contextual follow-up
+                // Add contextual follow-up using enhanced responses if available
                 setTimeout(() => {
-                    const followUp = this.generateGreetingFollowUp();
+                    let followUp;
+                    if (typeof window.MerlinEnhancedResponses !== 'undefined') {
+                        try {
+                            followUp = window.MerlinEnhancedResponses.generateTip({
+                                skillLevel: this.userProfile.skillLevel || 'beginner',
+                                userName: this.userProfile.userName || 'student'
+                            });
+                        } catch (e) {
+                            followUp = this.generateGreetingFollowUp();
+                        }
+                    } else {
+                        followUp = this.generateGreetingFollowUp();
+                    }
                     addMessage(followUp, 'assistant');
                 }, 2000);
                 
                 this.saveUserProfile();
+            }
+            
+            // Calculate days since last visit for enhanced greeting context
+            calculateDaysSinceLastVisit() {
+                if (!this.userProfile.lastSessionDate) return 0;
+                const lastVisit = new Date(this.userProfile.lastSessionDate);
+                const now = new Date();
+                const diffTime = Math.abs(now - lastVisit);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                return diffDays;
             }
             
             // NEW: Analyze conversation history to find patterns
