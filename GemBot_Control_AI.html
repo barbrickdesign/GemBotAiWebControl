@@ -5845,6 +5845,7 @@
                 <button class="game-btn" onclick="openInventoryPanel()">📦 Inventory</button>
                 <button class="game-btn game-btn-accent" onclick="openDesignPanel()">✨ Cut Stone</button>
                 <button class="game-btn" onclick="openMaintenancePanel()">🔧 Maintenance</button>
+                <button class="game-btn" onclick="openAcademyPanel()" style="background: linear-gradient(135deg, #8800ff, #006496);">🎓 Academy</button>
                 <button class="game-btn" onclick="gameFarm?.save()">💾 Save</button>
                 <div class="production-rate">
                     <span>⚡ Production: </span>
@@ -5952,7 +5953,6 @@
                         <div class="user-menu-item" onclick="authUI.showProfile()">👤 My Profile</div>
                         <div class="user-menu-item" onclick="leaderboardUI.open()">🏆 Leaderboard</div>
                         <div class="user-menu-item game-highlight" onclick="openGameMode()">🎮 GemBot Farm</div>
-                        <div class="user-menu-item game-highlight" onclick="open3DWorld()" style="background: linear-gradient(135deg, rgba(136, 0, 255, 0.2), rgba(0, 100, 150, 0.2));">🌍 Explore Academy</div>
                         <div class="user-menu-item" onclick="authUI.showShareAccess()">🔗 Share Access</div>
                         <div class="user-menu-item" onclick="authUI.showMachineSettings()">⚙️ Machine Settings</div>
                         <div class="user-menu-item hidden" id="connectedGuestsItem">👥 Connected Guests (0)</div>
@@ -20868,6 +20868,25 @@
             } else {
                 addMessage('🔧 **Maintenance Panel**\n\nMaintenance options:\n• Check machine status\n• Calibrate sensors\n• Replace worn parts\n\nThis feature is coming soon!', 'assistant');
             }
+        }
+        
+        // Academy panel - opens 3D World from within game mode
+        function openAcademyPanel() {
+            console.log('🎓 Opening Academy from Game Mode...');
+            
+            // Sync game state to Academy
+            if (gameFarm && window.GemBot3DWorld) {
+                // Sync gems and level
+                window.GemBot3DWorld.player.gems = gameFarm.state.player.gems;
+                // Give Academy XP based on game level
+                if (gameFarm.state.player.level > window.GemBot3DWorld.player.level) {
+                    window.GemBot3DWorld.player.level = Math.min(gameFarm.state.player.level, 10);
+                    addMessage(`🎓 Academy synced to your GemBot Farm level ${gameFarm.state.player.level}!`, 'system');
+                }
+            }
+            
+            // Open the 3D World
+            open3DWorld();
         }
         
         function showShopTab(tab) {
