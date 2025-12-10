@@ -2537,6 +2537,9 @@ class GemBotFarmGame {
         lapMat.specularColor = new BABYLON.Color3(0.7, 0.6, 0.5);
         lapDisc.material = lapMat;
         machine.lapMesh = lapDisc;
+        machine.lapMat = lapMat;
+        machine.lapBaseY = baseHeight + 0.85;
+        machine.currentLapType = 'coarse'; // Track current lap
         
         // Water drip tray rim
         const trayRim = BABYLON.MeshBuilder.CreateTorus(machine.id + '_trayRim', {
@@ -2883,13 +2886,27 @@ class GemBotFarmGame {
             return;
         }
         
+        // Check if lap change is needed (interaction type from cutting process)
+        if (stone?.needsLapChange) {
+            const newLapType = stone.nextLapType;
+            this.animateLapChange(machine, newLapType, () => {
+                stone.needsLapChange = false;
+                stone.nextLapType = null;
+                // Resume cutting after lap change
+                if (machine.animState) {
+                    machine.animState.lapSpinning = true;
+                }
+            });
+            return;
+        }
+        
         // No stone - start a new one
         if (!stone) {
             this.startNewStone(machine);
             return;
         }
         
-        // Show machine status popup
+        // Show machine status popup with options
         this.showMachineStatus(machine);
     }
     
@@ -2980,6 +2997,204 @@ class GemBotFarmGame {
                 machine.animState.lapSpinning = false;
                 break;
         }
+    }
+    
+    /**
+     * LAP COLORS - Visual representation of different lap types
+     */
+    getLapColor(lapType) {
+        const lapColors = {
+            // Cutting laps (diamond plated)
+            'coarse': { diffuse: new BABYLON.Color3(0.3, 0.3, 0.35), specular: new BABYLON.Color3(0.5, 0.5, 0.6), name: 'Coarse Diamond (180 mesh)' },
+            '600_grit': { diffuse: new BABYLON.Color3(0.35, 0.35, 0.4), specular: new BABYLON.Color3(0.6, 0.6, 0.7), name: '600 Grit Diamond' },
+            '800_grit': { diffuse: new BABYLON.Color3(0.4, 0.4, 0.45), specular: new BABYLON.Color3(0.7, 0.7, 0.8), name: '800 Grit Diamond' },
+            '1200_grit': { diffuse: new BABYLON.Color3(0.5, 0.5, 0.55), specular: new BABYLON.Color3(0.8, 0.8, 0.9), name: '1200 Grit Diamond' },
+            // Polishing laps (copper with paste)
+            'copper_8k': { diffuse: new BABYLON.Color3(0.72, 0.45, 0.2), specular: new BABYLON.Color3(0.9, 0.7, 0.5), name: 'Copper + 8K Paste' },
+            'copper_14k': { diffuse: new BABYLON.Color3(0.75, 0.5, 0.25), specular: new BABYLON.Color3(0.9, 0.75, 0.55), name: 'Copper + 14K Paste' },
+            'copper_50k': { diffuse: new BABYLON.Color3(0.78, 0.55, 0.3), specular: new BABYLON.Color3(0.95, 0.8, 0.6), name: 'Copper + 50K Paste' },
+            'copper_100k': { diffuse: new BABYLON.Color3(0.8, 0.6, 0.35), specular: new BABYLON.Color3(1.0, 0.85, 0.7), name: 'Copper + 100K Paste' },
+            'copper_200k': { diffuse: new BABYLON.Color3(0.85, 0.65, 0.4), specular: new BABYLON.Color3(1.0, 0.9, 0.8), name: 'Copper + 200K Mirror' }
+        };
+        return lapColors[lapType] || lapColors['coarse'];
+    }
+    
+    /**
+     * Animate lap change - record player style lift/swap/drop
+     * @param {Object} machine - The machine object
+     * @param {string} newLapType - The lap type to switch to
+     * @param {Function} callback - Called when animation completes
+     */
+    animateLapChange(machine, newLapType, callback) {
+        if (!machine.lapMesh || !machine.lapMat || !this.scene) {
+            if (callback) callback();
+            return;
+        }
+        
+        // Skip if same lap
+        if (machine.currentLapType === newLapType) {
+            if (callback) callback();
+            return;
+        }
+        
+        console.log(`🔄 Changing lap: ${machine.currentLapType} → ${newLapType}`);
+        
+        const lapMesh = machine.lapMesh;
+        const lapMat = machine.lapMat;
+        const baseY = machine.lapBaseY || 2.35;
+        const liftHeight = 1.5; // How high the lap lifts
+        const animDuration = 1500; // Total animation time in ms
+        
+        // Stop lap spinning during change
+        if (machine.animState) {
+            machine.animState.lapSpinning = false;
+        }
+        
+        // Animation phases: lift (0-0.3), pause (0.3-0.5), drop (0.5-0.8), settle (0.8-1.0)
+        const startTime = performance.now();
+        const newLapColor = this.getLapColor(newLapType);
+        
+        const animFrame = () => {
+            const elapsed = performance.now() - startTime;
+            const progress = Math.min(elapsed / animDuration, 1);
+            
+            if (progress < 0.3) {
+                // Phase 1: Lift old lap up
+                const liftProgress = progress / 0.3;
+                const eased = 1 - Math.pow(1 - liftProgress, 3); // Ease out
+                lapMesh.position.y = baseY + (liftHeight * eased);
+                // Fade out old lap
+                lapMat.alpha = 1 - (liftProgress * 0.5);
+            } else if (progress < 0.5) {
+                // Phase 2: Swap colors (lap at top, hidden)
+                lapMesh.position.y = baseY + liftHeight;
+                lapMat.alpha = 0.3;
+                // Change lap color midway
+                if (progress > 0.4) {
+                    lapMat.diffuseColor = newLapColor.diffuse;
+                    lapMat.specularColor = newLapColor.specular;
+                }
+            } else if (progress < 0.8) {
+                // Phase 3: Drop new lap down
+                const dropProgress = (progress - 0.5) / 0.3;
+                const eased = Math.pow(dropProgress, 2); // Ease in
+                lapMesh.position.y = baseY + liftHeight - (liftHeight * eased);
+                // Fade in new lap
+                lapMat.alpha = 0.3 + (dropProgress * 0.7);
+            } else {
+                // Phase 4: Settle with bounce
+                const settleProgress = (progress - 0.8) / 0.2;
+                const bounce = Math.sin(settleProgress * Math.PI) * 0.05;
+                lapMesh.position.y = baseY + bounce;
+                lapMat.alpha = 1;
+            }
+            
+            if (progress < 1) {
+                requestAnimationFrame(animFrame);
+            } else {
+                // Animation complete
+                lapMesh.position.y = baseY;
+                lapMat.alpha = 1;
+                machine.currentLapType = newLapType;
+                console.log(`✅ Lap changed to: ${newLapColor.name}`);
+                
+                // Show floating text notification
+                this.showLapChangeNotification(machine, newLapColor.name);
+                
+                if (callback) callback();
+            }
+        };
+        
+        requestAnimationFrame(animFrame);
+    }
+    
+    /**
+     * Show floating notification when lap changes
+     */
+    showLapChangeNotification(machine, lapName) {
+        if (!this.scene || !machine.mesh) return;
+        
+        // Create floating text plane above the machine
+        const plane = BABYLON.MeshBuilder.CreatePlane('lapNotify_' + Date.now(), {
+            width: 2.5, height: 0.5
+        }, this.scene);
+        
+        plane.position = machine.mesh.position.clone();
+        plane.position.y += 3;
+        plane.billboardMode = BABYLON.Mesh.BILLBOARDMODE_ALL;
+        
+        // Create dynamic texture for text
+        const texture = new BABYLON.DynamicTexture('lapNotifyTex', { width: 256, height: 64 }, this.scene);
+        const ctx = texture.getContext();
+        
+        // Background
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+        ctx.fillRect(0, 0, 256, 64);
+        
+        // Border
+        ctx.strokeStyle = '#00ffff';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(2, 2, 252, 60);
+        
+        // Text
+        ctx.font = 'bold 16px Arial';
+        ctx.fillStyle = '#00ffff';
+        ctx.textAlign = 'center';
+        ctx.fillText('🔄 ' + lapName, 128, 40);
+        
+        texture.update();
+        
+        const mat = new BABYLON.StandardMaterial('lapNotifyMat', this.scene);
+        mat.diffuseTexture = texture;
+        mat.emissiveTexture = texture;
+        mat.opacityTexture = texture;
+        mat.backFaceCulling = false;
+        plane.material = mat;
+        
+        // Animate: float up and fade out
+        let startY = plane.position.y;
+        let alpha = 1;
+        const floatAnim = () => {
+            plane.position.y += 0.02;
+            alpha -= 0.01;
+            mat.alpha = alpha;
+            
+            if (alpha > 0) {
+                requestAnimationFrame(floatAnim);
+            } else {
+                plane.dispose();
+                texture.dispose();
+                mat.dispose();
+            }
+        };
+        requestAnimationFrame(floatAnim);
+    }
+    
+    /**
+     * Handle lap change interaction from machine click
+     */
+    handleLapChangeClick(machine) {
+        if (!machine) return;
+        
+        // Get available laps from inventory
+        const availableLaps = Object.entries(this.state.inventory.laps)
+            .filter(([key, lap]) => lap.owned && lap.condition > 0)
+            .map(([key]) => key);
+        
+        // Add polishing laps if paste is available
+        Object.entries(this.state.inventory.paste).forEach(([grit, amount]) => {
+            if (amount > 0) {
+                availableLaps.push(`copper_${grit}`);
+            }
+        });
+        
+        // Find current lap index and cycle to next
+        const currentIndex = availableLaps.indexOf(machine.currentLapType);
+        const nextIndex = (currentIndex + 1) % availableLaps.length;
+        const nextLap = availableLaps[nextIndex];
+        
+        // Animate the lap change
+        this.animateLapChange(machine, nextLap);
     }
     
     /**
