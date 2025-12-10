@@ -992,6 +992,22 @@
             background: #4d5581;
         }
 
+        /* Responsive helper classes (set via JS for dynamic detection) */
+        body.mobile-view .desktop-only,
+        body.tablet-view .desktop-only {
+            display: none !important;
+        }
+        
+        body.desktop-view .mobile-only,
+        body.tablet-view .mobile-only {
+            display: none !important;
+        }
+        
+        body.mobile-view .tablet-only,
+        body.desktop-view .tablet-only {
+            display: none !important;
+        }
+
         /* Responsive */
         @media (max-width: 1400px) {
             .app-container {
@@ -18852,6 +18868,21 @@
         const activeHoldIntervals = new Map(); // Track all active D-pad intervals globally
         let motorKilled = false; // Flag to block commands during emergency stop
 
+        // ==================== CLEAR HIGHLIGHTS ON ANY BUTTON CLICK ====================
+        // Add a global click listener to clear highlights when highlighted buttons are clicked
+        document.addEventListener('click', (e) => {
+            const clickedBtn = e.target.closest('.highlighted-button');
+            if (clickedBtn) {
+                // Clear just this button's highlight after a short delay (let click register first)
+                setTimeout(() => {
+                    clickedBtn.style.boxShadow = '';
+                    clickedBtn.style.animation = '';
+                    clickedBtn.classList.remove('highlighted-button');
+                    console.log('✨ Highlight cleared on click:', clickedBtn.id);
+                }, 100);
+            }
+        });
+
         // ==================== EVENT LISTENERS ====================
         function initializeEventListeners() {
             console.log('%c🔧 INITIALIZING EVENT LISTENERS', 'color: #667eea; font-weight: bold; font-size: 14px; background: #0a0e27; padding: 5px');
@@ -19840,10 +19871,23 @@
         function checkResponsiveBreakpoint() {
             const width = window.innerWidth;
             let breakpoint = 'Desktop (3-column)';
-            if (width <= 1000) {
+            
+            // Match CSS breakpoints: 768px (mobile), 1000px (tablet), 1400px (desktop)
+            if (width <= 768) {
                 breakpoint = 'Mobile (1-column stack)';
+                document.body.classList.add('mobile-view');
+                document.body.classList.remove('tablet-view', 'desktop-view');
+            } else if (width <= 1000) {
+                breakpoint = 'Tablet (adaptive 2-column)';
+                document.body.classList.add('tablet-view');
+                document.body.classList.remove('mobile-view', 'desktop-view');
             } else if (width <= 1400) {
-                breakpoint = 'Tablet (adaptive 2-3 column)';
+                breakpoint = 'Large Tablet (2-3 column)';
+                document.body.classList.add('tablet-view');
+                document.body.classList.remove('mobile-view', 'desktop-view');
+            } else {
+                document.body.classList.add('desktop-view');
+                document.body.classList.remove('mobile-view', 'tablet-view');
             }
             console.log(`📱 Viewport: ${width}px → ${breakpoint}`);
         }
