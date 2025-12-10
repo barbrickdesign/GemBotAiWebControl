@@ -2354,7 +2354,7 @@ class GemBotFarmGame {
         if (stone.awaitingInteraction) {
             // Machine is paused waiting for human click
             // DO NOT PROGRESS - show visual indicator
-            console.log(`⏸️ ${machine.id} waiting for: ${stone.interactionType}`);
+            // Don't log every tick - too spammy
             return;
         }
         
@@ -2860,6 +2860,12 @@ class GemBotFarmGame {
         stone.interactionType = null;
         stone.isPaused = false;
         
+        // CRITICAL: Advance stage progress slightly so the humanRequired check doesn't re-trigger
+        // The check is: if (stage.humanRequired && stone.stageProgress === 0)
+        if (stone.stageProgress === 0) {
+            stone.stageProgress = 0.001;
+        }
+        
         // Remove from pending list
         this.state.pendingInteractions = this.state.pendingInteractions.filter(
             i => i.machineId !== machineId
@@ -2868,6 +2874,7 @@ class GemBotFarmGame {
         // Handle specific interaction types
         switch(interactionType) {
             case 'start_prep':
+                console.log('✅ start_prep handled, stageProgress now:', stone.stageProgress);
                 if (this.merlin) {
                     this.merlinSpeak('Examining the rough... looking for inclusions and best orientation.');
                 }

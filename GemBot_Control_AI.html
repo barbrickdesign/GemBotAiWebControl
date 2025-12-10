@@ -20709,12 +20709,19 @@
         
         // Handle machine interaction clicks (human required actions)
         function handleMachineInteraction(machineId, interactionType) {
-            if (!gameFarm) return;
+            if (!gameFarm) {
+                console.error('❌ gameFarm not initialized');
+                return;
+            }
             
             console.log(`🖱️ Handling interaction: ${interactionType} on ${machineId}`);
+            console.log('Machine state before:', gameFarm.state.machines.find(m => m.id === machineId)?.currentStone);
             
             // Call the game's interaction handler
-            const result = gameFarm.handleInteraction(machineId, interactionType);
+            const result = gameFarm.handleMachineInteraction(machineId);
+            
+            console.log('Interaction result:', result);
+            console.log('Machine state after:', gameFarm.state.machines.find(m => m.id === machineId)?.currentStone);
             
             if (result && result.success) {
                 addGameActivity(`✅ ${result.message || 'Action completed!'}`);
@@ -20722,7 +20729,9 @@
                 addGameActivity(`⚠️ ${result.message || 'Action failed'}`);
             }
             
+            // Force UI refresh
             updateGameUI();
+            updateCuttingStatus();
         }
         
         // New function to display realistic cutting progress
