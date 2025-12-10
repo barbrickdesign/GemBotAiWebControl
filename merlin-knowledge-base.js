@@ -95,7 +95,7 @@ Shows real-time position data:
         
         // Farm Game & Economy
         farmGame: {
-            keywords: ['farm', 'game', 'gem', 'rough', 'cut', 'polish', 'sell', 'buy', 'trade', 'marketplace', 'economy', 'price', 'value', 'token', '$gembot', 'currency'],
+            keywords: ['farm', 'game', 'gem', 'rough', 'cut', 'polish', 'sell', 'buy', 'trade', 'marketplace', 'economy', 'price', 'value', 'token', '$gbuv', '$gembot', 'currency', 'gem bot universe', 'vault'],
             files: [
                 'COMPLETE_TOKEN_ECOSYSTEM_SUMMARY.md',
                 'ECONOMY_LOOP_TESTING_GUIDE.md',
@@ -124,10 +124,11 @@ Shows real-time position data:
 Values increase based on cut quality and size.
 Polish level and precision affect final price.
 
-## $GEMBOT Token
+## $GBUV Token (Gem Bot Universe Vault)
 - Contract: DPHcbu7wJEbcrnCYjXC8vHBkM39kT9xZg4mYayvrpump
 - Network: Solana
-- Use for in-game purchases and trading
+- Use for in-game purchases, forging, and trading
+- Connect your Phantom wallet to interact
             `
         },
         
@@ -452,7 +453,7 @@ Press the EMERGENCY STOP button or:
         "GemBot supports both Step mode (precision) and Continuous mode (flow) for motor control.",
         "The speed slider goes from 1 (polishing) to 5 (roughing).",
         "You can earn gems by completing lessons with Merlin!",
-        "The $GEMBOT token is on Solana - real crypto integration!",
+        "The $GBUV token (Gem Bot Universe Vault) is on Solana - real crypto integration!",
         "Mobile users can scan the QR code to connect their camera.",
         "Press ESC anytime for emergency stop.",
         "The 3D visualization shows your machine state in real-time.",

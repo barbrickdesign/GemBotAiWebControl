@@ -5,11 +5,12 @@
  * Features:
  * - Live sync with earthartgems.com catalog
  * - In-game forging system (gold/silver + cut gems = rings)
- * - Crypto payment gateway ($GEMBOT token)
+ * - Crypto payment gateway ($GBUV token - Gem Bot Universe Vault)
  * - Virtual-to-real-world item conversion
  * - Player-to-player trading
  * 
  * Token: DPHcbu7wJEbcrnCYjXC8vHBkM39kT9xZg4mYayvrpump
+ * Name: Gem Bot Universe Vault ($GBUV)
  */
 
 const GemBotMarketplace = {
@@ -20,7 +21,8 @@ const GemBotMarketplace = {
     config: {
         // Crypto token address on Solana
         tokenAddress: "DPHcbu7wJEbcrnCYjXC8vHBkM39kT9xZg4mYayvrpump",
-        tokenSymbol: "$GEMBOT",
+        tokenSymbol: "$GBUV",
+        tokenName: "Gem Bot Universe Vault",
         tokenDecimals: 9,
         
         // Earth Art Gems integration
@@ -28,8 +30,8 @@ const GemBotMarketplace = {
         apiEndpoint: null, // Will need Shopify API access
         
         // Price conversion ratios
-        usdToToken: 100, // 1 USD = 100 $GEMBOT tokens (adjustable)
-        tokenToInGameGold: 10, // 1 $GEMBOT = 10 in-game gold
+        usdToToken: 100, // 1 USD = 100 $GBUV tokens (adjustable)
+        tokenToInGameGold: 10, // 1 $GBUV = 10 in-game gold
         
         // Forging requirements
         forgingFee: 50, // Base token cost to forge
@@ -55,7 +57,7 @@ const GemBotMarketplace = {
             gold: {
                 name: "14k Gold",
                 symbol: "🥇",
-                pricePerGram: 50, // in $GEMBOT
+                pricePerGram: 50, // in $GBUV
                 inGameAmount: 0
             },
             roseGold: {

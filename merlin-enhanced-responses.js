@@ -241,7 +241,7 @@ const MerlinEnhancedResponses = {
         ],
         marketplace: [
             "Earth Art Gems designs can be forged using your virtual metals and cut gems",
-            "the $GEMBOT token connects your virtual wealth to real-world treasures",
+            "the $GBUV token connects your virtual wealth to real-world treasures",
             "forging a ring requires both precious metals and quality cut gemstones",
             "collect enough virtual copies of an item to unlock the real jewelry piece",
             "gold and silver prices in the market fluctuate with the crypto exchange rate",
@@ -268,7 +268,7 @@ const MerlinEnhancedResponses = {
             "Each forge strengthens your connection to the final real piece."
         ],
         crypto: [
-            "$GEMBOT tokens are the bridge between your virtual achievements and real rewards.",
+            "$GBUV tokens are the bridge between your virtual achievements and real rewards.",
             "The token flows through Solana like water through ancient gem mines.",
             "Your crypto wallet holds the key to converting virtual to tangible.",
             "Token prices sync with Jupiter DEX—always fair, always transparent."
@@ -560,9 +560,9 @@ const MerlinEnhancedResponses = {
         const q = question.toLowerCase();
         
         // Token questions
-        if (q.includes('$gembot') || q.includes('token') || q.includes('crypto')) {
+        if (q.includes('$gembot') || q.includes('$gbuv') || q.includes('token') || q.includes('crypto') || q.includes('gem bot universe')) {
             return this.applyMood(
-                "The $GEMBOT token (DPHcbu7wJEbcrnCYjXC8vHBkM39kT9xZg4mYayvrpump) is our marketplace currency on Solana. " +
+                "The $GBUV token (Gem Bot Universe Vault) at DPHcbu7wJEbcrnCYjXC8vHBkM39kT9xZg4mYayvrpump is our marketplace currency on Solana. " +
                 "You earn tokens through gameplay and can use them to forge virtual jewelry, buy metals, trade with players, " +
                 "or convert your virtual collection into REAL jewelry from Earth Art Gems!"
             );
@@ -581,7 +581,7 @@ const MerlinEnhancedResponses = {
         if (q.includes('forge') || q.includes('craft') || q.includes('make ring')) {
             return this.applyMood(
                 "Forging combines your precious metals (gold or silver) with cut gemstones to create virtual jewelry. " +
-                "Each forge costs $GEMBOT tokens and requires specific materials. " +
+                "Each forge costs $GBUV tokens and requires specific materials. " +
                 "The more you forge, the closer you get to owning the real piece!"
             );
         }
@@ -591,7 +591,7 @@ const MerlinEnhancedResponses = {
             return this.applyMood(
                 "When you collect enough virtual copies of an item (equal to its real-world value in forging costs), " +
                 "you become eligible to CONVERT to the real item! " +
-                "Your $GEMBOT tokens are automatically converted via Solana, and Earth Art Gems ships your real jewelry!"
+                "Your $GBUV tokens are automatically converted via Solana, and Earth Art Gems ships your real jewelry!"
             );
         }
         
@@ -599,7 +599,7 @@ const MerlinEnhancedResponses = {
         if (q.includes('gold') || q.includes('silver') || q.includes('metal')) {
             return this.applyMood(
                 "Precious metals are essential for forging! " +
-                "Gold (🥇) and Silver (🥈) can be purchased with $GEMBOT tokens. " +
+                "Gold (🥇) and Silver (🥈) can be purchased with $GBUV tokens. " +
                 "Different jewelry pieces require different amounts of each metal."
             );
         }
@@ -608,7 +608,7 @@ const MerlinEnhancedResponses = {
         if (q.includes('trade') || q.includes('sell') || q.includes('player market')) {
             return this.applyMood(
                 "The player marketplace lets you trade your forged items with other players! " +
-                "List your virtual jewelry for $GEMBOT tokens, or browse others' listings. " +
+                "List your virtual jewelry for $GBUV tokens, or browse others' listings. " +
                 "Trading is a great way to complete collections or earn tokens!"
             );
         }
