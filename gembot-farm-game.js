@@ -2664,6 +2664,116 @@ class GemBotFarmGame {
     }
     
     /**
+     * Start cutting with a specific design selection (called from UI)
+     * @param {string} machineId - Machine ID to use
+     * @param {string} gemName - Name of gem from inventory
+     * @param {number} pieceIndex - Index of the piece in the rough array
+     * @param {string} designId - ID of the design to use
+     * @returns {Object} result with success status
+     */
+    startCuttingWithDesign(machineId, gemName, pieceIndex, designId) {
+        const machine = this.state.machines.find(m => m.id === machineId);
+        if (!machine) {
+            return { success: false, message: 'Machine not found' };
+        }
+        
+        if (machine.currentStone) {
+            return { success: false, message: 'Machine is already cutting' };
+        }
+        
+        if (machine.isDown) {
+            return { success: false, message: 'Machine needs repair' };
+        }
+        
+        // Get the specific rough piece
+        const roughArray = this.state.inventory.rough[gemName];
+        if (!roughArray || !Array.isArray(roughArray) || !roughArray[pieceIndex]) {
+            return { success: false, message: 'Stone not found in inventory' };
+        }
+        
+        const piece = roughArray[pieceIndex];
+        const gem = this.gemTypes.find(g => g.name === gemName);
+        if (!gem) {
+            return { success: false, message: 'Unknown gem type' };
+        }
+        
+        // Get the design
+        const design = this.designs[designId];
+        if (!design) {
+            return { success: false, message: 'Design not found' };
+        }
+        
+        // Check level requirement
+        if (design.levelRequired > this.state.player.level) {
+            return { success: false, message: `Need level ${design.levelRequired} for this design` };
+        }
+        
+        // Check dop wax
+        const dopResult = this.consumeDopWax();
+        if (!dopResult.success) {
+            return { success: false, message: dopResult.message };
+        }
+        
+        // Remove from inventory
+        roughArray.splice(pieceIndex, 1);
+        
+        // Calculate expected yield
+        const baseYield = this.caratYield[designId] || this.caratYield['default'];
+        const qualityMod = this.roughQuality[piece.quality || 'good']?.yieldMod || 1.0;
+        const expectedYield = baseYield * qualityMod;
+        const expectedFinishedCarats = piece.carats * expectedYield;
+        const caratTimeFactor = Math.sqrt(piece.carats);
+        
+        // Build facet sequence
+        const facetSequence = this.buildFacetSequence(design);
+        
+        // Create stone cutting record
+        machine.currentStone = {
+            id: 'stone_' + Date.now(),
+            gem: gem,
+            design: design,
+            designId: designId,
+            roughCarats: piece.carats,
+            roughQuality: piece.quality || 'good',
+            expectedYield: expectedYield,
+            expectedFinishedCarats: expectedFinishedCarats,
+            caratTimeFactor: caratTimeFactor,
+            currentStage: this.stageOrder[0],
+            stageIndex: 0,
+            stageProgress: 0,
+            facetSequence: facetSequence,
+            currentFacetIndex: 0,
+            currentAngle: 0,
+            currentIndex: 0,
+            cuttingPhase: 'pavilion',
+            currentTier: null,
+            startTime: Date.now(),
+            perfectBonus: 1,
+            qualityScore: 100,
+            awaitingInteraction: true,
+            interactionType: 'start_prep',
+            isPaused: false,
+            failureLog: []
+        };
+        
+        this.addPendingInteraction(machine.id, 'start_prep', 
+            `Click to start preparing ${piece.carats.toFixed(2)}ct ${gem.name} with ${design.name}`);
+        
+        if (this.merlin) {
+            this.merlinSpeak(`${piece.carats.toFixed(2)}ct ${gem.name} ready for ${design.name}! ${design.totalFacets} facets. Click to begin!`);
+        }
+        
+        console.log(`💎 Player selected: ${piece.carats.toFixed(2)}ct ${gem.name} → ${design.name} (${design.totalFacets} facets)`);
+        
+        return { 
+            success: true, 
+            message: `Started cutting ${gem.name} with ${design.name}`,
+            expectedFinishedCarats: expectedFinishedCarats,
+            totalFacets: design.totalFacets
+        };
+    }
+    
+    /**
      * Build the complete facet cutting sequence for a design
      * Returns array of { tier, angle, index, phase } for each facet
      */

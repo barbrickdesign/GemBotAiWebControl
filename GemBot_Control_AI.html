@@ -2908,6 +2908,216 @@
             color: #00ffff;
         }
         
+        /* Design Panel Styles */
+        .game-modal-large {
+            max-width: 700px !important;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .design-steps {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            padding: 10px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+        }
+        
+        .design-step {
+            flex: 1;
+            text-align: center;
+            padding: 8px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 6px;
+            font-size: 11px;
+            color: #666;
+            border: 1px solid transparent;
+        }
+        
+        .design-step.active {
+            background: linear-gradient(135deg, #ff0080, #7928ca);
+            color: white;
+            border-color: #ff0080;
+        }
+        
+        .design-step.completed {
+            background: rgba(0,255,136,0.2);
+            color: #00ff88;
+            border-color: #00ff88;
+        }
+        
+        .design-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 10px;
+            max-height: 350px;
+            overflow-y: auto;
+            padding: 5px;
+        }
+        
+        .design-card {
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        
+        .design-card:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(0,255,255,0.5);
+            transform: translateY(-2px);
+        }
+        
+        .design-card.selected {
+            background: rgba(0,255,136,0.15);
+            border-color: #00ff88;
+            box-shadow: 0 0 15px rgba(0,255,136,0.3);
+        }
+        
+        .design-card.locked {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .design-card-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+        
+        .design-card-name {
+            font-weight: bold;
+            color: #fff;
+            font-size: 11px;
+            margin-bottom: 4px;
+        }
+        
+        .design-card-info {
+            font-size: 9px;
+            color: #888;
+        }
+        
+        .design-card-facets {
+            color: #00ffff;
+            font-size: 10px;
+            margin-top: 4px;
+        }
+        
+        .design-card-time {
+            color: #ffd700;
+            font-size: 9px;
+        }
+        
+        .design-card-lock {
+            color: #ff4444;
+            font-size: 9px;
+            margin-top: 4px;
+        }
+        
+        .design-panel-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 16px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .design-summary {
+            flex: 1;
+            text-align: center;
+            font-size: 11px;
+            color: #ccc;
+        }
+        
+        .stone-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .stone-card {
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .stone-card:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(0,255,255,0.5);
+        }
+        
+        .stone-card.selected {
+            background: rgba(0,255,136,0.15);
+            border-color: #00ff88;
+        }
+        
+        .game-btn-accent {
+            background: linear-gradient(135deg, #ffd700, #ff8800) !important;
+            color: #000 !important;
+            font-weight: bold;
+        }
+        
+        .game-btn-accent:hover {
+            background: linear-gradient(135deg, #ffdd33, #ff9933) !important;
+        }
+        
+        .shape-category {
+            margin-bottom: 12px;
+        }
+        
+        .shape-category-header {
+            font-size: 12px;
+            color: #00ffff;
+            margin-bottom: 8px;
+            padding-bottom: 4px;
+            border-bottom: 1px solid rgba(0,255,255,0.2);
+        }
+        
+        .confirm-details {
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            padding: 16px;
+            text-align: center;
+        }
+        
+        .confirm-details h3 {
+            color: #00ffff;
+            margin-bottom: 12px;
+        }
+        
+        .confirm-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .confirm-label {
+            color: #888;
+        }
+        
+        .confirm-value {
+            color: #fff;
+            font-weight: bold;
+        }
+        
+        .estimated-time {
+            margin-top: 12px;
+            padding: 10px;
+            background: rgba(255,215,0,0.1);
+            border-radius: 8px;
+            color: #ffd700;
+        }
+        
         /* Mobile responsive for game mode */
         @media (max-width: 768px) {
             .game-stats-bar { gap: 8px; }
@@ -5598,6 +5808,34 @@
                         </div>
                     </div>
                 </div>
+                
+                <!-- Design Selection Panel Overlay -->
+                <div id="designPanelOverlay" class="game-modal-overlay hidden">
+                    <div class="game-modal game-modal-large">
+                        <div class="game-modal-header">
+                            <h2>💎 Select Design & Stone</h2>
+                            <button onclick="closeDesignPanel()" class="modal-close-btn">✕</button>
+                        </div>
+                        
+                        <!-- Step indicator -->
+                        <div class="design-steps">
+                            <div class="design-step active" id="step1Indicator">1. Select Stone</div>
+                            <div class="design-step" id="step2Indicator">2. Select Shape</div>
+                            <div class="design-step" id="step3Indicator">3. Select Design</div>
+                            <div class="design-step" id="step4Indicator">4. Confirm</div>
+                        </div>
+                        
+                        <div id="designPanelContent">
+                            <!-- Step 1: Stone Selection (populated by JS) -->
+                        </div>
+                        
+                        <div class="design-panel-footer">
+                            <button id="designBackBtn" class="game-btn" onclick="designPanelBack()" style="display:none;">← Back</button>
+                            <div id="designSelectionSummary" class="design-summary"></div>
+                            <button id="designNextBtn" class="game-btn game-btn-primary" onclick="designPanelNext()" disabled>Next →</button>
+                        </div>
+                    </div>
+                </div>
             </div>
             
             <!-- Game Footer -->
@@ -5605,6 +5843,7 @@
                 <button class="game-btn" onclick="leaderboardUI.open()">🏆 Leaderboard</button>
                 <button class="game-btn" onclick="openShopPanel()">🛒 Shop</button>
                 <button class="game-btn" onclick="openInventoryPanel()">📦 Inventory</button>
+                <button class="game-btn game-btn-accent" onclick="openDesignPanel()">✨ Cut Stone</button>
                 <button class="game-btn" onclick="openMaintenancePanel()">🔧 Maintenance</button>
                 <button class="game-btn" onclick="gameFarm?.save()">💾 Save</button>
                 <div class="production-rate">
@@ -21149,6 +21388,512 @@
             }
         }
         
+        // ==================== DESIGN SELECTION PANEL FUNCTIONS ====================
+        let designPanelState = {
+            step: 1,
+            selectedStone: null,
+            selectedShape: null,
+            selectedDesign: null,
+            availableShapes: [],
+            availableDesigns: []
+        };
+        
+        function openDesignPanel() {
+            // Reset state
+            designPanelState = {
+                step: 1,
+                selectedStone: null,
+                selectedShape: null,
+                selectedDesign: null,
+                availableShapes: [],
+                availableDesigns: []
+            };
+            
+            document.getElementById('designPanelOverlay').style.display = 'flex';
+            updateDesignStepIndicators();
+            renderDesignPanelContent();
+        }
+        
+        function closeDesignPanel() {
+            document.getElementById('designPanelOverlay').style.display = 'none';
+        }
+        
+        function updateDesignStepIndicators() {
+            for (let i = 1; i <= 4; i++) {
+                const el = document.getElementById(`step${i}Indicator`);
+                if (el) {
+                    el.classList.remove('active', 'completed');
+                    if (i < designPanelState.step) el.classList.add('completed');
+                    if (i === designPanelState.step) el.classList.add('active');
+                }
+            }
+            
+            // Update buttons
+            const backBtn = document.getElementById('designBackBtn');
+            const nextBtn = document.getElementById('designNextBtn');
+            
+            if (backBtn) backBtn.style.display = designPanelState.step > 1 ? 'block' : 'none';
+            if (nextBtn) {
+                nextBtn.textContent = designPanelState.step === 4 ? '✨ Start Cutting!' : 'Next →';
+                nextBtn.disabled = !canProceedToNextStep();
+            }
+            
+            updateDesignSummary();
+        }
+        
+        function canProceedToNextStep() {
+            switch(designPanelState.step) {
+                case 1: return designPanelState.selectedStone !== null;
+                case 2: return designPanelState.selectedShape !== null;
+                case 3: return designPanelState.selectedDesign !== null;
+                case 4: return true;
+                default: return false;
+            }
+        }
+        
+        function updateDesignSummary() {
+            const summary = document.getElementById('designSelectionSummary');
+            if (!summary) return;
+            
+            let parts = [];
+            if (designPanelState.selectedStone) {
+                parts.push(`💎 ${designPanelState.selectedStone.name} (${designPanelState.selectedStone.carats}ct)`);
+            }
+            if (designPanelState.selectedShape) {
+                parts.push(`📐 ${designPanelState.selectedShape.name}`);
+            }
+            if (designPanelState.selectedDesign) {
+                parts.push(`✨ ${designPanelState.selectedDesign.name}`);
+            }
+            
+            summary.innerHTML = parts.length > 0 ? parts.join(' → ') : 'Select options to begin...';
+        }
+        
+        function renderDesignPanelContent() {
+            const container = document.getElementById('designPanelContent');
+            if (!container || !gameFarm) return;
+            
+            switch(designPanelState.step) {
+                case 1:
+                    container.innerHTML = renderStoneSelection();
+                    break;
+                case 2:
+                    container.innerHTML = renderShapeSelection();
+                    break;
+                case 3:
+                    container.innerHTML = renderDesignSelection();
+                    break;
+                case 4:
+                    container.innerHTML = renderConfirmation();
+                    break;
+            }
+        }
+        
+        function renderStoneSelection() {
+            let html = '<h3 style="color: #00ffff; margin: 0 0 12px 0; font-size: 14px;">Select a rough stone to cut:</h3>';
+            html += '<div class="stone-grid">';
+            
+            let hasStones = false;
+            
+            // Get rough stones from inventory with their individual pieces
+            const rough = gameFarm.state.inventory.rough;
+            Object.entries(rough).forEach(([gemName, pieces]) => {
+                if (Array.isArray(pieces)) {
+                    pieces.forEach((piece, index) => {
+                        hasStones = true;
+                        const gem = gameFarm.gemTypes.find(g => g.name === gemName);
+                        const isSelected = designPanelState.selectedStone && 
+                                          designPanelState.selectedStone.name === gemName && 
+                                          designPanelState.selectedStone.pieceIndex === index;
+                        
+                        html += `
+                            <div class="stone-card ${isSelected ? 'selected' : ''}" 
+                                 onclick="selectStone('${gemName}', ${index}, ${piece.roughCarats}, '${piece.roughQuality}')">
+                                <div style="font-size: 24px; margin-bottom: 6px;">${gem?.icon || '💎'}</div>
+                                <div style="color: ${gem?.color || '#fff'}; font-weight: bold; font-size: 12px;">${gemName}</div>
+                                <div style="color: #ffd700; font-size: 11px;">${piece.roughCarats.toFixed(2)}ct</div>
+                                <div style="color: #888; font-size: 9px;">${piece.roughQuality || 'standard'} quality</div>
+                                <div style="color: #00ffff; font-size: 9px;">Hardness: ${gem?.hardness || '?'}</div>
+                            </div>
+                        `;
+                    });
+                } else if (pieces > 0) {
+                    // Legacy format - count only
+                    for (let i = 0; i < pieces; i++) {
+                        hasStones = true;
+                        const gem = gameFarm.gemTypes.find(g => g.name === gemName);
+                        const isSelected = designPanelState.selectedStone && 
+                                          designPanelState.selectedStone.name === gemName && 
+                                          designPanelState.selectedStone.pieceIndex === i;
+                        
+                        html += `
+                            <div class="stone-card ${isSelected ? 'selected' : ''}" 
+                                 onclick="selectStone('${gemName}', ${i}, 1.0, 'standard')">
+                                <div style="font-size: 24px; margin-bottom: 6px;">${gem?.icon || '💎'}</div>
+                                <div style="color: ${gem?.color || '#fff'}; font-weight: bold; font-size: 12px;">${gemName}</div>
+                                <div style="color: #ffd700; font-size: 11px;">~1.0ct</div>
+                                <div style="color: #00ffff; font-size: 9px;">Hardness: ${gem?.hardness || '?'}</div>
+                            </div>
+                        `;
+                    }
+                }
+            });
+            
+            if (!hasStones) {
+                html = `
+                    <div style="text-align: center; padding: 40px; color: #888;">
+                        <div style="font-size: 48px; margin-bottom: 16px;">📦</div>
+                        <div style="font-size: 14px; margin-bottom: 12px;">No rough stones in inventory</div>
+                        <button class="game-btn game-btn-primary" onclick="closeDesignPanel(); openShopPanel();">
+                            🛒 Visit Shop
+                        </button>
+                    </div>
+                `;
+            }
+            
+            html += '</div>';
+            return html;
+        }
+        
+        function selectStone(gemName, pieceIndex, carats, quality) {
+            const gem = gameFarm.gemTypes.find(g => g.name === gemName);
+            designPanelState.selectedStone = {
+                name: gemName,
+                pieceIndex: pieceIndex,
+                carats: carats,
+                quality: quality,
+                gem: gem
+            };
+            
+            // Get available shapes for this player level
+            designPanelState.availableShapes = getAvailableShapes();
+            
+            updateDesignStepIndicators();
+            renderDesignPanelContent();
+        }
+        
+        function getAvailableShapes() {
+            const playerLevel = gameFarm.state.player?.level || 1;
+            const shapes = [];
+            
+            // Use internal shapes from gameFarm
+            if (gameFarm.shapes) {
+                Object.entries(gameFarm.shapes).forEach(([id, shape]) => {
+                    shapes.push({
+                        id: id,
+                        name: shape.name,
+                        description: shape.description,
+                        levelRequired: shape.levelRequired,
+                        unlocked: playerLevel >= shape.levelRequired
+                    });
+                });
+            }
+            
+            // Also check GemBotFacetingDesigns if available
+            if (window.GemBotFacetingDesigns && window.GemBotFacetingDesigns.shapeCategories) {
+                Object.entries(window.GemBotFacetingDesigns.shapeCategories).forEach(([id, cat]) => {
+                    if (!shapes.find(s => s.id === id)) {
+                        shapes.push({
+                            id: id,
+                            name: cat.name,
+                            icon: cat.icon,
+                            description: cat.description,
+                            levelRequired: cat.unlockLevel,
+                            unlocked: playerLevel >= cat.unlockLevel,
+                            totalDesigns: cat.totalDesigns,
+                            difficulty: cat.difficulty
+                        });
+                    }
+                });
+            }
+            
+            return shapes.sort((a, b) => a.levelRequired - b.levelRequired);
+        }
+        
+        function renderShapeSelection() {
+            let html = '<h3 style="color: #00ffff; margin: 0 0 12px 0; font-size: 14px;">Select shape for your stone:</h3>';
+            html += '<div class="design-grid">';
+            
+            const shapes = designPanelState.availableShapes;
+            
+            shapes.forEach(shape => {
+                const isSelected = designPanelState.selectedShape && designPanelState.selectedShape.id === shape.id;
+                const isLocked = !shape.unlocked;
+                
+                const shapeIcons = {
+                    'round': '⭕', 'oval': '🥚', 'square': '⬜', 'emerald': '🟩', 'emerald_cut': '🟩',
+                    'rectangle': '📐', 'triangle': '🔺', 'trillion': '🔺', 'hexagon': '⬡', 'pentagon': '⬠',
+                    'pear': '🍐', 'marquise': '💎', 'cushion': '🛋️', 'heart': '❤️', 'fancy': '✨'
+                };
+                
+                html += `
+                    <div class="design-card ${isSelected ? 'selected' : ''} ${isLocked ? 'locked' : ''}" 
+                         onclick="${isLocked ? '' : `selectShape('${shape.id}')`}">
+                        <div class="design-card-icon">${shape.icon || shapeIcons[shape.id] || '💎'}</div>
+                        <div class="design-card-name">${shape.name}</div>
+                        <div class="design-card-info">${shape.description || ''}</div>
+                        ${shape.totalDesigns ? `<div class="design-card-facets">${shape.totalDesigns} designs</div>` : ''}
+                        ${isLocked ? `<div class="design-card-lock">🔒 Level ${shape.levelRequired}</div>` : ''}
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            return html;
+        }
+        
+        function selectShape(shapeId) {
+            const shape = designPanelState.availableShapes.find(s => s.id === shapeId);
+            if (!shape || !shape.unlocked) return;
+            
+            designPanelState.selectedShape = shape;
+            designPanelState.availableDesigns = getAvailableDesigns(shapeId);
+            
+            updateDesignStepIndicators();
+            renderDesignPanelContent();
+        }
+        
+        function getAvailableDesigns(shapeId) {
+            const playerLevel = gameFarm.state.player?.level || 1;
+            const designs = [];
+            
+            // Get from internal gameFarm designs
+            if (gameFarm.designs) {
+                Object.entries(gameFarm.designs).forEach(([id, design]) => {
+                    // Map shapes to design shapes
+                    const designShapeMatch = design.shape === shapeId || 
+                        (shapeId === 'round' && design.shape === 'round') ||
+                        (shapeId === 'emerald' && design.shape === 'emerald_cut') ||
+                        (shapeId === 'triangle' && design.shape === 'trillion');
+                    
+                    if (designShapeMatch || !design.shape) {
+                        designs.push({
+                            id: id,
+                            name: design.name,
+                            description: design.description,
+                            totalFacets: design.totalFacets,
+                            levelRequired: design.levelRequired,
+                            unlocked: playerLevel >= design.levelRequired && 
+                                     gameFarm.state.unlockedDesigns.includes(id),
+                            valueMultiplier: design.valueMultiplier,
+                            design: design
+                        });
+                    }
+                });
+            }
+            
+            // If no designs found for this shape, provide generic options
+            if (designs.length === 0) {
+                designs.push({
+                    id: 'simple_round',
+                    name: 'Simple Round',
+                    description: '33-facet beginner cut',
+                    totalFacets: 33,
+                    levelRequired: 1,
+                    unlocked: true,
+                    valueMultiplier: 0.7
+                });
+                designs.push({
+                    id: 'standard_round_brilliant',
+                    name: 'Standard Round Brilliant',
+                    description: '57-facet classic brilliant',
+                    totalFacets: 57,
+                    levelRequired: 1,
+                    unlocked: true,
+                    valueMultiplier: 1.0
+                });
+            }
+            
+            return designs.sort((a, b) => a.levelRequired - b.levelRequired);
+        }
+        
+        function renderDesignSelection() {
+            let html = `<h3 style="color: #00ffff; margin: 0 0 12px 0; font-size: 14px;">Select cutting design for ${designPanelState.selectedShape?.name || 'your shape'}:</h3>`;
+            html += '<div class="design-grid">';
+            
+            const designs = designPanelState.availableDesigns;
+            
+            designs.forEach(design => {
+                const isSelected = designPanelState.selectedDesign && designPanelState.selectedDesign.id === design.id;
+                const isLocked = !design.unlocked;
+                
+                // Calculate estimated time based on facets
+                const estimatedMinutes = calculateCuttingTime(design.totalFacets, designPanelState.selectedStone?.carats || 1);
+                
+                html += `
+                    <div class="design-card ${isSelected ? 'selected' : ''} ${isLocked ? 'locked' : ''}" 
+                         onclick="${isLocked ? '' : `selectDesign('${design.id}')`}">
+                        <div class="design-card-icon">✨</div>
+                        <div class="design-card-name">${design.name}</div>
+                        <div class="design-card-info">${design.description || ''}</div>
+                        <div class="design-card-facets">${design.totalFacets} facets</div>
+                        <div class="design-card-time">⏱️ ~${estimatedMinutes} min</div>
+                        ${design.valueMultiplier ? `<div style="color: #00ff88; font-size: 9px;">💰 ${Math.round(design.valueMultiplier * 100)}% value</div>` : ''}
+                        ${isLocked ? `<div class="design-card-lock">🔒 Level ${design.levelRequired}</div>` : ''}
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            return html;
+        }
+        
+        function selectDesign(designId) {
+            const design = designPanelState.availableDesigns.find(d => d.id === designId);
+            if (!design || !design.unlocked) return;
+            
+            designPanelState.selectedDesign = design;
+            
+            updateDesignStepIndicators();
+            renderDesignPanelContent();
+        }
+        
+        function calculateCuttingTime(totalFacets, carats) {
+            // Real-world timing: ~15 seconds per facet for cutting + 20 seconds for polishing
+            // Time acceleration in game is 60x (1 real second = 60 game seconds)
+            const cutTimePerFacet = gameFarm?.machineTimings?.cutTimePerFacet || 15;
+            const polishTimePerFacet = gameFarm?.machineTimings?.polishTimePerFacet || 20;
+            const timeAcceleration = gameFarm?.timeAcceleration || 60;
+            
+            // Larger stones take proportionally longer
+            const caratFactor = Math.sqrt(carats);
+            
+            const totalGameSeconds = (totalFacets * (cutTimePerFacet + polishTimePerFacet)) * caratFactor;
+            const realSeconds = totalGameSeconds / timeAcceleration;
+            const realMinutes = Math.ceil(realSeconds / 60);
+            
+            return Math.max(1, realMinutes);
+        }
+        
+        function renderConfirmation() {
+            const stone = designPanelState.selectedStone;
+            const shape = designPanelState.selectedShape;
+            const design = designPanelState.selectedDesign;
+            
+            if (!stone || !shape || !design) {
+                return '<div style="color: #ff4444; text-align: center;">Selection incomplete</div>';
+            }
+            
+            const estimatedMinutes = calculateCuttingTime(design.totalFacets, stone.carats);
+            const gem = stone.gem;
+            const baseValue = gameFarm.gemValues?.[stone.name]?.base || 100;
+            const estimatedValue = Math.round(baseValue * stone.carats * (design.valueMultiplier || 1));
+            
+            // Calculate yield
+            const baseYield = gameFarm.caratYield?.[design.id] || gameFarm.caratYield?.default || 0.4;
+            const qualityMod = gameFarm.roughQuality?.[stone.quality]?.yieldMod || 1.0;
+            const expectedFinishedCarats = (stone.carats * baseYield * qualityMod).toFixed(2);
+            
+            return `
+                <div class="confirm-details">
+                    <h3>Ready to Cut!</h3>
+                    
+                    <div class="confirm-item">
+                        <span class="confirm-label">Stone:</span>
+                        <span class="confirm-value" style="color: ${gem?.color || '#fff'}">${stone.name} (${stone.carats}ct ${stone.quality})</span>
+                    </div>
+                    
+                    <div class="confirm-item">
+                        <span class="confirm-label">Shape:</span>
+                        <span class="confirm-value">${shape.name}</span>
+                    </div>
+                    
+                    <div class="confirm-item">
+                        <span class="confirm-label">Design:</span>
+                        <span class="confirm-value">${design.name} (${design.totalFacets} facets)</span>
+                    </div>
+                    
+                    <div class="confirm-item">
+                        <span class="confirm-label">Expected Yield:</span>
+                        <span class="confirm-value" style="color: #00ffff;">${expectedFinishedCarats}ct finished</span>
+                    </div>
+                    
+                    <div class="confirm-item">
+                        <span class="confirm-label">Estimated Value:</span>
+                        <span class="confirm-value" style="color: #00ff88;">💎 ${estimatedValue}</span>
+                    </div>
+                    
+                    <div class="estimated-time">
+                        <strong>⏱️ Estimated Time: ${estimatedMinutes} minute${estimatedMinutes !== 1 ? 's' : ''}</strong>
+                        <div style="font-size: 10px; margin-top: 4px;">
+                            (Real time with ${gameFarm?.timeAcceleration || 60}x game acceleration)
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function designPanelBack() {
+            if (designPanelState.step > 1) {
+                designPanelState.step--;
+                updateDesignStepIndicators();
+                renderDesignPanelContent();
+            }
+        }
+        
+        function designPanelNext() {
+            if (designPanelState.step < 4) {
+                designPanelState.step++;
+                updateDesignStepIndicators();
+                renderDesignPanelContent();
+            } else {
+                // Start cutting!
+                startSelectedCutting();
+            }
+        }
+        
+        function startSelectedCutting() {
+            if (!gameFarm) {
+                alert('Game not initialized');
+                return;
+            }
+            
+            const stone = designPanelState.selectedStone;
+            const design = designPanelState.selectedDesign;
+            
+            if (!stone || !design) {
+                alert('Please complete all selections');
+                return;
+            }
+            
+            // Find an available machine
+            const machines = gameFarm.state.machines;
+            const availableMachine = machines.find(m => !m.currentStone && !m.isDown);
+            
+            if (!availableMachine) {
+                alert('No available machines! Add a machine or wait for current stone to finish.');
+                return;
+            }
+            
+            // Store selection in touchScreen state for synchronization
+            if (window.touchScreen) {
+                touchScreen.designSelected = design.id;
+                touchScreen.shapeSelected = designPanelState.selectedShape?.id;
+                touchScreen.stoneSelected = stone;
+            }
+            
+            // Use the gameFarm method with our selection
+            const result = gameFarm.startCuttingWithDesign(
+                availableMachine.id,
+                stone.name,
+                stone.pieceIndex,
+                design.id
+            );
+            
+            if (result && result.success) {
+                addGameActivity(`✨ Started cutting ${stone.carats}ct ${stone.name} with ${design.name}!`);
+                closeDesignPanel();
+                updateGameUI();
+            } else {
+                // Fall back to regular auto-selection if custom method doesn't exist
+                console.log('Using fallback auto-selection...');
+                gameFarm.assignRoughToMachine(availableMachine.id, stone.name);
+                addGameActivity(`✨ Started cutting ${stone.name} (auto-design selected)`);
+                closeDesignPanel();
+                updateGameUI();
+            }
+        }
+
         // ==================== UPDATE UI WITH RESOURCE STATUS ====================
         // Extend updateGameUI to show resource warnings
         const originalUpdateGameUI = updateGameUI;
