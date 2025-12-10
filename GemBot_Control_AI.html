@@ -256,93 +256,6 @@
 
         /* ROTATE OVERLAY - Hidden by default on all devices */
         /* Only shown via JS on actual mobile portrait */
-            // ==================== BASIC AUTH UI HANDLER ====================
-            window.authUI = {
-                switchTab(tab) {
-                    document.getElementById('loginForm').classList.add('hidden');
-                    document.getElementById('registerForm').classList.add('hidden');
-                    document.getElementById('linkDeviceForm').classList.add('hidden');
-                    document.getElementById('loginTab').classList.remove('active');
-                    document.getElementById('registerTab').classList.remove('active');
-                    document.getElementById('linkDeviceTab').classList.remove('active');
-                    if (tab === 'login') {
-                        document.getElementById('loginForm').classList.remove('hidden');
-                        document.getElementById('loginTab').classList.add('active');
-                    } else if (tab === 'register') {
-                        document.getElementById('registerForm').classList.remove('hidden');
-                        document.getElementById('registerTab').classList.add('active');
-                    } else if (tab === 'linkDevice') {
-                        document.getElementById('linkDeviceForm').classList.remove('hidden');
-                        document.getElementById('linkDeviceTab').classList.add('active');
-                    }
-                    document.getElementById('authError').textContent = '';
-                },
-                async login(event) {
-                    event.preventDefault();
-                    const email = document.getElementById('loginEmail').value;
-                    const password = document.getElementById('loginPassword').value;
-                    try {
-                        await authSystem.login(email, password);
-                    } catch (err) {
-                        document.getElementById('authError').textContent = err.message || 'Login failed.';
-                    }
-                },
-                async register(event) {
-                    event.preventDefault();
-                    const username = document.getElementById('registerUsername').value;
-                    const email = document.getElementById('registerEmail').value;
-                    const password = document.getElementById('registerPassword').value;
-                    const confirm = document.getElementById('registerConfirm').value;
-                    if (password !== confirm) {
-                        document.getElementById('authError').textContent = 'Passwords do not match.';
-                        return;
-                    }
-                    try {
-                        await authSystem.register(username, email, password);
-                    } catch (err) {
-                        document.getElementById('authError').textContent = err.message || 'Registration failed.';
-                    }
-                },
-                async linkDevice(event) {
-                    event.preventDefault();
-                    const code = document.getElementById('linkAccessCode').value;
-                    const email = document.getElementById('linkEmail').value;
-                    const password = document.getElementById('linkPassword').value;
-                    try {
-                        await authSystem.linkDeviceWithCode(code, email, password);
-                    } catch (err) {
-                        document.getElementById('authError').textContent = err.message || 'Device link failed.';
-                    }
-                },
-                async joinWithCode() {
-                    const code = document.getElementById('guestCode').value;
-                    try {
-                        await authSystem.joinWithCode(code);
-                    } catch (err) {
-                        document.getElementById('authError').textContent = err.message || 'Join failed.';
-                    }
-                },
-                continueAsGuest() {
-                    authSystem.continueAsGuest();
-                },
-                toggleUserMenu() {
-                    // Basic stub: toggle user menu visibility
-                    const menu = document.getElementById('userMenu');
-                    if (menu) menu.classList.toggle('hidden');
-                },
-                showProfile() {
-                    alert('Profile view not implemented.');
-                },
-                showShareAccess() {
-                    alert('Share Access not implemented.');
-                },
-                showMachineSettings() {
-                    alert('Machine Settings not implemented.');
-                },
-                logout() {
-                    authSystem.logout();
-                }
-            };
         .rotate-device-overlay {
             display: none !important;
         }
@@ -6180,6 +6093,7 @@
             }
         }
     </style>
+    <!-- Moved misplaced JS from <style> to <script> above -->
 </head>
 <body>
     <!-- ==================== ROTATE DEVICE OVERLAY (Mobile Portrait) ==================== -->
@@ -6311,7 +6225,7 @@
                         <span class="stat-label">Level</span>
                     </div>
                     <div class="game-stat xp-bar">
-                        <div class="xp-fill" id="gameXpFill" style="width: 0%"></div>
+                        <div class="xp-fill width-0" id="gameXpFill"></div>
                         <span class="xp-text" id="gameXpText">0 / 100 XP</span>
                     </div>
                 </div>
@@ -6471,7 +6385,7 @@
                         </div>
                         
                         <div class="design-panel-footer">
-                            <button id="designBackBtn" class="game-btn" onclick="designPanelBack()" style="display:none;">← Back</button>
+                            <button id="designBackBtn" class="game-btn hidden" onclick="designPanelBack()">← Back</button>
                             <div id="designSelectionSummary" class="design-summary"></div>
                             <button id="designNextBtn" class="game-btn game-btn-primary" onclick="designPanelNext()" disabled>Next →</button>
                         </div>
@@ -6559,7 +6473,7 @@
                                                 <span id="stoneProgress">0%</span>
                                             </div>
                                             <div class="progress-bar">
-                                                <div id="stoneProgressFill" class="progress-fill" style="width: 0%"></div>
+                                                <div id="stoneProgressFill" class="progress-fill width-0"></div>
                                             </div>
                                         </div>
                                         
@@ -6686,7 +6600,7 @@
                 <button class="game-btn" onclick="openInventoryPanel()">📦 Inventory</button>
                 <button class="game-btn game-btn-accent" onclick="openDesignPanel()">✨ Cut Stone</button>
                 <button class="game-btn" onclick="openMaintenancePanel()">🔧 Maintenance</button>
-                <button class="game-btn" onclick="openAcademyPanel()" style="background: linear-gradient(135deg, #8800ff, #006496);">🎓 Academy</button>
+                <button class="game-btn academy-gradient" onclick="openAcademyPanel()">🎓 Academy</button>
                 <button class="game-btn" onclick="gameFarm?.save()">💾 Save</button>
                 <div class="production-rate">
                     <span>⚡ Production: </span>
@@ -6725,7 +6639,7 @@
     </div>
 
     <!-- ==================== MARKETPLACE ITEM DETAIL MODAL ==================== -->
-    <div id="marketplaceDetailModal" class="item-detail-modal" style="display: none;">
+    <div id="marketplaceDetailModal" class="item-detail-modal hidden">
         <div class="item-detail-content">
             <div class="item-detail-header">
                 <h3>Item Details</h3>
@@ -6752,7 +6666,7 @@
         <div class="world-hud">
             <div class="hud-level">Level <span id="world-player-level">1</span></div>
             <div class="hud-xp-bar">
-                <div class="hud-xp-fill" id="world-xp-fill" style="width: 0%"></div>
+                <div class="hud-xp-fill width-0" id="world-xp-fill"></div>
             </div>
             <div class="hud-keys" id="world-keys">
                 <!-- Keys shown here -->
@@ -7155,7 +7069,7 @@
         </div>
 
         <!-- MOBILE TAB NAVIGATION (only shows on mobile) -->
-        <div class="mobile-tab-nav" id="mobileTabNav" style="display: none;">
+        <div class="mobile-tab-nav hidden" id="mobileTabNav">
             <button class="mobile-tab-btn active" data-tab="view" id="mobileTabView">
                 <span class="mobile-tab-icon">🎮</span>
                 <span>Control</span>
