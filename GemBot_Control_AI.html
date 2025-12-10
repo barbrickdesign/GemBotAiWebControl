@@ -47,6 +47,8 @@
     <script src="./arya-intel-system.js"></script>
     <script src="./gembot-3d-world.js"></script>
     <script src="./quantum-gem-visualizer.js"></script>
+    <script src="./gembot-changelog.js"></script>
+    <script src="./merlin-knowledge-base.js"></script>
     <link rel="stylesheet" href="./gembot-3d-world.css">
     
     <!-- TensorFlow.js for ML Analysis (Desktop Only) -->
@@ -488,13 +490,17 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 400px;
+            min-height: 300px;
+            max-height: 60vh; /* Prevent camera from stretching too tall */
+            overflow: hidden;
         }
 
         #cameraFeed {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            object-fit: contain; /* Maintain aspect ratio without stretching */
         }
 
         .camera-overlay {
@@ -619,7 +625,7 @@
             overflow-x: hidden;
             padding: 12px;
             display: flex;
-            flex-direction: column;
+            flex-direction: column-reverse; /* Newest messages at top */
             gap: 8px;
             min-height: 0;
             max-height: 100%;
@@ -1243,15 +1249,18 @@
             }
 
             .center-panel {
-                flex: 1 1 auto;
-                min-height: 150px;
+                flex: 0 0 auto;
+                min-height: 35vh;
+                max-height: 50vh;
                 display: flex;
                 flex-direction: column;
+                order: 1;
             }
 
             .right-panel {
-                flex: 0 0 auto;
-                max-height: 150px;
+                flex: 1 1 auto;
+                min-height: 200px;
+                max-height: 45vh;;
                 overflow-y: auto;
             }
 
@@ -1386,7 +1395,66 @@
                 transform: scale(0.95);
             }
 
-            /* FOOTER/NAVIGATION */
+            /* MOBILE TAB NAVIGATION */
+            .mobile-tab-nav {
+                display: flex !important;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: #0f1629;
+                border-top: 2px solid #2d3561;
+                padding: 8px;
+                z-index: 1000;
+                gap: 8px;
+            }
+            
+            .mobile-tab-btn {
+                flex: 1;
+                padding: 10px 8px;
+                background: #1a2347;
+                border: 1px solid #2d3561;
+                border-radius: 8px;
+                color: #4a9eff;
+                font-size: 12px;
+                font-weight: 600;
+                cursor: pointer;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 4px;
+                transition: all 0.2s ease;
+            }
+            
+            .mobile-tab-btn.active {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                border-color: #4affff;
+            }
+            
+            .mobile-tab-btn:active {
+                transform: scale(0.95);
+            }
+            
+            .mobile-tab-icon {
+                font-size: 18px;
+            }
+            
+            /* Hide panels when not active (controlled by JS) */
+            .center-panel.mobile-hidden {
+                display: none !important;
+            }
+            
+            .right-panel.mobile-hidden {
+                display: none !important;
+            }
+            
+            /* Adjust main content for bottom nav */
+            .main-content {
+                padding-bottom: 70px !important;
+            }
+
+            /* FOOTER/NAVIGATION - Hide on mobile, we use tab nav instead */
             .footer-nav {
                 grid-row: 3;
                 grid-column: 1;
@@ -1602,12 +1670,34 @@
                 display: none !important;
             }
 
-            /* MOBILE ONLY: Hide left and right panels, show only center */
+            /* MOBILE ONLY: Hide left panel, but SHOW right panel for AI chat */
             .left-panel {
                 display: none !important;
             }
 
+            /* RIGHT PANEL (AI Chat) - SHOW on mobile portrait */
             .right-panel {
+                display: flex !important;
+                flex-direction: column;
+                order: 2;
+                max-height: 40vh;
+                min-height: 200px;
+            }
+            
+            /* Make AI messages area fill available space */
+            .right-panel .ai-messages {
+                flex: 1;
+                min-height: 100px;
+                max-height: none;
+            }
+            
+            /* Hide voice panel on mobile portrait to save space */
+            .right-panel .voice-panel {
+                display: none !important;
+            }
+            
+            /* Compact status display on mobile */
+            .right-panel .status-display {
                 display: none !important;
             }
 
@@ -5848,6 +5938,22 @@
             </div>
         </div>
 
+        <!-- MOBILE TAB NAVIGATION (only shows on mobile) -->
+        <div class="mobile-tab-nav" id="mobileTabNav" style="display: none;">
+            <button class="mobile-tab-btn active" data-tab="view" id="mobileTabView">
+                <span class="mobile-tab-icon">🎮</span>
+                <span>Control</span>
+            </button>
+            <button class="mobile-tab-btn" data-tab="chat" id="mobileTabChat">
+                <span class="mobile-tab-icon">🤖</span>
+                <span>Merlin AI</span>
+            </button>
+            <button class="mobile-tab-btn" data-tab="game" id="mobileTabGame">
+                <span class="mobile-tab-icon">💎</span>
+                <span>Farm</span>
+            </button>
+        </div>
+
         <!-- FOOTER -->
         <div class="footer-panel">
             <button class="btn-danger" id="emergencyStop">🛑 EMERGENCY STOP</button>
@@ -8647,17 +8753,107 @@
             mobileOrientationHandler.dismissPrompt();
         }
 
+        // ==================== MOBILE TAB NAVIGATION ====================
+        const mobileTabNavigation = {
+            currentTab: 'view',
+            
+            init() {
+                // Check if we're on mobile
+                if (!this.isMobile()) {
+                    // Hide mobile nav on desktop
+                    const nav = document.getElementById('mobileTabNav');
+                    if (nav) nav.style.display = 'none';
+                    return;
+                }
+                
+                // Show mobile nav on mobile
+                const nav = document.getElementById('mobileTabNav');
+                if (nav) nav.style.display = 'flex';
+                
+                // Set up tab click handlers
+                const tabs = document.querySelectorAll('.mobile-tab-btn');
+                tabs.forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        this.switchTab(tab.dataset.tab);
+                    });
+                });
+                
+                // Initialize with view tab
+                this.switchTab('view');
+                
+                console.log('📱 Mobile tab navigation initialized');
+            },
+            
+            isMobile() {
+                const userAgent = navigator.userAgent.toLowerCase();
+                return (
+                    (/iphone|ipad|ipod|android|webos|blackberry|iemobile|opera mini/i.test(userAgent)) &&
+                    ('ontouchstart' in window || navigator.maxTouchPoints > 0)
+                );
+            },
+            
+            switchTab(tabName) {
+                this.currentTab = tabName;
+                
+                // Update tab button states
+                const tabs = document.querySelectorAll('.mobile-tab-btn');
+                tabs.forEach(tab => {
+                    tab.classList.toggle('active', tab.dataset.tab === tabName);
+                });
+                
+                // Get panel elements
+                const centerPanel = document.querySelector('.center-panel');
+                const rightPanel = document.querySelector('.right-panel');
+                
+                // Show/hide panels based on tab
+                switch(tabName) {
+                    case 'view':
+                        // Show 3D view and controls
+                        if (centerPanel) centerPanel.classList.remove('mobile-hidden');
+                        if (rightPanel) rightPanel.classList.add('mobile-hidden');
+                        break;
+                        
+                    case 'chat':
+                        // Show AI chat
+                        if (centerPanel) centerPanel.classList.add('mobile-hidden');
+                        if (rightPanel) rightPanel.classList.remove('mobile-hidden');
+                        // Focus the input
+                        setTimeout(() => {
+                            const input = document.getElementById('aiInput');
+                            if (input) input.focus();
+                        }, 100);
+                        break;
+                        
+                    case 'game':
+                        // Open the farm game / marketplace
+                        if (typeof openMarketplace === 'function') {
+                            openMarketplace();
+                        } else if (typeof GemBotFarmGame !== 'undefined' && GemBotFarmGame.showMarketplace) {
+                            GemBotFarmGame.showMarketplace();
+                        }
+                        // Keep current view
+                        break;
+                }
+                
+                console.log(`📱 Switched to tab: ${tabName}`);
+            }
+        };
+
         // Initialize mobile orientation handler when DOM is ready
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', () => {
                 mobileOrientationHandler.init();
                 // SAFETY: Always run orientation check to ensure desktop overlay is hidden
                 mobileOrientationHandler.handleOrientationChange();
+                // Initialize mobile tab navigation
+                mobileTabNavigation.init();
             });
         } else {
             mobileOrientationHandler.init();
             // SAFETY: Always run orientation check to ensure desktop overlay is hidden
             mobileOrientationHandler.handleOrientationChange();
+            // Initialize mobile tab navigation
+            mobileTabNavigation.init();
         }
 
         // ==================== GLOBAL STATE ====================
@@ -12054,13 +12250,113 @@
             }
             
             askClarifyingQuestion(query) {
-                // Instead of random responses, ask them to clarify
-                return `I'm not quite sure I understand. Could you rephrase that? ` +
-                    `For example: ` +
-                    `• "How do I increase speed?" ` +
-                    `• "What's the HOME button for?" ` +
-                    `• "Why aren't the motors responding?" ` +
-                    `• "How do I switch between step and continuous mode?" ` +
+                const lowerQuery = query.toLowerCase();
+                
+                // === CASUAL CONVERSATION HANDLING ===
+                // Greetings
+                if (/^(hi|hello|hey|sup|yo|greetings|howdy|hiya)/i.test(lowerQuery)) {
+                    const greetings = [
+                        "Greetings, gem seeker! How may I assist you today? Whether you want to learn about cutting, check the machine status, or explore the marketplace - I'm here to guide you.",
+                        "Hello there! Welcome to the lapidary. What brings you to the craft today? Ask me anything about gems, cutting techniques, or the machine.",
+                        "Hey! Good to see you. Ready to cut some gems, or shall we chat about the finer points of the craft?"
+                    ];
+                    return greetings[Math.floor(Math.random() * greetings.length)];
+                }
+                
+                // How are you / small talk
+                if (/how are you|how('s| is) it going|what's up|whats up|how do you do/i.test(lowerQuery)) {
+                    const responses = [
+                        "I'm functioning optimally! My circuits are humming with gem-cutting wisdom. What can I help you with today?",
+                        "Excellent, thank you for asking! I've been contemplating the perfect facet angles. How about you - ready to create something beautiful?",
+                        "I'm well! The machine is connected and ready. What shall we work on today?"
+                    ];
+                    return responses[Math.floor(Math.random() * responses.length)];
+                }
+                
+                // Thanks/appreciation
+                if (/^(thanks|thank you|ty|thx|appreciate|cheers)/i.test(lowerQuery)) {
+                    return "You're most welcome! It's my purpose to guide you through the art of gem cutting. Is there anything else you'd like to know?";
+                }
+                
+                // Goodbye
+                if (/^(bye|goodbye|see you|later|cya|gtg|leaving)/i.test(lowerQuery)) {
+                    return "Farewell, gem crafter! May your cuts be precise and your stones shine bright. Return whenever you need guidance. 💎";
+                }
+                
+                // Random expressions of confusion
+                if (/^(what|huh|eh|um|uh|hmm|\?+)$/i.test(lowerQuery)) {
+                    return "It seems you might be unsure where to start. That's perfectly normal!\n\n" +
+                        "Here are some things you can ask me:\n" +
+                        "• 'How do I start cutting?'\n" +
+                        "• 'What speed should I use?'\n" +
+                        "• 'Tell me about rubies'\n" +
+                        "• 'How does the marketplace work?'\n\n" +
+                        "Or just describe what you're trying to do!";
+                }
+                
+                // Jokes/fun
+                if (/joke|funny|make me laugh|humor/i.test(lowerQuery)) {
+                    const jokes = [
+                        "Why did the gemstone go to school? Because it wanted to be a little boulder! 🪨😄",
+                        "What do you call a fake diamond? A shamrock! ...Wait, that's not right. I'm better at facets than jokes!",
+                        "I tried to write a joke about gems, but it was too rough around the edges. Let me polish it up!"
+                    ];
+                    return jokes[Math.floor(Math.random() * jokes.length)];
+                }
+                
+                // Bored/nothing to do
+                if (/bored|nothing to do|what should i do|any suggestions/i.test(lowerQuery)) {
+                    // Check for changelog tips
+                    if (window.GemBotChangelog) {
+                        return window.GemBotChangelog.getFeatureTip() + "\n\nOr try one of these:\n" +
+                            "• Explore the 3D Academy (click your profile)\n" +
+                            "• Check out the marketplace\n" +
+                            "• Practice cutting a virtual stone\n" +
+                            "• Learn about a new gemstone type";
+                    }
+                    return "Here are some ideas:\n" +
+                        "• Try exploring the 3D Academy (click your profile → Explore Academy)\n" +
+                        "• Check the marketplace for rough stones\n" +
+                        "• Ask me to teach you about a specific gemstone\n" +
+                        "• Practice with the step mode to understand precision control";
+                }
+                
+                // What's new / updates
+                if (/what's new|whats new|updates?|changelog|new features?/i.test(lowerQuery)) {
+                    if (window.GemBotChangelog) {
+                        return window.GemBotChangelog.generateAnnouncement();
+                    }
+                    return "We're constantly improving! Recent additions include enhanced AI responses, real-world marketplace pricing, and the 3D Academy. What would you like to know more about?";
+                }
+                
+                // === SYSTEM STATUS COMMAND ===
+                if (/^status$|system status|check status|how's everything|diagnostics|health check/i.test(lowerQuery)) {
+                    return this.getFullSystemStatus();
+                }
+                
+                // === KNOWLEDGE BASE LOOKUP ===
+                // Try to find relevant information from the knowledge base
+                if (window.MerlinKnowledgeBase) {
+                    const kbResponse = window.MerlinKnowledgeBase.getResponse(lowerQuery);
+                    if (kbResponse && kbResponse.length > 50) {
+                        console.log('📚 Knowledge Base matched query');
+                        return kbResponse;
+                    }
+                }
+                
+                // === RANDOM FACT FOR VERY SHORT/UNCLEAR INPUT ===
+                if (query.length < 5 && window.MerlinKnowledgeBase) {
+                    const fact = window.MerlinKnowledgeBase.getRandomFact();
+                    return `Here's something interesting: ${fact}\n\nWhat would you like to know more about?`;
+                }
+                
+                // === DEFAULT: Ask for clarification ===
+                return `I'm not quite sure I understand "${query}". Could you rephrase that?\n\n` +
+                    `Here are things I'm great at:\n` +
+                    `• Gem cutting guidance: "How do I cut a ruby?"\n` +
+                    `• Machine control: "What's the current speed?"\n` +
+                    `• Marketplace: "How much is rough sapphire?"\n` +
+                    `• Learning: "Teach me about faceting"\n\n` +
                     `What are you trying to do?`;
             }
 
@@ -12368,6 +12664,81 @@
                 info += `Upon reconnection, these values can be restored. Yet it is wise to verify position before resuming critical work. Press HOME if unsure, then position yourself carefully once more.`;
                 
                 return info;
+            }
+
+            // === COMPREHENSIVE SYSTEM STATUS ===
+            getFullSystemStatus() {
+                let status = "📊 **SYSTEM STATUS REPORT**\n\n";
+                
+                // Machine Connection
+                const connectionState = machineGlobalState?.hardware?.connectionStatus || 'unknown';
+                const isConnected = connectionState === 'connected' || isConnected;
+                status += `🔌 **Machine Connection**: ${isConnected ? '✅ Connected' : '❌ Not Connected'}\n`;
+                
+                // Position Info
+                const posX = machineState?.currentState?.positionX || 0;
+                const posY = machineState?.currentState?.positionY || 0;
+                const angle = machineState?.currentState?.angle || 0;
+                const index = machineState?.currentState?.index || 0;
+                status += `📍 **Position**: X=${posX}, Y=${posY}, Angle=${angle}°, Index=${index}\n`;
+                
+                // Motor Settings
+                const currentSpeed = motorSpeed || 1;
+                const currentMode = motorMode || 'continuous';
+                status += `⚙️ **Motor**: Speed ${currentSpeed}/5, Mode: ${currentMode.toUpperCase()}\n`;
+                
+                // Camera Status
+                const cameraVideo = document.getElementById('cameraFeed');
+                const cameraOn = cameraVideo && cameraVideo.srcObject && cameraVideo.srcObject.active;
+                status += `📷 **Camera**: ${cameraOn ? '✅ Active' : '⏸️ Inactive'}\n`;
+                
+                // ML Detection
+                status += `🤖 **ML Detection**: ${mlModelLoaded ? '✅ Loaded' : '⏸️ Not Loaded'}\n`;
+                
+                // 3D Visualization
+                const vm = typeof virtualMachine !== 'undefined' && virtualMachine;
+                status += `🎮 **3D View**: ${vm ? '✅ Active' : '⏸️ Initializing'}\n`;
+                
+                // Farm Game Status
+                if (window.GemBotFarmGame) {
+                    const gs = window.GemBotFarmGame.gameState;
+                    if (gs) {
+                        status += `\n💎 **Farm Game**:\n`;
+                        status += `   • Gems: ${gs.gems || 0}\n`;
+                        status += `   • Rough Inventory: ${Object.keys(gs.roughInventory || {}).length} types\n`;
+                        status += `   • Cut Gems: ${Object.keys(gs.cutGems || {}).length} types\n`;
+                    }
+                }
+                
+                // User Profile
+                if (this.userProfile) {
+                    status += `\n👤 **Your Progress**:\n`;
+                    status += `   • Tier: ${this.userProfile.currentTier || 'Novice'}\n`;
+                    status += `   • Level: ${this.userProfile.xp?.level || 1}\n`;
+                    status += `   • Streak: ${this.userProfile.learningStreak || 0} days\n`;
+                    
+                    if (this.userProfile.gemForge) {
+                        status += `   • GemCoins: ${this.userProfile.gemForge.gemCoins || 0}\n`;
+                    }
+                }
+                
+                // Knowledge Base
+                if (window.MerlinKnowledgeBase) {
+                    const kb = window.MerlinKnowledgeBase.getSystemKnowledge();
+                    status += `\n📚 **Knowledge Base**: ${kb.totalDocFiles} docs indexed, ${kb.categories} categories\n`;
+                }
+                
+                // Changelog/Version
+                if (window.GemBotChangelog) {
+                    const latest = window.GemBotChangelog.versions[0];
+                    if (latest) {
+                        status += `📝 **Version**: ${latest.version} (${latest.date})\n`;
+                    }
+                }
+                
+                status += `\n---\n*Ask me about any of these systems for more details!*`;
+                
+                return status;
             }
 
             
@@ -17530,9 +17901,10 @@
                 console.log('✓ Feedback button added');
             }
             
-            messagesDiv.appendChild(msg);
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
-            console.log(`✓ Message appended to DOM, scroll position updated. Total messages: ${messagesDiv.children.length}`);
+            // Insert at beginning so newest appears at top (with flex-direction: column-reverse)
+            messagesDiv.insertBefore(msg, messagesDiv.firstChild);
+            messagesDiv.scrollTop = 0; // Scroll to top where newest message is
+            console.log(`✓ Message prepended to DOM (newest at top). Total messages: ${messagesDiv.children.length}`);
             
             // Speak AI responses (not user queries or system messages)
             if (type === 'assistant') {
