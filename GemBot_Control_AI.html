@@ -1121,8 +1121,10 @@
                 border-bottom: 2px solid #4a9eff;
                 gap: 8px;
                 max-height: 60px;
-                overflow: hidden;
+                overflow: visible;
                 flex-wrap: nowrap;
+                position: relative;
+                z-index: 100;
             }
 
             .header-title {
@@ -1213,13 +1215,13 @@
                 padding: 8px;
                 overflow-y: auto;
                 overflow-x: hidden;
-                overscroll-behavior: contain; /* Progressive enhancement - gracefully degrades on older browsers */
+                overscroll-behavior: contain;
                 width: 100%;
                 background: #0a0e27;
-                /* Enable momentum scrolling on iOS */
                 scroll-behavior: smooth;
-                /* Prevent content from overflowing */
                 min-height: 0;
+                -webkit-overflow-scrolling: touch;
+                touch-action: pan-y;
             }
 
             .main-content::-webkit-scrollbar {
@@ -1259,9 +1261,10 @@
 
             .right-panel {
                 flex: 1 1 auto;
-                min-height: 200px;
-                max-height: 45vh;;
+                min-height: 250px;
+                max-height: 60vh;
                 overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
             }
 
             /* PANELS HEADER */
@@ -5460,10 +5463,10 @@
             <!-- Game Footer -->
             <div class="game-footer">
                 <button class="game-btn" onclick="leaderboardUI.open()">🏆 Leaderboard</button>
-                <button class="game-btn" onclick="openShop()">🛒 Shop</button>
-                <button class="game-btn" onclick="openInventory()">📦 Inventory</button>
-                <button class="game-btn" onclick="openMaintenance()">🔧 Maintenance</button>
-                <button class="game-btn" onclick="gameFarm.save()">💾 Save</button>
+                <button class="game-btn" onclick="openShopPanel()">🛒 Shop</button>
+                <button class="game-btn" onclick="openInventoryPanel()">📦 Inventory</button>
+                <button class="game-btn" onclick="openMaintenancePanel()">🔧 Maintenance</button>
+                <button class="game-btn" onclick="gameFarm?.save()">💾 Save</button>
                 <div class="production-rate">
                     <span>⚡ Production: </span>
                     <span id="productionRate">1.0</span>
@@ -12250,6 +12253,45 @@
             askClarifyingQuestion(query) {
                 const lowerQuery = query.toLowerCase();
                 
+                // === CHECK CONVERSATION CONTEXT FOR FOLLOW-UPS ===
+                // If user is responding to a previous question, use context
+                if (this.contextHistory && this.contextHistory.length > 0) {
+                    const lastContext = this.contextHistory[this.contextHistory.length - 1];
+                    const timeSinceLastMessage = Date.now() - (lastContext.timestamp || 0);
+                    
+                    // If within 2 minutes and short response, it's likely a follow-up
+                    if (timeSinceLastMessage < 120000 && query.length < 50) {
+                        // Check for yes/no/affirmative responses to previous context
+                        if (/^(yes|yeah|yep|yup|sure|ok|okay|go ahead|continue|next|more|please|do it|got it)$/i.test(lowerQuery)) {
+                            // User is affirming previous topic - continue that topic
+                            const lastTopic = lastContext.query?.toLowerCase() || '';
+                            const lastResponse = lastContext.response?.toLowerCase() || '';
+                            
+                            // Check what we were discussing
+                            if (lastResponse.includes('speed') || lastTopic.includes('speed')) {
+                                return "Great! To adjust speed: use the Speed slider (1-5) in the control panel. Speed 1-2 for polishing, 3 for general cutting, 4-5 for rough material removal. What speed range would you like to practice with?";
+                            }
+                            if (lastResponse.includes('cutting') || lastTopic.includes('cut')) {
+                                return "Perfect! Let's continue with cutting. The key phases are:\n1. **Roughing** - Fast removal (Speed 4-5)\n2. **Pre-polish** - Refine shape (Speed 2-3)\n3. **Polish** - Final finish (Speed 1-2)\n\nWhich phase would you like to explore?";
+                            }
+                            if (lastResponse.includes('position') || lastTopic.includes('position')) {
+                                return "Excellent! Position controls:\n• **X-axis**: Left/Right rotation of the stone\n• **Y-axis**: Distance from the lap (cutting wheel)\n\nTry moving X by 5 steps and tell me how it responds.";
+                            }
+                            if (lastResponse.includes('machine') || lastResponse.includes('connect')) {
+                                return "To connect your machine:\n1. Plug Arduino via USB\n2. Click '🔍 Scan' to find ports\n3. Select your port from dropdown\n4. Click '🔌 Connect'\n\nDo you see any ports listed?";
+                            }
+                            // Generic continuation
+                            return `I'm ready to continue from where we left off. You can ask more about "${lastTopic.substring(0, 30)}..." or try something new. What interests you?`;
+                        }
+                        
+                        // Check for "it" or "that" references to previous topic
+                        if (/\b(it|that|this|those|these)\b/.test(lowerQuery) && !lowerQuery.includes('what is')) {
+                            const lastTopic = lastContext.query || '';
+                            return `I think you're referring to our previous topic: "${lastTopic.substring(0, 40)}..."\n\nCould you be more specific about what aspect you'd like to explore?`;
+                        }
+                    }
+                }
+                
                 // === CASUAL CONVERSATION HANDLING ===
                 // Greetings
                 if (/^(hi|hello|hey|sup|yo|greetings|howdy|hiya)/i.test(lowerQuery)) {
@@ -13866,22 +13908,44 @@
             }
 
             setupMerlinVoice() {
-                // Configure voice for Merlin - older, wise wizard
+                // Configure voice for Merlin - older, wise wizard (MUST be male)
                 if (voice && voice.voices && voice.voices.length > 0) {
                     // Try to find a male voice for older wizard character
                     let preferredVoiceIndex = 0;
                     let maleVoiceFound = false;
+                    let bestMaleScore = 0;
                     
                     voice.voices.forEach((v, idx) => {
-                        // Look for male voices first (usually marked with 'male' in name or lang)
-                        if (!maleVoiceFound && v.lang.startsWith('en')) {
+                        // Look for male voices (usually marked with 'male' in name)
+                        if (v.lang.startsWith('en')) {
                             const nameLower = v.name.toLowerCase();
-                            // Prioritize deeper male voices for old wizard
-                            if (nameLower.includes('male') || nameLower.includes('man') || nameLower.includes('david') || 
-                                nameLower.includes('mark') || nameLower.includes('george') || nameLower.includes('arthur') ||
-                                nameLower.includes('deep') || nameLower.includes('bass')) {
+                            let score = 0;
+                            
+                            // Strong male indicators
+                            if (nameLower.includes('male')) score += 10;
+                            if (nameLower.includes('david')) score += 8;
+                            if (nameLower.includes('mark')) score += 8;
+                            if (nameLower.includes('james')) score += 8;
+                            if (nameLower.includes('daniel')) score += 8;
+                            if (nameLower.includes('george')) score += 7;
+                            if (nameLower.includes('richard')) score += 7;
+                            if (nameLower.includes('arthur')) score += 7;
+                            if (nameLower.includes('guy')) score += 6;
+                            if (nameLower.includes('thomas')) score += 6;
+                            
+                            // Avoid female voices
+                            if (nameLower.includes('female') || nameLower.includes('woman') || 
+                                nameLower.includes('girl') || nameLower.includes('samantha') ||
+                                nameLower.includes('victoria') || nameLower.includes('karen') ||
+                                nameLower.includes('kate') || nameLower.includes('susan') ||
+                                nameLower.includes('moira') || nameLower.includes('fiona')) {
+                                score = -100; // Strong negative
+                            }
+                            
+                            if (score > bestMaleScore) {
+                                bestMaleScore = score;
                                 preferredVoiceIndex = idx;
-                                maleVoiceFound = true;
+                                if (score > 0) maleVoiceFound = true;
                             }
                         }
                     });
@@ -20375,12 +20439,52 @@
         let currentShopTab = 'rough';
         
         function openShopPanel() {
-            document.getElementById('shopPanelOverlay').style.display = 'flex';
-            showShopTab('rough');
+            const overlay = document.getElementById('shopPanelOverlay');
+            if (overlay) {
+                overlay.style.display = 'flex';
+                showShopTab('rough');
+            } else {
+                console.warn('Shop panel overlay not found');
+                addMessage('Shop is loading... Please try again.', 'system');
+            }
         }
         
         function closeShopPanel() {
-            document.getElementById('shopPanelOverlay').style.display = 'none';
+            const overlay = document.getElementById('shopPanelOverlay');
+            if (overlay) overlay.style.display = 'none';
+        }
+        
+        // Inventory panel functions
+        function openInventoryPanel() {
+            if (gameFarm && typeof gameFarm.showInventory === 'function') {
+                gameFarm.showInventory();
+            } else {
+                // Fallback: show in chat
+                addMessage('📦 **Inventory**\nYour inventory is being loaded...', 'system');
+                if (gameFarm && gameFarm.state) {
+                    const inv = gameFarm.state.inventory;
+                    let msg = '📦 **Your Inventory:**\n\n';
+                    msg += '**Rough Stones:**\n';
+                    for (const [gem, pieces] of Object.entries(inv.rough || {})) {
+                        if (pieces.length > 0) {
+                            msg += `• ${gem}: ${pieces.length} pieces\n`;
+                        }
+                    }
+                    msg += '\n**Supplies:**\n';
+                    msg += `• Dop Wax: ${inv.consumables?.dopWax || 0}\n`;
+                    msg += `• Polishing Compound: ${inv.consumables?.polishingCompound || 0}\n`;
+                    addMessage(msg, 'assistant');
+                }
+            }
+        }
+        
+        // Maintenance panel functions
+        function openMaintenancePanel() {
+            if (gameFarm && typeof gameFarm.showMaintenance === 'function') {
+                gameFarm.showMaintenance();
+            } else {
+                addMessage('🔧 **Maintenance Panel**\n\nMaintenance options:\n• Check machine status\n• Calibrate sensors\n• Replace worn parts\n\nThis feature is coming soon!', 'assistant');
+            }
         }
         
         function showShopTab(tab) {
