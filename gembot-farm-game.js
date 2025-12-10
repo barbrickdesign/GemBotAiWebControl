@@ -1464,6 +1464,122 @@ class GemBotFarmGame {
     }
     
     /**
+     * Create work tables for GemBot machines
+     */
+    createWorkTables(roomConfig) {
+        const tableCount = roomConfig?.machineSlots || 4;
+        const tableWidth = 2.5;
+        const tableDepth = 1.8;
+        const tableHeight = 0.9;
+        const spacing = 3.5;
+        
+        // Calculate layout - 2 rows
+        const tablesPerRow = Math.ceil(tableCount / 2);
+        const startX = -((tablesPerRow - 1) * spacing) / 2;
+        
+        for (let i = 0; i < tableCount; i++) {
+            const row = Math.floor(i / tablesPerRow);
+            const col = i % tablesPerRow;
+            const x = startX + col * spacing;
+            const z = row === 0 ? -2 : 2;
+            
+            // Table top
+            const tableTop = BABYLON.MeshBuilder.CreateBox(
+                `workTable_${i}`,
+                { width: tableWidth, height: 0.1, depth: tableDepth },
+                this.scene
+            );
+            tableTop.position = new BABYLON.Vector3(x, tableHeight, z);
+            
+            const tableMat = new BABYLON.StandardMaterial(`tableMat_${i}`, this.scene);
+            tableMat.diffuseColor = new BABYLON.Color3(0.3, 0.3, 0.35);
+            tableMat.specularColor = new BABYLON.Color3(0.2, 0.2, 0.2);
+            tableTop.material = tableMat;
+            
+            // Table legs
+            const legPositions = [
+                { x: x - tableWidth/2 + 0.15, z: z - tableDepth/2 + 0.15 },
+                { x: x + tableWidth/2 - 0.15, z: z - tableDepth/2 + 0.15 },
+                { x: x - tableWidth/2 + 0.15, z: z + tableDepth/2 - 0.15 },
+                { x: x + tableWidth/2 - 0.15, z: z + tableDepth/2 - 0.15 }
+            ];
+            
+            legPositions.forEach((pos, legIndex) => {
+                const leg = BABYLON.MeshBuilder.CreateBox(
+                    `tableLeg_${i}_${legIndex}`,
+                    { width: 0.1, height: tableHeight - 0.05, depth: 0.1 },
+                    this.scene
+                );
+                leg.position = new BABYLON.Vector3(pos.x, (tableHeight - 0.05) / 2, pos.z);
+                
+                const legMat = new BABYLON.StandardMaterial(`legMat_${i}_${legIndex}`, this.scene);
+                legMat.diffuseColor = new BABYLON.Color3(0.2, 0.2, 0.25);
+                leg.material = legMat;
+            });
+            
+            // Slot indicator light (shows if machine is placed)
+            const indicator = BABYLON.MeshBuilder.CreateBox(
+                `slotIndicator_${i}`,
+                { width: 0.3, height: 0.05, depth: 0.3 },
+                this.scene
+            );
+            indicator.position = new BABYLON.Vector3(x, tableHeight + 0.08, z);
+            
+            const indicatorMat = new BABYLON.StandardMaterial(`indicatorMat_${i}`, this.scene);
+            indicatorMat.emissiveColor = new BABYLON.Color3(0.2, 0.8, 0.2); // Green = available
+            indicatorMat.diffuseColor = new BABYLON.Color3(0.1, 0.4, 0.1);
+            indicator.material = indicatorMat;
+        }
+    }
+    
+    /**
+     * Create overhead work lights
+     */
+    createOverheadLights(roomWidth, roomDepth) {
+        const lightCount = 4;
+        const lightSpacing = roomWidth / (lightCount + 1);
+        
+        for (let i = 0; i < lightCount; i++) {
+            const x = -roomWidth/2 + lightSpacing * (i + 1);
+            
+            // Light fixture housing
+            const fixture = BABYLON.MeshBuilder.CreateBox(
+                `lightFixture_${i}`,
+                { width: 1.5, height: 0.15, depth: 0.4 },
+                this.scene
+            );
+            fixture.position = new BABYLON.Vector3(x, 5, 0);
+            
+            const fixtureMat = new BABYLON.StandardMaterial(`fixtureMat_${i}`, this.scene);
+            fixtureMat.diffuseColor = new BABYLON.Color3(0.3, 0.3, 0.3);
+            fixture.material = fixtureMat;
+            
+            // Light panel (emissive)
+            const lightPanel = BABYLON.MeshBuilder.CreateBox(
+                `lightPanel_${i}`,
+                { width: 1.4, height: 0.05, depth: 0.35 },
+                this.scene
+            );
+            lightPanel.position = new BABYLON.Vector3(x, 4.9, 0);
+            
+            const lightMat = new BABYLON.StandardMaterial(`lightMat_${i}`, this.scene);
+            lightMat.emissiveColor = new BABYLON.Color3(1, 0.98, 0.95);
+            lightMat.diffuseColor = new BABYLON.Color3(1, 0.98, 0.95);
+            lightPanel.material = lightMat;
+            
+            // Actual point light
+            const light = new BABYLON.PointLight(
+                `workLight_${i}`,
+                new BABYLON.Vector3(x, 4.5, 0),
+                this.scene
+            );
+            light.intensity = 0.4;
+            light.diffuse = new BABYLON.Color3(1, 0.95, 0.9);
+            light.range = 12;
+        }
+    }
+
+    /**
      * Create holographic title text
      */
     createHolographicText() {
