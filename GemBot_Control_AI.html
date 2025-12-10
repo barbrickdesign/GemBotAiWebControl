@@ -3,7 +3,7 @@
 <!-- BUILD: v2025.12.09.001 - Enhanced Merlin AI + Game Systems Integration -->
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="screen-orientation" content="landscape">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -796,6 +796,163 @@
             }
         }
 
+        /* Utility Classes - Reusable styles to replace inline styles */
+        .hidden { display: none !important; }
+        .visible { display: block !important; }
+        .flex { display: flex !important; }
+        .flex-center { display: flex; align-items: center; justify-content: center; }
+        .flex-between { display: flex; justify-content: space-between; align-items: center; }
+        .flex-gap-8 { display: flex; gap: 8px; }
+        .text-center { text-align: center; }
+        .text-uppercase { text-transform: uppercase; }
+        .text-small { font-size: 11px; }
+        .text-tiny { font-size: 10px; }
+        .text-muted { color: #888; }
+        .text-cyan { color: #4affff; }
+        .text-gold { color: #ffd700; }
+        .text-purple { color: #9f7aea; }
+        .text-warning { color: #ff6666; }
+        .mt-12 { margin-top: 12px; }
+        .mt-15 { margin-top: 15px; }
+        .mb-16 { margin-bottom: 16px; }
+        .w-full { width: 100%; }
+        .modal-close-btn { background: none; border: none; color: #fff; font-size: 24px; cursor: pointer; }
+        .game-btn-small { padding: 4px 8px; margin: 2px; font-size: 9px; }
+        .info-box { background: rgba(102, 126, 234, 0.2); padding: 12px; border-radius: 8px; margin-bottom: 16px; font-size: 12px; color: #aaa; }
+        .access-code-input { text-transform: uppercase; letter-spacing: 3px; text-align: center; font-size: 18px; }
+        .guest-code-input { flex: 1; text-transform: uppercase; letter-spacing: 2px; text-align: center; }
+        .shop-tabs-container { display: flex; gap: 5px; margin-bottom: 15px; }
+        .game-modal-content { max-width: 700px; max-height: 80vh; overflow-y: auto; }
+        .game-modal-medium { max-width: 600px; max-height: 80vh; overflow-y: auto; }
+        .game-modal-small { max-width: 500px; }
+        .resources-panel-header { display: flex; justify-content: space-between; align-items: center; }
+        .sell-all-section { margin-top: 15px; padding-top: 15px; border-top: 1px solid #333; }
+        .stats-compact { display: flex; align-items: center; gap: 12px; background: rgba(102, 126, 234, 0.2); padding: 4px 12px; border-radius: 6px; border: 1px solid rgba(74, 255, 255, 0.3); }
+        .leaderboard-btn-style { background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%); border: none; color: #1a1a2e; padding: 3px 8px; border-radius: 4px; font-size: 10px; cursor: pointer; font-weight: bold; }
+        .user-badge-container { position: relative; margin-left: 8px; }
+        .status-badge-min { min-width: 120px; }
+        .emoji-large { font-size: 32px; }
+        .header-flex-wrap { display: flex; align-items: center; gap: 8px; width: 100%; flex-wrap: wrap; }
+        .game-highlight { background: linear-gradient(135deg, rgba(255,0,128,0.2), rgba(0,255,255,0.2)); border-left: 3px solid #ff0080; }
+        .fullscreen-btn { background: rgba(102, 126, 234, 0.3); border: 1px solid #667eea; color: #4affff; padding: 4px 8px; border-radius: 4px; font-size: 11px; cursor: pointer; }
+        .game-resources-header { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 300px; background: rgba(0,0,0,0.9); padding: 8px; font-size: 10px; }
+        .resources-row { display: flex; justify-content: space-between; align-items: center; }
+        /* Connection panel utilities */
+        .connection-panel-header { margin-top: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; }
+        .connection-panel-secondary { margin-top: 8px; }
+        .flex-wrap-controls { display: flex; gap: 4px; flex-wrap: wrap; align-items: center; }
+        .port-select { flex: 1; min-width: 120px; padding: 6px 8px; background: #2d3b4f; color: #4affff; border: 1px solid #667eea; border-radius: 6px; font-size: 11px; cursor: pointer; }
+        .btn-compact { flex: 0 0 auto; padding: 6px 10px; font-size: 11px; }
+        .flex-1 { flex: 1; }
+        .help-panel { margin-top: 8px; background: rgba(102, 126, 234, 0.1); padding: 10px; border-radius: 6px; border-left: 4px solid #667eea; }
+        .help-title { font-size: 11px; color: #aaa; margin-bottom: 6px; }
+        .help-content { font-size: 10px; color: #ccc; line-height: 1.5; margin-bottom: 8px; }
+        .help-links { font-size: 9px; color: #aaa; }
+        .help-link { color: #4affff; text-decoration: none; }
+        .diagnostic-btn { background: #4a5a8e; color: white; padding: 6px 10px; border: 1px solid #667eea; border-radius: 6px; font-size: 12px; cursor: pointer; }
+        /* Mobile connection panel */
+        .mobile-connection-panel { grid-column: 1 / -1; background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); padding: 16px; border-radius: 12px; border: 2px solid #4a9eff; }
+        .mobile-grid { display: grid; grid-template-columns: 1fr auto auto; gap: 20px; align-items: center; }
+        .mobile-title { font-size: 14px; font-weight: 600; color: #4affff; margin-bottom: 8px; }
+        .mobile-info-row { display: flex; gap: 20px; flex-wrap: wrap; }
+        .mobile-label { font-size: 11px; color: #aaa; margin-bottom: 4px; }
+        .network-url-display { font-family: monospace; background: rgba(0,0,0,0.3); padding: 8px 12px; border-radius: 6px; color: #4affff; font-weight: 600; -webkit-user-select: all; user-select: all; }
+        .mobile-devices-list { font-size: 13px; color: #44ff44; font-weight: 600; }
+        .mobile-actions { display: flex; flex-direction: column; gap: 8px; }
+        .btn-qr { background: #4affff; color: #1e3c72; padding: 8px 16px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+        .btn-copy-url { background: #667eea; color: white; padding: 8px 16px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+        .qr-container { margin-top: 16px; text-align: center; padding: 16px; background: rgba(0,0,0,0.2); border-radius: 8px; }
+        .qr-label { font-size: 12px; color: #aaa; margin-bottom: 12px; }
+        .qr-canvas { max-width: 200px; border: 2px solid #4affff; border-radius: 8px; background: white; padding: 8px; }
+        .qr-help { font-size: 11px; color: #aaa; margin-top: 8px; }
+        /* Network devices panel */
+        .network-devices-panel { grid-column: 1 / -1; background: linear-gradient(135deg, #1a3a3a 0%, #1f4a4a 100%); padding: 16px; border-radius: 12px; border: 2px solid #4a9eaa; margin-top: 12px; }
+        .network-grid { display: grid; gap: 8px; }
+        .network-devices-list { font-size: 13px; color: #44ff44; font-weight: 600; max-height: 300px; overflow-y: auto; }
+        .btn-rescan { background: #4a9eaa; color: white; padding: 8px 16px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; margin-top: 12px; width: 100%; }
+        .scanning-placeholder { color: #888; font-style: italic; }
+        /* Control panel utilities */
+        .nav-panel-box { padding: 8px; background: #2a3050; border-radius: 4px; margin-bottom: 8px; }
+        .nav-panel-label { font-size: 10px; color: #aaa; margin-bottom: 6px; }
+        .nav-command-hint { font-size: 9px; color: #888; margin-top: 4px; text-align: center; }
+        .btn-enter { background: #667eea; }
+        .btn-sync { background: #4a7c2e; width: 100%; }
+        .push-panel-box { margin-top: 8px; padding: 8px; background: #2a3050; border-radius: 4px; }
+        .push-panel-label { font-size: 10px; color: #aaa; margin-bottom: 6px; }
+        .button-grid-compact { gap: 4px; }
+        .btn-push { background: #2e5a7c; font-size: 10px; padding: 6px; }
+        
+        /* 3D Viewer utility classes */
+        .viewer-control-row { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
+        .viewer-control-btn { padding: 4px 8px; font-size: 10px; cursor: pointer; background: #2d3b4f; border: 1px solid #667eea; border-radius: 4px; color: white; }
+        .viewer-control-label { font-size: 10px; color: #aaa; }
+        .viewer-control-select { padding: 2px; background: #2d3b4f; border: 1px solid #667eea; border-radius: 4px; color: #4affff; font-size: 10px; }
+        .camera-control-row { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; margin-top: 6px; }
+        .camera-label { font-size: 10px; color: #aaa; }
+        .camera-input { width: 50px; padding: 2px 4px; font-size: 10px; background: #2d3b4f; border: 1px solid #667eea; border-radius: 3px; color: #4affff; }
+        .position-display { font-family: monospace; font-size: 10px; color: #4affff; background: #1a2332; padding: 4px; border-radius: 4px; }
+        .progress-bar-container { height: 4px; background: #2d3b4f; border-radius: 2px; margin-top: 2px; overflow: hidden; }
+        .progress-bar-fill { height: 100%; background: linear-gradient(90deg, #667eea, #4affff); transition: width 0.3s; }
+        .joystick-container { width: 100%; max-width: 200px; aspect-ratio: 1; background: radial-gradient(circle, #2d3b4f 0%, #1a2332 100%); border-radius: 50%; border: 2px solid #667eea; position: relative; touch-action: none; }
+        .joystick-knob { width: 50px; height: 50px; background: radial-gradient(circle, #4affff 0%, #667eea 100%); border-radius: 50%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); cursor: grab; }
+        .axis-label { position: absolute; font-size: 9px; color: #888; }
+        .axis-x { top: 50%; left: 4px; transform: translateY(-50%); }
+        .axis-y { top: 4px; left: 50%; transform: translateX(-50%); }
+        .mobile-controls-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+        .mobile-btn-large { padding: 12px; font-size: 12px; font-weight: 600; }
+        .status-panel-compact { padding: 8px; font-size: 11px; background: rgba(42, 48, 80, 0.6); border-radius: 6px; }
+        
+        /* Additional utility classes for inline style replacements */
+        .machine-view-container { width: 100%; height: 400px; background: #1a1f3a; border-radius: 8px; border: 2px solid #667eea; margin-bottom: 12px; overflow: hidden; position: relative; }
+        .canvas-full { width: 100%; height: 100%; display: block; }
+        .loading-overlay { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.8); padding: 16px; border-radius: 8px; color: #4affff; font-size: 14px; text-align: center; z-index: 10; }
+        .mobile-inview-controls { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(26,31,58,0.95), rgba(26,31,58,0.8)); padding: 12px; border-top: 2px solid #667eea; z-index: 6; }
+        .speed-control-grid { display: grid; grid-template-columns: 1fr 3fr 1fr; gap: 8px; align-items: center; margin-bottom: 10px; }
+        .speed-label { font-size: 11px; color: #aaa; }
+        .speed-slider { width: 100%; cursor: pointer; }
+        .speed-value { color: #4affff; font-weight: bold; text-align: center; font-size: 11px; }
+        .joystick-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+        .grid-col-2 { grid-column: 2; }
+        .grid-col-1 { grid-column: 1; }
+        .grid-col-3 { grid-column: 3; }
+        .grid-col-span { grid-column: 1 / -1; }
+        .btn-stop { background: #7c2e2e; }
+        .desktop-3d-controls { position: absolute; bottom: 12px; left: 12px; display: flex; gap: 8px; z-index: 5; }
+        .btn-3d { background: #667eea; color: white; border: 1px solid #4affff; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; }
+        .btn-3d-reset { background: #764ba2; border: 1px solid #9f7aea; }
+        .motor-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; font-size: 11px; }
+        .motor-box { background: #2a3050; padding: 6px; border-radius: 4px; }
+        .motor-label { color: #aaa; margin-bottom: 2px; }
+        .motor-value { color: #4affff; font-weight: bold; }
+        .btn-home { background: #4a7c2e; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn-camera-start { background: #4a7c2e; }
+        .btn-camera-stop { background: #7c2e2e; }
+        .btn-record { background: #2e4a7c; }
+        .select-camera { background: #2e4a5c; color: white; border: 1px solid #667eea; padding: 6px; border-radius: 4px; font-size: 12px; cursor: pointer; }
+        .adjustment-header { font-size: 11px; color: #aaa; font-weight: 600; margin: 8px 0 4px 0; }
+        .btn-auto { float: right; background: #667eea; color: white; border: none; padding: 2px 8px; border-radius: 4px; font-size: 10px; cursor: pointer; font-weight: 600; }
+        .slider-grid { display: grid; grid-template-columns: auto 1fr auto; gap: 6px; align-items: center; font-size: 11px; }
+        .slider-label { color: #aaa; }
+        .slider-value { color: #667eea; font-weight: 600; min-width: 30px; }
+        .slider-value-cyan { color: #4affff; font-weight: 600; min-width: 30px; }
+        .mt-4 { margin-top: 4px; }
+        .edge-panel { background: #1a1f3a; border: 1px solid #667eea; border-radius: 8px; padding: 10px; margin-top: 10px; }
+        .edge-header { font-size: 12px; color: #aaa; font-weight: 600; margin-bottom: 8px; }
+        .status-badge { float: right; padding: 2px 8px; border-radius: 4px; font-size: 10px; background: #333; color: #999; }
+        .btn-edge-flex { display: flex; gap: 6px; margin-bottom: 8px; }
+        .btn-edge-start { flex: 1; background: #2e7c4a; color: white; border: none; padding: 8px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 600; }
+        .btn-edge-stop { flex: 1; background: #7c2e2e; color: white; border: none; padding: 8px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 600; }
+        .hint-subtle { font-size: 10px; color: #888; margin-top: 6px; text-align: center; }
+        .sync-badge { display: inline-block; margin-left: 8px; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; background: #666; color: #fff; }
+        .last-sync { font-size: 10px; color: #999; margin-top: 4px; text-align: center; }
+        .last-sync-value { color: #00ff88; }
+        .btn-accessibility { float: right; background: #667eea; color: white; border: none; padding: 4px 10px; border-radius: 4px; font-size: 11px; cursor: pointer; font-weight: 600; }
+        .voice-indicator { padding: 6px 10px; background: #444; color: #aaa; text-align: center; border-radius: 4px; font-size: 10px; font-weight: 600; }
+        .slider-flex { display: flex; gap: 4px; align-items: center; }
+        .slider-display { min-width: 30px; color: #667eea; font-weight: 600; }
+        .feedback-container { padding: 8px; background: #1a1f3a; border-top: 1px solid #444; font-size: 11px; gap: 4px; display: flex; }
+        .flex-1 { flex: 1; }
+
         /* Scrollbar styling */
         ::-webkit-scrollbar {
             width: 6px;
@@ -859,7 +1016,6 @@
                 /* Prevent iOS bounce scroll */
                 position: fixed;
                 width: 100%;
-                -webkit-overflow-scrolling: touch;
             }
 
             /* LANDSCAPE ORIENTATION PROMPT - Only shows on MOBILE portrait */
@@ -962,7 +1118,6 @@
                 gap: 4px;
                 flex-wrap: nowrap;
                 overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
                 flex: 1 1 auto;
                 min-width: 0;
                 padding-right: 8px;
@@ -1038,8 +1193,7 @@
                 padding: 8px;
                 overflow-y: auto;
                 overflow-x: hidden;
-                overscroll-behavior: contain;
-                -webkit-overflow-scrolling: touch;
+                overscroll-behavior: contain; /* Progressive enhancement - gracefully degrades on older browsers */
                 width: 100%;
                 background: #0a0e27;
                 /* Enable momentum scrolling on iOS */
@@ -1101,7 +1255,6 @@
             .chat-messages {
                 flex: 1 1 auto;
                 overflow-y: auto;
-                -webkit-overflow-scrolling: touch;
                 display: flex;
                 flex-direction: column;
                 gap: 6px;
@@ -1230,7 +1383,6 @@
                 gap: 4px;
                 padding: 4px;
                 overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
             }
 
             .footer-nav button {
@@ -1284,6 +1436,7 @@
                 background: #1a2347;
                 outline: none;
                 -webkit-appearance: none;
+                appearance: none;
                 accent-color: #667eea;
             }
 
@@ -1547,7 +1700,6 @@
                 height: calc(100vh - 44px);
                 height: calc(100dvh - 44px);
                 overflow: auto;
-                -webkit-overflow-scrolling: touch;
             }
 
             /* LEFT SECTION - 3D View & Camera */
@@ -1581,7 +1733,6 @@
                 border: 1px solid #2d3561;
                 padding: 8px;
                 overflow-y: auto;
-                -webkit-overflow-scrolling: touch;
                 order: 2;
                 max-width: 300px;
             }
@@ -2243,6 +2394,7 @@
             border-radius: 12px;
             padding: 12px;
             pointer-events: auto;
+            -webkit-backdrop-filter: blur(5px);
             backdrop-filter: blur(5px);
         }
         
@@ -2986,13 +3138,13 @@
                     <input type="password" id="loginPassword" class="auth-input" placeholder="••••••••" required>
                 </div>
                 <button type="submit" class="auth-btn" id="loginBtn">🔐 Sign In</button>
-                <p style="font-size: 11px; color: #888; margin-top: 12px; text-align: center;">
-                    Registered on another device? Use <strong style="color: #4affff;">Link Device</strong> tab
+                <p class="text-small text-muted mt-12 text-center">
+                    Registered on another device? Use <strong class="text-cyan">Link Device</strong> tab
                 </p>
             </form>
 
             <!-- Register Form (hidden by default) -->
-            <form id="registerForm" class="auth-form" style="display: none;" onsubmit="authUI.register(event)">
+            <form id="registerForm" class="auth-form hidden" onsubmit="authUI.register(event)">
                 <div class="auth-input-group">
                     <label for="registerUsername">Username</label>
                     <input type="text" id="registerUsername" class="auth-input" placeholder="Choose a username" required minlength="3">
@@ -3013,14 +3165,14 @@
             </form>
 
             <!-- Link Device Form (hidden by default) -->
-            <form id="linkDeviceForm" class="auth-form" style="display: none;" onsubmit="authUI.linkDevice(event)">
-                <div style="background: rgba(102, 126, 234, 0.2); padding: 12px; border-radius: 8px; margin-bottom: 16px; font-size: 12px; color: #aaa;">
-                    <strong style="color: #4affff;">📱 Link your mobile & desktop</strong><br>
-                    Use this to connect a new device to your existing account. You'll need your <strong style="color: #ffd700;">Access Code</strong> from your logged-in device.
+            <form id="linkDeviceForm" class="auth-form hidden" onsubmit="authUI.linkDevice(event)">
+                <div class="info-box">
+                    <strong class="text-cyan">📱 Link your mobile & desktop</strong><br>
+                    Use this to connect a new device to your existing account. You'll need your <strong class="text-gold">Access Code</strong> from your logged-in device.
                 </div>
                 <div class="auth-input-group">
                     <label for="linkAccessCode">Your Access Code</label>
-                    <input type="text" id="linkAccessCode" class="auth-input" placeholder="ABC123" maxlength="6" style="text-transform: uppercase; letter-spacing: 3px; text-align: center; font-size: 18px;" required>
+                    <input type="text" id="linkAccessCode" class="auth-input access-code-input" placeholder="ABC123" maxlength="6" required>
                 </div>
                 <div class="auth-input-group">
                     <label for="linkEmail">Email</label>
@@ -3031,8 +3183,8 @@
                     <input type="password" id="linkPassword" class="auth-input" placeholder="••••••••" required>
                 </div>
                 <button type="submit" class="auth-btn" id="linkDeviceBtn">🔗 Link This Device</button>
-                <p style="font-size: 11px; color: #888; margin-top: 12px; text-align: center;">
-                    Find your Access Code in <strong style="color: #4affff;">Profile → Share Access</strong> on your logged-in device
+                <p class="text-small text-muted mt-12 text-center">
+                    Find your Access Code in <strong class="text-cyan">Profile → Share Access</strong> on your logged-in device
                 </p>
             </form>
 
@@ -3041,13 +3193,13 @@
             <!-- Guest Access with Code -->
             <div class="auth-input-group">
                 <label for="guestCode">Have an Access Code?</label>
-                <div style="display: flex; gap: 8px;">
-                    <input type="text" id="guestCode" class="auth-input" placeholder="Enter 6-digit code" maxlength="6" style="flex: 1; text-transform: uppercase; letter-spacing: 2px; text-align: center;">
+                <div class="flex-gap-8">
+                    <input type="text" id="guestCode" class="auth-input guest-code-input" placeholder="Enter 6-digit code" maxlength="6">
                     <button type="button" class="guest-btn" onclick="authUI.joinWithCode()">Join</button>
                 </div>
             </div>
 
-            <button type="button" class="guest-btn" style="margin-top: 12px; width: 100%;" onclick="authUI.continueAsGuest()">
+            <button type="button" class="guest-btn mt-12 w-full" onclick="authUI.continueAsGuest()">
                 👤 Continue as Guest (View Only)
             </button>
         </div>
@@ -3110,31 +3262,31 @@
                         <div id="roomsList" class="rooms-list">
                             <!-- Rooms populated by JS -->
                         </div>
-                        <h3 style="margin-top: 12px;">⬆️ Upgrades</h3>
+                        <h3 class="mt-12">⬆️ Upgrades</h3>
                         <div id="upgradesList" class="upgrades-list">
                             <!-- Upgrades populated by JS -->
                         </div>
                         
                         <!-- Quick Shop Access -->
-                        <h3 style="margin-top: 12px;">🛒 Quick Buy</h3>
-                        <div class="quick-shop" style="font-size: 10px;">
-                            <button class="game-btn" style="padding: 4px 8px; margin: 2px; font-size: 9px;" onclick="openShopPanel()">
+                        <h3 class="mt-12">🛒 Quick Buy</h3>
+                        <div class="quick-shop text-tiny">
+                            <button class="game-btn game-btn-small" onclick="openShopPanel()">
                                 🏪 Open Shop
                             </button>
-                            <button class="game-btn" style="padding: 4px 8px; margin: 2px; font-size: 9px;" onclick="openInventoryPanel()">
+                            <button class="game-btn game-btn-small" onclick="openInventoryPanel()">
                                 📦 Inventory
                             </button>
                         </div>
                     </div>
                     
                     <!-- Resource Status Panel (New!) -->
-                    <div class="game-panel game-resources-panel" style="position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 300px; background: rgba(0,0,0,0.9); padding: 8px; font-size: 10px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div class="game-panel game-resources-panel game-resources-header">
+                        <div class="resources-row">
                             <span>💧 Water: <span id="waterLevel">100</span>%</span>
                             <span>🕯️ Wax: <span id="waxLevel">100</span></span>
                             <span>🛢️ Lube: <span id="lubeLevel">100</span>%</span>
                         </div>
-                        <div id="resourceWarnings" style="color: #ff6666; margin-top: 4px;"></div>
+                        <div id="resourceWarnings" class="text-warning mt-12"></div>
                     </div>
                     
                     <!-- Bottom - Activity Feed -->
@@ -3146,22 +3298,22 @@
                 </div>
                 
                 <!-- Real Machine Connection Bonus -->
-                <div id="realMachineBonus" class="real-machine-bonus" style="display: none;">
+                <div id="realMachineBonus" class="real-machine-bonus hidden">
                     <span class="bonus-icon">🔌</span>
                     <span class="bonus-text">Real GemBot Connected!</span>
                     <span class="bonus-value">+50% Bonus Active</span>
                 </div>
                 
                 <!-- Shop Panel Overlay -->
-                <div id="shopPanelOverlay" class="game-modal-overlay" style="display: none;">
-                    <div class="game-modal" style="max-width: 700px; max-height: 80vh; overflow-y: auto;">
+                <div id="shopPanelOverlay" class="game-modal-overlay hidden">
+                    <div class="game-modal game-modal-content">
                         <div class="game-modal-header">
                             <h2>🏪 GemBot Shop</h2>
-                            <button onclick="closeShopPanel()" style="background: none; border: none; color: #fff; font-size: 24px; cursor: pointer;">✕</button>
+                            <button onclick="closeShopPanel()" class="modal-close-btn">✕</button>
                         </div>
                         
                         <!-- Shop Tabs -->
-                        <div class="shop-tabs" style="display: flex; gap: 5px; margin-bottom: 15px;">
+                        <div class="shop-tabs shop-tabs-container">
                             <button class="shop-tab active" onclick="showShopTab('rough')">💎 Rough Stones</button>
                             <button class="shop-tab" onclick="showShopTab('laps')">🔧 Laps</button>
                             <button class="shop-tab" onclick="showShopTab('paste')">✨ Polish Paste</button>
@@ -3176,15 +3328,15 @@
                 </div>
                 
                 <!-- Inventory Panel Overlay -->
-                <div id="inventoryPanelOverlay" class="game-modal-overlay" style="display: none;">
-                    <div class="game-modal" style="max-width: 600px; max-height: 80vh; overflow-y: auto;">
+                <div id="inventoryPanelOverlay" class="game-modal-overlay hidden">
+                    <div class="game-modal game-modal-medium">
                         <div class="game-modal-header">
                             <h2>📦 Inventory</h2>
-                            <button onclick="closeInventoryPanel()" style="background: none; border: none; color: #fff; font-size: 24px; cursor: pointer;">✕</button>
+                            <button onclick="closeInventoryPanel()" class="modal-close-btn">✕</button>
                         </div>
                         
                         <!-- Inventory Tabs -->
-                        <div class="inv-tabs" style="display: flex; gap: 5px; margin-bottom: 15px;">
+                        <div class="inv-tabs shop-tabs-container">
                             <button class="inv-tab active" onclick="showInvTab('rough')">💎 Rough</button>
                             <button class="inv-tab" onclick="showInvTab('cut')">🌟 Cut Stones</button>
                             <button class="inv-tab" onclick="showInvTab('laps')">🔧 Laps</button>
@@ -3197,8 +3349,8 @@
                         </div>
                         
                         <!-- Sell All Button -->
-                        <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #333;">
-                            <button class="game-btn game-btn-primary" onclick="sellAllStones()" style="width: 100%;">
+                        <div class="sell-all-section">
+                            <button class="game-btn game-btn-primary w-full" onclick="sellAllStones()">
                                 💰 Sell All Cut Stones
                             </button>
                         </div>
@@ -3206,11 +3358,11 @@
                 </div>
                 
                 <!-- Maintenance Panel Overlay -->
-                <div id="maintenancePanelOverlay" class="game-modal-overlay" style="display: none;">
-                    <div class="game-modal" style="max-width: 500px;">
+                <div id="maintenancePanelOverlay" class="game-modal-overlay hidden">
+                    <div class="game-modal game-modal-small">
                         <div class="game-modal-header">
                             <h2>🔧 Machine Maintenance</h2>
-                            <button onclick="closeMaintenancePanel()" style="background: none; border: none; color: #fff; font-size: 24px; cursor: pointer;">✕</button>
+                            <button onclick="closeMaintenancePanel()" class="modal-close-btn">✕</button>
                         </div>
                         
                         <div id="maintenanceContent">
@@ -3242,7 +3394,7 @@
         <div class="leaderboard-modal">
             <div class="leaderboard-header">
                 <div class="leaderboard-title">
-                    <span style="font-size: 32px;">🏆</span>
+                    <span class="emoji-large">🏆</span>
                     <h2>GemForge Global Leaderboard</h2>
                 </div>
                 <button class="leaderboard-close" onclick="leaderboardUI.close()">&times;</button>
@@ -3269,71 +3421,71 @@
             <div class="header-title">💎 GEMBOT</div>
             
             <!-- Compact Status & Camera Controls -->
-            <div style="display: flex; align-items: center; gap: 8px; width: 100%; flex-wrap: wrap;">
+            <div class="header-flex-wrap">
                 <!-- Status Badge (compact) -->
-                <div class="status-badge" style="min-width: 120px;">
+                <div class="status-badge status-badge-min">
                     <div class="status-indicator" id="statusIndicator"></div>
-                    <span id="connectionStatus" style="font-size: 12px;">OFFLINE</span>
+                    <span id="connectionStatus" class="text-small">OFFLINE</span>
                 </div>
 
                 <!-- User Badge (after login) -->
-                <div id="userBadgeContainer" style="position: relative; margin-left: 8px; display: none;">
+                <div id="userBadgeContainer" class="user-badge-container hidden">
                     <div class="user-badge" id="userBadge" onclick="authUI.toggleUserMenu()">
                         <div class="user-avatar" id="userAvatar">?</div>
-                        <span id="userName" style="font-size: 12px; color: #4affff;">Guest</span>
-                        <span style="font-size: 10px; color: #888;">▼</span>
+                        <span id="userName" class="text-small text-cyan">Guest</span>
+                        <span class="text-tiny text-muted">▼</span>
                     </div>
                     <div class="user-menu" id="userMenu">
                         <div class="user-menu-item" onclick="authUI.showProfile()">👤 My Profile</div>
                         <div class="user-menu-item" onclick="leaderboardUI.open()">🏆 Leaderboard</div>
-                        <div class="user-menu-item" onclick="openGameMode()" style="background: linear-gradient(135deg, rgba(255,0,128,0.2), rgba(0,255,255,0.2)); border-left: 3px solid #ff0080;">🎮 GemBot Farm</div>
+                        <div class="user-menu-item game-highlight" onclick="openGameMode()">🎮 GemBot Farm</div>
                         <div class="user-menu-item" onclick="authUI.showShareAccess()">🔗 Share Access</div>
                         <div class="user-menu-item" onclick="authUI.showMachineSettings()">⚙️ Machine Settings</div>
-                        <div class="user-menu-item" id="connectedGuestsItem" style="display: none;">👥 Connected Guests (0)</div>
+                        <div class="user-menu-item hidden" id="connectedGuestsItem">👥 Connected Guests (0)</div>
                         <div class="user-menu-item danger" onclick="authUI.logout()">🚪 Sign Out</div>
                     </div>
                 </div>
                 
                 <!-- Game Stats (mobile hidden) -->
-                <div id="gameStatsCompact" style="display: flex; align-items: center; gap: 12px; background: rgba(102, 126, 234, 0.2); padding: 4px 12px; border-radius: 6px; border: 1px solid rgba(74, 255, 255, 0.2); margin-left: auto;">
-                    <div id="gemBalanceDisplay" style="color: #ffd700; font-weight: bold; font-size: 11px;">💎 100</div>
-                    <div id="tierDisplay" style="color: #9f7aea; font-size: 10px;">🏆 Apprentice</div>
-                    <button id="leaderboardBtn" onclick="leaderboardUI.open()" style="background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%); border: none; color: #1a1a2e; padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;" title="View Leaderboard">🏆</button>
+                <div id="gameStatsCompact" class="stats-compact">
+                    <div id="gemBalanceDisplay" class="text-gold text-small">💎 100</div>
+                    <div id="tierDisplay" class="text-purple text-tiny">🏆 Apprentice</div>
+                    <button id="leaderboardBtn" onclick="leaderboardUI.open()" class="leaderboard-btn-style" title="View Leaderboard">🏆</button>
                 </div>
                 
                 <!-- Fullscreen Toggle (Mobile) -->
-                <button id="fullscreenToggle" onclick="mobileOrientationHandler.requestFullscreen()" style="display: none; background: rgba(102, 126, 234, 0.3); border: 1px solid #667eea; color: #4affff; padding: 6px 10px; border-radius: 6px; font-size: 14px; cursor: pointer;" title="Enter Fullscreen">⛶</button>
+                <button id="fullscreenToggle" onclick="mobileOrientationHandler.requestFullscreen()" class="fullscreen-btn hidden" title="Enter Fullscreen">⛶</button>
             </div>
             
             <!-- USB Arduino Connection Controls (RESTORED) -->
-            <div class="connection-panel" style="margin-top: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px;">
-                <div style="display: flex; gap: 4px; flex-wrap: wrap; align-items: center;">
-                    <select id="portSelect" title="Select Arduino port" style="flex: 1; min-width: 120px; padding: 6px 8px; background: #2d3b4f; color: #4affff; border: 1px solid #667eea; border-radius: 6px; font-size: 11px; cursor: pointer;">
+            <div class="connection-panel connection-panel-header">
+                <div class="flex-wrap-controls">
+                    <select id="portSelect" title="Select Arduino port" class="port-select">
                         <option value="">🔍 Select Arduino...</option>
                     </select>
-                    <button id="scanBtn" class="btn-primary" style="flex: 0 0 auto; padding: 6px 10px; font-size: 11px;">🔍 Scan</button>
-                    <button id="connectBtn" class="btn-primary" style="flex: 0 0 auto; padding: 6px 10px; font-size: 11px;">🔌 Connect</button>
-                    <button id="disconnectBtn" class="btn-danger hidden" style="flex: 0 0 auto; padding: 6px 10px; font-size: 11px;">⏹️ Disconnect</button>
+                    <button id="scanBtn" class="btn-primary btn-compact">🔍 Scan</button>
+                    <button id="connectBtn" class="btn-primary btn-compact">🔌 Connect</button>
+                    <button id="disconnectBtn" class="btn-danger btn-compact hidden">⏹️ Disconnect</button>
                 </div>
             </div>
 
             <!-- USB Connection Help (Desktop Only) -->
-            <div id="usbHelpPanel" style="margin-top: 8px; background: rgba(102, 126, 234, 0.1); padding: 10px; border-radius: 6px; border-left: 4px solid #667eea; display: none;">
-                <div style="font-size: 11px; color: #aaa; margin-bottom: 6px;">💡 TWO WAYS TO CONNECT ARDUINO:</div>
-                <div style="font-size: 10px; color: #ccc; line-height: 1.5; margin-bottom: 8px;">
-                    <div><strong style="color: #4affff;">Direct:</strong> Use Web Serial API (local/LAN only)</div>
-                    <div><strong style="color: #4affff;">Bridge:</strong> Local server + cloud app (Render works!)</div>
+            <div id="usbHelpPanel" class="help-panel hidden">
+                <div class="help-title">💡 TWO WAYS TO CONNECT ARDUINO:</div>
+                <div class="help-content">
+                    <div><strong class="text-cyan">Direct:</strong> Use Web Serial API (local/LAN only)</div>
+                    <div><strong class="text-cyan">Bridge:</strong> Local server + cloud app (Render works!)</div>
                 </div>
-                <div style="font-size: 9px; color: #aaa;">
-                    <a href="https://github.com/barbrickdesign/GemBotAiWebControl/blob/main/LOCAL_USB_BRIDGE_SETUP.md" target="_blank" rel="noopener" style="color: #4affff; text-decoration: none;">📖 Setup Guide</a>
+                <div class="help-links">
+                    <a href="https://github.com/barbrickdesign/GemBotAiWebControl/blob/main/LOCAL_USB_BRIDGE_SETUP.md" target="_blank" rel="noopener" class="help-link">📖 Setup Guide</a>
                 </div>
             </div>
 
             <!-- Camera/Mobile Connection Controls -->
-            <div class="connection-panel" style="margin-top: 8px;">
-                <button class="btn-primary" id="cameraConnectBtn" style="flex: 1;">🔗 Link to Desktop</button>
-                <button class="btn-danger hidden" id="cameraDisconnectBtn" style="flex: 1;">📵 Disconnect</button>
-                <button style="background: #4a5a8e; color: white; padding: 6px 10px; border: 1px solid #667eea; border-radius: 6px; font-size: 12px; cursor: pointer;" id="btnDiagnostic" title="Show connection help and diagnostics">⚙️</button>
+            <div class="connection-panel connection-panel-secondary">
+                <button class="btn-primary flex-1" id="cameraConnectBtn">🔗 Link to Desktop</button>
+                <button class="btn-danger flex-1 hidden" id="cameraDisconnectBtn">📵 Disconnect</button>
+                <button class="diagnostic-btn" id="btnDiagnostic" title="Show connection help and diagnostics">⚙️</button>
             </div>
 
             <!-- Show USB help on desktop only -->
@@ -3349,44 +3501,44 @@
         </div>
 
         <!-- MOBILE CONNECTION INFO PANEL -->
-        <div id="mobileConnectionPanel" style="grid-column: 1 / -1; background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); padding: 16px; border-radius: 12px; border: 2px solid #4a9eff; display: none;">
-            <div style="display: grid; grid-template-columns: 1fr auto auto; gap: 20px; align-items: center;">
+        <div id="mobileConnectionPanel" class="mobile-connection-panel hidden">
+            <div class="mobile-grid">
                 <div>
-                    <div style="font-size: 14px; font-weight: 600; color: #4affff; margin-bottom: 8px;">📱 Mobile Device Connected</div>
-                    <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                    <div class="mobile-title">📱 Mobile Device Connected</div>
+                    <div class="mobile-info-row">
                         <div>
-                            <div style="font-size: 11px; color: #aaa; margin-bottom: 4px;">Network URL:</div>
-                            <div id="networkURLDisplay" style="font-family: monospace; background: rgba(0,0,0,0.3); padding: 8px 12px; border-radius: 6px; color: #4affff; font-weight: 600; user-select: all; line-height: 1.4;">Loading...</div>
+                            <div class="mobile-label">Network URL:</div>
+                            <div id="networkURLDisplay" class="network-url-display">Loading...</div>
                         </div>
                         <div>
-                            <div style="font-size: 11px; color: #aaa; margin-bottom: 4px;">Connected Mobile Devices:</div>
-                            <div id="mobileDevicesList" style="font-size: 13px; color: #44ff44; font-weight: 600;">None yet</div>
+                            <div class="mobile-label">Connected Mobile Devices:</div>
+                            <div id="mobileDevicesList" class="mobile-devices-list">None yet</div>
                         </div>
                     </div>
                 </div>
-                <div style="display: flex; flex-direction: column; gap: 8px;">
-                    <button id="toggleQRBtn" style="background: #4affff; color: #1e3c72; padding: 8px 16px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; white-space: nowrap;">📲 Show QR Code</button>
-                    <button id="copyURLBtn" style="background: #667eea; color: white; padding: 8px 16px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; white-space: nowrap;">📋 Copy URL</button>
+                <div class="mobile-actions">
+                    <button id="toggleQRBtn" class="btn-qr">📲 Show QR Code</button>
+                    <button id="copyURLBtn" class="btn-copy-url">📋 Copy URL</button>
                 </div>
             </div>
             
             <!-- QR CODE DISPLAY -->
-            <div id="qrCodeContainer" style="margin-top: 16px; text-align: center; padding: 16px; background: rgba(0,0,0,0.2); border-radius: 8px; display: none;">
-                <div style="font-size: 12px; color: #aaa; margin-bottom: 12px;">📱 Scan with iPhone or Android:</div>
-                <canvas id="qrCodeCanvas" style="display: none; max-width: 200px; border: 2px solid #4affff; border-radius: 8px; background: white; padding: 8px;"></canvas>
-                <div id="qrImageContainer" style="text-align: center;"></div>
-                <div style="font-size: 11px; color: #aaa; margin-top: 8px;">Hold your phone camera over the code</div>
+            <div id="qrCodeContainer" class="qr-container hidden">
+                <div class="qr-label">📱 Scan with iPhone or Android:</div>
+                <canvas id="qrCodeCanvas" class="qr-canvas hidden"></canvas>
+                <div id="qrImageContainer" class="text-center"></div>
+                <div class="qr-help">Hold your phone camera over the code</div>
             </div>
 
             <!-- NETWORK DEVICES DISCOVERY -->
-            <div id="networkDevicesPanel" style="grid-column: 1 / -1; background: linear-gradient(135deg, #1a3a3a 0%, #1f4a4a 100%); padding: 16px; border-radius: 12px; border: 2px solid #4a9eaa; margin-top: 12px; display: none;">
-                <div style="font-size: 14px; font-weight: 600; color: #4affff; margin-bottom: 12px;">🌐 Devices on Network</div>
-                <div style="display: grid; gap: 8px;">
-                    <div id="networkDevicesList" style="font-size: 13px; color: #44ff44; font-weight: 600; max-height: 300px; overflow-y: auto;">
-                        <div style="color: #888; font-style: italic;">Scanning network...</div>
+            <div id="networkDevicesPanel" class="network-devices-panel hidden">
+                <div class="mobile-title">🌐 Devices on Network</div>
+                <div class="network-grid">
+                    <div id="networkDevicesList" class="network-devices-list">
+                        <div class="scanning-placeholder">Scanning network...</div>
                     </div>
                 </div>
-                <button id="rescanNetworkBtn" style="background: #4a9eaa; color: white; padding: 8px 16px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; margin-top: 12px; width: 100%;">🔍 Rescan Network</button>
+                <button id="rescanNetworkBtn" class="btn-rescan">🔍 Rescan Network</button>
             </div>
         </div>
 
@@ -3449,84 +3601,84 @@
 
                 <div class="control-section">
                     <div class="section-title">📋 MENU CONTROL</div>
-                    <div style="padding: 8px; background: #2a3050; border-radius: 4px; margin-bottom: 8px;">
-                        <div style="font-size: 10px; color: #aaa; margin-bottom: 6px;">Touch Screen Navigation</div>
+                    <div class="nav-panel-box">
+                        <div class="nav-panel-label">Touch Screen Navigation</div>
                         <div class="button-grid">
                             <button class="btn-control" id="btnMenuLeft" title="Left navigation">◀ LEFT</button>
-                            <button class="btn-control" id="btnMenuEnter" title="Select/Enter" style="background: #667eea;">ENTER</button>
+                            <button class="btn-control btn-enter" id="btnMenuEnter" title="Select/Enter">ENTER</button>
                             <button class="btn-control" id="btnMenuRight" title="Right navigation">▶ RIGHT</button>
                         </div>
-                        <div style="font-size: 9px; color: #888; margin-top: 4px; text-align: center;">Commands: '0'|'1'|'3'</div>
+                        <div class="nav-command-hint">Commands: '0'|'1'|'3'</div>
                     </div>
 
                     <div class="section-title">🔗 SYNC VARIABLES</div>
-                    <button class="btn-control" id="btnSyncVariables" title="Fetch all variables from Nextion" style="background: #4a7c2e; width: 100%;">📥 SYNC FROM TOUCH</button>
+                    <button class="btn-control btn-sync" id="btnSyncVariables" title="Fetch all variables from Nextion">📥 SYNC FROM TOUCH</button>
                     
                     <!-- Bi-directional Touch Screen Controls -->
-                    <div style="margin-top: 8px; padding: 8px; background: #2a3050; border-radius: 4px;">
-                        <div style="font-size: 10px; color: #aaa; margin-bottom: 6px;">📤 Push to Touch Screen</div>
-                        <div class="button-grid" style="gap: 4px;">
-                            <button class="btn-control" id="btnPushSpeed" title="Send current speed to Touch Screen" style="background: #2e5a7c; font-size: 10px; padding: 6px;">⚡ Speed</button>
-                            <button class="btn-control" id="btnPushMode" title="Send current mode to Touch Screen" style="background: #2e5a7c; font-size: 10px; padding: 6px;">🎛️ Mode</button>
+                    <div class="push-panel-box">
+                        <div class="push-panel-label">📤 Push to Touch Screen</div>
+                        <div class="button-grid button-grid-compact">
+                            <button class="btn-control btn-push" id="btnPushSpeed" title="Send current speed to Touch Screen">⚡ Speed</button>
+                            <button class="btn-control btn-push" id="btnPushMode" title="Send current mode to Touch Screen">🎛️ Mode</button>
                         </div>
-                        <div class="button-grid" style="gap: 4px; margin-top: 4px;">
-                            <button class="btn-control" id="btnPushPosition" title="Send current position to Touch Screen" style="background: #5a2e7c; font-size: 10px; padding: 6px; grid-column: 1 / -1;">📍 Sync Position →</button>
+                        <div class="button-grid button-grid-compact mt-12">
+                            <button class="btn-control btn-push-position" id="btnPushPosition" title="Send current position to Touch Screen">📍 Sync Position →</button>
                         </div>
-                        <div id="pushStatus" style="padding: 4px; font-size: 9px; color: #888; margin-top: 4px; text-align: center;">Ready to push</div>
+                        <div id="pushStatus" class="status-text">Ready to push</div>
                     </div>
-                    <div id="syncStatus" style="padding: 6px; background: #1a1f3a; border-radius: 4px; font-size: 9px; color: #aaa; margin-top: 4px; text-align: center;">Ready</div>
+                    <div id="syncStatus" class="sync-status">Ready</div>
                 </div>
             </div>
 
             <!-- CENTER: 3D VIRTUAL MACHINE & WEBCAM -->
             <div class="center-panel">
                 <!-- 3D Virtual Machine View -->
-                <div id="machineViewContainer" style="width: 100%; height: 400px; background: #1a1f3a; border-radius: 8px; border: 2px solid #667eea; margin-bottom: 12px; overflow: hidden; position: relative;">
-                    <canvas id="babylon-canvas" style="width: 100%; height: 100%; display: block;"></canvas>
-                    <div id="machineLoadingStatus" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.8); padding: 16px; border-radius: 8px; color: #4affff; font-size: 14px; text-align: center; z-index: 10;">
+                <div id="machineViewContainer" class="machine-view-container">
+                    <canvas id="babylon-canvas" class="canvas-full"></canvas>
+                    <div id="machineLoadingStatus" class="loading-overlay">
                         ⏳ Initializing 3D Virtual Machine...
                     </div>
                     
                     <!-- MOBILE IN-VIEW CONTROLS (hidden on desktop) -->
-                    <div id="mobileInViewControls" style="position: absolute; bottom: 0; left: 0; right: 0; display: none; background: linear-gradient(to top, rgba(26,31,58,0.95), rgba(26,31,58,0.8)); padding: 12px; border-top: 2px solid #667eea; z-index: 6;">
+                    <div id="mobileInViewControls" class="mobile-inview-controls hidden">
                         <!-- Speed Control -->
-                        <div style="display: grid; grid-template-columns: 1fr 3fr 1fr; gap: 8px; align-items: center; margin-bottom: 10px;">
-                            <label style="font-size: 11px; color: #aaa;">SPEED</label>
-                            <input type="range" id="mobileSpeedSlider" style="width: 100%; cursor: pointer;" min="1" max="5" value="1">
-                            <span id="mobileSpeedValue" style="color: #4affff; font-weight: bold; text-align: center; font-size: 11px;">1/5</span>
+                        <div class="speed-control-grid">
+                            <label class="speed-label">SPEED</label>
+                            <input type="range" id="mobileSpeedSlider" class="speed-slider" min="1" max="5" value="1">
+                            <span id="mobileSpeedValue" class="speed-value">1/5</span>
                         </div>
                         <!-- Movement Joystick -->
-                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;">
-                            <button class="mobile-joy-btn" data-cmd="w" style="grid-column: 2;">▲</button>
-                            <button class="mobile-joy-btn" data-cmd="a" style="grid-column: 1;">◄</button>
-                            <button class="mobile-joy-btn" data-cmd="d" style="grid-column: 3;">►</button>
-                            <button class="mobile-joy-btn" data-cmd="z" style="grid-column: 2;">▼</button>
-                            <button class="mobile-joy-btn" data-cmd="u" style="grid-column: 1 / -1; background: #7c2e2e;">⏹ STOP</button>
+                        <div class="joystick-grid">
+                            <button class="mobile-joy-btn grid-col-2" data-cmd="w">▲</button>
+                            <button class="mobile-joy-btn grid-col-1" data-cmd="a">◄</button>
+                            <button class="mobile-joy-btn grid-col-3" data-cmd="d">►</button>
+                            <button class="mobile-joy-btn grid-col-2" data-cmd="z">▼</button>
+                            <button class="mobile-joy-btn grid-col-span btn-stop" data-cmd="u">⏹ STOP</button>
                         </div>
                     </div>
                     
                     <!-- 3D Scene Controls (desktop) -->
-                    <div style="position: absolute; bottom: 12px; left: 12px; display: flex; gap: 8px; z-index: 5;" id="desktop3DControls">
-                        <button id="btn3DZoomIn" style="background: #667eea; color: white; border: 1px solid #4affff; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;">🔍+</button>
-                        <button id="btn3DZoomOut" style="background: #667eea; color: white; border: 1px solid #4affff; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;">🔍−</button>
-                        <button id="btn3DReset" style="background: #764ba2; color: white; border: 1px solid #9f7aea; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;">⟲ Reset</button>
+                    <div class="desktop-3d-controls" id="desktop3DControls">
+                        <button id="btn3DZoomIn" class="btn-3d">🔍+</button>
+                        <button id="btn3DZoomOut" class="btn-3d">🔍−</button>
+                        <button id="btn3DReset" class="btn-3d btn-3d-reset">⟲ Reset</button>
                     </div>
                 </div>
                 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; font-size: 11px;">
-                    <div style="background: #2a3050; padding: 6px; border-radius: 4px;">
-                        <div style="color: #aaa; margin-bottom: 2px;">X-Axis</div>
-                        <div id="motorXPosition" style="color: #4affff; font-weight: bold;">0 steps</div>
+                <div class="motor-grid">
+                    <div class="motor-box">
+                        <div class="motor-label">X-Axis</div>
+                        <div id="motorXPosition" class="motor-value">0 steps</div>
                     </div>
-                    <div style="background: #2a3050; padding: 6px; border-radius: 4px;">
-                        <div style="color: #aaa; margin-bottom: 2px;">Y-Axis</div>
-                        <div id="motorYPosition" style="color: #4affff; font-weight: bold;">0 steps</div>
+                    <div class="motor-box">
+                        <div class="motor-label">Y-Axis</div>
+                        <div id="motorYPosition" class="motor-value">0 steps</div>
                     </div>
-                    <div style="background: #2a3050; padding: 6px; border-radius: 4px;">
-                        <div style="color: #aaa; margin-bottom: 2px;">P-Axis (Rotation)</div>
-                        <div id="motorPPosition" style="color: #4affff; font-weight: bold;">0°</div>
+                    <div class="motor-box">
+                        <div class="motor-label">P-Axis (Rotation)</div>
+                        <div id="motorPPosition" class="motor-value">0°</div>
                     </div>
-                    <button id="btnHomeAll" style="background: #4a7c2e; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">🏠 HOME ALL</button>
+                    <button id="btnHomeAll" class="btn-home">🏠 HOME ALL</button>
                 </div>
                 
                 <!-- Webcam & ML Analysis -->
@@ -3535,10 +3687,10 @@
                     <canvas id="mlCanvas" class="camera-overlay"></canvas>
                 </div>
                 <div class="camera-controls">
-                    <button id="cameraStartBtn" style="background: #4a7c2e;">📷 START CAMERA</button>
-                    <button id="cameraStopBtn" style="background: #7c2e2e; display: none;">⏹ STOP</button>
-                    <button id="recordBtn" style="background: #2e4a7c;">⚫ RECORD</button>
-                    <select id="cameraSourceSelect" title="Select camera source" style="background: #2e4a5c; color: white; border: 1px solid #667eea; padding: 6px; border-radius: 4px; font-size: 12px; cursor: pointer;">
+                    <button id="cameraStartBtn" class="btn-camera-start">📷 START CAMERA</button>
+                    <button id="cameraStopBtn" class="btn-camera-stop hidden">⏹ STOP</button>
+                    <button id="recordBtn" class="btn-record">⚫ RECORD</button>
+                    <select id="cameraSourceSelect" title="Select camera source" class="select-camera">
                         <option value="auto">📱 Auto Select Camera</option>
                         <option value="environment">🖥️ Rear/External Camera</option>
                         <option value="user">😊 Front Camera</option>
@@ -3546,43 +3698,43 @@
                     </select>
                 </div>
                 <div class="camera-adjustments">
-                    <div style="font-size: 11px; color: #aaa; font-weight: 600; margin: 8px 0 4px 0;">🎨 Image Adjustment
-                        <button id="autoAdjustBtn" style="float: right; background: #667eea; color: white; border: none; padding: 2px 8px; border-radius: 4px; font-size: 10px; cursor: pointer; font-weight: 600;">AUTO</button>
+                    <div class="adjustment-header">🎨 Image Adjustment
+                        <button id="autoAdjustBtn" class="btn-auto">AUTO</button>
                     </div>
-                    <div style="display: grid; grid-template-columns: auto 1fr auto; gap: 6px; align-items: center; font-size: 11px;">
-                        <label for="brightnessSlider" style="color: #aaa;">Brightness:</label>
-                        <input type="range" id="brightnessSlider" min="0" max="200" value="100" style="cursor: pointer;" aria-label="Image brightness adjustment">
-                        <span id="brightnessValue" style="color: #667eea; font-weight: 600; min-width: 30px;">100%</span>
+                    <div class="slider-grid">
+                        <label for="brightnessSlider" class="slider-label">Brightness:</label>
+                        <input type="range" id="brightnessSlider" min="0" max="200" value="100" class="speed-slider" aria-label="Image brightness adjustment">
+                        <span id="brightnessValue" class="slider-value">100%</span>
                     </div>
-                    <div style="display: grid; grid-template-columns: auto 1fr auto; gap: 6px; align-items: center; font-size: 11px; margin-top: 4px;">
-                        <label for="contrastSlider" style="color: #aaa;">Contrast:</label>
-                        <input type="range" id="contrastSlider" min="0" max="200" value="100" style="cursor: pointer;" aria-label="Image contrast adjustment">
-                        <span id="contrastValue" style="color: #667eea; font-weight: 600; min-width: 30px;">100%</span>
+                    <div class="slider-grid mt-4">
+                        <label for="contrastSlider" class="slider-label">Contrast:</label>
+                        <input type="range" id="contrastSlider" min="0" max="200" value="100" class="speed-slider" aria-label="Image contrast adjustment">
+                        <span id="contrastValue" class="slider-value">100%</span>
                     </div>
-                    <div style="display: grid; grid-template-columns: auto 1fr auto; gap: 6px; align-items: center; font-size: 11px; margin-top: 4px;">
-                        <label for="saturationSlider" style="color: #aaa;">Saturation:</label>
-                        <input type="range" id="saturationSlider" min="0" max="200" value="100" style="cursor: pointer;" aria-label="Image saturation adjustment">
-                        <span id="saturationValue" style="color: #667eea; font-weight: 600; min-width: 30px;">100%</span>
+                    <div class="slider-grid mt-4">
+                        <label for="saturationSlider" class="slider-label">Saturation:</label>
+                        <input type="range" id="saturationSlider" min="0" max="200" value="100" class="speed-slider" aria-label="Image saturation adjustment">
+                        <span id="saturationValue" class="slider-value">100%</span>
                     </div>
                 </div>
                 <div class="ml-status"><div id="mlStatus">ML Model Ready • Waiting for camera...</div></div>
                 
                 <!-- Edge Detection Controls -->
-                <div style="background: #1a1f3a; border: 1px solid #667eea; border-radius: 8px; padding: 10px; margin-top: 10px;">
-                    <div style="font-size: 12px; color: #aaa; font-weight: 600; margin-bottom: 8px;">
+                <div class="edge-panel">
+                    <div class="edge-header">
                         🔍 Edge Detection → 3D
-                        <span id="edgeDetectionStatus" style="float: right; padding: 2px 8px; border-radius: 4px; font-size: 10px; background: #333; color: #999;">OFF</span>
+                        <span id="edgeDetectionStatus" class="status-badge">OFF</span>
                     </div>
-                    <div style="display: flex; gap: 6px; margin-bottom: 8px;">
-                        <button id="btnStartEdgeDetection" style="flex: 1; background: #2e7c4a; color: white; border: none; padding: 8px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 600;">▶ START</button>
-                        <button id="btnStopEdgeDetection" style="flex: 1; background: #7c2e2e; color: white; border: none; padding: 8px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 600;">⏹ STOP</button>
+                    <div class="btn-edge-flex">
+                        <button id="btnStartEdgeDetection" class="btn-edge-start">▶ START</button>
+                        <button id="btnStopEdgeDetection" class="btn-edge-stop">⏹ STOP</button>
                     </div>
-                    <div style="display: grid; grid-template-columns: auto 1fr auto; gap: 6px; align-items: center; font-size: 11px;">
-                        <label for="edgeSensitivitySlider" style="color: #aaa;">Sensitivity:</label>
-                        <input type="range" id="edgeSensitivitySlider" min="10" max="200" value="50" style="cursor: pointer;">
-                        <span id="edgeSensitivityValue" style="color: #4affff; font-weight: 600; min-width: 30px;">50</span>
+                    <div class="slider-grid">
+                        <label for="edgeSensitivitySlider" class="slider-label">Sensitivity:</label>
+                        <input type="range" id="edgeSensitivitySlider" min="10" max="200" value="50" class="speed-slider">
+                        <span id="edgeSensitivityValue" class="slider-value-cyan">50</span>
                     </div>
-                    <div style="font-size: 10px; color: #888; margin-top: 6px; text-align: center;">
+                    <div class="hint-subtle">
                         Detects gem edges and maps to 3D model
                     </div>
                 </div>
@@ -3592,7 +3744,7 @@
             <div class="right-panel">
                 <div class="status-display">
                     <div class="section-title">📊 Position 
-                        <span id="positionUpdateStatus" style="display: inline-block; margin-left: 8px; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; background: #666; color: #fff;">⏸️ SYNC</span>
+                        <span id="positionUpdateStatus" class="sync-badge">⏸️ SYNC</span>
                     </div>
                     <div class="status-box">
                         <div class="status-item"><div class="status-label">X</div><div class="status-value" id="statusX">—</div></div>
@@ -3600,42 +3752,42 @@
                         <div class="status-item"><div class="status-label">ANGLE</div><div class="status-value" id="statusAngle">—</div></div>
                         <div class="status-item"><div class="status-label">INDEX</div><div class="status-value" id="statusIndex">—</div></div>
                     </div>
-                    <div style="font-size: 10px; color: #999; margin-top: 4px; text-align: center;">
-                        Last updated: <span id="lastSyncAge" style="color: #00ff88;">—</span>
+                    <div class="last-sync">
+                        Last updated: <span id="lastSyncAge" class="last-sync-value">—</span>
                     </div>
                 </div>
                 <div class="ai-header">🤖 AI ASSISTANT 
-                    <button id="accessibilityToggleBtn" style="float: right; background: #667eea; color: white; border: none; padding: 4px 10px; border-radius: 4px; font-size: 11px; cursor: pointer; font-weight: 600;">♿ Accessibility</button>
+                    <button id="accessibilityToggleBtn" class="btn-accessibility">♿ Accessibility</button>
                 </div>
                 <div class="ai-messages" id="aiMessages"></div>
-                <div id="feedbackContainer" style="display: none; padding: 8px; background: #1a1f3a; border-top: 1px solid #444; font-size: 11px; gap: 4px; display: flex;"></div>
-                <div id="helperButtonsContainer" style="display: none;"></div>
+                <div id="feedbackContainer" class="feedback-container hidden"></div>
+                <div id="helperButtonsContainer" class="hidden"></div>
                 <div class="voice-panel">
                     <button id="voiceToggleBtn">🔊 Voice ON</button>
-                    <div id="voiceSpeakingIndicator" style="padding: 6px 10px; background: #444; color: #aaa; text-align: center; border-radius: 4px; font-size: 10px; font-weight: 600;">🔊 Ready</div>
+                    <div id="voiceSpeakingIndicator" class="voice-indicator">🔊 Ready</div>
                     <div class="voice-controls">
                         <label for="voiceSelect">🎤 Voice</label>
                         <select id="voiceSelect"></select>
                     </div>
                     <div class="voice-controls">
                         <label for="rateSlider">⚡ Speed</label>
-                        <div style="display: flex; gap: 4px; align-items: center;">
-                            <input type="range" id="rateSlider" min="0.5" max="2" step="0.1" value="1" style="flex: 1;">
-                            <span id="rateDisplay" style="min-width: 30px; color: #667eea; font-weight: 600;">100%</span>
+                        <div class="slider-flex">
+                            <input type="range" id="rateSlider" min="0.5" max="2" step="0.1" value="1" class="flex-1">
+                            <span id="rateDisplay" class="slider-display">100%</span>
                         </div>
                     </div>
                     <div class="voice-controls">
                         <label for="pitchSlider">🎵 Pitch</label>
-                        <div style="display: flex; gap: 4px; align-items: center;">
-                            <input type="range" id="pitchSlider" min="0.5" max="2" step="0.1" value="1" style="flex: 1;">
-                            <span id="pitchDisplay" style="min-width: 30px; color: #667eea; font-weight: 600;">1.0</span>
+                        <div class="slider-flex">
+                            <input type="range" id="pitchSlider" min="0.5" max="2" step="0.1" value="1" class="flex-1">
+                            <span id="pitchDisplay" class="slider-display">1.0</span>
                         </div>
                     </div>
                     <div class="voice-controls">
                         <label for="volumeSlider">🔈 Volume</label>
-                        <div style="display: flex; gap: 4px; align-items: center;">
-                            <input type="range" id="volumeSlider" min="0" max="1" step="0.1" value="1" style="flex: 1;">
-                            <span id="volumeDisplay" style="min-width: 30px; color: #667eea; font-weight: 600;">100%</span>
+                        <div class="slider-flex">
+                            <input type="range" id="volumeSlider" min="0" max="1" step="0.1" value="1" class="flex-1">
+                            <span id="volumeDisplay" class="slider-display">100%</span>
                         </div>
                     </div>
                 </div>
@@ -3650,7 +3802,7 @@
         <!-- FOOTER -->
         <div class="footer-panel">
             <button class="btn-danger" id="emergencyStop">🛑 EMERGENCY STOP</button>
-            <button style="background: #2e4a7c; color: white;" id="btnHome">🏠 HOME</button>
+            <button class="btn-record" id="btnHome">🏠 HOME</button>
         </div>
     </div>
 
