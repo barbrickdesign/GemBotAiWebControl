@@ -58,6 +58,66 @@
             cocoScript.src = 'https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3';
             document.head.appendChild(cocoScript);
         }
+        
+        // ==================== GLOBAL ERROR HANDLER ====================
+        // Comprehensive error catching and logging system
+        window.GemBotErrorLog = [];
+        
+        window.onerror = function(message, source, lineno, colno, error) {
+            const errorEntry = {
+                type: 'error',
+                message: message,
+                source: source,
+                line: lineno,
+                column: colno,
+                stack: error?.stack || 'No stack',
+                timestamp: new Date().toISOString(),
+                userAgent: navigator.userAgent
+            };
+            window.GemBotErrorLog.push(errorEntry);
+            console.error('🚨 GemBot Error Caught:', errorEntry);
+            
+            // Keep only last 50 errors
+            if (window.GemBotErrorLog.length > 50) {
+                window.GemBotErrorLog.shift();
+            }
+            
+            return false; // Let error propagate for normal handling
+        };
+        
+        window.addEventListener('unhandledrejection', function(event) {
+            const errorEntry = {
+                type: 'unhandledRejection',
+                reason: event.reason?.message || String(event.reason),
+                stack: event.reason?.stack || 'No stack',
+                timestamp: new Date().toISOString()
+            };
+            window.GemBotErrorLog.push(errorEntry);
+            console.error('🚨 Unhandled Promise Rejection:', errorEntry);
+        });
+        
+        // Helper function to get error log
+        window.getGemBotErrors = function() {
+            console.table(window.GemBotErrorLog);
+            return window.GemBotErrorLog;
+        };
+        
+        // Safe function wrapper for error handling
+        window.safeCall = function(fn, context, ...args) {
+            try {
+                return fn.apply(context, args);
+            } catch (error) {
+                console.error('🛡️ SafeCall caught error:', error);
+                window.GemBotErrorLog.push({
+                    type: 'safeCall',
+                    function: fn.name || 'anonymous',
+                    error: error.message,
+                    stack: error.stack,
+                    timestamp: new Date().toISOString()
+                });
+                return null;
+            }
+        };
     </script>
     
     <style>
@@ -13935,7 +13995,45 @@
             const element = document.getElementById(elementId);
             if (element) {
                 element.textContent = axis === 'ANGLE' ? `${value}°` : value;
+                element.style.color = '#4a7c2e'; // Green to show updated
                 console.log(`📍 Status ${axis}: ${value}${axis === 'ANGLE' ? '°' : ''}`);
+            }
+            
+            // Also update nextion.variables for consistency
+            if (typeof nextion !== 'undefined' && nextion.variables) {
+                switch(axis) {
+                    case 'X':
+                        nextion.variables.positionX = value;
+                        break;
+                    case 'Y':
+                        nextion.variables.positionY = value;
+                        break;
+                    case 'ANGLE':
+                        nextion.variables.rotationAngle = value;
+                        break;
+                    case 'INDEX':
+                        nextion.variables.indexPosition = value;
+                        break;
+                }
+            }
+            
+            // Update machineGlobalState as well (correct path: hardware.position)
+            if (typeof machineGlobalState !== 'undefined' && machineGlobalState.hardware?.position) {
+                switch(axis) {
+                    case 'X':
+                        machineGlobalState.hardware.position.x = value;
+                        break;
+                    case 'Y':
+                        machineGlobalState.hardware.position.y = value;
+                        break;
+                    case 'ANGLE':
+                        machineGlobalState.hardware.position.rotation = value;
+                        break;
+                    case 'INDEX':
+                        machineGlobalState.hardware.position.index = value;
+                        break;
+                }
+                machineGlobalState.hardware.lastUpdate = Date.now();
             }
         }
 
@@ -16671,6 +16769,102 @@
         }
         
         // Merlin greeting will be given on window load, no duplicate welcome needed
+        
+        // ═══════════════════════════════════════════════════════════════════
+        // CONSOLE DEBUG HELPER - Type merlinDebug() in browser console
+        // ═══════════════════════════════════════════════════════════════════
+        window.merlinDebug = function(section = 'all') {
+            const sections = {
+                state: () => {
+                    console.group('🔧 MACHINE STATE');
+                    console.log('machineGlobalState:', JSON.parse(JSON.stringify(machineGlobalState)));
+                    console.log('machineState (manager):', machineState ? {
+                        position: machineState.position,
+                        mode: machineState.operationMode,
+                        homed: machineState.isHomed,
+                        state: machineState.currentState
+                    } : 'Not initialized');
+                    console.log('nextion.variables:', nextion?.variables || 'Not available');
+                    console.groupEnd();
+                },
+                serial: () => {
+                    console.group('📡 SERIAL CONNECTION');
+                    console.log('Connected:', serial?.port ? 'Yes' : 'No');
+                    console.log('Port:', serial?.port || 'None');
+                    console.log('Reader:', serial?.reader ? 'Active' : 'None');
+                    console.groupEnd();
+                },
+                ai: () => {
+                    console.group('🧙‍♂️ AI SYSTEMS');
+                    console.log('GemBotAI:', typeof gemBotAI !== 'undefined' ? 'Loaded' : 'Missing');
+                    console.log('MerlinPersonality:', typeof merlin !== 'undefined' ? {
+                        name: merlin.userName,
+                        expertise: merlin.userProfile?.expertise,
+                        totalInteractions: merlin.userProfile?.totalInteractions
+                    } : 'Not initialized');
+                    console.log('MerlinAdaptiveAI:', typeof window.merlinAdaptive !== 'undefined' ? 'Active' : 'Not loaded');
+                    console.log('MerlinScreenContext:', typeof window.merlinScreen !== 'undefined' ? 'Active' : 'Not loaded');
+                    console.groupEnd();
+                },
+                feedback: () => {
+                    console.group('📊 FEEDBACK SYSTEM');
+                    const fb = window.feedbackSystem;
+                    if (fb) {
+                        console.log('Total Feedback:', fb.feedbackLog?.length || 0);
+                        console.log('Categories:', [...new Set(fb.feedbackLog?.map(f => f.category) || [])]);
+                        console.log('Export:', fb.exportFeedback?.() || 'N/A');
+                    } else {
+                        console.log('FeedbackSystem not initialized');
+                    }
+                    console.groupEnd();
+                },
+                errors: () => {
+                    console.group('❌ ERROR LOG');
+                    const errors = window.GemBotErrorHandler?.getErrors?.() || [];
+                    console.log('Total Errors:', errors.length);
+                    errors.slice(-5).forEach((e, i) => {
+                        console.log(`[${i+1}] ${e.timestamp}: ${e.message}`);
+                    });
+                    if (errors.length > 5) console.log(`... and ${errors.length - 5} more`);
+                    console.groupEnd();
+                },
+                games: () => {
+                    console.group('🎮 GAME SYSTEMS');
+                    console.log('GameFarm:', typeof gameFarm !== 'undefined' ? 'Loaded' : 'Not loaded');
+                    console.log('GemBot Games:', typeof GemBotGames !== 'undefined' ? 'Available' : 'Missing');
+                    console.log('Game Integration:', typeof window.gemBotGameIntegration !== 'undefined' ? 'Active' : 'Not loaded');
+                    console.groupEnd();
+                },
+                ui: () => {
+                    console.group('🖥️ UI ELEMENTS');
+                    const elements = ['statusX', 'statusY', 'statusAngle', 'statusIndex', 'serialOutput', 'aiChatMessages'];
+                    elements.forEach(id => {
+                        const el = document.getElementById(id);
+                        console.log(`${id}:`, el ? (el.textContent?.substring(0, 50) || 'empty') : 'MISSING');
+                    });
+                    console.groupEnd();
+                }
+            };
+            
+            console.log('%c═══════════════════════════════════════════════════════', 'color: #8B5CF6; font-weight: bold');
+            console.log('%c  GEMBOT MERLIN DEBUG CONSOLE v1.0', 'color: #8B5CF6; font-weight: bold; font-size: 14px');
+            console.log('%c═══════════════════════════════════════════════════════', 'color: #8B5CF6; font-weight: bold');
+            console.log('Usage: merlinDebug("section") where section is:');
+            console.log('  all, state, serial, ai, feedback, errors, games, ui');
+            console.log('');
+            
+            if (section === 'all') {
+                Object.values(sections).forEach(fn => fn());
+            } else if (sections[section]) {
+                sections[section]();
+            } else {
+                console.warn('Unknown section. Use: all, state, serial, ai, feedback, errors, games, ui');
+            }
+            
+            return 'Debug complete - check grouped output above';
+        };
+        
+        console.log('%c🧙‍♂️ Type merlinDebug() for system diagnostics', 'color: #8B5CF6; font-style: italic');
     </script>
 </body>
 </html>
