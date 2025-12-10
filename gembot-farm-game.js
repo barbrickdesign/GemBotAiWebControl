@@ -1576,6 +1576,9 @@ class GemBotFarmGame {
         // Overhead lighting
         this.createOverheadLights(roomWidth, roomDepth);
         
+        // Create interactive doors to other rooms
+        this.createDoors(roomWidth, roomDepth, roomHeight);
+        
         // Holographic title
         this.createHolographicText();
         
@@ -1622,21 +1625,49 @@ class GemBotFarmGame {
         doorTop.material = wallMat;
         doorTop.checkCollisions = true;
         
-        // Left wall
-        const leftWall = BABYLON.MeshBuilder.CreateBox('leftWall', {
-            width: wallThickness, height: roomHeight, depth: roomDepth
+        // Left wall - split into sections with door opening at z=-2
+        const leftWallFront = BABYLON.MeshBuilder.CreateBox('leftWallFront', {
+            width: wallThickness, height: roomHeight, depth: roomDepth/2 - 3
         }, this.scene);
-        leftWall.position = new BABYLON.Vector3(-roomWidth/2, roomHeight/2, 0);
-        leftWall.material = wallMat;
-        leftWall.checkCollisions = true;
+        leftWallFront.position = new BABYLON.Vector3(-roomWidth/2, roomHeight/2, roomDepth/4 + 0.5);
+        leftWallFront.material = wallMat;
+        leftWallFront.checkCollisions = true;
         
-        // Right wall
-        const rightWall = BABYLON.MeshBuilder.CreateBox('rightWall', {
-            width: wallThickness, height: roomHeight, depth: roomDepth
+        const leftWallBack = BABYLON.MeshBuilder.CreateBox('leftWallBack', {
+            width: wallThickness, height: roomHeight, depth: roomDepth/2 - 3
         }, this.scene);
-        rightWall.position = new BABYLON.Vector3(roomWidth/2, roomHeight/2, 0);
-        rightWall.material = wallMat;
-        rightWall.checkCollisions = true;
+        leftWallBack.position = new BABYLON.Vector3(-roomWidth/2, roomHeight/2, -roomDepth/4 - 0.5);
+        leftWallBack.material = wallMat;
+        leftWallBack.checkCollisions = true;
+        
+        const leftDoorTop = BABYLON.MeshBuilder.CreateBox('leftDoorTop', {
+            width: wallThickness, height: roomHeight - 2.5, depth: 2
+        }, this.scene);
+        leftDoorTop.position = new BABYLON.Vector3(-roomWidth/2, roomHeight - (roomHeight - 2.5)/2, -2);
+        leftDoorTop.material = wallMat;
+        leftDoorTop.checkCollisions = true;
+        
+        // Right wall - split into sections with door opening at z=-2
+        const rightWallFront = BABYLON.MeshBuilder.CreateBox('rightWallFront', {
+            width: wallThickness, height: roomHeight, depth: roomDepth/2 - 3
+        }, this.scene);
+        rightWallFront.position = new BABYLON.Vector3(roomWidth/2, roomHeight/2, roomDepth/4 + 0.5);
+        rightWallFront.material = wallMat;
+        rightWallFront.checkCollisions = true;
+        
+        const rightWallBack = BABYLON.MeshBuilder.CreateBox('rightWallBack', {
+            width: wallThickness, height: roomHeight, depth: roomDepth/2 - 3
+        }, this.scene);
+        rightWallBack.position = new BABYLON.Vector3(roomWidth/2, roomHeight/2, -roomDepth/4 - 0.5);
+        rightWallBack.material = wallMat;
+        rightWallBack.checkCollisions = true;
+        
+        const rightDoorTop = BABYLON.MeshBuilder.CreateBox('rightDoorTop', {
+            width: wallThickness, height: roomHeight - 2.5, depth: 2
+        }, this.scene);
+        rightDoorTop.position = new BABYLON.Vector3(roomWidth/2, roomHeight - (roomHeight - 2.5)/2, -2);
+        rightDoorTop.material = wallMat;
+        rightDoorTop.checkCollisions = true;
         
         // Add window panels on back wall
         this.createWindowPanels(roomWidth, roomDepth, roomHeight);
@@ -1730,39 +1761,450 @@ class GemBotFarmGame {
     }
     
     /**
-     * Create computer stations along walls
+     * Create interactive computer stations along walls
+     * Each screen links to a different game feature
      */
     createComputerStations(roomWidth, roomDepth) {
         const deskMat = new BABYLON.StandardMaterial('deskMat', this.scene);
         deskMat.diffuseColor = new BABYLON.Color3(0.12, 0.12, 0.15);
         
-        const screenMat = new BABYLON.StandardMaterial('screenMat', this.scene);
-        screenMat.diffuseColor = new BABYLON.Color3(0.05, 0.1, 0.15);
-        screenMat.emissiveColor = new BABYLON.Color3(0.1, 0.2, 0.3);
+        // Define interactive screens with their functions
+        const screenConfigs = [
+            // Left wall screens
+            { side: 0, idx: 0, icon: '🛒', label: 'SHOP', action: 'openShopPanel', color: new BABYLON.Color3(0.1, 0.4, 0.1) },
+            { side: 0, idx: 1, icon: '📦', label: 'INVENTORY', action: 'openInventoryPanel', color: new BABYLON.Color3(0.1, 0.2, 0.4) },
+            { side: 0, idx: 2, icon: '🏪', label: 'MARKETPLACE', action: 'openMarketplace', color: new BABYLON.Color3(0.4, 0.2, 0.1) },
+            // Right wall screens
+            { side: 1, idx: 0, icon: '🤖', label: 'GEMBOT', action: 'closeGameMode', color: new BABYLON.Color3(0, 0.3, 0.4) },
+            { side: 1, idx: 1, icon: '📊', label: 'STATS', action: 'showGameStats', color: new BABYLON.Color3(0.3, 0.1, 0.3) },
+            { side: 1, idx: 2, icon: '🏠', label: 'ROOMS', action: 'showRoomsPanel', color: new BABYLON.Color3(0.2, 0.3, 0.1) }
+        ];
         
-        // Desks along left and right walls
+        // Store interactive meshes for raycasting
+        this.interactiveScreens = [];
+        
         const sides = [{x: -roomWidth/2 + 1.5, rotY: Math.PI/2}, {x: roomWidth/2 - 1.5, rotY: -Math.PI/2}];
         
-        sides.forEach((side, sideIdx) => {
-            for (let i = 0; i < 3; i++) {
-                const z = -roomDepth/2 + 3 + i * 4;
-                
-                // Desk
-                const desk = BABYLON.MeshBuilder.CreateBox(`desk_${sideIdx}_${i}`, {
-                    width: 2, height: 0.05, depth: 1
-                }, this.scene);
-                desk.position = new BABYLON.Vector3(side.x, 0.75, z);
-                desk.material = deskMat;
-                
-                // Monitor
-                const monitor = BABYLON.MeshBuilder.CreateBox(`monitor_${sideIdx}_${i}`, {
-                    width: 1.2, height: 0.8, depth: 0.05
-                }, this.scene);
-                monitor.position = new BABYLON.Vector3(side.x + (sideIdx === 0 ? 0.3 : -0.3), 1.2, z);
-                monitor.rotation.y = side.rotY;
-                monitor.material = screenMat;
-            }
+        screenConfigs.forEach(config => {
+            const side = sides[config.side];
+            const z = -roomDepth/2 + 3 + config.idx * 4;
+            
+            // Desk
+            const desk = BABYLON.MeshBuilder.CreateBox(`desk_${config.side}_${config.idx}`, {
+                width: 2, height: 0.05, depth: 1
+            }, this.scene);
+            desk.position = new BABYLON.Vector3(side.x, 0.75, z);
+            desk.material = deskMat;
+            
+            // Monitor frame
+            const monitorFrame = BABYLON.MeshBuilder.CreateBox(`monitorFrame_${config.side}_${config.idx}`, {
+                width: 1.3, height: 0.9, depth: 0.08
+            }, this.scene);
+            monitorFrame.position = new BABYLON.Vector3(side.x + (config.side === 0 ? 0.3 : -0.3), 1.2, z);
+            monitorFrame.rotation.y = side.rotY;
+            const frameMat = new BABYLON.StandardMaterial(`frameMat_${config.side}_${config.idx}`, this.scene);
+            frameMat.diffuseColor = new BABYLON.Color3(0.08, 0.08, 0.1);
+            monitorFrame.material = frameMat;
+            
+            // Interactive screen surface
+            const screen = BABYLON.MeshBuilder.CreatePlane(`screen_${config.side}_${config.idx}`, {
+                width: 1.2, height: 0.8
+            }, this.scene);
+            screen.position = new BABYLON.Vector3(
+                side.x + (config.side === 0 ? 0.35 : -0.35), 
+                1.2, 
+                z
+            );
+            screen.rotation.y = side.rotY;
+            
+            // Create screen texture with icon and label
+            const screenMat = new BABYLON.StandardMaterial(`screenMat_${config.side}_${config.idx}`, this.scene);
+            const screenTex = new BABYLON.DynamicTexture(`screenTex_${config.side}_${config.idx}`, {width: 256, height: 180}, this.scene);
+            const ctx = screenTex.getContext();
+            
+            // Background gradient
+            const gradient = ctx.createLinearGradient(0, 0, 0, 180);
+            gradient.addColorStop(0, `rgb(${Math.floor(config.color.r*60)}, ${Math.floor(config.color.g*60)}, ${Math.floor(config.color.b*60)})`);
+            gradient.addColorStop(1, `rgb(${Math.floor(config.color.r*30)}, ${Math.floor(config.color.g*30)}, ${Math.floor(config.color.b*30)})`);
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 256, 180);
+            
+            // Icon
+            ctx.font = '48px Arial';
+            ctx.fillStyle = '#ffffff';
+            ctx.textAlign = 'center';
+            ctx.fillText(config.icon, 128, 70);
+            
+            // Label
+            ctx.font = 'bold 20px Arial';
+            ctx.fillStyle = '#00ffff';
+            ctx.fillText(config.label, 128, 110);
+            
+            // "Click to open" hint
+            ctx.font = '12px Arial';
+            ctx.fillStyle = 'rgba(255,255,255,0.6)';
+            ctx.fillText('[ CLICK TO OPEN ]', 128, 150);
+            
+            screenTex.update();
+            
+            screenMat.diffuseTexture = screenTex;
+            screenMat.emissiveTexture = screenTex;
+            screenMat.emissiveColor = config.color.scale(0.5);
+            screenMat.backFaceCulling = false;
+            screen.material = screenMat;
+            
+            // Store for interaction
+            screen.actionManager = new BABYLON.ActionManager(this.scene);
+            screen.actionManager.registerAction(new BABYLON.ExecuteCodeAction(
+                BABYLON.ActionManager.OnPickTrigger,
+                () => this.handleScreenClick(config.action, config.label)
+            ));
+            
+            // Hover effect
+            screen.actionManager.registerAction(new BABYLON.ExecuteCodeAction(
+                BABYLON.ActionManager.OnPointerOverTrigger,
+                () => {
+                    screenMat.emissiveColor = config.color;
+                    document.body.style.cursor = 'pointer';
+                }
+            ));
+            screen.actionManager.registerAction(new BABYLON.ExecuteCodeAction(
+                BABYLON.ActionManager.OnPointerOutTrigger,
+                () => {
+                    screenMat.emissiveColor = config.color.scale(0.5);
+                    document.body.style.cursor = 'default';
+                }
+            ));
+            
+            this.interactiveScreens.push({ mesh: screen, config });
         });
+    }
+    
+    /**
+     * Handle computer screen click
+     */
+    handleScreenClick(action, label) {
+        console.log(`🖥️ Screen clicked: ${label}`);
+        
+        // Call the appropriate function in the main app
+        switch(action) {
+            case 'openShopPanel':
+                if (typeof openShopPanel === 'function') openShopPanel();
+                break;
+            case 'openInventoryPanel':
+                if (typeof openInventoryPanel === 'function') openInventoryPanel();
+                break;
+            case 'openMarketplace':
+                if (typeof openMarketplace === 'function') openMarketplace();
+                else if (typeof window.marketplace?.openMarketplace === 'function') window.marketplace.openMarketplace();
+                break;
+            case 'closeGameMode':
+                if (typeof closeGameMode === 'function') closeGameMode();
+                break;
+            case 'showGameStats':
+                this.showStatsOverlay();
+                break;
+            case 'showRoomsPanel':
+                this.showRoomsOverlay();
+                break;
+        }
+    }
+    
+    /**
+     * Show stats overlay
+     */
+    showStatsOverlay() {
+        const stats = this.state;
+        alert(`📊 GemBot Stats\n\nLevel: ${stats.level}\nXP: ${stats.xp}\nCoins: ${stats.coins}\nGems Cut: ${stats.gemsCut || 0}\nMachines: ${stats.machines.length}`);
+    }
+    
+    /**
+     * Show rooms overlay  
+     */
+    showRoomsOverlay() {
+        const rooms = Object.entries(this.roomTypes)
+            .filter(([key, room]) => room.unlockLevel <= this.state.level)
+            .map(([key, room]) => `${room.name} (${room.slots} slots) - ${room.cost === 0 ? 'FREE' : room.cost + ' coins'}`)
+            .join('\n');
+        alert(`🏠 Available Rooms\n\n${rooms}`);
+    }
+    
+    /**
+     * Create doors to other rooms with lock status
+     */
+    createDoors(roomWidth, roomDepth, roomHeight) {
+        // Store doors for interaction
+        this.doors = [];
+        
+        // Door positions - front (main entrance) and side doors
+        const doorConfigs = [
+            { 
+                name: 'main_entrance',
+                position: new BABYLON.Vector3(0, 1.25, roomDepth/2 - 0.1),
+                rotation: 0,
+                targetRoom: null, // Exit to main menu
+                label: 'EXIT',
+                locked: false,
+                keyRequired: null
+            },
+            {
+                name: 'studio_door',
+                position: new BABYLON.Vector3(-roomWidth/2 + 0.1, 1.25, -2),
+                rotation: Math.PI/2,
+                targetRoom: 'home_studio',
+                label: 'STUDIO',
+                locked: true,
+                keyRequired: 'studio_key',
+                unlockLevel: 5,
+                cost: 500
+            },
+            {
+                name: 'shop_door',
+                position: new BABYLON.Vector3(roomWidth/2 - 0.1, 1.25, -2),
+                rotation: -Math.PI/2,
+                targetRoom: 'small_shop',
+                label: 'SHOP',
+                locked: true,
+                keyRequired: 'shop_key',
+                unlockLevel: 8,
+                cost: 2000
+            }
+        ];
+        
+        doorConfigs.forEach((config, i) => {
+            // Check if player has unlocked this door
+            const isUnlocked = !config.locked || 
+                (this.state.level >= (config.unlockLevel || 1) && 
+                 (this.state.unlockedRooms?.includes(config.targetRoom) || !config.cost));
+            
+            // Door frame
+            const frame = BABYLON.MeshBuilder.CreateBox(`doorFrame_${i}`, {
+                width: 1.8, height: 2.5, depth: 0.15
+            }, this.scene);
+            frame.position = config.position.clone();
+            frame.position.y = 1.25;
+            frame.rotation.y = config.rotation;
+            
+            const frameMat = new BABYLON.StandardMaterial(`doorFrameMat_${i}`, this.scene);
+            frameMat.diffuseColor = new BABYLON.Color3(0.15, 0.15, 0.18);
+            frame.material = frameMat;
+            
+            // Door panel (clickable)
+            const door = BABYLON.MeshBuilder.CreateBox(`door_${i}`, {
+                width: 1.5, height: 2.3, depth: 0.1
+            }, this.scene);
+            door.position = config.position.clone();
+            door.position.y = 1.15;
+            door.rotation.y = config.rotation;
+            
+            const doorMat = new BABYLON.StandardMaterial(`doorMat_${i}`, this.scene);
+            if (isUnlocked) {
+                doorMat.diffuseColor = new BABYLON.Color3(0.2, 0.4, 0.3);
+                doorMat.emissiveColor = new BABYLON.Color3(0.05, 0.15, 0.1);
+            } else {
+                doorMat.diffuseColor = new BABYLON.Color3(0.4, 0.2, 0.2);
+                doorMat.emissiveColor = new BABYLON.Color3(0.15, 0.05, 0.05);
+            }
+            door.material = doorMat;
+            
+            // Door label sign
+            const sign = BABYLON.MeshBuilder.CreatePlane(`doorSign_${i}`, {
+                width: 1, height: 0.3
+            }, this.scene);
+            sign.position = config.position.clone();
+            sign.position.y = 2.2;
+            sign.rotation.y = config.rotation;
+            
+            const signTex = new BABYLON.DynamicTexture(`signTex_${i}`, {width: 200, height: 60}, this.scene);
+            const ctx = signTex.getContext();
+            ctx.fillStyle = isUnlocked ? '#1a3a2a' : '#3a1a1a';
+            ctx.fillRect(0, 0, 200, 60);
+            ctx.font = 'bold 20px Arial';
+            ctx.fillStyle = isUnlocked ? '#00ff88' : '#ff4444';
+            ctx.textAlign = 'center';
+            ctx.fillText(config.label, 100, 25);
+            ctx.font = '12px Arial';
+            ctx.fillStyle = '#aaaaaa';
+            if (!isUnlocked && config.unlockLevel) {
+                ctx.fillText(`🔒 Lvl ${config.unlockLevel} | ${config.cost} coins`, 100, 48);
+            } else {
+                ctx.fillText(isUnlocked ? '[ CLICK TO ENTER ]' : '🔒 LOCKED', 100, 48);
+            }
+            signTex.update();
+            
+            const signMat = new BABYLON.StandardMaterial(`signMat_${i}`, this.scene);
+            signMat.diffuseTexture = signTex;
+            signMat.emissiveTexture = signTex;
+            signMat.backFaceCulling = false;
+            sign.material = signMat;
+            
+            // Lock icon if locked
+            if (!isUnlocked) {
+                const lockIcon = BABYLON.MeshBuilder.CreateBox(`lock_${i}`, {
+                    width: 0.2, height: 0.25, depth: 0.05
+                }, this.scene);
+                lockIcon.position = config.position.clone();
+                lockIcon.position.y = 1.4;
+                lockIcon.position.addInPlace(new BABYLON.Vector3(
+                    Math.sin(config.rotation) * 0.1,
+                    0,
+                    Math.cos(config.rotation) * 0.1
+                ));
+                lockIcon.rotation.y = config.rotation;
+                
+                const lockMat = new BABYLON.StandardMaterial(`lockMat_${i}`, this.scene);
+                lockMat.diffuseColor = new BABYLON.Color3(0.8, 0.6, 0.1);
+                lockMat.emissiveColor = new BABYLON.Color3(0.3, 0.2, 0);
+                lockIcon.material = lockMat;
+            }
+            
+            // Door interaction
+            door.actionManager = new BABYLON.ActionManager(this.scene);
+            door.actionManager.registerAction(new BABYLON.ExecuteCodeAction(
+                BABYLON.ActionManager.OnPickTrigger,
+                () => this.handleDoorClick(config, isUnlocked)
+            ));
+            
+            // Hover effects
+            door.actionManager.registerAction(new BABYLON.ExecuteCodeAction(
+                BABYLON.ActionManager.OnPointerOverTrigger,
+                () => {
+                    doorMat.emissiveColor = isUnlocked ? 
+                        new BABYLON.Color3(0.1, 0.3, 0.2) : 
+                        new BABYLON.Color3(0.3, 0.1, 0.1);
+                    document.body.style.cursor = 'pointer';
+                }
+            ));
+            door.actionManager.registerAction(new BABYLON.ExecuteCodeAction(
+                BABYLON.ActionManager.OnPointerOutTrigger,
+                () => {
+                    doorMat.emissiveColor = isUnlocked ? 
+                        new BABYLON.Color3(0.05, 0.15, 0.1) : 
+                        new BABYLON.Color3(0.15, 0.05, 0.05);
+                    document.body.style.cursor = 'default';
+                }
+            ));
+            
+            this.doors.push({ mesh: door, config, isUnlocked });
+        });
+    }
+    
+    /**
+     * Handle door click - unlock or enter room
+     */
+    handleDoorClick(config, isUnlocked) {
+        console.log(`🚪 Door clicked: ${config.label}`);
+        
+        if (config.name === 'main_entrance') {
+            // Exit to main GemBot controller
+            if (typeof closeGameMode === 'function') {
+                closeGameMode();
+            }
+            return;
+        }
+        
+        if (isUnlocked) {
+            // Enter the room
+            this.enterRoom(config.targetRoom);
+        } else {
+            // Show unlock dialog
+            this.showUnlockDialog(config);
+        }
+    }
+    
+    /**
+     * Show unlock dialog for locked doors
+     */
+    showUnlockDialog(config) {
+        const canAfford = this.state.coins >= config.cost;
+        const meetsLevel = this.state.level >= config.unlockLevel;
+        
+        let message = `🚪 ${config.label}\n\n`;
+        message += `Required Level: ${config.unlockLevel} ${meetsLevel ? '✅' : '❌ (You: ' + this.state.level + ')'}\n`;
+        message += `Cost: ${config.cost} coins ${canAfford ? '✅' : '❌ (You: ' + this.state.coins + ')'}\n\n`;
+        
+        if (meetsLevel && canAfford) {
+            if (confirm(message + 'Unlock this room?')) {
+                this.unlockRoom(config);
+            }
+        } else {
+            alert(message + 'Requirements not met!');
+        }
+    }
+    
+    /**
+     * Unlock a room
+     */
+    unlockRoom(config) {
+        if (!this.state.unlockedRooms) {
+            this.state.unlockedRooms = [];
+        }
+        
+        this.state.coins -= config.cost;
+        this.state.unlockedRooms.push(config.targetRoom);
+        
+        // Give the key
+        if (!this.state.keys) {
+            this.state.keys = [];
+        }
+        this.state.keys.push(config.keyRequired);
+        
+        this.saveState();
+        
+        // Refresh the scene to update door status
+        this.addActivityMessage(`🔑 Unlocked ${config.label}!`);
+        
+        // Rebuild doors to show updated status
+        this.rebuildDoors();
+    }
+    
+    /**
+     * Rebuild doors after unlock
+     */
+    rebuildDoors() {
+        // Remove existing doors
+        if (this.doors) {
+            this.doors.forEach(d => {
+                d.mesh.dispose();
+            });
+        }
+        
+        // Dispose all door-related meshes
+        this.scene.meshes
+            .filter(m => m.name.startsWith('door') || m.name.startsWith('lock') || m.name.startsWith('sign'))
+            .forEach(m => m.dispose());
+        
+        // Recreate doors
+        this.createDoors(14, 14, 4);
+    }
+    
+    /**
+     * Enter a different room
+     */
+    enterRoom(roomKey) {
+        const room = this.roomTypes[roomKey];
+        if (!room) {
+            console.error('Room not found:', roomKey);
+            return;
+        }
+        
+        console.log(`🏠 Entering room: ${room.name}`);
+        this.addActivityMessage(`🏠 Entered ${room.name}`);
+        
+        // Update current room
+        this.currentRoom = roomKey;
+        
+        // Save room change
+        if (!this.state.rooms) {
+            this.state.rooms = [];
+        }
+        if (!this.state.rooms.includes(roomKey)) {
+            this.state.rooms.push(roomKey);
+        }
+        this.saveState();
+        
+        // For now, show confirmation - full room transition would rebuild the scene
+        alert(`🏠 Welcome to ${room.name}!\n\nSlots: ${room.slots}\nBonus: ${Math.round((room.bonus - 1) * 100)}%\n\n(Full room transitions coming soon!)`);
     }
     
     /**
