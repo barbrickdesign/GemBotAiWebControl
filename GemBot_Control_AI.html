@@ -7777,7 +7777,7 @@
                 return items.map(item => `
                     <div class="featured-item-card" onclick="marketplaceUI.viewItem('${item.id}')">
                         <div class="item-image-wrapper">
-                            <img src="${item.imageUrl}" alt="${item.name}" class="item-image" loading="lazy">
+                            <img src="${item.imageUrl || 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22><rect fill=%22%23333%22 width=%22200%22 height=%22200%22/><text x=%2250%25%22 y=%2250%25%22 fill=%22%23888%22 font-size=%2224%22 text-anchor=%22middle%22 dominant-baseline=%22middle%22>💎</text></svg>'}" alt="${item.name}" class="item-image" loading="lazy" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22><rect fill=%22%23333%22 width=%22200%22 height=%22200%22/><text x=%2250%25%22 y=%2250%25%22 fill=%22%23888%22 font-size=%2224%22 text-anchor=%22middle%22 dominant-baseline=%22middle%22>💎</text></svg>'">
                             ${item.virtualCopiesOwned > 0 ? `<div class="virtual-badge">${item.virtualCopiesOwned}/10</div>` : ''}
                         </div>
                         <div class="item-details">
@@ -7943,7 +7943,7 @@
                 return `
                     <div class="catalog-item ${item.soldOut ? 'sold-out' : ''}" onclick="marketplaceUI.viewItem('${item.id}')">
                         <div class="catalog-item-image">
-                            <img src="${item.imageUrl}" alt="${item.name}" loading="lazy">
+                            <img src="${item.imageUrl || ''}" alt="${item.name}" loading="lazy" onerror="this.style.display='none'">
                             ${item.soldOut ? '<div class="sold-out-badge">SOLD OUT</div>' : ''}
                             ${item.virtualCopiesOwned > 0 ? `<div class="virtual-progress">${item.virtualCopiesOwned}/10</div>` : ''}
                         </div>
@@ -7991,7 +7991,7 @@
                     
                     <div class="item-detail-view">
                         <div class="item-detail-image">
-                            <img src="${item.imageUrl}" alt="${item.name}">
+                            <img src="${item.imageUrl || ''}" alt="${item.name}" onerror="this.style.display='none'">
                             ${item.soldOut ? '<div class="sold-out-overlay">SOLD OUT</div>' : ''}
                         </div>
                         
@@ -8141,7 +8141,7 @@
                             <div class="forged-items-grid">
                                 ${mp.resources.forgedItems.map(item => `
                                     <div class="forged-item-card">
-                                        <img src="${item.imageUrl}" alt="${item.name}">
+                                        <img src="${item.imageUrl || ''}" alt="${item.name}" onerror="this.style.display='none'">
                                         <div class="forged-item-name">${item.name}</div>
                                         <div class="forged-item-quality">Quality: ${item.quality}%</div>
                                         <div class="forged-item-value">${item.virtualValue} $GBUV value</div>
@@ -8783,7 +8783,7 @@
                     </div>
                     
                     <div class="conversion-summary">
-                        <img src="${conversion.item.imageUrl}" alt="${conversion.item.name}" class="conversion-item-image">
+                        <img src="${conversion.item.imageUrl || 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22><rect fill=%22%23333%22 width=%22200%22 height=%22200%22/><text x=%2250%25%22 y=%2250%25%22 fill=%22%23888%22 font-size=%2224%22 text-anchor=%22middle%22 dominant-baseline=%22middle%22>💎</text></svg>'}" alt="${conversion.item.name}" class="conversion-item-image" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22><rect fill=%22%23333%22 width=%22200%22 height=%22200%22/><text x=%2250%25%22 y=%2250%25%22 fill=%22%23888%22 font-size=%2224%22 text-anchor=%22middle%22 dominant-baseline=%22middle%22>💎</text></svg>'">
                         <h3>${conversion.item.name}</h3>
                         <p>You're converting ${conversion.virtualCopiesOwned} virtual copies into a REAL item!</p>
                         <div class="conversion-cost">
@@ -8898,7 +8898,7 @@
                 const itemCategory = item.itemType || 'jewelry';
                 
                 body.innerHTML = `
-                    <img src="${item.imageUrl}" alt="${item.name}" class="item-detail-image">
+                    <img src="${item.imageUrl || ''}" alt="${item.name}" class="item-detail-image" onerror="this.style.display='none'">
                     <div class="item-detail-body">
                         <h3 class="item-detail-name">${item.name}</h3>
                         
