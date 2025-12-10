@@ -238,6 +238,52 @@ const MerlinEnhancedResponses = {
             "heat treatment before cutting can improve some stones but ruins others",
             "certain rough shows 'silk' that can create star effects if cut correctly",
             "the relationship between table size and crown angle determines light return vs. fire"
+        ],
+        marketplace: [
+            "Earth Art Gems designs can be forged using your virtual metals and cut gems",
+            "the $GEMBOT token connects your virtual wealth to real-world treasures",
+            "forging a ring requires both precious metals and quality cut gemstones",
+            "collect enough virtual copies of an item to unlock the real jewelry piece",
+            "gold and silver prices in the market fluctuate with the crypto exchange rate",
+            "rare gemstones fetch higher prices in player trading",
+            "the Solana blockchain ensures transparent and fast token transactions",
+            "each forged item becomes part of your permanent collection",
+            "real jewelry from earthartgems.com features authentic gemstones",
+            "your forging skill level affects the quality and value of crafted pieces"
+        ]
+    },
+
+    // Marketplace-specific responses
+    marketplaceResponses: {
+        greetings: [
+            "The marketplace beckons with treasures both virtual and real, {name}!",
+            "Ah, a visit to the trading grounds! Earth Art Gems has wondrous designs.",
+            "The forge fires burn bright today. What shall we craft, {name}?",
+            "Welcome to where virtual mastery becomes real-world treasure!"
+        ],
+        forging: [
+            "An excellent choice for forging! This design showcases your cut gems beautifully.",
+            "Forging requires patience—gather your metals and stones before beginning.",
+            "The {metal} will complement those {gem} brilliantly in this piece.",
+            "Each forge strengthens your connection to the final real piece."
+        ],
+        crypto: [
+            "$GEMBOT tokens are the bridge between your virtual achievements and real rewards.",
+            "The token flows through Solana like water through ancient gem mines.",
+            "Your crypto wallet holds the key to converting virtual to tangible.",
+            "Token prices sync with Jupiter DEX—always fair, always transparent."
+        ],
+        conversion: [
+            "Incredible! You've gathered enough to claim a REAL piece from Earth Art Gems!",
+            "The moment has arrived—your virtual dedication manifests into true jewelry!",
+            "This conversion marks a milestone few achieve. The stones honor you, {name}.",
+            "From pixel to precious metal—your journey completes its circle!"
+        ],
+        trading: [
+            "Player trading allows your excess treasures to find new homes.",
+            "Fair prices make the market thrive. Price wisely, {name}.",
+            "I've seen fortunes made and lost in these trading grounds.",
+            "A good trade benefits both parties—remember that, young merchant."
         ]
     },
 
@@ -451,6 +497,200 @@ const MerlinEnhancedResponses = {
     },
 
     /**
+     * Generate marketplace-related response
+     */
+    generateMarketplaceResponse(type, context = {}) {
+        const responses = this.marketplaceResponses[type];
+        if (!responses || responses.length === 0) {
+            return this.generateTip(context);
+        }
+        
+        this.updateMood({ game: true, marketplace: true });
+        
+        const template = this.getUniqueResponse(`marketplace_${type}`, responses);
+        const vars = {
+            name: context.userName || "trader",
+            metal: context.metal || "gold",
+            gem: context.gem || "gemstones",
+            item: context.item || "jewelry piece",
+            tokens: context.tokens || "1,000"
+        };
+        
+        return this.applyMood(this.fillTemplate(template, vars));
+    },
+
+    /**
+     * Generate marketplace tip based on context
+     */
+    generateMarketplaceTip(context = {}) {
+        const tips = this.factDatabase.marketplace;
+        const tip = this.getUniqueResponse('marketplace_tips', tips);
+        return this.applyMood(`A marketplace insight: ${tip}`);
+    },
+
+    /**
+     * Generate forging encouragement
+     */
+    generateForgingMessage(itemName, progress, context = {}) {
+        const percentage = progress.percent || 0;
+        const name = context.userName || "artisan";
+        
+        let message;
+        if (percentage === 0) {
+            message = `Begin your journey to forge the ${itemName}! Each virtual copy brings you closer to owning the real treasure.`;
+        } else if (percentage < 25) {
+            message = `${percentage}% progress on ${itemName}! The first steps are always the hardest, ${name}. Keep forging!`;
+        } else if (percentage < 50) {
+            message = `Impressive! ${percentage}% toward your ${itemName}. The path becomes clearer with each forge, ${name}.`;
+        } else if (percentage < 75) {
+            message = `Over halfway to ${itemName}! ${percentage}%—I can almost see the real gem in your future, ${name}!`;
+        } else if (percentage < 100) {
+            message = `So close! ${percentage}% toward ${itemName}! The final stretch reveals true dedication, ${name}.`;
+        } else {
+            message = `🎉 COMPLETE! You've gathered enough for the REAL ${itemName}! Convert now to claim your treasure, ${name}!`;
+        }
+        
+        return this.applyMood(message);
+    },
+
+    /**
+     * Answer marketplace questions
+     */
+    answerMarketplaceQuestion(question) {
+        const q = question.toLowerCase();
+        
+        // Token questions
+        if (q.includes('$gembot') || q.includes('token') || q.includes('crypto')) {
+            return this.applyMood(
+                "The $GEMBOT token (DPHcbu7wJEbcrnCYjXC8vHBkM39kT9xZg4mYayvrpump) is our marketplace currency on Solana. " +
+                "You earn tokens through gameplay and can use them to forge virtual jewelry, buy metals, trade with players, " +
+                "or convert your virtual collection into REAL jewelry from Earth Art Gems!"
+            );
+        }
+        
+        // Earth Art Gems questions
+        if (q.includes('earth art') || q.includes('earthartgems') || q.includes('real jewelry')) {
+            return this.applyMood(
+                "Earth Art Gems (earthartgems.com) provides our marketplace designs! " +
+                "Each virtual ring, pendant, and jewelry piece is based on their real catalog. " +
+                "Collect enough virtual copies through forging, and you can convert them into the ACTUAL item!"
+            );
+        }
+        
+        // Forging questions
+        if (q.includes('forge') || q.includes('craft') || q.includes('make ring')) {
+            return this.applyMood(
+                "Forging combines your precious metals (gold or silver) with cut gemstones to create virtual jewelry. " +
+                "Each forge costs $GEMBOT tokens and requires specific materials. " +
+                "The more you forge, the closer you get to owning the real piece!"
+            );
+        }
+        
+        // Conversion questions
+        if (q.includes('convert') || q.includes('real') || q.includes('buy')) {
+            return this.applyMood(
+                "When you collect enough virtual copies of an item (equal to its real-world value in forging costs), " +
+                "you become eligible to CONVERT to the real item! " +
+                "Your $GEMBOT tokens are automatically converted via Solana, and Earth Art Gems ships your real jewelry!"
+            );
+        }
+        
+        // Metal questions
+        if (q.includes('gold') || q.includes('silver') || q.includes('metal')) {
+            return this.applyMood(
+                "Precious metals are essential for forging! " +
+                "Gold (🥇) and Silver (🥈) can be purchased with $GEMBOT tokens. " +
+                "Different jewelry pieces require different amounts of each metal."
+            );
+        }
+        
+        // Trading questions
+        if (q.includes('trade') || q.includes('sell') || q.includes('player market')) {
+            return this.applyMood(
+                "The player marketplace lets you trade your forged items with other players! " +
+                "List your virtual jewelry for $GEMBOT tokens, or browse others' listings. " +
+                "Trading is a great way to complete collections or earn tokens!"
+            );
+        }
+        
+        // Default marketplace response
+        return this.generateMarketplaceTip();
+    },
+
+    /**
+     * Query the Arya Intel System for gemstone research
+     */
+    queryAryaIntel(question) {
+        if (typeof window !== 'undefined' && window.AryaIntelSystem) {
+            return window.AryaIntelSystem.answerQuestion(question);
+        }
+        return null;
+    },
+
+    /**
+     * Answer gemstone research questions via Arya Intel
+     */
+    answerGemstoneQuestion(question) {
+        const q = question.toLowerCase();
+        
+        // Check if Arya Intel is available
+        const aryaResponse = this.queryAryaIntel(question);
+        if (aryaResponse && aryaResponse.response) {
+            return this.applyMood(`🔬 *Consulting Arya Intel System...* ${aryaResponse.response}`);
+        }
+        
+        // Recut questions
+        if (q.includes('recut') || q.includes('re-cut') || q.includes('resize stone')) {
+            return this.applyMood(
+                "The Arya Intel System can calculate precise recut outcomes! " +
+                "Recutting involves weight loss: Minimal (5%), Standard (15%), Major (30%), or Extreme (50%). " +
+                "Use the Stone Lab to analyze your gem before cutting. Once set in a ring, stones are PERMANENT!"
+            );
+        }
+        
+        // Stone bonding questions
+        if (q.includes('bond') || q.includes('set stone') || q.includes('permanent')) {
+            return this.applyMood(
+                "⚠️ Stone bonding is PERMANENT! Once a gemstone is set into a ring blank, it becomes forever tied to that piece. " +
+                "The stone's value becomes the base value of the ring. Choose wisely—you cannot remove or replace it!"
+            );
+        }
+        
+        // Price/value questions
+        if (q.includes('price') || q.includes('value') || q.includes('worth')) {
+            return this.applyMood(
+                "Gemstone pricing varies by the 4Cs (Cut, Color, Clarity, Carat), origin, and market conditions. " +
+                "The Arya Intel System provides real-time market data from worldwide sources. " +
+                "Ask about specific stones for detailed pricing information!"
+            );
+        }
+        
+        // Arya Akhavan questions
+        if (q.includes('arya') || q.includes('akhavan') || q.includes('gemstone lab')) {
+            return this.applyMood(
+                "Dr. Arya Akhavan is our inspiration! A renowned lapidary, gemstone designer, and researcher. " +
+                "Board member of the US Faceter's Guild, founder of The Gemstone Lab. " +
+                "His supercomputer crystal modeling and 'Faceting 101' series have advanced gemology worldwide!"
+            );
+        }
+        
+        // SlinginRockz / Andy Acker
+        if (q.includes('slingin') || q.includes('andy') || q.includes('acker') || q.includes('mineral data')) {
+            return this.applyMood(
+                "Andy Acker (@slinginrockz) powers our mineral database! " +
+                "His detailed documentation covers chemical properties, cut characteristics, and true market values. " +
+                "Every stone in our system has been cataloged with his expertise!"
+            );
+        }
+        
+        // Default gemstone response
+        return this.applyMood(
+            "The Arya Intel System provides comprehensive gemstone intelligence. " +
+            "Ask about specific stones, pricing, recutting, or mineral properties!"
+        );
+    },
+
+    /**
      * Get statistics about response uniqueness
      */
     getResponseStats() {
@@ -463,6 +703,7 @@ const MerlinEnhancedResponses = {
         }
         stats.currentMood = this.moodState.current;
         stats.moodIntensity = this.moodState.intensity;
+        stats.aryaIntelConnected = typeof window !== 'undefined' && !!window.AryaIntelSystem;
         return stats;
     },
 
@@ -489,4 +730,5 @@ if (typeof window !== 'undefined') {
 
 console.log('🧙 Merlin Enhanced Response System loaded!');
 console.log(`📚 Fact database: ${Object.values(MerlinEnhancedResponses.factDatabase).flat().length} facts`);
+console.log(`🏪 Marketplace responses: ${Object.values(MerlinEnhancedResponses.marketplaceResponses || {}).flat().length} templates`);
 console.log(`🎭 Moods available: ${Object.keys(MerlinEnhancedResponses.moods).length}`);

@@ -1,0 +1,1167 @@
+/**
+ * GemBot 3D World CSS Styles
+ * Futuristic cyberpunk learning environment
+ */
+
+/* ==================== 3D WORLD CONTAINER ==================== */
+#gembot-3d-world {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: radial-gradient(ellipse at center, #0a0a1a 0%, #000005 100%);
+    overflow: hidden;
+    perspective: 1000px;
+    z-index: 1000;
+}
+
+#gembot-3d-world.hidden {
+    display: none;
+}
+
+/* ==================== ROOM CONTAINER ==================== */
+.world-room {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ==================== ROOM HEADER ==================== */
+.room-header {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    z-index: 100;
+    padding: 16px 32px;
+    background: rgba(0, 0, 0, 0.7);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--accent-color, #00ffff);
+    border-radius: 12px;
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.2);
+}
+
+.room-header h2 {
+    font-size: 24px;
+    color: var(--accent-color, #00ffff);
+    margin: 0 0 8px 0;
+    text-shadow: 0 0 20px var(--accent-color, #00ffff);
+}
+
+.room-header p {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0 0 8px 0;
+    max-width: 400px;
+}
+
+.room-level {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+/* ==================== 3D VIEWPORT ==================== */
+.room-viewport {
+    flex: 1;
+    position: relative;
+    transform-style: preserve-3d;
+    perspective: 800px;
+}
+
+/* ==================== FLOOR ==================== */
+.room-floor {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%) rotateX(60deg);
+    width: 80vmin;
+    height: 80vmin;
+    display: grid;
+    gap: 2px;
+    transform-origin: center bottom;
+}
+
+.tile {
+    background: linear-gradient(135deg, 
+        rgba(0, 255, 255, 0.1) 0%, 
+        rgba(0, 100, 150, 0.2) 50%,
+        rgba(0, 50, 100, 0.1) 100%
+    );
+    border: 1px solid rgba(0, 255, 255, 0.3);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.tile:hover {
+    background: rgba(0, 255, 255, 0.3);
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+    transform: translateY(-2px);
+}
+
+.tile.player-position {
+    background: radial-gradient(circle, #00ffff 0%, #0088aa 100%);
+    box-shadow: 0 0 20px #00ffff;
+    animation: playerPulse 2s ease-in-out infinite;
+}
+
+@keyframes playerPulse {
+    0%, 100% { box-shadow: 0 0 20px #00ffff; }
+    50% { box-shadow: 0 0 40px #00ffff, 0 0 60px #0088ff; }
+}
+
+/* ==================== WALLS ==================== */
+.room-walls {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.wall {
+    position: absolute;
+    background: linear-gradient(to bottom, 
+        rgba(0, 50, 100, 0.8), 
+        rgba(0, 20, 50, 0.9)
+    );
+    border: 1px solid rgba(0, 255, 255, 0.3);
+}
+
+.wall-north {
+    top: 15%;
+    left: 10%;
+    right: 10%;
+    height: 25%;
+    transform: rotateX(-10deg);
+}
+
+.wall-south {
+    bottom: 15%;
+    left: 10%;
+    right: 10%;
+    height: 15%;
+}
+
+.wall-east {
+    top: 15%;
+    right: 5%;
+    width: 10%;
+    height: 60%;
+    transform: rotateY(10deg);
+}
+
+.wall-west {
+    top: 15%;
+    left: 5%;
+    width: 10%;
+    height: 60%;
+    transform: rotateY(-10deg);
+}
+
+.wall.has-door {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ==================== DOORS ==================== */
+.door {
+    pointer-events: auto;
+    padding: 20px 30px;
+    background: linear-gradient(135deg, 
+        rgba(0, 0, 0, 0.8), 
+        rgba(0, 50, 80, 0.6)
+    );
+    border: 2px solid var(--accent-color, #00ffff);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.door:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+}
+
+.door.locked {
+    border-color: #ff4444;
+    opacity: 0.7;
+}
+
+.door.locked:hover {
+    box-shadow: 0 0 30px rgba(255, 68, 68, 0.5);
+}
+
+.door-icon {
+    font-size: 32px;
+}
+
+.door-label {
+    font-size: 12px;
+    color: #fff;
+    font-weight: 600;
+}
+
+.door-req {
+    font-size: 10px;
+    color: #ff8888;
+}
+
+/* ==================== FOG EFFECT ==================== */
+.room-fog {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    animation: fogDrift 20s ease-in-out infinite;
+}
+
+@keyframes fogDrift {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.5; }
+}
+
+/* ==================== FEATURES ==================== */
+.room-features {
+    position: absolute;
+    bottom: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 20px;
+    z-index: 50;
+}
+
+.feature {
+    padding: 12px 20px;
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid var(--accent-color, #00ffff);
+    border-radius: 8px;
+    color: #fff;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.feature:hover {
+    background: rgba(0, 255, 255, 0.2);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 255, 255, 0.3);
+}
+
+/* ==================== NAVIGATION BUTTONS ==================== */
+.room-connections {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    z-index: 100;
+}
+
+.nav-btn {
+    padding: 12px 24px;
+    background: linear-gradient(135deg, rgba(0, 100, 150, 0.8), rgba(0, 50, 100, 0.9));
+    border: 1px solid var(--accent-color, #00ffff);
+    border-radius: 8px;
+    color: #fff;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 150px;
+}
+
+.nav-btn:hover {
+    background: linear-gradient(135deg, rgba(0, 150, 200, 0.9), rgba(0, 100, 150, 0.9));
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
+}
+
+.nav-btn.locked {
+    background: linear-gradient(135deg, rgba(100, 50, 50, 0.8), rgba(80, 30, 30, 0.9));
+    border-color: #ff4444;
+    cursor: not-allowed;
+}
+
+.nav-btn.locked:hover {
+    box-shadow: 0 0 20px rgba(255, 68, 68, 0.4);
+    transform: none;
+}
+
+/* Navigation button positions */
+.nav-north { position: absolute; bottom: 120px; }
+.nav-south { position: absolute; bottom: 0; }
+.nav-east { position: absolute; bottom: 60px; right: -180px; }
+.nav-west { position: absolute; bottom: 60px; left: -180px; }
+
+/* ==================== NPCs ==================== */
+.room-npcs {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    gap: 30px;
+    z-index: 50;
+}
+
+.npc {
+    padding: 20px;
+    background: radial-gradient(circle, rgba(0, 100, 150, 0.3), transparent);
+    border: 2px solid rgba(0, 255, 255, 0.5);
+    border-radius: 50%;
+    color: #fff;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    min-width: 100px;
+    animation: npcFloat 3s ease-in-out infinite;
+}
+
+@keyframes npcFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.npc:hover {
+    border-color: #00ffff;
+    box-shadow: 0 0 40px rgba(0, 255, 255, 0.5);
+    transform: scale(1.1);
+}
+
+/* ==================== NOTIFICATIONS ==================== */
+.world-notification {
+    position: fixed;
+    top: 100px;
+    right: 30px;
+    padding: 20px 30px;
+    background: rgba(0, 0, 0, 0.9);
+    border-left: 4px solid #00ffff;
+    border-radius: 8px;
+    z-index: 10000;
+    animation: slideIn 0.5s ease;
+    max-width: 300px;
+}
+
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+.world-notification.fade-out {
+    animation: slideOut 0.5s ease forwards;
+}
+
+@keyframes slideOut {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(100%); opacity: 0; }
+}
+
+.world-notification-success {
+    border-color: #00ff88;
+}
+
+.world-notification-error {
+    border-color: #ff4444;
+}
+
+.notification-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 8px;
+}
+
+.notification-message {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* ==================== MINIMAP ==================== */
+.world-minimap {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 200px;
+    height: 200px;
+    background: rgba(0, 0, 0, 0.8);
+    border: 1px solid rgba(0, 255, 255, 0.5);
+    border-radius: 12px;
+    padding: 10px;
+    z-index: 500;
+}
+
+.minimap-room {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: rgba(0, 100, 150, 0.5);
+    border: 1px solid rgba(0, 255, 255, 0.3);
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.minimap-room.current {
+    background: #00ffff;
+    box-shadow: 0 0 10px #00ffff;
+}
+
+.minimap-room.locked {
+    background: rgba(100, 50, 50, 0.5);
+    border-color: rgba(255, 68, 68, 0.3);
+}
+
+/* ==================== PLAYER STATS HUD ==================== */
+.world-hud {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background: rgba(0, 0, 0, 0.8);
+    border: 1px solid rgba(0, 255, 255, 0.5);
+    border-radius: 12px;
+    padding: 15px 20px;
+    z-index: 500;
+    min-width: 200px;
+}
+
+.hud-level {
+    font-size: 20px;
+    font-weight: 700;
+    color: #00ffff;
+    margin-bottom: 10px;
+}
+
+.hud-xp-bar {
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.hud-xp-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #00ffff, #00ff88);
+    transition: width 0.5s ease;
+}
+
+.hud-keys {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.hud-key {
+    font-size: 16px;
+    padding: 4px;
+    background: rgba(255, 215, 0, 0.2);
+    border-radius: 4px;
+}
+
+/* ==================== QUANTUM EFFECTS ==================== */
+.quantum-overlay {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center,
+        transparent 0%,
+        rgba(136, 0, 255, 0.1) 50%,
+        rgba(136, 0, 255, 0.3) 100%
+    );
+    pointer-events: none;
+    animation: quantumPulse 4s ease-in-out infinite;
+}
+
+@keyframes quantumPulse {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.7; }
+}
+
+.quantum-particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: #8800ff;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #8800ff, 0 0 20px #ff00ff;
+    animation: quantumFloat 5s ease-in-out infinite;
+}
+
+@keyframes quantumFloat {
+    0%, 100% { 
+        transform: translate(0, 0) scale(1); 
+        opacity: 0.8;
+    }
+    25% { 
+        transform: translate(50px, -30px) scale(1.2); 
+        opacity: 1;
+    }
+    50% { 
+        transform: translate(100px, 0) scale(0.8); 
+        opacity: 0.6;
+    }
+    75% { 
+        transform: translate(50px, 30px) scale(1.1); 
+        opacity: 0.9;
+    }
+}
+
+/* ==================== GEM DISPLAY EFFECTS ==================== */
+.gem-display {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.gem-glow {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    background: radial-gradient(circle,
+        var(--gem-color, #00ffff) 0%,
+        transparent 70%
+    );
+    animation: gemGlow 3s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes gemGlow {
+    0%, 100% { transform: scale(1); opacity: 0.5; }
+    50% { transform: scale(1.3); opacity: 0.8; }
+}
+
+.gem-icon {
+    font-size: 48px;
+    filter: drop-shadow(0 0 10px var(--gem-color, #00ffff));
+    animation: gemRotate 10s linear infinite;
+}
+
+@keyframes gemRotate {
+    from { transform: rotateY(0deg); }
+    to { transform: rotateY(360deg); }
+}
+
+/* ==================== LOADING SCREEN ==================== */
+.world-loading {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 20000;
+}
+
+.loading-gem {
+    font-size: 64px;
+    animation: loadingGem 2s ease-in-out infinite;
+}
+
+@keyframes loadingGem {
+    0%, 100% { transform: scale(1) rotate(0deg); }
+    50% { transform: scale(1.2) rotate(180deg); }
+}
+
+.loading-text {
+    font-size: 18px;
+    color: #00ffff;
+    margin-top: 20px;
+    animation: loadingPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes loadingPulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 768px) {
+    .room-header {
+        padding: 12px 20px;
+    }
+    
+    .room-header h2 {
+        font-size: 18px;
+    }
+    
+    .room-floor {
+        width: 90vmin;
+        height: 70vmin;
+    }
+    
+    .room-features {
+        flex-wrap: wrap;
+        max-width: 90%;
+    }
+    
+    .nav-east, .nav-west {
+        position: static;
+    }
+    
+    .room-connections {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 0 10px;
+    }
+    
+    .world-minimap {
+        width: 120px;
+        height: 120px;
+    }
+}
+
+/* ==================== THEME VARIATIONS ==================== */
+[data-theme="forge-fire"] {
+    --accent-color: #ff4400;
+}
+
+[data-theme="quantum-void"] {
+    --accent-color: #8800ff;
+}
+
+[data-theme="legendary"] {
+    --accent-color: #ffd700;
+}
+
+[data-theme="museum-dark"] {
+    --accent-color: #8855ff;
+}
+
+/* ==================== QUANTUM EFFECTS ==================== */
+.quantum-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.25;
+    pointer-events: none;
+    z-index: 0;
+    mix-blend-mode: screen;
+}
+
+.quantum-gem-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.quantum-gem-modal-content {
+    background: linear-gradient(145deg, rgba(20, 10, 40, 0.95), rgba(10, 5, 30, 0.95));
+    border: 2px solid #8800ff;
+    border-radius: 20px;
+    padding: 30px;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 
+        0 0 50px rgba(136, 0, 255, 0.5),
+        inset 0 0 30px rgba(136, 0, 255, 0.1);
+}
+
+.quantum-gem-modal-content h3 {
+    color: #8800ff;
+    font-size: 24px;
+    margin-bottom: 20px;
+    text-shadow: 0 0 20px rgba(136, 0, 255, 0.8);
+}
+
+.quantum-gem-display {
+    background: radial-gradient(circle, rgba(136, 0, 255, 0.2) 0%, transparent 70%);
+    border-radius: 50%;
+    padding: 20px;
+    margin: 20px 0;
+}
+
+.quantum-gem-display canvas {
+    border-radius: 50%;
+    box-shadow: 0 0 30px rgba(136, 0, 255, 0.6);
+}
+
+.quantum-gem-info {
+    color: #a0a0ff;
+    font-size: 14px;
+    margin: 20px 0;
+}
+
+.quantum-gem-info p {
+    margin: 8px 0;
+}
+
+.quantum-gem-modal-content button {
+    background: linear-gradient(135deg, #8800ff 0%, #6600cc 100%);
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 20px rgba(136, 0, 255, 0.5);
+}
+
+.quantum-gem-modal-content button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 30px rgba(136, 0, 255, 0.8);
+}
+
+/* Room viewport with quantum effects */
+.room-viewport {
+    position: relative;
+}
+
+.room-viewport .quantum-backdrop {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+}
+
+.room-floor,
+.room-walls {
+    position: relative;
+    z-index: 2;
+}
+
+/* Quantum pulse animation */
+@keyframes quantumPulse {
+    0%, 100% { opacity: 0.2; }
+    50% { opacity: 0.4; }
+}
+
+.quantum-backdrop {
+    animation: quantumPulse 4s ease-in-out infinite;
+}
+
+/* ==================== STL GALLERY ==================== */
+.stl-gallery-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 10001;
+    overflow: hidden;
+}
+
+.stl-gallery-content {
+    width: 95%;
+    max-width: 1400px;
+    max-height: 90vh;
+    margin: 2vh auto;
+    background: linear-gradient(145deg, rgba(10, 20, 40, 0.98), rgba(5, 10, 30, 0.98));
+    border: 2px solid #00aaff;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 
+        0 0 60px rgba(0, 170, 255, 0.3),
+        inset 0 0 40px rgba(0, 170, 255, 0.1);
+}
+
+.stl-gallery-header {
+    padding: 20px 30px;
+    background: linear-gradient(90deg, rgba(0, 170, 255, 0.2), transparent);
+    border-bottom: 1px solid rgba(0, 170, 255, 0.3);
+    position: relative;
+}
+
+.stl-gallery-header h2 {
+    color: #00aaff;
+    font-size: 28px;
+    margin: 0 0 8px 0;
+    text-shadow: 0 0 20px rgba(0, 170, 255, 0.8);
+}
+
+.stl-gallery-header p {
+    color: #88ccff;
+    margin: 0;
+    font-size: 14px;
+}
+
+.close-gallery {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 50, 50, 0.3);
+    border: 1px solid #ff5555;
+    color: #ff8888;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.close-gallery:hover {
+    background: rgba(255, 50, 50, 0.6);
+    transform: scale(1.1);
+}
+
+.stl-gallery-categories {
+    padding: 15px 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    background: rgba(0, 0, 0, 0.3);
+    border-bottom: 1px solid rgba(0, 170, 255, 0.2);
+}
+
+.cat-btn {
+    background: rgba(0, 170, 255, 0.1);
+    border: 1px solid rgba(0, 170, 255, 0.3);
+    color: #88ccff;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.3s ease;
+}
+
+.cat-btn:hover {
+    background: rgba(0, 170, 255, 0.3);
+    border-color: #00aaff;
+}
+
+.cat-btn.active {
+    background: linear-gradient(135deg, #00aaff 0%, #0077cc 100%);
+    color: white;
+    border-color: #00aaff;
+    box-shadow: 0 0 15px rgba(0, 170, 255, 0.5);
+}
+
+.stl-gallery-grid {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 20px;
+}
+
+.stl-gallery-grid::-webkit-scrollbar {
+    width: 8px;
+}
+
+.stl-gallery-grid::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.stl-gallery-grid::-webkit-scrollbar-thumb {
+    background: rgba(0, 170, 255, 0.5);
+    border-radius: 4px;
+}
+
+.stl-part {
+    background: rgba(0, 50, 100, 0.3);
+    border: 1px solid rgba(0, 170, 255, 0.2);
+    border-radius: 12px;
+    padding: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.stl-part:hover {
+    background: rgba(0, 100, 150, 0.4);
+    border-color: #00aaff;
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 170, 255, 0.3);
+}
+
+.stl-part img {
+    width: 100%;
+    height: 120px;
+    object-fit: contain;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.stl-part .part-name {
+    font-size: 11px;
+    color: #88ccff;
+    text-align: center;
+    line-height: 1.3;
+    max-height: 2.6em;
+    overflow: hidden;
+}
+
+.no-parts {
+    color: #666;
+    text-align: center;
+    grid-column: 1 / -1;
+    padding: 40px;
+}
+
+.stl-gallery-footer {
+    padding: 15px 20px;
+    background: rgba(0, 0, 0, 0.3);
+    border-top: 1px solid rgba(0, 170, 255, 0.2);
+    text-align: center;
+}
+
+.stl-gallery-footer p {
+    color: #88ccff;
+    margin: 0;
+    font-size: 13px;
+}
+
+/* STL Detail Modal */
+.stl-detail-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10002;
+}
+
+.stl-detail-content {
+    background: linear-gradient(145deg, rgba(10, 30, 60, 0.98), rgba(5, 15, 40, 0.98));
+    border: 2px solid #00aaff;
+    border-radius: 20px;
+    padding: 30px;
+    max-width: 500px;
+    text-align: center;
+    position: relative;
+}
+
+.stl-detail-content .close-detail {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: rgba(255, 50, 50, 0.3);
+    border: 1px solid #ff5555;
+    color: #ff8888;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.stl-detail-content img {
+    max-width: 100%;
+    max-height: 300px;
+    object-fit: contain;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+.stl-detail-content h3 {
+    color: #00aaff;
+    font-size: 20px;
+    margin: 0 0 10px 0;
+}
+
+.stl-detail-content .part-info {
+    color: #88ccff;
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+.part-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.action-btn {
+    background: linear-gradient(135deg, #00aaff 0%, #0077cc 100%);
+    border: none;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.action-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 5px 20px rgba(0, 170, 255, 0.5);
+}
+
+/* ==================== NPC DIALOG ==================== */
+.npc-dialog-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10001;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.npc-dialog-content {
+    background: linear-gradient(145deg, rgba(20, 30, 60, 0.98), rgba(10, 15, 40, 0.98));
+    border: 2px solid #00ccff;
+    border-radius: 20px;
+    padding: 30px;
+    max-width: 450px;
+    text-align: center;
+    box-shadow: 
+        0 0 60px rgba(0, 200, 255, 0.3),
+        inset 0 0 30px rgba(0, 200, 255, 0.1);
+}
+
+.npc-portrait {
+    font-size: 64px;
+    margin-bottom: 15px;
+    filter: drop-shadow(0 0 20px rgba(0, 200, 255, 0.5));
+}
+
+.npc-dialog-content h3 {
+    color: #00ccff;
+    font-size: 24px;
+    margin: 0 0 15px 0;
+    text-shadow: 0 0 15px rgba(0, 200, 255, 0.8);
+}
+
+.npc-greeting {
+    color: #a0d0ff;
+    font-size: 15px;
+    line-height: 1.6;
+    margin-bottom: 25px;
+    font-style: italic;
+}
+
+.npc-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.npc-action-btn {
+    background: linear-gradient(135deg, rgba(0, 150, 200, 0.3) 0%, rgba(0, 100, 150, 0.3) 100%);
+    border: 1px solid rgba(0, 200, 255, 0.5);
+    color: #00ccff;
+    padding: 12px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.npc-action-btn:hover {
+    background: linear-gradient(135deg, rgba(0, 200, 255, 0.4) 0%, rgba(0, 150, 200, 0.4) 100%);
+    border-color: #00ccff;
+    transform: translateX(5px);
+    box-shadow: 0 0 20px rgba(0, 200, 255, 0.4);
+}
+
+.close-dialog {
+    background: rgba(100, 100, 100, 0.3);
+    border: 1px solid rgba(150, 150, 150, 0.5);
+    color: #aaa;
+    padding: 10px 25px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.3s ease;
+}
+
+.close-dialog:hover {
+    background: rgba(150, 150, 150, 0.3);
+    color: #fff;
+}
+
+/* ==================== FEATURE INTERACTIONS ==================== */
+.feature {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.feature:hover {
+    transform: scale(1.1);
+    filter: brightness(1.3);
+}
+
+.npc {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.npc:hover {
+    transform: scale(1.1) translateY(-3px);
+    filter: drop-shadow(0 5px 15px rgba(0, 200, 255, 0.5));
+}
+
+/* Neural view modal */
+.neural-view-modal {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    z-index: 10001;
+}
+
+.neural-view-modal canvas {
+    width: 100%;
+    height: 100%;
+}
+
+/* Mobile responsive for STL gallery */
+@media (max-width: 768px) {
+    .stl-gallery-content {
+        width: 98%;
+        margin: 1vh auto;
+        border-radius: 12px;
+    }
+    
+    .stl-gallery-header h2 {
+        font-size: 20px;
+    }
+    
+    .stl-gallery-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 12px;
+        padding: 12px;
+    }
+    
+    .stl-part img {
+        height: 80px;
+    }
+    
+    .cat-btn {
+        padding: 6px 12px;
+        font-size: 11px;
+    }
+    
+    .npc-dialog-content {
+        margin: 20px;
+        padding: 20px;
+    }
+    
+    .npc-portrait {
+        font-size: 48px;
+    }
+}
