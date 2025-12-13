@@ -382,13 +382,19 @@ class GemBot3DVisualizer {
     }
 }
 
-// Initialize when document is ready
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-        setTimeout(initializeGemBot3DVisualizer, 500);
-    });
-} else {
+// Initialize when document is ready (unless deterministic boot disables auto-init)
+function __gembot3dMaybeAutoInit() {
+    if (typeof window !== 'undefined' && window.GemBotAutoInit === false) {
+        console.log('ℹ️ GemBot3DInitializer: auto-init disabled (GemBotAutoInit=false). Waiting for GemBotApp/bootstrap.');
+        return;
+    }
     setTimeout(initializeGemBot3DVisualizer, 500);
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', __gembot3dMaybeAutoInit);
+} else {
+    __gembot3dMaybeAutoInit();
 }
 
 console.log('📦 GemBot 3D Initializer module loaded');

@@ -76,7 +76,7 @@
   let initPromise = null;
 
   const GemBotApp = {
-    version: '2025.12.13.bootstrap.001',
+    version: '2025.12.13.bootstrap.002',
 
     async init(options = {}) {
       if (!isBrowser()) return;
@@ -144,6 +144,17 @@
           if (window.GemBotSyncUI?.init && !window.GemBotSyncUI.initialized) {
             window.GemBotSyncUI.init();
           }
+        });
+
+        // 4b) Align with docs: ensure machineGlobalState is the canonical state object
+        safeCall('state.ensureMachineGlobalState', () => {
+          if (!window.machineGlobalState) {
+            warn('machineGlobalState not found on window; will rely on legacy inline state.');
+            return;
+          }
+          // Provide a standard timestamp field (some docs expect lastUpdate)
+          if (!window.machineGlobalState.hardware) window.machineGlobalState.hardware = {};
+          if (!('lastUpdate' in window.machineGlobalState.hardware)) window.machineGlobalState.hardware.lastUpdate = 0;
         });
 
         // 5) 3D World

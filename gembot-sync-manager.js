@@ -98,17 +98,31 @@ class GemBotSyncManager {
     setupWebSocketConnection() {
         const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
         const wsUrl = `${protocol}//${window.location.host}/gembot-sync`;
-        
+
+        // If we are served from a static server (python http.server, GitHub pages, file://, etc)
+        // there will be no WS endpoint. Avoid a noisy infinite reconnect loop.
+        // You can force-enable WS by setting: window.GemBotSyncForceWebSocket = true
+        if (window.GemBotSyncForceWebSocket !== true) {
+            const isStaticHost = window.location.protocol === 'file:';
+            const isLikelyStaticServer = true; // default safe behavior (we still attempt once below)
+            if (isStaticHost) {
+                console.log('ℹ️ Sync Manager: file:// origin detected. Running in local-only sync mode.');
+                this.disableWebSocket('file-origin');
+                return;
+            }
+        }
+
         try {
             this.ws = new WebSocket(wsUrl);
-            
+
             this.ws.onopen = () => {
                 console.log('✅ WebSocket connection established');
                 this.isConnected = true;
+                this._wsDisabledReason = null;
                 this.broadcastDeviceInfo();
                 this.processSyncQueue();
             };
-            
+
             this.ws.onmessage = (event) => {
                 try {
                     const message = JSON.parse(event.data);
@@ -117,13 +131,23 @@ class GemBotSyncManager {
                     console.error('❌ Error parsing WebSocket message:', error);
                 }
             };
-            
+
             this.ws.onerror = (error) => {
-                console.error('❌ WebSocket error:', error);
+                // Common when server returns 404/handshake fails.
+                // We log once and fall back instead of reconnect-spamming.
+                console.warn('⚠️ WebSocket error (falling back to local-only sync):', error);
                 this.isConnected = false;
             };
-            
+
             this.ws.onclose = () => {
+                // If we never successfully opened, assume endpoint not present and disable.
+                if (!this.isConnected && window.GemBotSyncForceWebSocket !== true) {
+                    console.log('ℹ️ WebSocket unavailable (likely no /gembot-sync endpoint). Using fallback sync without reconnect loop.');
+                    this.disableWebSocket('endpoint-missing');
+                    this.setupFallbackSync();
+                    return;
+                }
+
                 console.log('⚠️ WebSocket closed, attempting reconnect in 5s...');
                 this.isConnected = false;
                 setTimeout(() => this.setupWebSocketConnection(), 5000);
@@ -131,6 +155,15 @@ class GemBotSyncManager {
         } catch (error) {
             console.warn('⚠️ WebSocket not available, using fallback sync', error);
             this.setupFallbackSync();
+        }
+    }
+
+    disableWebSocket(reason) {
+        this._wsDisabledReason = reason;
+        this.isConnected = false;
+        if (this.ws) {
+            try { this.ws.close(); } catch (_) {}
+            this.ws = null;
         }
     }
     
@@ -804,6 +837,12 @@ class GemBotSyncManager {
 let gembotSync = null;
 
 function initGembotSync() {
+    // Deterministic boot: allow HTML/bootstrap to control initialization
+    if (typeof window !== 'undefined' && window.GemBotAutoInit === false) {
+        console.log('ℹ️ GemBotSyncManager: auto-init disabled (GemBotAutoInit=false). Waiting for GemBotApp/bootstrap.');
+        return;
+    }
+
     gembotSync = new GemBotSyncManager();
     window.gembotSync = gembotSync; // Update window reference after creation
     console.log('✅ GemBot Sync Manager ready');

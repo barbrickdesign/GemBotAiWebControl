@@ -8,12 +8,21 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="mobile-web-app-capable" content="yes">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https: blob:; style-src 'self' 'unsafe-inline'; media-src 'self' blob:; connect-src 'self' blob: indexeddb: https: ws: wss: http://localhost:* https://*.firebaseio.com https://*.googleapis.com https://*.firebase.com https://*.firebaseapp.com; object-src 'none'; img-src 'self' data: blob: https:; font-src 'self' https:;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https: blob:; style-src 'self' 'unsafe-inline'; media-src 'self' blob:; connect-src 'self' blob: indexeddb: https: ws: wss: http://localhost:* http://127.0.0.1:* http://127.0.0.1:8000 http://127.0.0.*:8000 http://192.168.0.0/16 http://10.0.0.0/8 https://*.firebaseio.com https://*.googleapis.com https://*.firebase.com https://*.firebaseapp.com; object-src 'none'; img-src 'self' data: blob: https:; font-src 'self' https:;">
     <title>GemBot AI Control System</title>
+    <link rel="icon" href="./favicon.ico">
 
     <!-- Deterministic boot: prevent legacy modules from self-initializing -->
     <script>
         window.GemBotAutoInit = false;
+        // Explicitly run deterministic bootstrap after all defer scripts loaded
+        window.addEventListener('load', () => {
+            try {
+                window.GemBotApp?.init?.();
+            } catch (e) {
+                console.warn('[GemBotApp] init failed', e);
+            }
+        }, { once: true });
     </script>
 
         <!-- Firebase Modular SDK v12.6.0 -->
@@ -49,10 +58,25 @@
     
     <!-- QR Code Library -->
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3"></script>
+
+    <!-- Compatibility shim: some legacy modules still call require(...) in browser -->
+    <script>
+        window.require = window.require || function () {
+            throw new Error('require() is not available in this browser build. Convert this dependency to a <script> include or ES module import.');
+        };
+    </script>
     
+    <!-- Core API/Logging (centralizes fetch + persistent implementation log) -->
+    <script src="./gembot-api.js" defer></script>
+
     <!-- Virtual Machine 3D Module -->
     <script src="./virtual-machine-3d.js" defer></script>
-    <script src="./gembot-3d-init.js" defer></script>
+
+    <!-- NOTE: gembot-3d-init.js defines a *different* GemBot3DVisualizer stub that conflicts with
+         gembot-3d-visualizer.js (Three.js) and with our Babylon-based VirtualMachine3D.
+         It is intentionally NOT loaded here. -->
+    <!-- <script src="./gembot-3d-init.js" defer></script> -->
+
     <script src="./gembot-farm-game.js" defer></script>
 
     <!-- Multi-Device Synchronization -->
@@ -158,76 +182,84 @@
             }
         };
         // ==================== BASIC AUTH UI HANDLER ====================
-        window.authUI = {
+        // NOTE: This stub exists only to prevent early inline handlers from throwing
+        // before the full authUI is defined later in the HTML. It must NOT overwrite
+        // the real implementation.
+        window.authUIStub = {
             switchTab(tab) {
-                document.getElementById('loginForm').classList.add('hidden');
-                document.getElementById('registerForm').classList.add('hidden');
-                document.getElementById('linkDeviceForm').classList.add('hidden');
-                document.getElementById('loginTab').classList.remove('active');
-                document.getElementById('registerTab').classList.remove('active');
-                document.getElementById('linkDeviceTab').classList.remove('active');
+                document.getElementById('loginForm')?.classList.add('hidden');
+                document.getElementById('registerForm')?.classList.add('hidden');
+                document.getElementById('linkDeviceForm')?.classList.add('hidden');
+                document.getElementById('loginTab')?.classList.remove('active');
+                document.getElementById('registerTab')?.classList.remove('active');
+                document.getElementById('linkDeviceTab')?.classList.remove('active');
                 if (tab === 'login') {
-                    document.getElementById('loginForm').classList.remove('hidden');
-                    document.getElementById('loginTab').classList.add('active');
+                    document.getElementById('loginForm')?.classList.remove('hidden');
+                    document.getElementById('loginTab')?.classList.add('active');
                 } else if (tab === 'register') {
-                    document.getElementById('registerForm').classList.remove('hidden');
-                    document.getElementById('registerTab').classList.add('active');
+                    document.getElementById('registerForm')?.classList.remove('hidden');
+                    document.getElementById('registerTab')?.classList.add('active');
                 } else if (tab === 'linkDevice') {
-                    document.getElementById('linkDeviceForm').classList.remove('hidden');
-                    document.getElementById('linkDeviceTab').classList.add('active');
+                    document.getElementById('linkDeviceForm')?.classList.remove('hidden');
+                    document.getElementById('linkDeviceTab')?.classList.add('active');
                 }
-                document.getElementById('authError').textContent = '';
+                const err = document.getElementById('authError');
+                if (err) err.textContent = '';
             },
             async login(event) {
-                event.preventDefault();
-                const email = document.getElementById('loginEmail').value;
-                const password = document.getElementById('loginPassword').value;
+                event?.preventDefault?.();
+                const email = document.getElementById('loginEmail')?.value;
+                const password = document.getElementById('loginPassword')?.value;
                 try {
-                    await authSystem.login(email, password);
+                    await window.authSystem?.login?.(email, password);
                 } catch (err) {
-                    document.getElementById('authError').textContent = err.message || 'Login failed.';
+                    const el = document.getElementById('authError');
+                    if (el) el.textContent = err?.message || 'Login failed.';
                 }
             },
             async register(event) {
-                event.preventDefault();
-                const username = document.getElementById('registerUsername').value;
-                const email = document.getElementById('registerEmail').value;
-                const password = document.getElementById('registerPassword').value;
-                const confirm = document.getElementById('registerConfirm').value;
+                event?.preventDefault?.();
+                const username = document.getElementById('registerUsername')?.value;
+                const email = document.getElementById('registerEmail')?.value;
+                const password = document.getElementById('registerPassword')?.value;
+                const confirm = document.getElementById('registerConfirm')?.value;
                 if (password !== confirm) {
-                    document.getElementById('authError').textContent = 'Passwords do not match.';
+                    const el = document.getElementById('authError');
+                    if (el) el.textContent = 'Passwords do not match.';
                     return;
                 }
                 try {
-                    await authSystem.register(username, email, password);
+                    await window.authSystem?.register?.(username, email, password);
                 } catch (err) {
-                    document.getElementById('authError').textContent = err.message || 'Registration failed.';
+                    const el = document.getElementById('authError');
+                    if (el) el.textContent = err?.message || 'Registration failed.';
                 }
             },
             async linkDevice(event) {
-                event.preventDefault();
-                const code = document.getElementById('linkAccessCode').value;
-                const email = document.getElementById('linkEmail').value;
-                const password = document.getElementById('linkPassword').value;
+                event?.preventDefault?.();
+                const code = document.getElementById('linkAccessCode')?.value;
+                const email = document.getElementById('linkEmail')?.value;
+                const password = document.getElementById('linkPassword')?.value;
                 try {
-                    await authSystem.linkDeviceWithCode(code, email, password);
+                    await window.authSystem?.linkDeviceWithCode?.(code, email, password);
                 } catch (err) {
-                    document.getElementById('authError').textContent = err.message || 'Device link failed.';
+                    const el = document.getElementById('authError');
+                    if (el) el.textContent = err?.message || 'Device link failed.';
                 }
             },
             async joinWithCode() {
-                const code = document.getElementById('guestCode').value;
+                const code = document.getElementById('guestCode')?.value;
                 try {
-                    await authSystem.joinWithCode(code);
+                    await window.authSystem?.joinWithCode?.(code);
                 } catch (err) {
-                    document.getElementById('authError').textContent = err.message || 'Join failed.';
+                    const el = document.getElementById('authError');
+                    if (el) el.textContent = err?.message || 'Join failed.';
                 }
             },
             continueAsGuest() {
-                authSystem.continueAsGuest();
+                window.authSystem?.continueAsGuest?.();
             },
             toggleUserMenu() {
-                // Basic stub: toggle user menu visibility
                 const menu = document.getElementById('userMenu');
                 if (menu) menu.classList.toggle('hidden');
             },
@@ -241,9 +273,14 @@
                 alert('Machine Settings not implemented.');
             },
             logout() {
-                authSystem.logout();
+                window.authSystem?.logout?.();
             }
         };
+
+        // Expose stub as authUI only if real authUI isn't defined yet
+        if (!window.authUI) {
+            window.authUI = window.authUIStub;
+        }
     </script>
     
     <style>
@@ -7015,8 +7052,17 @@
                 </div>
             </div>
 
-            <!-- RIGHT: AI ASSISTANT & STATUS -->
-            <div class="right-panel">
+    <!-- RIGHT: AI ASSISTANT & STATUS -->
+    <div class="right-panel">
+        <!-- Implementation Log (persistent; helps diagnose broken API calls) -->
+        <div class="status-display" style="padding:10px 12px;border-bottom:1px solid #2d3561;background:#0f0f1e;">
+            <div class="section-title" style="margin-bottom:6px;">🧾 Implementation Log</div>
+            <div style="display:flex;gap:8px;">
+                <button class="btn-control" style="flex:1;" onclick="window.GemBotLogger?.clear?.();">Clear</button>
+                <button class="btn-control" style="flex:1;" onclick="console.table(window.GemBotLogger?.list?.() || []);">Console</button>
+            </div>
+            <div id="gembotImplementationLog" style="margin-top:8px;max-height:140px;overflow:auto;border:1px solid rgba(255,255,255,0.06);border-radius:6px;"></div>
+        </div>
                 <div class="status-display">
                     <div class="section-title">📊 Position 
                         <span id="positionUpdateStatus" class="sync-badge">⏸️ SYNC</span>
