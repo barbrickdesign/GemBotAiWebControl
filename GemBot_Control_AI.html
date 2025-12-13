@@ -10,7 +10,12 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https: blob:; style-src 'self' 'unsafe-inline'; media-src 'self' blob:; connect-src 'self' blob: indexeddb: https: ws: wss: http://localhost:* https://*.firebaseio.com https://*.googleapis.com https://*.firebase.com https://*.firebaseapp.com; object-src 'none'; img-src 'self' data: blob: https:; font-src 'self' https:;">
     <title>GemBot AI Control System</title>
-    
+
+    <!-- Deterministic boot: prevent legacy modules from self-initializing -->
+    <script>
+        window.GemBotAutoInit = false;
+    </script>
+
         <!-- Firebase Modular SDK v12.6.0 -->
         <script type="module">
             import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
@@ -46,35 +51,36 @@
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3"></script>
     
     <!-- Virtual Machine 3D Module -->
-    <script src="./virtual-machine-3d.js"></script>
-    <script src="./gembot-3d-init.js"></script>
-    <script src="./gembot-farm-game.js"></script>
-    
+    <script src="./virtual-machine-3d.js" defer></script>
+    <script src="./gembot-3d-init.js" defer></script>
+    <script src="./gembot-farm-game.js" defer></script>
+
     <!-- Multi-Device Synchronization -->
-    <script src="./gembot-sync-manager.js"></script>
-    <script src="./gembot-sync-ui.js"></script>
-    
+    <script src="./gembot-sync-manager.js" defer></script>
+    <script src="./gembot-sync-ui.js" defer></script>
+
     <!-- Knowledge Base System -->
-    <script src="./knowledge-loader.js"></script>
-    <script src="./merlin-knowledge-integration.js"></script>
-    <script src="./knowledge-integration-examples.js"></script>
-    
+    <script src="./knowledge-loader.js" defer></script>
+    <script src="./merlin-knowledge-integration.js" defer></script>
+    <script src="./knowledge-integration-examples.js" defer></script>
+
     <!-- GemBot Game Systems -->
-    <script src="./gembot-parts-database.js"></script>
-    <script src="./gembot-faceting-designs.js"></script>
-    <script src="./gembot-stl-catalog.js"></script>
-    <script src="./gembot-game-cards.js"></script>
-    <script src="./gembot-3d-printing.js"></script>
-    <script src="./gembot-troubleshooting.js"></script>
-    <script src="./gembot-game-master.js"></script>
-    <script src="./merlin-enhanced-responses.js"></script>
-    <script src="./gembot-game-integration.js"></script>
-    <script src="./gembot-marketplace.js"></script>
-    <script src="./arya-intel-system.js"></script>
-    <script src="./gembot-3d-world.js"></script>
-    <script src="./quantum-gem-visualizer.js"></script>
-    <script src="./gembot-changelog.js"></script>
-    <script src="./merlin-knowledge-base.js"></script>
+    <script src="./gembot-parts-database.js" defer></script>
+    <script src="./gembot-faceting-designs.js" defer></script>
+    <script src="./gembot-stl-catalog.js" defer></script>
+    <script src="./gembot-game-cards.js" defer></script>
+    <script src="./gembot-3d-printing.js" defer></script>
+    <script src="./gembot-troubleshooting.js" defer></script>
+    <script src="./gembot-game-master.js" defer></script>
+    <script src="./merlin-enhanced-responses.js" defer></script>
+    <script src="./gembot-game-integration.js" defer></script>
+    <script src="./gembot-marketplace.js" defer></script>
+    <script src="./arya-intel-system.js" defer></script>
+    <script src="./gembot-3d-world.js" defer></script>
+    <script src="./quantum-gem-visualizer.js" defer></script>
+    <script src="./gembot-changelog.js" defer></script>
+    <script src="./merlin-knowledge-base.js" defer></script>
+    <script src="./gembot-app-bootstrap.js" defer></script>
     <link rel="stylesheet" href="./gembot-3d-world.css">
     
     <!-- TensorFlow.js for ML Analysis (Desktop Only) -->
@@ -7101,7 +7107,9 @@
             currentUser: null,
             sessionToken: null,
             isGuest: false,
-            useFirebase: window.firebaseInitialized, // Flag to use Firebase when available
+            // Firebase is only usable if the modular SDK is loaded AND the correct wrapper functions are present.
+            // In this project we use a localStorage auth fallback by default to avoid runtime errors.
+            useFirebase: false,
             guestPermissions: {
                 canView: true,
                 canControl: false,
@@ -21434,20 +21442,7 @@
         }
         
         // Helper to add game activity with potential Merlin context
-        function addGameActivity(message) {
-            const feed = document.getElementById('activityFeed');
-            if (feed) {
-                const item = document.createElement('div');
-                item.className = 'activity-item';
-                item.textContent = message;
-                feed.insertBefore(item, feed.firstChild);
-                
-                // Keep only last 20 items
-                while (feed.children.length > 20) {
-                    feed.removeChild(feed.lastChild);
-                }
-            }
-        }
+        // NOTE: addGameActivity is defined later (single canonical definition)
         
         function updateGameUI() {
             if (!gameFarm) return;
@@ -21709,13 +21704,7 @@
         }
         
         // Maintenance panel functions (inventory functions are defined later in file)
-        function openMaintenancePanel() {
-            if (gameFarm && typeof gameFarm.showMaintenance === 'function') {
-                gameFarm.showMaintenance();
-            } else {
-                addMessage('🔧 **Maintenance Panel**\n\nMaintenance options:\n• Check machine status\n• Calibrate sensors\n• Replace worn parts\n\nThis feature is coming soon!', 'assistant');
-            }
-        }
+        // NOTE: openMaintenancePanel is defined later (single canonical definition)
         
         // Academy panel - opens 3D World from within game mode
         function openAcademyPanel() {
