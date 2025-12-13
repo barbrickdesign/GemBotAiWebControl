@@ -1018,15 +1018,20 @@ const GemBotMarketplace = {
     }
 };
 
-// Auto-initialize when DOM is ready
+// Auto-initialize when DOM is ready (legacy behavior)
+// For the main app (GemBot_Control_AI.html) we prefer a single deterministic bootstrap.
+// Set `window.GemBotAutoInit = false` before loading scripts to prevent double-init.
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => GemBotMarketplace.init());
+    document.addEventListener('DOMContentLoaded', () => {
+        if (window.GemBotAutoInit !== false) GemBotMarketplace.init();
+    });
 } else {
-    GemBotMarketplace.init();
+    if (window.GemBotAutoInit !== false) GemBotMarketplace.init();
 }
 
-// Export for module systems
-if (typeof module !== 'undefined' && module.exports) {
+// Export for module systems (Node/CommonJS). In browsers, `module` may exist as an HTML element id;
+// also `require()` is not available. Guard for CommonJS specifically.
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
     module.exports = GemBotMarketplace;
 }
 
