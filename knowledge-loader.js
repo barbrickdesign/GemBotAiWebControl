@@ -51,7 +51,7 @@ class KnowledgeBaseLoader {
             'quick-reference': [
                 'GETTING_STARTED.md',
                 '30_SECOND_OVERVIEW.md',
-                'MASTER_INDEX.md'
+                'COMPLETE_INDEX.md'
             ]
         };
     }
@@ -228,8 +228,9 @@ class KnowledgeBaseLoader {
 
         for (const word of uniqueWords) {
             if (word.length > 3) { // Only index words longer than 3 chars
-                if (!this.searchIndex[word]) {
-                    this.searchIndex[word] = [];
+                // Normalize index bucket to array (guards against accidental non-array assignments)
+                if (!Array.isArray(this.searchIndex[word])) {
+                    this.searchIndex[word] = this.searchIndex[word] ? [String(this.searchIndex[word])] : [];
                 }
                 if (!this.searchIndex[word].includes(filename)) {
                     this.searchIndex[word].push(filename);
@@ -386,8 +387,10 @@ class KnowledgeBaseLoader {
 // Create global instance
 window.knowledgeBase = new KnowledgeBaseLoader();
 
-// Auto-load on page ready
-if (document.readyState === 'loading') {
+// Auto-load on page ready (unless deterministic boot disables auto-init)
+if (typeof window !== 'undefined' && window.GemBotAutoInit === false) {
+    console.log('ℹ️ KnowledgeBaseLoader: auto-init disabled (GemBotAutoInit=false). Waiting for GemBotApp/bootstrap.');
+} else if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
         window.knowledgeBase.loadAllKnowledge();
     });
