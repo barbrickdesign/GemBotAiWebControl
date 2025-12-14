@@ -7457,13 +7457,22 @@
             // Register new user (Firebase with local fallback)
             async register(username, email, password) {
                 email = email.toLowerCase().trim();
+
+                // Prefer Firebase if available, but ONLY using the modular API.
+                // The previous implementation attempted to call v8-style methods
+                // (createUserWithEmailAndPassword / db.collection) on the modular objects,
+                // which causes registration to fail.
                 if (window.firebaseInitialized && window.firebaseAuth && window.firebaseDb) {
                     try {
-                        // Create user in Firebase Auth
-                        const userCredential = await window.firebaseAuth.createUserWithEmailAndPassword(email, password);
-                        const user = userCredential.user;
-                        // Store profile in Firestore
-                        await window.firebaseDb.collection('users').doc(user.uid).set({
+                        // Lazy import modular functions (safe in browsers that support modules)
+                        const { createUserWithEmailAndPassword } = await import('https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js');
+                        const { doc, setDoc } = await import('https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js');
+
+                        const userCredential = await createUserWithEmailAndPassword(window.firebaseAuth, email, password);
+                        const fbUser = userCredential.user;
+
+                        const profile = {
+                            id: fbUser.uid,
                             username,
                             email,
                             createdAt: Date.now(),
@@ -7472,19 +7481,36 @@
                             settings: {
                                 autoShare: false,
                                 requireApproval: true,
-                                maxGuests: 3
+                                maxGuests: 3,
+                                allowGuestControl: true
                             }
-                        });
-                        // Auto-login after registration
+                        };
+
+                        await setDoc(doc(window.firebaseDb, 'users', fbUser.uid), profile);
+
+                        // Also cache locally for offline/linking workflows
+                        const users = JSON.parse(localStorage.getItem('gembot_users') || '{}');
+                        users[email] = {
+                            ...profile,
+                            passwordHash: await this.hashPassword(password),
+                            registeredOnDevice: this.deviceId,
+                            allowedGuests: []
+                        };
+                        localStorage.setItem('gembot_users', JSON.stringify(users));
+                        this.broadcastAuth('user_registered', users[email]);
+                        localStorage.setItem('gembot_users_sync', JSON.stringify({ users: users, timestamp: Date.now() }));
+
+                        console.log('📝 New user registered (Firebase):', username, '| Access Code:', profile.machineAccessCode);
                         return this.login(email, password);
                     } catch (error) {
-                        if (error.code === 'auth/email-already-in-use') {
+                        // Use Firebase error codes when present
+                        if (error?.code === 'auth/email-already-in-use') {
                             throw new Error('Email already registered. Please login instead.');
                         }
-                        // If Firebase fails, fallback to local
-                        console.warn('Firebase register failed, using localStorage:', error.message);
+                        console.warn('Firebase register failed, falling back to localStorage:', error);
                     }
                 }
+
                 // Local fallback
                 const users = JSON.parse(localStorage.getItem('gembot_users') || '{}');
                 if (users[email]) {
@@ -7507,7 +7533,8 @@
                     settings: {
                         autoShare: false,
                         requireApproval: true,
-                        maxGuests: 3
+                        maxGuests: 3,
+                        allowGuestControl: true
                     }
                 };
                 users[email] = user;
@@ -7521,17 +7548,24 @@
             // Login user (Firebase with local fallback)
             async login(emailOrUsername, password) {
                 emailOrUsername = emailOrUsername.toLowerCase().trim();
+
+                // Prefer Firebase if available, but ONLY using the modular API.
+                // The previous implementation attempted to call v8-style methods
+                // (signInWithEmailAndPassword / db.collection) on the modular objects.
                 if (window.firebaseInitialized && window.firebaseAuth && window.firebaseDb) {
                     try {
-                        // Login with Firebase Auth
-                        const userCredential = await window.firebaseAuth.signInWithEmailAndPassword(emailOrUsername, password);
-                        const user = userCredential.user;
-                        // Get profile from Firestore
-                        const profileSnap = await window.firebaseDb.collection('users').doc(user.uid).get();
-                        if (!profileSnap.exists) throw new Error('User profile not found');
+                        const { signInWithEmailAndPassword } = await import('https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js');
+                        const { doc, getDoc } = await import('https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js');
+
+                        const userCredential = await signInWithEmailAndPassword(window.firebaseAuth, emailOrUsername, password);
+                        const fbUser = userCredential.user;
+
+                        const profileSnap = await getDoc(doc(window.firebaseDb, 'users', fbUser.uid));
+                        if (!profileSnap.exists()) throw new Error('User profile not found');
                         const profile = profileSnap.data();
+
                         this.currentUser = {
-                            id: user.uid,
+                            id: fbUser.uid,
                             username: profile.username,
                             email: profile.email,
                             machineAccessCode: profile.machineAccessCode,
@@ -7541,6 +7575,27 @@
                         this.isGuest = false;
                         this.linkedDevices = profile.linkedDevices || [this.deviceId];
                         this.saveSession();
+
+                        // Cache locally as well (helps linking / offline)
+                        try {
+                            const users = JSON.parse(localStorage.getItem('gembot_users') || '{}');
+                            if (!users[this.currentUser.email]) {
+                                users[this.currentUser.email] = {
+                                    id: this.currentUser.id,
+                                    username: this.currentUser.username,
+                                    email: this.currentUser.email,
+                                    passwordHash: await this.hashPassword(password),
+                                    createdAt: profile.createdAt || Date.now(),
+                                    registeredOnDevice: this.deviceId,
+                                    machineAccessCode: this.currentUser.machineAccessCode,
+                                    linkedDevices: this.linkedDevices,
+                                    allowedGuests: [],
+                                    settings: this.currentUser.settings
+                                };
+                                localStorage.setItem('gembot_users', JSON.stringify(users));
+                            }
+                        } catch (_) {}
+
                         this.broadcastAuth('session_active', this.currentUser);
                         if (typeof leaderboardUI !== 'undefined') {
                             setTimeout(() => {
@@ -7553,10 +7608,10 @@
                         this.updateUserUI();
                         return this.currentUser;
                     } catch (error) {
-                        // If Firebase fails, fallback to local
-                        console.warn('Firebase login failed, using localStorage:', error.message);
+                        console.warn('Firebase login failed, falling back to localStorage:', error);
                     }
                 }
+
                 // Local fallback
                 const users = JSON.parse(localStorage.getItem('gembot_users') || '{}');
                 let user = users[emailOrUsername];
@@ -7600,14 +7655,14 @@
             // Join with access code (guest)
             async joinWithCode(code) {
                 const users = JSON.parse(localStorage.getItem('gembot_users') || '{}');
-                
+
                 // Find user with this access code
                 const owner = Object.values(users).find(u => u.machineAccessCode === code.toUpperCase());
-                
+
                 if (!owner) {
                     throw new Error('Invalid access code');
                 }
-                
+
                 // Create guest session
                 this.currentUser = {
                     id: 'guest_' + Date.now(),
@@ -7617,12 +7672,16 @@
                 };
                 this.sessionToken = this.generateSessionToken();
                 this.isGuest = true;
+
+                // Policy: guests who join with a valid access code CAN control by default.
+                // The owner can disable this via settings.allowGuestControl = false.
+                const allowGuestControl = (owner.settings?.allowGuestControl !== false);
                 this.guestPermissions = {
                     canView: true,
-                    canControl: owner.settings?.allowGuestControl || false,
+                    canControl: allowGuestControl,
                     canChangeSettings: false
                 };
-                
+
                 // Save guest session (4 hour expiry)
                 localStorage.setItem('gembot_session', JSON.stringify({
                     user: this.currentUser,
@@ -7631,8 +7690,8 @@
                     permissions: this.guestPermissions,
                     expires: Date.now() + (4 * 60 * 60 * 1000)
                 }));
-                
-                console.log('✅ Joined as guest of:', owner.username);
+
+                console.log('✅ Joined as guest of:', owner.username, '| canControl:', allowGuestControl);
                 this.hideAuthOverlay();
                 this.updateUserUI();
                 return this.currentUser;
@@ -7916,7 +7975,7 @@
             
             continueAsGuest() {
                 authSystem.continueAsGuest();
-                addMessage('👁️ Viewing as guest. Machine control is disabled.', 'system');
+                addMessage('👁️ Viewing as guest (view-only). To control: Join with an Access Code (6 characters) or connect locally via USB/bridge.', 'system');
             },
             
             toggleUserMenu() {
@@ -8515,6 +8574,27 @@
                         <a href="https://earthartgems.com" target="_blank" class="marketplace-btn earth-art-btn">
                             🛒 Visit Shop
                         </a>
+                    </div>
+
+                    <!-- USFG Resources Banner -->
+                    <div class="marketplace-banner" style="background: linear-gradient(135deg, #0b2b2b 0%, #1a2347 100%); border: 2px solid rgba(74,255,255,0.35);">
+                        <div class="marketplace-info">
+                            <h3>🏛️ United States Faceters Guild (USFG)</h3>
+                            <p>Competition-ready faceting references + real-world workflow tools (GemCad/GemRay) integrated into Merlin’s knowledge.</p>
+                            <div class="token-info">
+                                <span class="token-badge" style="background:#4affff;">Learning</span>
+                                <span class="token-address" style="cursor: default;" title="Links open in a new tab">USFG + FacetDiagrams + Competition Files</span>
+                            </div>
+                            <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;">
+                                <a href="https://usfacetersguild.org/" target="_blank" rel="noopener" class="marketplace-btn" style="border-color:#4affff;">🏛️ USFG Home</a>
+                                <a href="https://usfacetersguild.org/single-stone-competition-files-2024/" target="_blank" rel="noopener" class="marketplace-btn" style="border-color:#4affff;">🏆 2024 Competition Files</a>
+                                <a href="https://facetdiagrams.org/" target="_blank" rel="noopener" class="marketplace-btn" style="border-color:#4affff;">📐 FacetDiagrams</a>
+                                <button class="marketplace-btn" style="border-color:#4affff;" onclick="(function(){ try { const q='us faceters guild competition facet diagrams gemcad gemray'; const kb = window.knowledgeBase?.getContextForQuery?.(q, 5); const titles = kb?.context?.map(c=>`• ${c.title}`).join('\\n') || 'No documents loaded yet.'; if (typeof addMessage==='function') addMessage('📚 USFG Knowledge Pack is loaded. Try asking Merlin about: \\n- USFG competition files \\n- choosing a design from facetdiagrams.org \\n- GemCad/GemRay style mechanics \\n\\nLoaded docs:\\n'+titles, 'system'); } catch(e){ console.warn(e); } })();">📚 Show KB Hint</button>
+                            </div>
+                            <div style="margin-top:10px; font-size:11px; color:#aaa; line-height:1.4;">
+                                <strong>USFG Verified bonus (coming soon):</strong> optional profile badge + in-game perks for verified members.
+                            </div>
+                        </div>
                     </div>
                     
                     <!-- Market Categories -->
@@ -11287,12 +11367,27 @@
                     if (!this.isConnected) return;
                     
                     // ===== ACCESS CONTROL CHECK =====
-                    if (typeof authSystem !== 'undefined' && !authSystem.canPerformAction('control')) {
-                        console.warn('🔒 Access denied: Guest users cannot control the machine');
-                        if (typeof addMessage === 'function') {
-                            addMessage('🔒 Control access denied. You are viewing as a guest.', 'warning');
+                    // Updated policy:
+                    // - "Continue as Guest" remains view-only.
+                    // - "Join with Access Code" guest sessions can control IF the owner enabled allowGuestControl.
+                    // - Additionally, if a guest device is physically connected (USB/bridge), allow control.
+                    //   Rationale: physical access should permit control even if logged in as guest.
+                    if (typeof authSystem !== 'undefined') {
+                        const isGuest = !!authSystem.isGuest;
+                        const isGuestWithCode = isGuest && !!authSystem.currentUser?.isGuestOf;
+                        const hasPhysicalConnection = !!(window.isConnected || (window.serial && window.serial.isConnected));
+                        const allowViaOwnerSettings = !!authSystem.guestPermissions?.canControl;
+                        const allowViaPhysical = isGuest && hasPhysicalConnection;
+
+                        const allowed = (!isGuest) || (isGuestWithCode && allowViaOwnerSettings) || allowViaPhysical;
+
+                        if (!allowed) {
+                            console.warn('🔒 Access denied: guest control not permitted');
+                            if (typeof addMessage === 'function') {
+                                addMessage('🔒 Control is disabled for view-only guests. Use an Access Code (Join) or connect locally via USB/bridge.', 'warning');
+                            }
+                            return;
                         }
-                        return;
                     }
                     // ===== END ACCESS CONTROL =====
                     

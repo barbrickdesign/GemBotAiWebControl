@@ -52,6 +52,9 @@ class KnowledgeBaseLoader {
                 'GETTING_STARTED.md',
                 '30_SECOND_OVERVIEW.md',
                 'COMPLETE_INDEX.md'
+            ],
+            'usfg-faceting': [
+                'USFG_KNOWLEDGE_PACK.md'
             ]
         };
     }
