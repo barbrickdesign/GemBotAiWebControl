@@ -856,3 +856,15 @@ if (document.readyState === 'loading') {
 
 // Export class for use in other modules
 window.GemBotSyncManager = GemBotSyncManager;
+
+// Also expose an explicit initializer for deterministic boot.
+// GemBotApp/bootstrap calls this.
+window.initGembotSync = function initGembotSync(options) {
+    if (!window.gembotSync) {
+        window.gembotSync = new GemBotSyncManager(options);
+    } else if (typeof window.gembotSync.init === 'function' && !window.gembotSync.__gembotInitialized) {
+        window.gembotSync.__gembotInitialized = true;
+        window.gembotSync.init();
+    }
+    return window.gembotSync;
+};
