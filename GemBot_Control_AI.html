@@ -7226,6 +7226,55 @@
                 canControl: false,
                 canChangeSettings: false
             },
+            // DEBUG MODE DETECTION
+            debugMode: false,
+
+            // Initialize debug mode from URL parameters
+            initDebugMode() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const debugParam = urlParams.get('debug');
+
+                if (debugParam) {
+                    this.debugMode = true;
+                    console.log('🔓 DEBUG MODE ENABLED:', debugParam);
+
+                    // Create debug user based on parameter
+                    switch(debugParam) {
+                        case 'guest':
+                            this.currentUser = {
+                                id: 'debug_guest',
+                                username: 'Debug Guest',
+                                email: 'guest@debug.local'
+                            };
+                            this.isGuest = true;
+                            break;
+                        case 'admin':
+                            this.currentUser = {
+                                id: 'debug_admin',
+                                username: 'Debug Admin',
+                                email: 'admin@debug.local',
+                                machineAccessCode: 'ADMIN123'
+                            };
+                            this.isGuest = false;
+                            break;
+                        case 'bypass':
+                            this.currentUser = {
+                                id: 'debug_bypass',
+                                username: 'Bypass User',
+                                email: 'bypass@debug.local',
+                                machineAccessCode: 'BYPASS456'
+                            };
+                            this.isGuest = false;
+                            break;
+                    }
+
+                    // Bypass authentication overlay
+                    this.hideAuthOverlay();
+                    this.updateUserUI();
+
+                    addMessage(`🔓 Debug mode active as ${this.currentUser.username}`, 'system');
+                }
+            },
             connectedGuests: [],
             broadcastChannel: null,
             deviceId: null,
