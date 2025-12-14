@@ -59,15 +59,63 @@
     <!-- QR Code Library -->
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3"></script>
 
-    <!-- Compatibility shim: some legacy modules still call require(...) in browser.
-         We provide a NO-OP-ish stub that logs instead of throwing to avoid halting the entire app.
-         If a module truly requires Node, it should be refactored, but this keeps the UI alive. -->
+    <!-- Enhanced compatibility shim for Node.js require() calls in browser -->
     <script>
+        // Provide browser-compatible require function
         window.require = window.require || function (name) {
             console.warn('[GemBot] require(...) called in browser for:', name);
-            // Return an empty object so callers can feature-detect without crashing.
-            return {};
+
+            // Handle specific modules that might be expected
+            const moduleStubs = {
+                'fs': {
+                    readFileSync: () => '',
+                    writeFileSync: () => {},
+                    existsSync: () => false
+                },
+                'path': {
+                    join: (...args) => args.join('/'),
+                    resolve: (...args) => args.join('/'),
+                    dirname: (p) => p.split('/').slice(0, -1).join('/'),
+                    basename: (p) => p.split('/').pop(),
+                    extname: (p) => '.' + p.split('.').pop()
+                },
+                'os': {
+                    platform: () => 'browser',
+                    homedir: () => '/',
+                    tmpdir: () => '/tmp'
+                },
+                'process': {
+                    env: {},
+                    platform: 'browser',
+                    cwd: () => '/',
+                    exit: () => {}
+                },
+                'url': {
+                    parse: (url) => ({ pathname: url }),
+                    format: (obj) => obj.pathname
+                },
+                'crypto': {
+                    randomBytes: (size) => new Uint8Array(size).map(() => Math.floor(Math.random() * 256)),
+                    createHash: () => ({
+                        update: () => ({}),
+                        digest: () => new ArrayBuffer(32)
+                    })
+                }
+            };
+
+            // Return stub if available, otherwise empty object
+            return moduleStubs[name] || {};
         };
+
+        // Also provide global process object for compatibility
+        if (!window.process) {
+            window.process = {
+                env: {},
+                platform: 'browser',
+                cwd: () => '/',
+                exit: () => {}
+            };
+        }
     </script>
     
     <!-- Core API/Logging (centralizes fetch + persistent implementation log) -->
