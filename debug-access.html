@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GemBot Control - Debug Access</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #0a0e27;
+            color: #e0e6ed;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #1a1f3a;
+            padding: 30px;
+            border-radius: 12px;
+            border: 1px solid #2d3561;
+        }
+        .btn {
+            background: #667eea;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn:hover { background: #5568d3; }
+        .btn-danger { background: #ff4444; }
+        .btn-danger:hover { background: #dd0000; }
+        .status { margin: 20px 0; padding: 15px; background: #2d3561; border-radius: 6px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🛠️ GemBot Debug Access</h1>
+        <p>Direct access to GemBot Control AI (bypasses authentication)</p>
+
+        <div class="status">
+            <h3>🚀 Quick Access Options:</h3>
+            <a href="GemBot_Control_AI.html?debug=guest" class="btn">👤 Guest Mode</a>
+            <a href="GemBot_Control_AI.html?debug=admin" class="btn">👑 Admin Mode</a>
+            <a href="GemBot_Control_AI.html?debug=bypass" class="btn">🔓 Full Bypass</a>
+        </div>
+
+        <div class="status">
+            <h3>🔧 Debug Tools:</h3>
+            <button onclick="checkConsole()" class="btn">📊 Check Console</button>
+            <button onclick="clearStorage()" class="btn btn-danger">🗑️ Clear Storage</button>
+            <button onclick="openConsole()" class="btn">🖥️ Open Dev Tools</button>
+        </div>
+
+        <div class="status">
+            <h3>📋 Status:</h3>
+            <div id="serverStatus">Checking server...</div>
+            <div id="authStatus">Checking auth...</div>
+        </div>
+    </div>
+
+    <script>
+        // Check if we're running on a server
+        fetch('GemBot_Control_AI.html')
+            .then(() => document.getElementById('serverStatus').innerHTML = '✅ Server running')
+            .catch(() => document.getElementById('serverStatus').innerHTML = '❌ Server not running');
+
+        // Check localStorage
+        const authData = localStorage.getItem('gembot_session');
+        document.getElementById('authStatus').innerHTML = authData ?
+            '✅ Auth data found' : 'ℹ️ No auth data (normal for first use)';
+
+        function checkConsole() {
+            console.log('=== GEMBOT DEBUG INFO ===');
+            console.log('Server URL:', window.location.href);
+            console.log('LocalStorage keys:', Object.keys(localStorage));
+            console.log('UserAgent:', navigator.userAgent);
+            alert('Check browser console (F12) for debug info');
+        }
+
+        function clearStorage() {
+            localStorage.clear();
+            sessionStorage.clear();
+            alert('Storage cleared! Refresh the main page.');
+        }
+
+        function openConsole() {
+            alert('Press F12 or right-click → Inspect to open developer tools');
+        }
+
+        // Auto-redirect to bypass mode
+        if (window.location.search.includes('auto')) {
+            window.location.href = 'GemBot_Control_AI.html?debug=bypass';
+        }
+    </script>
+</body>
+</html>
