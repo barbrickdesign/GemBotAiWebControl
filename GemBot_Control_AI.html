@@ -7946,27 +7946,27 @@
                 const loginForm = document.getElementById('loginForm');
                 const registerForm = document.getElementById('registerForm');
                 const linkDeviceForm = document.getElementById('linkDeviceForm');
-                
+
                 // Remove active from all tabs
                 loginTab.classList.remove('active');
                 registerTab.classList.remove('active');
                 linkDeviceTab.classList.remove('active');
-                
-                // Hide all forms
-                loginForm.style.display = 'none';
-                registerForm.style.display = 'none';
-                linkDeviceForm.style.display = 'none';
-                
+
+                // Hide all forms using 'hidden' class
+                loginForm.classList.add('hidden');
+                registerForm.classList.add('hidden');
+                linkDeviceForm.classList.add('hidden');
+
                 // Show selected tab/form
                 if (tab === 'login') {
                     loginTab.classList.add('active');
-                    loginForm.style.display = 'flex';
+                    loginForm.classList.remove('hidden');
                 } else if (tab === 'register') {
                     registerTab.classList.add('active');
-                    registerForm.style.display = 'flex';
+                    registerForm.classList.remove('hidden');
                 } else if (tab === 'linkDevice') {
                     linkDeviceTab.classList.add('active');
-                    linkDeviceForm.style.display = 'flex';
+                    linkDeviceForm.classList.remove('hidden');
                 }
                 this.clearError();
             },
