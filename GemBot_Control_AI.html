@@ -18073,59 +18073,66 @@
                 return helps[topic] || `Let's work through this ${topic} issue together.`;
             }
 
-            // ==================== GEMFORGE ECONOMY SYSTEM ====================
-            
-            /**
-             * 💎 GEM COIN TRANSACTIONS
-             */
-            
-            // Get current gem coin balance
-            getGemBalance() {
-                return this.userProfile.gemForge?.wallet?.balance || 0;
+        // ==================== GEMFORGE ECONOMY SYSTEM ====================
+
+        /**
+         * 💎 GEM COIN TRANSACTIONS
+         */
+
+        // Get current gem coin balance
+        getGemBalance() {
+            return this.userProfile.gemForge?.wallet?.balance || 0;
+        }
+
+        // Add gem coins to wallet
+        earnGemCoins(amount, reason, details = {}) {
+            if (!this.userProfile.gemForge) this.initializeGemForge();
+
+            const wallet = this.userProfile.gemForge.wallet;
+            wallet.balance += amount;
+            wallet.lifetimeEarned += amount;
+
+            const transaction = {
+                type: 'earn',
+                amount: amount,
+                reason: reason,
+                details: details,
+                balance: wallet.balance,
+                timestamp: new Date().toISOString()
+            };
+            wallet.transactionHistory.push(transaction);
+
+            // Keep only last 100 transactions
+            if (wallet.transactionHistory.length > 100) {
+                wallet.transactionHistory = wallet.transactionHistory.slice(-100);
             }
-            
-            // Add gem coins to wallet
-            earnGemCoins(amount, reason, details = {}) {
-                if (!this.userProfile.gemForge) this.initializeGemForge();
-                
-                const wallet = this.userProfile.gemForge.wallet;
-                wallet.balance += amount;
-                wallet.lifetimeEarned += amount;
-                
-                const transaction = {
-                    type: 'earn',
+
+            this.saveUserProfile();
+            this.checkAchievements('earn', amount);
+
+            // Record activity in leaderboard
+            if (typeof leaderboardUI !== 'undefined' && leaderboardUI.recordActivity) {
+                leaderboardUI.recordActivity('earn', {
                     amount: amount,
                     reason: reason,
-                    details: details,
-                    balance: wallet.balance,
-                    timestamp: new Date().toISOString()
-                };
-                wallet.transactionHistory.push(transaction);
-                
-                // Keep only last 100 transactions
-                if (wallet.transactionHistory.length > 100) {
-                    wallet.transactionHistory = wallet.transactionHistory.slice(-100);
-                }
-                
-                this.saveUserProfile();
-                this.checkAchievements('earn', amount);
-                
-                // Record activity in leaderboard
-                if (typeof leaderboardUI !== 'undefined' && leaderboardUI.recordActivity) {
-                    leaderboardUI.recordActivity('earn', {
-                        amount: amount,
-                        reason: reason,
-                        newBalance: wallet.balance
-                    });
-                }
-                
-                return {
-                    success: true,
-                    newBalance: wallet.balance,
-                    earned: amount,
-                    reason: reason
-                };
+                    newBalance: wallet.balance
+                });
             }
+
+            return {
+                success: true,
+                newBalance: wallet.balance,
+                earned: amount,
+                reason: reason
+            };
+        }
+
+        // ==================== END GEMFORGE ECONOMY SYSTEM ====================
+
+        // ===== END TEACHING INTEGRATION METHODS =====
+    }
+
+    const speechInput = new SpeechInputManager();
             
             // Spend gem coins (returns false if insufficient)
             spendGemCoins(amount, reason, details = {}) {
