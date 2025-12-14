@@ -6892,13 +6892,16 @@
                 </div>
 
                 <div class="control-section">
-                    <div class="section-title">🕹️ Movement</div>
-                    <div class="dpad-container">
-                        <button class="dpad-btn up" data-cmd="w">▲</button>
-                        <button class="dpad-btn left" data-cmd="a">◄</button>
-                        <button class="dpad-btn right" data-cmd="d">►</button>
-                        <button class="dpad-btn down" data-cmd="z">▼</button>
-                        <button class="dpad-btn stop" data-cmd="u">STOP</button>
+                    <div class="section-title">🕹️ Manual Motion (D-PAD)</div>
+                    <div class="dpad-container" id="manualDpad">
+                        <button class="dpad-btn up" data-dir="up" aria-label="Move Y forward toward lap">▲</button>
+                        <button class="dpad-btn left" data-dir="left" aria-label="Move X left (counter-clockwise)">◄</button>
+                        <button class="dpad-btn right" data-dir="right" aria-label="Move X right (clockwise)">►</button>
+                        <button class="dpad-btn down" data-dir="down" aria-label="Move Y backward away from lap">▼</button>
+                        <button class="dpad-btn stop" data-dir="stop" aria-label="Stop motion">STOP</button>
+                    </div>
+                    <div class="nav-command-hint" style="margin-top:6px;">
+                        STEP: ▲ e • ▼ s • ◄ d • ► f &nbsp; | &nbsp; CONT: ▲ w • ▼ z • ◄ a • ► d (release = stop)
                     </div>
                 </div>
 
@@ -6967,12 +6970,12 @@
                             <span id="mobileSpeedValue" class="speed-value">1/5</span>
                         </div>
                         <!-- Movement Joystick -->
-                        <div class="joystick-grid">
-                            <button class="mobile-joy-btn grid-col-2" data-cmd="w">▲</button>
-                            <button class="mobile-joy-btn grid-col-1" data-cmd="a">◄</button>
-                            <button class="mobile-joy-btn grid-col-3" data-cmd="d">►</button>
-                            <button class="mobile-joy-btn grid-col-2" data-cmd="z">▼</button>
-                            <button class="mobile-joy-btn grid-col-span btn-stop" data-cmd="u">⏹ STOP</button>
+                    <div class="joystick-grid" id="mobileManualDpad">
+                            <button class="mobile-joy-btn grid-col-2" data-dir="up" aria-label="Move Y forward toward lap">▲</button>
+                            <button class="mobile-joy-btn grid-col-1" data-dir="left" aria-label="Move X left (counter-clockwise)">◄</button>
+                            <button class="mobile-joy-btn grid-col-3" data-dir="right" aria-label="Move X right (clockwise)">►</button>
+                            <button class="mobile-joy-btn grid-col-2" data-dir="down" aria-label="Move Y backward away from lap">▼</button>
+                            <button class="mobile-joy-btn grid-col-span btn-stop" data-dir="stop" aria-label="Stop motion">⏹ STOP</button>
                         </div>
                     </div>
                     
@@ -10196,13 +10199,7 @@
             }
             
             // MOBILE IN-VIEW CONTROLS
-            const mobileJoyBtns = document.querySelectorAll('.mobile-joy-btn');
-            mobileJoyBtns.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const cmd = btn.getAttribute('data-cmd');
-                    sendCommand(cmd);
-                });
-            });
+            // (Handled by unified D-PAD controller; no direct sendCommand usage here)
             
             const mobileSpeedSlider = document.getElementById('mobileSpeedSlider');
             const mobileSpeedValue = document.getElementById('mobileSpeedValue');
@@ -20199,153 +20196,158 @@
                 if (isConnected) serial.sendCommand('n' + motorStepSize);
             });
 
-            document.querySelectorAll('.dpad-btn').forEach(btn => {
-                const btnId = btn.dataset.cmd; // Use command as unique identifier
-                const btnClass = btn.className; // Get button class to identify axis buttons
-                const isXAxisBtn = btnClass.includes('left') || btnClass.includes('right');
-                const isYAxisBtn = btnClass.includes('up') || btnClass.includes('down');
-                
-                btn.addEventListener('mousedown', () => {
+            // ==================== UNIFIED D-PAD CONTROLLER (STEP + CONTINUOUS) ====================
+            // Spec mapping (user-provided):
+            // STEP: up=e, down=s, left=d, right=f
+            // CONTINUOUS: up=w, down=a, left=a, right=d
+            // Release always sends stop ('u') in continuous mode.
+            // NOTE: If firmware does not support a continuous DOWN command distinct from LEFT (both 'a'),
+            // this is a firmware protocol collision. We still honor the spec here and log it.
+
+            const DpadController = {
+                activeIntervals: new Map(),
+                isPointerDown: new Set(),
+
+                mapDirectionToCommand(dir) {
+                    const map = {
+                        step: { up: 'e', down: 's', left: 'd', right: 'f' },
+                        continuous: { up: 'w', down: 'a', left: 'a', right: 'd' }
+                    };
+                    const modeKey = (motorMode || 'continuous') === 'step' ? 'step' : 'continuous';
+                    return map[modeKey][dir] || null;
+                },
+
+                send(cmd, meta = {}) {
+                    // Centralized send w/ logging
+                    try {
+                        window.GemBotLogger?.info?.('D-PAD send', { cmd, ...meta, motorMode, motorSpeed, isConnected });
+                    } catch (_) {}
+
                     if (motorKilled) {
-                        console.warn('🛑 Motor killed - ignoring command');
+                        window.GemBotLogger?.warn?.('Motor killed - ignoring D-PAD command', { cmd, ...meta });
                         return;
                     }
-                    let cmd = btn.dataset.cmd;
-                    if (cmd === 'u') return; // Skip for stop button
-                    
-                    // Map to appropriate firmware commands based on mode
-                    // Firmware limitation: Only has continuous LEFT/UP/DOWN/P-CCW
-                    // So we use single-step for RIGHT/P-CW and repeat them
-                    
-                    if (motorMode === 'step') {
-                        // STEP mode: Single step per click
-                        console.log(`📍 STEP button clicked - Original cmd: ${btn.dataset.cmd}, Button classes: ${btn.className}`);
-                        // CRITICAL: Map based on original button values BEFORE modifying
-                        // Store original for comparison
-                        const originalCmd = cmd;
-                        if (originalCmd === 'w') cmd = 'e'; // UP: 'w' -> 'e' (single)
-                        else if (originalCmd === 'z') cmd = 'i'; // DOWN: 'z' -> 'i' (single)
-                        else if (originalCmd === 'a') cmd = 'd'; // LEFT: 'a' -> 'd' (single)
-                        else if (originalCmd === 'd') cmd = 'f'; // RIGHT: 'd' -> 'f' (single)
-                        console.log(`🎮 STEP MODE - Mapped to firmware command: ${cmd}`);
-                        console.log(`🎮 Sending to Arduino: '${cmd}' (char code ${cmd.charCodeAt(0)})`);
-                        if (isConnected) {
-                            serial.sendCommand(cmd);
-                            machineState.recordCommand(cmd);
-                        }
-                        return; // Exit early - no interval for step mode
-                    }
-                    
-                    // CONTINUOUS mode
-                    // Firmware has handlers for: a (LEFT), w (UP), z (DOWN), j (P-CCW)
-                    // For RIGHT and P-CW, use repeated single-step commands
-                    let useSingleStep = false;
-                    if (cmd === 'd') {
-                        // X RIGHT: Use repeated 'f' command since firmware lacks motorXRight handler
-                        cmd = 'f';
-                        useSingleStep = true;
-                    }
-                    
-                    console.log(`🎮 DPAD button held (${motorMode} mode): ${cmd}${useSingleStep ? ' (repeated single-step)' : ''}`);
-                    if (isConnected) {
-                        serial.sendCommand(cmd);
-                        machineState.recordCommand(cmd);
-                        // Send continuous commands while held - interval scales with speed
-                        // Speed 1: 40ms interval, Speed 2: 20ms, Speed 5: 8ms (minimum)
-                        const interval = Math.max(8, Math.floor(40 / motorSpeed));
-                        console.log(`⚡ Command repeat interval: ${interval}ms (speed level ${motorSpeed})`);
-                        const intervalId = setInterval(() => {
-                            if (!motorKilled && isConnected) serial.sendCommand(cmd);
-                            else clearInterval(intervalId); // Stop loop if motor killed
-                        }, interval);
-                        // Track this interval globally so emergency stop can kill it
-                        activeHoldIntervals.set(btnId, intervalId);
-                    } else {
-                        console.warn('⚠️ Not connected to Arduino');
-                    }
-                });
-                
-                btn.addEventListener('mouseup', () => {
-                    console.log('🎮 DPAD button released - sending immediate stop');
-                    // Clear interval FIRST before sending stop
-                    const interval = activeHoldIntervals.get(btnId);
-                    if (interval) {
-                        clearInterval(interval);
-                        activeHoldIntervals.delete(btnId);
-                    }
-                    // ALWAYS send stop immediately on button release (no delay, no conditions)
-                    if (!motorKilled && isConnected) serial.sendCommand('u');
-                });
-                
-                btn.addEventListener('mouseleave', () => {
-                    console.log('🎮 Mouse left button - sending immediate stop');
-                    // Clear interval FIRST before sending stop
-                    const interval = activeHoldIntervals.get(btnId);
-                    if (interval) {
-                        clearInterval(interval);
-                        activeHoldIntervals.delete(btnId);
-                        // Send stop immediately when dragging off button
-                        if (!motorKilled && isConnected) serial.sendCommand('u');
-                    }
-                });
-                
-                // Touch support for mobile
-                btn.addEventListener('touchstart', (e) => {
-                    if (motorKilled) {
-                        console.warn('🛑 Motor killed - ignoring command');
+                    if (!isConnected) {
+                        window.GemBotLogger?.warn?.('Not connected - ignoring D-PAD command', { cmd, ...meta });
                         return;
                     }
-                    let cmd = btn.dataset.cmd;
-                    if (cmd === 'u') return;
-                    e.preventDefault();
-                    
-                    // Map to appropriate firmware commands based on mode
-                    if (motorMode === 'step') {
-                        // STEP mode: Single step per click
-                        console.log(`📍 STEP button touched - Original cmd: ${btn.dataset.cmd}, Button classes: ${btn.className}`);
-                        const originalCmd = cmd; // PRESERVE ORIGINAL BUTTON VALUE
-                        if (originalCmd === 'w') cmd = 'e'; // UP: single
-                        if (originalCmd === 'z') cmd = 'i'; // DOWN: single
-                        if (originalCmd === 'a') cmd = 'd'; // LEFT: single
-                        if (originalCmd === 'd') cmd = 'f'; // RIGHT: single
-                        console.log(`🎮 STEP MODE (touch) - Mapped to firmware command: ${cmd}`);
-                        console.log(`🎮 Sending to Arduino: '${cmd}' (char code ${cmd.charCodeAt(0)})`);
-                        if (isConnected) serial.sendCommand(cmd);
+
+                    serial.sendCommand(cmd);
+                    try { machineState?.recordCommand?.(cmd); } catch (_) {}
+                },
+
+                stopAll(reason = 'stopAll') {
+                    this.activeIntervals.forEach((id) => clearInterval(id));
+                    this.activeIntervals.clear();
+                    this.isPointerDown.clear();
+
+                    // Only send stop if we were in continuous mode (spec behavior)
+                    if ((motorMode || 'continuous') === 'continuous') {
+                        this.send('u', { reason });
+                    }
+                },
+
+                startContinuousLoop(key, cmd) {
+                    // Repeat rate scales with speed (existing behavior)
+                    const intervalMs = Math.max(8, Math.floor(40 / (motorSpeed || 1)));
+                    const id = setInterval(() => {
+                        if (!this.isPointerDown.has(key)) return;
+                        this.send(cmd, { phase: 'repeat', key });
+                    }, intervalMs);
+                    this.activeIntervals.set(key, id);
+                },
+
+                onDown(el, dir, key) {
+                    if (this.isPointerDown.has(key)) return;
+                    this.isPointerDown.add(key);
+
+                    if (dir === 'stop') {
+                        this.stopAll('user_stop_button');
                         return;
                     }
-                    
-                    // CONTINUOUS mode with firmware workaround
-                    let useSingleStep = false;
-                    if (cmd === 'd') {
-                        cmd = 'f'; // X RIGHT: use repeated single-step
-                        useSingleStep = true;
+
+                    const cmd = this.mapDirectionToCommand(dir);
+                    if (!cmd) {
+                        window.GemBotLogger?.warn?.('No D-PAD mapping for direction', { dir, motorMode });
+                        return;
                     }
-                    
-                    console.log(`🎮 DPAD touched (${motorMode} mode): ${cmd}${useSingleStep ? ' (repeated)' : ''}`);
-                    if (isConnected) {
-                        serial.sendCommand(cmd);
-                        // Dynamic interval: Speed 1: 40ms, Speed 5: 8ms (minimum)
-                        const interval = Math.max(8, Math.floor(40 / motorSpeed));
-                        console.log(`⚡ Touch repeat interval: ${interval}ms (speed level ${motorSpeed})`);
-                        const intervalId = setInterval(() => {
-                            if (!motorKilled && isConnected) serial.sendCommand(cmd);
-                            else clearInterval(intervalId);
-                        }, interval);
-                        activeHoldIntervals.set(btnId, intervalId);
+
+                    // Log protocol collision warning
+                    if ((motorMode || 'continuous') === 'continuous' && cmd === 'a' && (dir === 'down' || dir === 'left')) {
+                        window.GemBotLogger?.warn?.('Protocol collision risk: CONTINUOUS down/left both map to "a" in spec', { dir, cmd });
                     }
-                });
-                
-                btn.addEventListener('touchend', (e) => {
-                    e.preventDefault();
-                    console.log('🎮 Touch ended - sending immediate stop');
-                    const interval = activeHoldIntervals.get(btnId);
-                    if (interval) {
-                        clearInterval(interval);
-                        activeHoldIntervals.delete(btnId);
+
+                    // Step mode: send once
+                    if ((motorMode || 'continuous') === 'step') {
+                        this.send(cmd, { phase: 'step', dir, key });
+                        this.isPointerDown.delete(key);
+                        return;
                     }
-                    // ALWAYS send stop immediately on touch release
-                    if (!motorKilled && isConnected) serial.sendCommand('u');
-                });
+
+                    // Continuous mode: send immediately, then repeat until release
+                    this.send(cmd, { phase: 'start', dir, key });
+                    this.startContinuousLoop(key, cmd);
+                },
+
+                onUp(key) {
+                    if (!this.isPointerDown.has(key)) return;
+                    this.isPointerDown.delete(key);
+
+                    const intervalId = this.activeIntervals.get(key);
+                    if (intervalId) {
+                        clearInterval(intervalId);
+                        this.activeIntervals.delete(key);
+                    }
+
+                    // Release-to-stop in continuous mode
+                    if ((motorMode || 'continuous') === 'continuous') {
+                        this.send('u', { phase: 'release', key });
+                    }
+                },
+
+                bind(containerSelector, buttonSelector, keyPrefix) {
+                    const container = document.querySelector(containerSelector);
+                    if (!container) return;
+
+                    container.querySelectorAll(buttonSelector).forEach((btn) => {
+                        const dir = btn.getAttribute('data-dir');
+                        if (!dir) return;
+                        const key = `${keyPrefix}:${dir}`;
+
+                        // Pointer events cover mouse + touch consistently
+                        btn.addEventListener('pointerdown', (e) => {
+                            e.preventDefault();
+                            try { btn.setPointerCapture?.(e.pointerId); } catch (_) {}
+                            this.onDown(btn, dir, key);
+                        });
+
+                        btn.addEventListener('pointerup', (e) => {
+                            e.preventDefault();
+                            this.onUp(key);
+                        });
+
+                        btn.addEventListener('pointercancel', (e) => {
+                            e.preventDefault();
+                            this.onUp(key);
+                        });
+
+                        btn.addEventListener('pointerleave', () => {
+                            // If the pointer is still down and leaves, treat as release
+                            this.onUp(key);
+                        });
+                    });
+                }
+            };
+
+            // Bind desktop left-panel D-PAD
+            DpadController.bind('#manualDpad', '.dpad-btn', 'desktop');
+            // Bind mobile in-view D-PAD
+            DpadController.bind('#mobileManualDpad', '.mobile-joy-btn', 'mobile');
+
+            // Ensure emergency stop kills D-PAD intervals too
+            // (existing E-STOP already clears activeHoldIntervals; this controller has its own)
+            window.addEventListener('gembot:emergencyStop', () => {
+                DpadController.stopAll('emergencyStop_event');
             });
 
             document.getElementById('btnRotateCCW')?.addEventListener('click', () => {
@@ -20594,30 +20596,34 @@
 
             document.getElementById('emergencyStop')?.addEventListener('click', () => {
                 console.error('🛑 EMERGENCY STOP BUTTON PRESSED - KILLING ALL MOTORS IMMEDIATELY');
-                
+
                 // IMMEDIATELY set flag to block any new commands
                 motorKilled = true;
-                
-                // IMMEDIATELY clear ALL active intervals (DO NOT WAIT)
+
+                // Broadcast for other controllers (D-pad) to stop loops
+                try { window.dispatchEvent(new CustomEvent('gembot:emergencyStop')); } catch (_) {}
+
+                // IMMEDIATELY clear ALL legacy active intervals (DO NOT WAIT)
                 activeHoldIntervals.forEach((interval, btnId) => {
                     clearInterval(interval);
                     console.log(`  ⚡ Killed interval for: ${btnId}`);
                 });
                 activeHoldIntervals.clear();
-                
+
                 // Display emergency stop message
                 addMessage('🛑 EMERGENCY STOP ACTIVATED - ALL MOTORS KILLED', 'error');
-                
+                window.GemBotLogger?.error?.('Emergency stop triggered', { source: 'UI' });
+
                 // Send emergency stop with multiple rapid commands
                 if (isConnected) {
                     console.log('📡 Sending emergency stop commands...');
                     serial.emergencyStop();
-                    machineState.recordCommand('u', undefined, undefined, undefined, undefined);
+                    try { machineState?.recordCommand?.('u', undefined, undefined, undefined, undefined); } catch (_) {}
                 }
-                
+
                 // Save machine state immediately
-                machineState.saveState();
-                
+                try { machineState?.saveState?.(); } catch (_) {}
+
                 // Reset motorKilled flag after 500ms to allow new commands
                 setTimeout(() => {
                     motorKilled = false;
