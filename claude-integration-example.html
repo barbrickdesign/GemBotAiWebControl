@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude AI Integration - GemBot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e0e6ed;
+        }
+        
+        .container {
+            background: rgba(30, 30, 50, 0.8);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #4affff;
+            text-shadow: 0 0 20px rgba(74, 255, 255, 0.5);
+        }
+        
+        .status-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .status-card {
+            background: rgba(50, 50, 80, 0.5);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(74, 255, 255, 0.2);
+        }
+        
+        .status-label {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 5px;
+        }
+        
+        .status-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4affff;
+        }
+        
+        .status-value.online {
+            color: #00ff88;
+        }
+        
+        .status-value.offline {
+            color: #ff6b6b;
+        }
+        
+        .chat-section {
+            background: rgba(50, 50, 80, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        input, textarea {
+            flex: 1;
+            padding: 12px;
+            background: rgba(30, 30, 50, 0.8);
+            border: 1px solid rgba(74, 255, 255, 0.3);
+            border-radius: 8px;
+            color: #e0e6ed;
+            font-size: 14px;
+        }
+        
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        button {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #4affff, #00bfff);
+            border: none;
+            border-radius: 8px;
+            color: #1a1a2e;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(74, 255, 255, 0.4);
+        }
+        
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .response-area {
+            background: rgba(30, 30, 50, 0.8);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid rgba(74, 255, 255, 0.2);
+            min-height: 150px;
+            margin-top: 15px;
+        }
+        
+        .merlin-response {
+            color: #4affff;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+        
+        .log-area {
+            background: rgba(20, 20, 30, 0.9);
+            padding: 15px;
+            border-radius: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            margin-top: 20px;
+        }
+        
+        .log-entry {
+            padding: 5px;
+            border-left: 3px solid #4affff;
+            margin-bottom: 5px;
+            padding-left: 10px;
+        }
+        
+        .log-entry.error {
+            border-left-color: #ff6b6b;
+            color: #ff6b6b;
+        }
+        
+        .log-entry.success {
+            border-left-color: #00ff88;
+            color: #00ff88;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .balance-display {
+            background: linear-gradient(135deg, #ff6b6b, #ffa500);
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 Claude AI Integration Demo</h1>
+        
+        <!-- Status Panel -->
+        <div class="status-panel">
+            <div class="status-card">
+                <div class="status-label">Claude Status</div>
+                <div class="status-value" id="claude-status">⏳ Checking...</div>
+            </div>
+            <div class="status-card">
+                <div class="status-label">$GBUV Balance</div>
+                <div class="status-value" id="token-balance">0</div>
+            </div>
+            <div class="status-card">
+                <div class="status-label">Total Calls</div>
+                <div class="status-value" id="total-calls">0</div>
+            </div>
+            <div class="status-card">
+                <div class="status-label">Total Gas Paid</div>
+                <div class="status-value" id="total-gas">0 $GBUV</div>
+            </div>
+            <div class="status-card">
+                <div class="status-label">Success Rate</div>
+                <div class="status-value" id="success-rate">N/A</div>
+            </div>
+            <div class="status-card">
+                <div class="status-label">Gas Fee</div>
+                <div class="status-value" id="gas-fee">10 $GBUV</div>
+            </div>
+        </div>
+        
+        <!-- Chat Section -->
+        <div class="chat-section">
+            <h2>💬 Ask Merlin (Powered by Claude AI)</h2>
+            
+            <div class="input-group">
+                <textarea id="question-input" placeholder="Ask Merlin a question about gemstone cutting..."></textarea>
+            </div>
+            
+            <div class="controls">
+                <button id="ask-button" onclick="askMerlin()">🔮 Ask Merlin (Costs Gas)</button>
+                <button onclick="askBasic()">📖 Ask Basic Q&A (Free)</button>
+                <button onclick="checkStatus()">🔄 Refresh Status</button>
+                <button onclick="addTokens()">💰 Add 100 $GBUV</button>
+            </div>
+            
+            <div class="response-area">
+                <div class="merlin-response" id="response-text">
+                    🧙‍♂️ Greetings, apprentice! Ask me anything about the ancient art of gemstone cutting...
+                </div>
+            </div>
+        </div>
+        
+        <!-- Configuration -->
+        <div class="chat-section">
+            <h3>⚙️ Configuration</h3>
+            <div class="input-group">
+                <input type="text" id="endpoint-input" placeholder="Claude Endpoint" value="http://localhost:8000">
+                <input type="number" id="gas-fee-input" placeholder="Gas Fee" value="10" min="0">
+                <button onclick="updateConfig()">Update Config</button>
+            </div>
+        </div>
+        
+        <!-- Log Area -->
+        <div class="log-area" id="log-area">
+            <div class="log-entry">System initialized. Ready to connect to Claude AI.</div>
+        </div>
+    </div>
+
+    <!-- Load Dependencies -->
+    <script src="gembot-marketplace.js"></script>
+    <script src="claude-local-integration.js"></script>
+    
+    <script>
+        // Initialize marketplace (for token balance)
+        let marketplace;
+        let claudeAI;
+        
+        // Initialize on page load
+        window.addEventListener('DOMContentLoaded', async () => {
+            try {
+                // Initialize marketplace with demo wallet
+                marketplace = new window.GemBotMarketplace();
+                marketplace.wallet = {
+                    tokenBalance: 50, // Start with 50 demo tokens
+                    address: 'demo-wallet'
+                };
+                marketplace.saveState = () => {
+                    localStorage.setItem('gembot_marketplace', JSON.stringify(marketplace));
+                };
+                window.GemBotMarketplace = marketplace;
+                
+                log('✅ Marketplace initialized with 50 $GBUV demo tokens', 'success');
+                
+                // Initialize Claude integration
+                claudeAI = new ClaudeLocalIntegration({
+                    claudeEndpoint: 'http://localhost:8000',
+                    gasFeePerCall: 10,
+                    fallbackToBasic: true
+                });
+                window.claudeAI = claudeAI;
+                
+                log('✅ Claude AI integration initialized', 'success');
+                
+                // Update UI
+                await updateStatus();
+                
+                // Listen for gas fee events
+                window.addEventListener('gembot:gas-fee-charged', (event) => {
+                    const { amount, newBalance } = event.detail;
+                    log(`⛽ Gas fee charged: ${amount} $GBUV (Balance: ${newBalance})`, 'success');
+                    updateStatus();
+                });
+                
+            } catch (error) {
+                log(`❌ Initialization error: ${error.message}`, 'error');
+            }
+        });
+        
+        // Ask Merlin using Claude AI
+        async function askMerlin() {
+            const question = document.getElementById('question-input').value.trim();
+            
+            if (!question) {
+                log('⚠️ Please enter a question', 'error');
+                return;
+            }
+            
+            const button = document.getElementById('ask-button');
+            button.disabled = true;
+            button.textContent = '🤔 Thinking...';
+            
+            try {
+                log(`📝 Question: ${question}`);
+                
+                // Build context (simulate game state)
+                const context = {
+                    playerLevel: 5,
+                    currentStone: 'Sapphire',
+                    recentActions: ['cutting', 'shaping']
+                };
+                
+                // Ask Claude (this will charge gas if successful)
+                const response = await claudeAI.askClaude(question, context);
+                
+                // Display response
+                document.getElementById('response-text').textContent = response;
+                
+                log('✅ Response received from Claude AI', 'success');
+                
+            } catch (error) {
+                log(`❌ Error: ${error.message}`, 'error');
+                
+                if (error.message.includes('Insufficient')) {
+                    document.getElementById('response-text').textContent = 
+                        '💰 My powers require $GBUV tokens to channel, young apprentice. Click "Add 100 $GBUV" to continue!';
+                } else {
+                    document.getElementById('response-text').textContent = 
+                        '⚠️ The mystical energies are disrupted. The Claude API may not be available. Try the Basic Q&A instead.';
+                }
+            } finally {
+                button.disabled = false;
+                button.textContent = '🔮 Ask Merlin (Costs Gas)';
+                await updateStatus();
+            }
+        }
+        
+        // Ask using basic Q&A (free)
+        function askBasic() {
+            const question = document.getElementById('question-input').value.trim();
+            
+            if (!question) {
+                log('⚠️ Please enter a question', 'error');
+                return;
+            }
+            
+            log(`📖 Basic Q&A question: ${question}`);
+            
+            // Simulate basic response
+            const responses = [
+                "The ancient scrolls speak of patience and precision in all facets of our craft.",
+                "Remember, young apprentice, each gemstone tells its own story through its unique characteristics.",
+                "The path to mastery is paved with careful observation and steady hands.",
+                "Let the stone guide you, for it knows its true form better than we ever could."
+            ];
+            
+            const response = responses[Math.floor(Math.random() * responses.length)];
+            document.getElementById('response-text').textContent = response;
+            
+            log('✅ Basic response provided (no gas fee)', 'success');
+        }
+        
+        // Check system status
+        async function checkStatus() {
+            log('🔄 Refreshing status...');
+            await claudeAI.checkAvailability();
+            await updateStatus();
+        }
+        
+        // Update status display
+        async function updateStatus() {
+            const stats = claudeAI.getStats();
+            
+            // Claude status
+            const statusEl = document.getElementById('claude-status');
+            if (stats.available) {
+                statusEl.textContent = '✅ Online';
+                statusEl.className = 'status-value online';
+            } else {
+                statusEl.textContent = '⚠️ Offline';
+                statusEl.className = 'status-value offline';
+            }
+            
+            // Token balance
+            document.getElementById('token-balance').textContent = 
+                marketplace?.wallet?.tokenBalance || 0;
+            
+            // Stats
+            document.getElementById('total-calls').textContent = stats.totalCalls;
+            document.getElementById('total-gas').textContent = `${stats.totalGasPaid} $GBUV`;
+            document.getElementById('success-rate').textContent = stats.successRate;
+            document.getElementById('gas-fee').textContent = `${stats.gasFeePerCall} $GBUV`;
+        }
+        
+        // Add demo tokens
+        function addTokens() {
+            if (marketplace && marketplace.wallet) {
+                marketplace.wallet.tokenBalance += 100;
+                marketplace.saveState();
+                log('💰 Added 100 $GBUV demo tokens', 'success');
+                updateStatus();
+            }
+        }
+        
+        // Update configuration
+        function updateConfig() {
+            const endpoint = document.getElementById('endpoint-input').value;
+            const gasFee = parseInt(document.getElementById('gas-fee-input').value) || 10;
+            
+            claudeAI.config.claudeEndpoint = endpoint;
+            claudeAI.config.gasFeePerCall = gasFee;
+            
+            log(`⚙️ Config updated: Endpoint=${endpoint}, Gas Fee=${gasFee}`, 'success');
+            updateStatus();
+            checkStatus();
+        }
+        
+        // Log function
+        function log(message, type = 'info') {
+            const logArea = document.getElementById('log-area');
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logArea.appendChild(entry);
+            logArea.scrollTop = logArea.scrollHeight;
+            
+            // Also log to console
+            console.log(message);
+        }
+        
+        // Allow Enter key to submit
+        document.getElementById('question-input')?.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && e.ctrlKey) {
+                askMerlin();
+            }
+        });
+    </script>
+</body>
+</html>
