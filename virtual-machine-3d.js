@@ -334,20 +334,59 @@ class VirtualMachine3D {
     createFallbackGeometry() {
         console.log('🔧 Creating fallback procedural geometry...');
         
+        // Use enhanced config if available
+        const config = window.GemBot3DConfig || { current: { pbr: false } };
+        const usePBR = config.current.pbr;
+        
         // Materials
-        const frameMat = new BABYLON.StandardMaterial('frameMat', this.scene);
-        frameMat.diffuseColor = new BABYLON.Color3(0.7, 0.72, 0.75);
-        frameMat.specularColor = new BABYLON.Color3(0.9, 0.9, 0.9);
-        frameMat.specularPower = 64;
+        let frameMat, metalMat, lapMat, gemMat;
         
-        const metalMat = new BABYLON.StandardMaterial('metalMat', this.scene);
-        metalMat.diffuseColor = new BABYLON.Color3(0.15, 0.15, 0.18);
-        metalMat.specularColor = new BABYLON.Color3(0.3, 0.3, 0.3);
-        
-        const lapMat = new BABYLON.StandardMaterial('lapMat', this.scene);
-        lapMat.diffuseColor = new BABYLON.Color3(0.5, 0.5, 0.55);
-        lapMat.specularColor = new BABYLON.Color3(0.8, 0.8, 0.8);
-        lapMat.specularPower = 32;
+        if (usePBR && this.scene) {
+            // High-fidelity PBR Materials
+            frameMat = new BABYLON.PBRMaterial('frameMat', this.scene);
+            frameMat.albedoColor = new BABYLON.Color3(0.7, 0.72, 0.75);
+            frameMat.metallic = 0.9;
+            frameMat.roughness = 0.3;
+            
+            metalMat = new BABYLON.PBRMaterial('metalMat', this.scene);
+            metalMat.albedoColor = new BABYLON.Color3(0.15, 0.15, 0.18);
+            metalMat.metallic = 0.8;
+            metalMat.roughness = 0.4;
+            
+            lapMat = new BABYLON.PBRMaterial('lapMat', this.scene);
+            lapMat.albedoColor = new BABYLON.Color3(0.5, 0.5, 0.55);
+            lapMat.metallic = 0.6;
+            lapMat.roughness = 0.2;
+            
+            gemMat = new BABYLON.PBRMaterial('gemMat', this.scene);
+            gemMat.albedoColor = new BABYLON.Color3(0.2, 0.6, 0.9);
+            gemMat.metallic = 0.1;
+            gemMat.roughness = 0.0;
+            gemMat.alpha = 0.6;
+            gemMat.indexOfRefraction = 1.77; // Ruby/Sapphire range
+            gemMat.subSurface.isRefractionEnabled = true;
+        } else {
+            // Standard Materials (Low/Medium quality)
+            frameMat = new BABYLON.StandardMaterial('frameMat', this.scene);
+            frameMat.diffuseColor = new BABYLON.Color3(0.7, 0.72, 0.75);
+            frameMat.specularColor = new BABYLON.Color3(0.9, 0.9, 0.9);
+            frameMat.specularPower = 64;
+            
+            metalMat = new BABYLON.StandardMaterial('metalMat', this.scene);
+            metalMat.diffuseColor = new BABYLON.Color3(0.15, 0.15, 0.18);
+            metalMat.specularColor = new BABYLON.Color3(0.3, 0.3, 0.3);
+            
+            lapMat = new BABYLON.StandardMaterial('lapMat', this.scene);
+            lapMat.diffuseColor = new BABYLON.Color3(0.5, 0.5, 0.55);
+            lapMat.specularColor = new BABYLON.Color3(0.8, 0.8, 0.8);
+            lapMat.specularPower = 32;
+            
+            gemMat = new BABYLON.StandardMaterial('gemMat', this.scene);
+            gemMat.diffuseColor = new BABYLON.Color3(0.2, 0.6, 0.9);
+            gemMat.specularColor = new BABYLON.Color3(1, 1, 1);
+            gemMat.specularPower = 128;
+            gemMat.alpha = 0.85;
+        }
         
         // Base platform
         const base = BABYLON.MeshBuilder.CreateBox('base', { width: 200, height: 15, depth: 150 }, this.scene);
@@ -400,11 +439,6 @@ class VirtualMachine3D {
         
         // Gemstone on dop
         const gem = BABYLON.MeshBuilder.CreatePolyhedron('gemstone', { type: 1, size: 5 }, this.scene);
-        const gemMat = new BABYLON.StandardMaterial('gemMat', this.scene);
-        gemMat.diffuseColor = new BABYLON.Color3(0.2, 0.6, 0.9);
-        gemMat.specularColor = new BABYLON.Color3(1, 1, 1);
-        gemMat.specularPower = 128;
-        gemMat.alpha = 0.85;
         gem.material = gemMat;
         gem.position = new BABYLON.Vector3(0, -25, 0);
         gem.parent = this.meshes.dopStick;
@@ -454,33 +488,93 @@ class VirtualMachine3D {
     }
     
     /**
-     * Setup scene lighting
+     * Setup scene lighting and post-processing
      */
     setupLighting() {
-        // Ambient hemisphere light
+        const config = window.GemBot3DConfig ? window.GemBot3DConfig.current : { pbr: false, shadows: false, postProcessing: false };
+        
+        // Use HDR environment if PBR is enabled
+        if (config.pbr && this.scene) {
+            // Use a built-in environment texture for reflections
+            // In a real app, load a .env file: this.scene.environmentTexture = BABYLON.CubeTexture.CreateFromPrefilteredData("path/to/env.env", this.scene);
+            const envHelper = this.scene.createDefaultEnvironment({
+                createSkybox: false,
+                createGround: false,
+                toneMappingEnabled: true,
+                environmentTexture: "https://assets.babylonjs.com/environments/studio.env"
+            });
+            if (envHelper) {
+                envHelper.setMainColor(new BABYLON.Color3(0.1, 0.1, 0.15));
+            }
+        }
+
+        // Ambient hemisphere light (always good for base visibility)
         const ambient = new BABYLON.HemisphericLight('ambient', new BABYLON.Vector3(0, 1, 0), this.scene);
-        ambient.intensity = 0.4;
+        ambient.intensity = config.pbr ? 0.3 : 0.6;
         ambient.diffuse = new BABYLON.Color3(0.9, 0.9, 0.95);
-        ambient.groundColor = new BABYLON.Color3(0.3, 0.3, 0.35);
+        ambient.groundColor = new BABYLON.Color3(0.2, 0.2, 0.25);
         
-        // Key light (front-left)
-        const keyLight = new BABYLON.PointLight('keyLight', new BABYLON.Vector3(-100, 150, 100), this.scene);
-        keyLight.intensity = 1.2;
-        keyLight.diffuse = new BABYLON.Color3(1, 0.98, 0.95);
+        // Key light (Spotlight with shadows)
+        const keyLight = new BABYLON.SpotLight("keyLight", 
+            new BABYLON.Vector3(-80, 150, 80), 
+            new BABYLON.Vector3(0.5, -1, -0.5), 
+            Math.PI / 2, 2, this.scene);
+        keyLight.intensity = config.pbr ? 2000 : 1.2; // PBR needs higher intensity
+        keyLight.diffuse = new BABYLON.Color3(1, 0.95, 0.9);
         
-        // Fill light (front-right)
-        const fillLight = new BABYLON.PointLight('fillLight', new BABYLON.Vector3(100, 100, 100), this.scene);
-        fillLight.intensity = 0.6;
-        fillLight.diffuse = new BABYLON.Color3(0.9, 0.92, 1);
+        // Shadows
+        if (config.shadows) {
+            const shadowGenerator = new BABYLON.ShadowGenerator(config.shadowMapSize || 1024, keyLight);
+            shadowGenerator.useBlurExponentialShadowMap = true;
+            shadowGenerator.blurKernel = 32;
+            // Note: Meshes need to be added to shadowGenerator.getShadowMap().renderList
+            this.shadowGenerator = shadowGenerator;
+        }
         
-        // Back rim light
-        const rimLight = new BABYLON.PointLight('rimLight', new BABYLON.Vector3(0, 80, -120), this.scene);
-        rimLight.intensity = 0.4;
+        // Fill light (Point)
+        const fillLight = new BABYLON.PointLight('fillLight', new BABYLON.Vector3(100, 80, 50), this.scene);
+        fillLight.intensity = config.pbr ? 800 : 0.5;
+        fillLight.diffuse = new BABYLON.Color3(0.8, 0.85, 1);
+        
+        // Rim light (Point)
+        const rimLight = new BABYLON.PointLight('rimLight', new BABYLON.Vector3(0, 100, -100), this.scene);
+        rimLight.intensity = config.pbr ? 1000 : 0.4;
         rimLight.diffuse = new BABYLON.Color3(0.7, 0.8, 1);
-        
-        // Top light
-        const topLight = new BABYLON.PointLight('topLight', new BABYLON.Vector3(0, 200, 0), this.scene);
-        topLight.intensity = 0.5;
+
+        // Post-Processing Pipeline
+        if (config.postProcessing) {
+            const pipeline = new BABYLON.DefaultRenderingPipeline(
+                "GemBotPipeline", 
+                true, // HDR
+                this.scene, 
+                this.scene.cameras
+            );
+            
+            // Bloom (Glow)
+            if (config.bloom) {
+                pipeline.bloomEnabled = true;
+                pipeline.bloomThreshold = 0.7;
+                pipeline.bloomWeight = 0.4;
+                pipeline.bloomKernel = 64;
+                pipeline.bloomScale = 0.5;
+            }
+            
+            // FXAA (Anti-aliasing)
+            if (config.fxaa) {
+                pipeline.fxaaEnabled = true;
+            }
+            
+            // Image Processing
+            pipeline.imageProcessingEnabled = true;
+            pipeline.imageProcessing.contrast = 1.1;
+            pipeline.imageProcessing.exposure = 1.0;
+            
+            // Sharpening
+            if (config.resolutionScale > 1.0) {
+                pipeline.sharpenEnabled = true;
+                pipeline.sharpen.edgeAmount = 0.2;
+            }
+        }
     }
     
     /**
