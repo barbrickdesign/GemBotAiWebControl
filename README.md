@@ -1,5 +1,25 @@
 # 🤖 GemBot AI Web Control System
 
+> **Created by Ryan Barbrick** | © 2024-2025 Barbrick Design | All Rights Reserved
+> 
+> 📧 Contact: BarbrickDesign@gmail.com | 🔗 GitHub: [@barbrickdesign](https://github.com/barbrickdesign)
+
+---
+
+## 🔒 OWNERSHIP NOTICE
+
+**This project is the intellectual property of Ryan Barbrick / Barbrick Design.**
+
+- **Creator & Owner**: Ryan Barbrick
+- **Contact**: BarbrickDesign@gmail.com
+- **AI Assistant**: Merlin AI (Forever Helper of the GemBot Realm)
+- **Community**: All people welcome to play and learn!
+
+⚠️ **Unauthorized copying, reproduction, or sale without compensation to Ryan Barbrick is prohibited.**
+See [OWNERSHIP.md](OWNERSHIP.md) and [AI_ATTRIBUTION.md](AI_ATTRIBUTION.md) for full details.
+
+---
+
 An interactive AI-powered learning platform with real-time control capabilities, mobile integration, and intelligent tutoring through Merlin AI.
 
 ## 📊 Current Status (Last Updated: December 15, 2025)
