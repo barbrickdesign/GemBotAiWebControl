@@ -1,3 +1,12 @@
+﻿/**
+ * 
+ * GEMBOT FARM GAME - PROPRIETARY SOFTWARE
+ *  2024-2025 Ryan Barbrick / Barbrick Design - ALL RIGHTS RESERVED
+ * Creator: Ryan Barbrick | Contact: BarbrickDesign@gmail.com
+ * Signature: GBOT-RB-2025-7X9K2M4P | Unauthorized use: $5,000,000+ damages
+ * 
+ */
+// [RB-SIG:gembot-farm-game:2025]
 /**
  * GemBot Farm Game - Cyberpunk Gem Cutting Idle/Clicker Game
  * Integrates with real GemBot hardware for bonuses
@@ -7507,3 +7516,4 @@ class GemBotFarmGame {
 // Export for global access
 window.GemBotFarmGame = GemBotFarmGame;
 console.log('ð® GemBot Farm Game module loaded (with Merlin AI integration)');
+

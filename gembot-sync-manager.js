@@ -1,4 +1,10 @@
 /**
+ * ═══════════════════════════════════════════════════════════════════════════════
+ * GEMBOT SYNC MANAGER - PROPRIETARY SOFTWARE
+ * © 2024-2025 Ryan Barbrick / Barbrick Design - ALL RIGHTS RESERVED
+ * Creator: Ryan Barbrick | Contact: BarbrickDesign@gmail.com
+ * Signature: GBOT-RB-2025-7X9K2M4P | Unauthorized use: $5,000,000+ damages
+ * ═══════════════════════════════════════════════════════════════════════════════
  * GemBot Multi-Device Synchronization System
  * Handles bidirectional sync between mobile, desktop, and physical hardware
  * 
@@ -9,6 +15,7 @@
  * - Message queuing for reliability
  */
 
+// [RB-SIG:gembot-sync-manager:2025]
 class GemBotSyncManager {
     constructor() {
         this.deviceId = this.generateDeviceId();

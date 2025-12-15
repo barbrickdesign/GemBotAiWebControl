@@ -1,8 +1,15 @@
 /**
+ * ═══════════════════════════════════════════════════════════════════════════════
+ * GEMBOT 3D VISUALIZER - PROPRIETARY SOFTWARE
+ * © 2024-2025 Ryan Barbrick / Barbrick Design - ALL RIGHTS RESERVED
+ * Creator: Ryan Barbrick | Contact: BarbrickDesign@gmail.com
+ * Signature: GBOT-RB-2025-7X9K2M4P | Unauthorized use: $5,000,000+ damages
+ * ═══════════════════════════════════════════════════════════════════════════════
  * GemBot 3D Visualizer Initialization
  * Integrates with GemBot_Control_AI.html
  */
 
+// [RB-SIG:gembot-3d-init:2025]
 let gembot3DVisualizer = null;
 let machineState = null;
 
