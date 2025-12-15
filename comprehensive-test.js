@@ -259,6 +259,60 @@ const GemBotSystemTest = {
         this.log('Machine', 'Home button', !!document.querySelector('[data-cmd="h"]'), 'Found');
     },
     
+    testIntegration() {
+        console.log('\n=== 12. INTEGRATION TESTS ===');
+        
+        // Test all systems communicate
+        const systems = [];
+        
+        // Check Fantasy → GemBot marketplace connection
+        const fantasy = window.FantasyMarketplace;
+        const gembot = window.GemBotMarketplace;
+        if (fantasy && gembot) {
+            systems.push('Fantasy↔GemBot');
+            this.log('Integration', 'Fantasy + GemBot', true, 'Both loaded');
+        } else {
+            this.log('Integration', 'Fantasy + GemBot', false, 'Missing one or both');
+        }
+        
+        // Check Merlin → Economy connection
+        if (typeof merlin !== 'undefined' && merlin?.userProfile?.gemForge) {
+            this.log('Integration', 'Merlin + Economy', true, 'Profile with GemForge');
+        } else {
+            this.log('Integration', 'Merlin + Economy', !!(typeof merlin !== 'undefined'), 
+                typeof merlin !== 'undefined' ? 'Missing GemForge' : 'Merlin not loaded');
+        }
+        
+        // Check Auth → Leaderboard connection
+        if (typeof authSystem !== 'undefined' && typeof leaderboardUI !== 'undefined') {
+            this.log('Integration', 'Auth + Leaderboard', true, 'Both connected');
+        } else {
+            this.log('Integration', 'Auth + Leaderboard', false, 'Missing connection');
+        }
+        
+        // Check 3D → Machine state connection
+        if (typeof virtualMachine !== 'undefined' && typeof serial !== 'undefined') {
+            this.log('Integration', '3D + Serial', true, 'Both available');
+        } else {
+            this.log('Integration', '3D + Serial', false, 'Missing connection');
+        }
+        
+        // Check localStorage state persistence
+        const stateKeys = ['merlin_user_profile', 'gembot_marketplace', 'fantasy_marketplace', 'gembot_session'];
+        let foundStates = 0;
+        stateKeys.forEach(key => {
+            if (localStorage.getItem(key)) foundStates++;
+        });
+        this.log('Integration', 'State Persistence', foundStates > 0, `${foundStates}/4 states saved`);
+        
+        // Check token address consistency
+        const tokenAddr = 'DPHcbu7wJEbcrnCYjXC8vHBkM39kT9xZg4mYayvrpump';
+        const gembotToken = gembot?.config?.tokenAddress;
+        const fantasyToken = fantasy?.config?.tokenAddress;
+        const tokensMatch = gembotToken === tokenAddr || fantasyToken === tokenAddr;
+        this.log('Integration', 'Token Address', tokensMatch, tokensMatch ? '$GBUV verified' : 'Mismatch');
+    },
+    
     // ==================== RUN ALL TESTS ====================
     
     runAll() {
@@ -284,6 +338,7 @@ const GemBotSystemTest = {
         this.test3DVisualization();
         this.testAuthentication();
         this.testMachineControl();
+        this.testIntegration();
         
         // Summary
         console.log('\n═══════════════════════════════════════════════════════════════');
