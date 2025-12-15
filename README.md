@@ -2,6 +2,37 @@
 
 An interactive AI-powered learning platform with real-time control capabilities, mobile integration, and intelligent tutoring through Merlin AI.
 
+## 📊 Current Status (Last Updated: December 15, 2025)
+
+### ✅ Working Features
+| Feature | Status | Notes |
+|---------|--------|-------|
+| Page Load | ✅ Working | Site loads correctly |
+| Authentication UI | ✅ Working | Login/Register tabs, overlay hides after auth |
+| Merlin AI Responses | ✅ Working | AI chat and responses functional |
+| 3D Visualization | ✅ Working | Babylon.js virtual machine renders |
+| Mobile Detection | ✅ Working | Lightweight mode on mobile devices |
+| QR Code Generation | ✅ Working | For mobile device connection |
+| Local Storage | ✅ Working | Saves user progress and settings |
+| Game Integration | ✅ Working | Optional enhancement module |
+| Console Logging | ✅ Working | Debug output visible in F12 console |
+
+### ⚠️ Known Issues / In Progress
+| Feature | Status | Notes |
+|---------|--------|-------|
+| Firebase Auth | ⚠️ Limited | Falls back to localStorage when Firebase unavailable |
+| Multi-device Sync | ⚠️ Optional | Requires server setup for full functionality |
+| Farm Game | ⚠️ Optional | Enhanced features load when available |
+
+### 🔧 Recent Fixes (December 15, 2025)
+- Fixed auth overlay not hiding after login/register
+- Removed critical syntax errors (duplicate orphaned methods)
+- Simplified script loading (removed Three.js, require shim)
+- Fixed game integration timing (waits for page load)
+- Removed unnecessary error banners for optional modules
+
+---
+
 ## ✨ Features
 
 ### 🎓 Intelligent Learning System
@@ -160,210 +191,41 @@ MIT - Free for personal and commercial use
 
 **Built with ❤️ by barbrickdesign**  
 [GitHub](https://github.com/barbrickdesign/GemBotAiWebControl)
-- Original working version (keep as backup)
-- Use for comparison if needed
-
-### Documentation
-- **QUICK_REFERENCE.md** ⭐ Start here for quick answers
-- **COMPARISON_AND_FIXES.md** - Detailed before/after comparison
-- **MIGRATION_SUMMARY.md** - Executive overview
-- **ENHANCEMENTS_EXPLAINED.md** - Feature comparison with code examples
-- **DETAILED_CHANGES.md** - Line-by-line changes
-- **INDEX.md** - Navigation guide for all documentation
 
 ---
 
-## 🚀 Quick Start
+## 📝 Changelog
 
-### Step 1: Understand What Changed
-Read **QUICK_REFERENCE.md** (5 min read)
+### December 15, 2025
+- Fixed authentication UI overlay persistence issue
+- Removed Three.js and Node.js require() shim (not needed)
+- Fixed game integration module timing
+- Removed critical error banners for optional modules
+- Cleaned up duplicate code blocks causing syntax errors
 
-### Step 2: Upload to Arduino
-1. Open `GemBotArduinoMemoryUpgrade2025_copy_20251201233437.ino`
-2. Select your Arduino board
-3. Click Upload ✓
-
-### Step 3: Test Everything
-1. Verify motor movements (X, Y, P axes)
-2. Test limit switches
-3. Run calibration
-4. Verify display and menu work
-
-### Step 4: You're Done!
-Machine is ready with enhanced firmware and bug fixes.
+### December 7, 2025
+- Added AI enhancement features
+- Improved mobile UI responsiveness
+- Fixed button behavior issues
 
 ---
 
-## 🎯 Key Improvements
+## 🔧 Troubleshooting
 
-### The Critical Fix
-**Motor Shield Configuration** was completely wrong in MemoryUpgrade2025:
-- Y-axis was on wrong shield (could damage it)
-- P-axis was on wrong port (wouldn't respond)
-- This has been corrected
+### Page Not Loading?
+1. Check browser console (F12) for errors
+2. Clear browser cache and reload
+3. Check that all JS files exist on server
 
-### The Enhancements You Keep
-- Better switch responsiveness (200ms debounce)
-- WiFi support (optional, doesn't break anything)
-- Nextion display integration
-- Professional monitoring features
-- Cloud-ready architecture
+### Auth Not Working?
+1. Firebase may be blocked by CSP - uses localStorage fallback
+2. Check that overlay hides after clicking Login/Register
 
----
-
-## 📋 Documentation Guide
-
-| Document | Best For | Read Time |
-|----------|----------|-----------|
-| **QUICK_REFERENCE.md** | Quick answers & troubleshooting | 5 min |
-| **COMPARISON_AND_FIXES.md** | Understanding what was fixed | 10 min |
-| **MIGRATION_SUMMARY.md** | Complete overview | 15 min |
-| **ENHANCEMENTS_EXPLAINED.md** | Learning about new features | 15 min |
-| **DETAILED_CHANGES.md** | Code-level changes | 20 min |
-| **INDEX.md** | Navigation & organization | 5 min |
+### Modules Not Found Warnings?
+- These are informational only - optional features
+- Core functionality works without them
 
 ---
 
-## ❓ Common Questions
-
-**Q: Is the fixed version safe?**
-A: Yes! The motor shield fix is essential. Use the fixed version.
-
-**Q: Do I need to implement WiFi?**
-A: No, it's optional. Machine works perfectly without it.
-
-**Q: What about state persistence?**
-A: Currently disabled (stubs). Safe to leave off for now.
-
-**Q: Can I go back to WorkingMini2025?**
-A: You could, but don't - it has the motor config error.
-
-**Q: Will everything work the same?**
-A: Yes! Plus extra enhancements and better stability.
-
----
-
-## ✨ What's Better
-
-| Feature | Before | After |
-|---------|--------|-------|
-| Motor Config | ❌ BROKEN | ✅ FIXED |
-| Compilation | ❌ Errors | ✅ Clean |
-| Switch Response | 50ms | 200ms ⚡ |
-| Code Quality | Good | Professional |
-| Future Features | No | Ready |
-
----
-
-## 📝 File Summary
-
-### Original Files
-- WorkingMini2025.ino (3,028 lines) - Working but can't use enhancements
-- MemoryUpgrade2025.ino - Has enhancements but broken motor config
-
-### Fixed File
-- **GemBotArduinoMemoryUpgrade2025_copy_20251201233437.ino** (1,458 lines)
-  - All fixes applied ✅
-  - All enhancements retained ✅
-  - Production ready ✅
-
-### Documentation
-- 6 comprehensive guides covering all aspects of the migration
-
----
-
-## 🎓 What You're Getting
-
-✅ **Working Motor Control** - Correct power supply to all motors
-✅ **Better Reliability** - Improved debounce prevents false triggers
-✅ **Proven Functionality** - All features from WorkingMini2025
-✅ **Enhanced Features** - WiFi, monitoring, display integration
-✅ **Professional Code** - Clean, organized, maintainable
-✅ **Complete Documentation** - Everything explained
-✅ **Future Ready** - Structure for new features
-✅ **Production Quality** - Thoroughly tested and verified
-
----
-
-## 🔧 Next Steps
-
-### Immediate
-1. ✅ Read QUICK_REFERENCE.md
-2. ✅ Upload fixed file to Arduino
-3. ✅ Test motors and switches
-4. ✅ Run calibration
-
-### This Week
-1. Test in actual operation
-2. Verify all features work
-3. Monitor performance
-4. Check for edge cases
-
-### Optional (Future)
-1. Implement state persistence
-2. Configure WiFi for your network
-3. Set up remote monitoring
-4. Add custom features
-
----
-
-## 📞 Need Help?
-
-### Motor Issues
-→ See QUICK_REFERENCE.md "Testing Motor Configuration" section
-
-### Display Issues  
-→ Check I2C/Serial1 connections
-→ See QUICK_REFERENCE.md troubleshooting
-
-### Compilation Issues
-→ Install required Arduino libraries
-→ See DETAILED_CHANGES.md "Compilation Status"
-
-### Understanding Changes
-→ Start with COMPARISON_AND_FIXES.md
-→ Then ENHANCEMENTS_EXPLAINED.md
-
----
-
-## ✅ Status: COMPLETE AND READY
-
-Everything is done. The fixed MemoryUpgrade2025 is ready for:
-- ✅ Immediate upload
-- ✅ Full testing
-- ✅ Production deployment
-- ✅ Future enhancement
-
-**Recommendation**: Use this version as your primary firmware.
-
----
-
-## 📚 Documentation Files Included
-
-1. **README.md** (this file) - Quick overview
-2. **QUICK_REFERENCE.md** - Quick answers ⭐
-3. **COMPARISON_AND_FIXES.md** - Detailed comparison
-4. **MIGRATION_SUMMARY.md** - Complete summary
-5. **ENHANCEMENTS_EXPLAINED.md** - Feature details
-6. **DETAILED_CHANGES.md** - Code changes
-7. **INDEX.md** - Navigation guide
-
----
-
-## 🎉 Summary
-
-Your GemBot Arduino firmware migration is complete!
-
-- **What Was Wrong**: Motor shield misconfiguration
-- **What We Fixed**: Critical bug + cleaned up code
-- **What We Kept**: All enhancements from memory upgrade
-- **Result**: Professional-grade, production-ready firmware
-
-**Status**: ✅ READY FOR DEPLOYMENT
-
----
-
-**Project**: GemBot Automated Gemstone Faceting Machine
-**Completed**: December 1, 2025
-**Quality**: ✅ Production Ready
+**Live Demo**: https://barbrickdesign.github.io/GemBotAiWebControl/GemBot_Control_AI.html
 
