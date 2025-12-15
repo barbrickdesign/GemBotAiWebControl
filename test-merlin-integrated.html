@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Merlin AI Card - Integrated Reference Design Test</title>
+    <link rel="stylesheet" href="./merlin-3d-card-integrated.css">
+    <style>
+        body {
+            background: 
+                radial-gradient(ellipse at 30% 20%, rgba(25, 25, 50, 0.3) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 80%, rgba(30, 20, 40, 0.2) 0%, transparent 60%),
+                linear-gradient(180deg, #0a0a0f 0%, #151520 30%, #1a1a25 70%, #0f0f1a 100%);
+            min-height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        /* Distant stars */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(1px 1px at 80px 120px, rgba(255, 255, 255, 0.4), transparent),
+                radial-gradient(1px 1px at 300px 80px, rgba(255, 255, 255, 0.3), transparent),
+                radial-gradient(1px 1px at 180px 220px, rgba(255, 255, 255, 0.3), transparent),
+                radial-gradient(1px 1px at 450px 150px, rgba(255, 255, 255, 0.2), transparent),
+                radial-gradient(1px 1px at 50px 300px, rgba(255, 255, 255, 0.3), transparent),
+                radial-gradient(1px 1px at 400px 280px, rgba(255, 255, 255, 0.2), transparent);
+            background-repeat: no-repeat;
+            animation: distant-twinkle 8s ease-in-out infinite alternate;
+            z-index: -2;
+            opacity: 0.6;
+        }
+        
+        @keyframes distant-twinkle {
+            0% { opacity: 0.4; }
+            100% { opacity: 0.8; }
+        }
+        
+        .test-controls {
+            position: fixed;
+            left: 20px;
+            top: 20px;
+            background: rgba(20, 20, 30, 0.9);
+            border: 1px solid rgba(147, 51, 234, 0.5);
+            border-radius: 15px;
+            padding: 20px;
+            color: white;
+            max-width: 280px;
+            backdrop-filter: blur(10px);
+            z-index: 9999;
+        }
+        
+        .test-controls h2 {
+            margin: 0 0 15px 0;
+            color: #a855f7;
+            font-size: 1.2em;
+        }
+        
+        .control-group {
+            margin-bottom: 15px;
+        }
+        
+        .control-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .control-group input,
+        .control-group select {
+            width: 100%;
+            padding: 8px;
+            border-radius: 8px;
+            border: 1px solid rgba(147, 51, 234, 0.5);
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            font-size: 0.9em;
+        }
+        
+        .control-group button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border-radius: 8px;
+            border: 1px solid rgba(147, 51, 234, 0.5);
+            background: rgba(147, 51, 234, 0.4);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .control-group button:hover {
+            background: rgba(147, 51, 234, 0.7);
+            box-shadow: 0 0 15px rgba(147, 51, 234, 0.6);
+            transform: translateY(-2px);
+        }
+        
+        .slider-value {
+            display: inline-block;
+            margin-left: 10px;
+            color: #a855f7;
+            font-weight: bold;
+        }
+        
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            height: 6px;
+            background: rgba(147, 51, 234, 0.3);
+            border-radius: 3px;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #a855f7;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        
+        input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: #a855f7;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .demo-info {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(59, 130, 246, 0.2);
+            border-left: 3px solid #3b82f6;
+            border-radius: 8px;
+            font-size: 0.85em;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-controls">
+        <h2>🧙 Merlin Test Controls</h2>
+        
+        <div class="control-group">
+            <label>Username</label>
+            <input type="text" id="username" value="GemBot Master" placeholder="Enter username">
+        </div>
+        
+        <div class="control-group">
+            <label>Level</label>
+            <input type="number" id="level" value="7" min="1" max="100">
+        </div>
+        
+        <div class="control-group">
+            <label>Current XP</label>
+            <input type="number" id="currentXP" value="1850" min="0" max="10000">
+        </div>
+        
+        <div class="control-group">
+            <label>Max XP</label>
+            <input type="number" id="maxXP" value="2500" min="100" max="10000">
+        </div>
+        
+        <div class="control-group">
+            <button onclick="updateLevelTest()">Update Level</button>
+        </div>
+        
+        <hr style="border-color: rgba(147, 51, 234, 0.3); margin: 15px 0;">
+        
+        <div class="control-group">
+            <label>Heart Progress <span class="slider-value" id="heartValue">65%</span></label>
+            <input type="range" id="heartProgress" min="0" max="100" value="65" oninput="updateProgressTest()">
+        </div>
+        
+        <div class="control-group">
+            <label>Star Progress <span class="slider-value" id="starValue">80%</span></label>
+            <input type="range" id="starProgress" min="0" max="100" value="80" oninput="updateProgressTest()">
+        </div>
+        
+        <hr style="border-color: rgba(147, 51, 234, 0.3); margin: 15px 0;">
+        
+        <div class="control-group">
+            <label>Gemstone Color</label>
+            <select id="gemColor" onchange="updateGemTest()">
+                <option value="magic">Magic (Purple)</option>
+                <option value="success">Success (Green)</option>
+                <option value="error">Error (Red)</option>
+                <option value="thinking">Thinking (Blue)</option>
+                <option value="question">Question (Amber)</option>
+                <option value="#ff1493">Custom (Pink)</option>
+            </select>
+        </div>
+        
+        <div class="control-group">
+            <button onclick="animateWizardTest()">Animate Wizard</button>
+            <button onclick="createParticlesTest()">Magic Particles</button>
+        </div>
+        
+        <hr style="border-color: rgba(147, 51, 234, 0.3); margin: 15px 0;">
+        
+        <div class="control-group">
+            <button onclick="testGuidance()" style="background: rgba(168, 85, 247, 0.5);">
+                🧙 Test Contextual Guide
+            </button>
+        </div>
+        
+        <div class="demo-info">
+            <strong>💡 Tip:</strong> Drag the gemstone around! The wizard follows your mouse for tilt effects.
+        </div>
+    </div>
+
+    <script src="./merlin-3d-card-integrated.js"></script>
+    <script>
+        // Wait for card to initialize
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                // Run demo after 2.5 seconds
+                console.log('[Test] Running demo sequence...');
+                updateLevelTest();
+                updateProgressTest();
+                updateGemTest();
+                
+                // Auto-animate every 10 seconds
+                setInterval(() => {
+                    if (window.MerlinCardIntegrated) {
+                        MerlinCardIntegrated.animateWizard({ 
+                            intensity: 2, 
+                            color: getRandomColor() 
+                        });
+                    }
+                }, 10000);
+            }, 2500);
+        });
+        
+        function updateLevelTest() {
+            if (!window.MerlinCardIntegrated) {
+                alert('Merlin Card not initialized yet!');
+                return;
+            }
+            
+            const username = document.getElementById('username').value;
+            const level = parseInt(document.getElementById('level').value);
+            const currentXP = parseInt(document.getElementById('currentXP').value);
+            const maxXP = parseInt(document.getElementById('maxXP').value);
+            
+            MerlinCardIntegrated.updateLevel(level, currentXP, maxXP, username);
+            console.log(`[Test] Level updated: ${username} - Lv${level}, ${currentXP}/${maxXP} XP`);
+        }
+        
+        function updateProgressTest() {
+            if (!window.MerlinCardIntegrated) return;
+            
+            const heart = parseInt(document.getElementById('heartProgress').value);
+            const star = parseInt(document.getElementById('starProgress').value);
+            
+            document.getElementById('heartValue').textContent = heart + '%';
+            document.getElementById('starValue').textContent = star + '%';
+            
+            MerlinCardIntegrated.updateProgress(heart, star);
+            console.log(`[Test] Progress updated: ❤️${heart}% ⭐${star}%`);
+        }
+        
+        function updateGemTest() {
+            if (!window.MerlinCardIntegrated) return;
+            
+            const color = document.getElementById('gemColor').value;
+            MerlinCardIntegrated.updateGemstoneColor(color);
+            console.log(`[Test] Gemstone color: ${color}`);
+        }
+        
+        function animateWizardTest() {
+            if (!window.MerlinCardIntegrated) return;
+            
+            MerlinCardIntegrated.animateWizard({
+                pointTo: { x: 0.5, y: 0.6 },
+                intensity: 2,
+                color: document.getElementById('gemColor').value.startsWith('#') 
+                    ? document.getElementById('gemColor').value 
+                    : null
+            });
+            console.log('[Test] Wizard animated!');
+        }
+        
+        function createParticlesTest() {
+            if (!window.MerlinCardIntegrated) return;
+            
+            const color = document.getElementById('gemColor').value;
+            MerlinCardIntegrated.createMagicParticles(
+                18, 
+                color.startsWith('#') ? color : null
+            );
+            console.log('[Test] Magic particles created!');
+        }
+        
+        // Test contextual guidance
+        function testGuidance() {
+            if (!window.MerlinCardIntegrated) return;
+            
+            const examples = [
+                'How do I plant gems?',
+                'I want to craft something',
+                'Can you help me trade?',
+                'Where is the marketplace?',
+                'I need to repair my items'
+            ];
+            
+            const msg = examples[Math.floor(Math.random() * examples.length)];
+            MerlinCardIntegrated.addMessage('user', msg);
+            MerlinCardIntegrated.analyzeAndGuide(msg);
+        }
+        
+        function getRandomColor() {
+            const colors = ['#a855f7', '#10b981', '#ef4444', '#3b82f6', '#f59e0b'];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+        
+        // Auto-update progress display
+        document.getElementById('heartProgress').addEventListener('input', (e) => {
+            document.getElementById('heartValue').textContent = e.target.value + '%';
+        });
+        
+        document.getElementById('starProgress').addEventListener('input', (e) => {
+            document.getElementById('starValue').textContent = e.target.value + '%';
+        });
+    </script>
+</body>
+</html>
