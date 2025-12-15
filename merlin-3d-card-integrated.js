@@ -183,20 +183,20 @@ class MerlinAICardIntegrated {
                             
                             <!-- Control Panel Grid -->
                             <div class="control-panel-grid">
-                                <!-- Farm Controls -->
+                                <!-- Gem Bot Farm Controls -->
                                 <div class="control-section">
-                                    <h3>🌾 Farm</h3>
-                                    <button class="control-btn" data-action="plant" id="btn-plant">
-                                        <span class="btn-icon">🌱</span>
-                                        <span class="btn-label">Plant Gems</span>
+                                    <h3>🤖 Gem Bot Farm</h3>
+                                    <button class="control-btn" data-action="deploy" id="btn-deploy">
+                                        <span class="btn-icon">🚀</span>
+                                        <span class="btn-label">Deploy Machine</span>
                                     </button>
-                                    <button class="control-btn" data-action="harvest" id="btn-harvest">
-                                        <span class="btn-icon">💎</span>
-                                        <span class="btn-label">Harvest</span>
+                                    <button class="control-btn" data-action="monitor" id="btn-monitor">
+                                        <span class="btn-icon">📊</span>
+                                        <span class="btn-label">Monitor Production</span>
                                     </button>
-                                    <button class="control-btn" data-action="upgrade-farm" id="btn-upgrade-farm">
-                                        <span class="btn-icon">⬆️</span>
-                                        <span class="btn-label">Upgrade Farm</span>
+                                    <button class="control-btn" data-action="upgrade-automation" id="btn-upgrade-automation">
+                                        <span class="btn-icon">⚡</span>
+                                        <span class="btn-label">Upgrade Automation</span>
                                     </button>
                                 </div>
                                 
@@ -443,16 +443,30 @@ class MerlinAICardIntegrated {
         ctx.fillStyle = grd;
         ctx.fillRect(0, 0, w, h);
 
-        // Draw wizard portrait with tilt
-        const scale = 1.02 + Math.abs(this.canvasState.tiltX + this.canvasState.tiltY) * 0.002;
-        const drawW = w * 0.95 * scale;
-        const drawH = h * 0.95 * scale;
-        const offsetX = this.canvasState.tiltY * 6;
-        const offsetY = this.canvasState.tiltX * 6 + this.canvasState.bob;
+        // Draw wizard portrait with tilt (contain within canvas)
+        const scale = 1.0 + Math.abs(this.canvasState.tiltX + this.canvasState.tiltY) * 0.002;
+        
+        // Calculate aspect ratio and fit within canvas
+        const imgAspect = this.canvasState.img.width / this.canvasState.img.height;
+        const canvasAspect = w / h;
+        
+        let drawW, drawH;
+        if (imgAspect > canvasAspect) {
+            // Image is wider - fit to width
+            drawW = w * 0.85 * scale;
+            drawH = drawW / imgAspect;
+        } else {
+            // Image is taller - fit to height
+            drawH = h * 0.85 * scale;
+            drawW = drawH * imgAspect;
+        }
+        
+        const offsetX = this.canvasState.tiltY * 4;
+        const offsetY = this.canvasState.tiltX * 4 + this.canvasState.bob;
 
         ctx.save();
         ctx.translate(cx + offsetX, cy + offsetY);
-        ctx.rotate(this.canvasState.tiltY * 0.02);
+        ctx.rotate(this.canvasState.tiltY * 0.015);
         ctx.drawImage(this.canvasState.img, -drawW / 2, -drawH / 2, drawW, drawH);
         ctx.restore();
 
@@ -814,13 +828,17 @@ class MerlinAICardIntegrated {
     analyzeAndGuide(userMessage) {
         const msg = userMessage.toLowerCase();
         
-        // Farm keywords
-        if (msg.includes('plant') || msg.includes('grow') || msg.includes('seed')) {
-            this.guideToControl('plant', '🌱 Press "Plant Gems" to start growing your gem farm!');
+        // Gem Bot Farm keywords (automated cutting machines)
+        if (msg.includes('deploy') || (msg.includes('add') && msg.includes('machine')) || (msg.includes('new') && msg.includes('bot'))) {
+            this.guideToControl('deploy', '🚀 Press "Deploy Machine" to add a new Gem Bot!');
             return true;
         }
-        if (msg.includes('harvest') || msg.includes('collect') || msg.includes('pick')) {
-            this.guideToControl('harvest', '💎 Press "Harvest" to collect your mature gems!');
+        if (msg.includes('monitor') || msg.includes('production') || msg.includes('output') || msg.includes('status')) {
+            this.guideToControl('monitor', '📊 Press "Monitor Production" to track your farm!');
+            return true;
+        }
+        if (msg.includes('automat') || msg.includes('efficiency') || (msg.includes('upgrade') && msg.includes('speed'))) {
+            this.guideToControl('upgrade-automation', '⚡ Press "Upgrade Automation" to boost efficiency!');
             return true;
         }
         
