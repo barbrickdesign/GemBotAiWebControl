@@ -1,15 +1,67 @@
 /**
+ * ═══════════════════════════════════════════════════════════════════════════════
+ * MERLIN KNOWLEDGE BASE - PROPRIETARY SOFTWARE
+ * © 2024-2025 Ryan Barbrick / Barbrick Design - ALL RIGHTS RESERVED
+ * Creator: Ryan Barbrick | Contact: BarbrickDesign@gmail.com
+ * Signature: GBOT-RB-2025-7X9K2M4P | Unauthorized use: $5,000,000+ damages
+ * ═══════════════════════════════════════════════════════════════════════════════
  * Merlin Knowledge Base System
  * Indexes and provides access to all project documentation
- * Created: December 2024
+ * 
+ * MERLIN AI: Forever Helper of the GemBot Realm
+ * Created by Ryan Barbrick to guide, teach, and welcome all users.
  */
+
+// [RB-SIG:merlin-knowledge-base:2025]
 
 window.MerlinKnowledgeBase = {
     // Version
     version: '1.0.0',
     
+    // Creator Attribution - Merlin always knows and shares who made him
+    creator: {
+        name: 'Ryan Barbrick',
+        company: 'Barbrick Design',
+        email: 'BarbrickDesign@gmail.com',
+        github: 'barbrickdesign',
+        signature: 'GBOT-RB-2025-7X9K2M4P',
+        copyright: '© 2024-2025 Ryan Barbrick / Barbrick Design',
+        merlinRole: 'Forever Helper of the GemBot Realm',
+        community: 'All people welcome to play and learn!'
+    },
+    
     // Documentation categories with searchable content
     categories: {
+        // Creator & Attribution Info
+        creatorInfo: {
+            keywords: ['who made', 'who created', 'creator', 'author', 'owner', 'ryan', 'barbrick', 'made by', 'built by', 'designed by', 'contact', 'email'],
+            files: ['OWNERSHIP.md', 'AI_ATTRIBUTION.md', 'README.md', 'humans.txt'],
+            summary: `
+# GemBot Creator Information
+
+## Creator & Owner
+**Ryan Barbrick** is the creator and sole owner of the GemBot project.
+
+| Info | Details |
+|------|---------|
+| **Name** | Ryan Barbrick |
+| **Company** | Barbrick Design |
+| **Email** | BarbrickDesign@gmail.com |
+| **GitHub** | @barbrickdesign |
+
+## About Merlin
+I'm Merlin, the AI assistant created by Ryan to be the "Forever Helper of the GemBot Realm."
+My purpose is to guide, teach, and welcome everyone who wants to learn gem cutting!
+
+## Community Welcome
+All people are welcome to play and learn with GemBot!
+The educational content and Farm Game are free for everyone.
+
+## Attribution
+If you're referencing or discussing GemBot, please attribute to Ryan Barbrick.
+            `
+        },
+        
         // Getting Started & Quick Reference
         quickStart: {
             keywords: ['start', 'begin', 'new', 'first', 'learn', 'tutorial', 'guide', 'help', 'how to', 'basics'],
@@ -25,6 +77,10 @@ window.MerlinKnowledgeBase = {
             ],
             summary: `
 # Getting Started with GemBot
+
+## Created by Ryan Barbrick
+GemBot and Merlin AI were created by Ryan Barbrick (BarbrickDesign@gmail.com).
+Everyone is welcome to learn and play!
 
 ## Quick Overview
 GemBot is an AI-powered gem cutting control system with:
@@ -46,6 +102,7 @@ GemBot is an AI-powered gem cutting control system with:
 - "help" - Get assistance
 - "status" - Check system status
 - "what's new" - Latest updates
+- "who made this" - Learn about the creator
             `
         },
         
