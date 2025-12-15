@@ -208,6 +208,7 @@
     <!-- Academy System & Panel Manager -->
     <script src="./gembot-academy.js"></script>
     <script src="./gembot-panel-manager.js"></script>
+    <script src="./gembot-3d-mirror.js"></script>
     <link rel="stylesheet" href="./gembot-academy.css">
     
     <!-- TensorFlow.js for ML Analysis (Desktop Only) -->
@@ -3099,8 +3100,9 @@
             left: 12px;
             top: 12px;
             width: 200px;
-            max-height: 300px;
+            max-height: calc(50% - 50px);
             overflow-y: auto;
+            z-index: 10;
         }
         
         .game-upgrades-panel {
@@ -3108,17 +3110,28 @@
             right: 12px;
             top: 12px;
             width: 200px;
-            max-height: 400px;
+            max-height: calc(60% - 50px);
             overflow-y: auto;
+            z-index: 10;
+        }
+        
+        .game-resources-panel {
+            position: absolute;
+            left: 12px;
+            top: auto;
+            bottom: 80px;
+            width: 200px;
+            z-index: 10;
         }
         
         .game-activity-panel {
             position: absolute;
             bottom: 12px;
-            left: 12px;
-            right: 12px;
+            left: 220px;
+            right: 220px;
             height: 60px;
             overflow: hidden;
+            z-index: 10;
         }
         
         .machines-list, .rooms-list, .upgrades-list {
@@ -3329,6 +3342,18 @@
         .rarity-uncommon { color: #00ff88; }
         .rarity-rare { color: #0088ff; }
         .rarity-legendary { color: #ff8800; }
+        
+        /* Academy Button Gradient */
+        .academy-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            color: white !important;
+            border: 1px solid rgba(102, 126, 234, 0.5) !important;
+        }
+        
+        .academy-gradient:hover {
+            background: linear-gradient(135deg, #7b93f5 0%, #8b5fc4 100%) !important;
+            box-shadow: 0 0 15px rgba(102, 126, 234, 0.4);
+        }
         
         .game-footer {
             display: flex;
@@ -3585,8 +3610,54 @@
             .stat-value { font-size: 14px; }
             .game-title h1 { font-size: 16px; }
             .game-subtitle { display: none; }
-            .game-machines-panel, .game-upgrades-panel { width: 150px; }
+            .game-machines-panel, .game-upgrades-panel { 
+                width: 140px;
+                max-height: calc(40% - 40px);
+            }
+            .game-machines-panel { left: 8px; top: 8px; }
+            .game-upgrades-panel { right: 8px; top: 8px; }
+            .game-resources-panel { 
+                left: 8px; 
+                bottom: 70px;
+                width: 140px;
+            }
+            .game-activity-panel {
+                left: 8px;
+                right: 8px;
+                height: 50px;
+            }
             .game-stat.xp-bar { width: 80px; }
+            .game-footer {
+                flex-wrap: wrap;
+                gap: 8px;
+                padding: 8px;
+            }
+            .game-footer .game-btn {
+                font-size: 11px;
+                padding: 6px 10px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .game-machines-panel, .game-upgrades-panel {
+                position: relative;
+                width: 100%;
+                max-height: none;
+                margin-bottom: 10px;
+            }
+            .game-resources-panel {
+                position: relative;
+                width: 100%;
+                margin-bottom: 10px;
+            }
+            .game-activity-panel {
+                position: relative;
+                width: 100%;
+            }
+            .game-hud {
+                flex-direction: column;
+                overflow-y: auto;
+            }
         }
 
         /* ==================== MACHINE INTERACTION PANEL STYLES ==================== */
