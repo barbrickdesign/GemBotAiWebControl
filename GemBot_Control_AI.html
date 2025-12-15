@@ -20888,6 +20888,16 @@ function spendGemCoins(amount, reason, details = {}) {
             console.log('🔐 Initializing authentication system...');
             const hasSession = authSystem.init();
             
+            // Auto-continue as guest after 3 seconds if auth overlay is still showing
+            // This ensures the app is usable even if user doesn't interact with auth
+            setTimeout(() => {
+                const overlay = document.getElementById('authOverlay');
+                if (overlay && overlay.style.display !== 'none' && !authSystem.currentUser) {
+                    console.log('⏳ Auto-continuing as guest for immediate access...');
+                    authSystem.continueAsGuest();
+                }
+            }, 3000);
+            
             setTimeout(() => {
                 // Setup voice before giving greeting
                 merlin.setupMerlinVoice();
