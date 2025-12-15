@@ -72,11 +72,55 @@ const MerlinAICard = {
                     
                     <!-- FRONT SIDE: Chat Interface -->
                     <div class="merlin-card-face merlin-card-front">
-                        <!-- Card Header -->
+                        <!-- User Info Header -->
+                        <div class="merlin-user-info">
+                            <span class="merlin-user-name" id="merlinUserName">Guest</span>
+                            <span class="merlin-user-level" id="merlinUserLevel">Lv 1</span>
+                        </div>
+                        
+                        <!-- Level XP Progress Bar -->
+                        <div class="level-xp-bar">
+                            <div class="level-section">
+                                <span class="level-number" id="merlinLevelNum">Lv 1</span>
+                            </div>
+                            <div class="xp-section">
+                                <div class="xp-fill" id="merlinXpFill" style="width: 0%"></div>
+                                <div class="xp-text">
+                                    <span class="xp-text-full" id="merlinXpFull">0 / 100 XP</span>
+                                    <span class="xp-text-short" id="merlinXpShort">0/100</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Card Header with Floating Wizard -->
                         <div class="merlin-card-header">
-                            <div class="merlin-avatar-animated" id="merlinAvatar">
-                                <div class="merlin-avatar-circle">🧙‍♂️</div>
-                                <div class="merlin-speaking-indicator"></div>
+                            <div class="merlin-wizard-container">
+                                <canvas id="merlinWizardCanvas" class="merlin-wizard-canvas"></canvas>
+                                <div class="merlin-avatar-animated floating-wizard" id="merlinAvatar">
+                                    <div class="merlin-avatar-circle">🧙‍♂️</div>
+                                    <div class="merlin-speaking-indicator"></div>
+                                    <!-- Glowing Gemstone -->
+                                    <div class="merlin-gemstone" id="merlinGemstone">
+                                        <svg viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+                                            <defs>
+                                                <filter id="gemGlow">
+                                                    <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+                                                    <feMerge>
+                                                        <feMergeNode in="coloredBlur"/>
+                                                        <feMergeNode in="SourceGraphic"/>
+                                                    </feMerge>
+                                                </filter>
+                                            </defs>
+                                            <polygon points="25,5 45,20 40,40 25,45 10,40 5,20" 
+                                                     fill="var(--gem-color, #8b5cf6)" 
+                                                     filter="url(#gemGlow)" 
+                                                     class="gem-shape"/>
+                                            <polygon points="25,5 35,15 25,25 15,15" 
+                                                     fill="rgba(255,255,255,0.4)" 
+                                                     class="gem-highlight"/>
+                                        </svg>
+                                    </div>
+                                </div>
                             </div>
                             <div class="merlin-card-title">
                                 <h3>Merlin AI</h3>
@@ -85,6 +129,22 @@ const MerlinAICard = {
                             <div class="merlin-card-controls">
                                 <button class="card-btn" onclick="MerlinAICard.minimize()" title="Minimize">_</button>
                                 <button class="card-btn" onclick="MerlinAICard.flip()" title="Settings">⚙️</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Progress Indicators (Heart and Star) -->
+                        <div class="merlin-progress-indicators">
+                            <div class="progress-indicator" id="merlinHeartProgress" title="In-Game Progress">
+                                <svg viewBox="0 0 24 24" fill="currentColor" class="progress-icon heart-icon">
+                                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                                </svg>
+                                <span class="progress-text" id="merlinHeartText">0%</span>
+                            </div>
+                            <div class="progress-indicator" id="merlinStarProgress" title="Academy Progress">
+                                <svg viewBox="0 0 24 24" fill="currentColor" class="progress-icon star-icon">
+                                    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                                </svg>
+                                <span class="progress-text" id="merlinStarText">0%</span>
                             </div>
                         </div>
                         
@@ -571,17 +631,244 @@ const MerlinAICard = {
                 console.error('Failed to load Merlin card state:', e);
             }
         }
+    },
+    
+    /**
+     * Update player level and XP
+     * @param {number} level - Player level
+     * @param {number} currentXP - Current XP amount
+     * @param {number} maxXP - Maximum XP for current level
+     * @param {string} username - Player name
+     */
+    updateLevel(level, currentXP, maxXP, username) {
+        // Update user name
+        const nameEl = document.getElementById('merlinUserName');
+        if (nameEl && username) nameEl.textContent = username;
+        
+        // Update level displays
+        const levelEl = document.getElementById('merlinUserLevel');
+        const levelNumEl = document.getElementById('merlinLevelNum');
+        if (levelEl) levelEl.textContent = `Lv ${level}`;
+        if (levelNumEl) levelNumEl.textContent = `Lv ${level}`;
+        
+        // Update XP bar
+        const xpFill = document.getElementById('merlinXpFill');
+        const xpFull = document.getElementById('merlinXpFull');
+        const xpShort = document.getElementById('merlinXpShort');
+        
+        const percentage = Math.min(100, (currentXP / maxXP) * 100);
+        
+        if (xpFill) {
+            xpFill.style.width = percentage + '%';
+            xpFill.classList.add('xp-animate');
+            setTimeout(() => xpFill.classList.remove('xp-animate'), 600);
+        }
+        
+        if (xpFull) xpFull.textContent = `${currentXP.toLocaleString()} / ${maxXP.toLocaleString()} XP`;
+        if (xpShort) {
+            const shortCurrent = currentXP >= 1000 ? (currentXP/1000).toFixed(1) + 'k' : currentXP;
+            const shortMax = maxXP >= 1000 ? (maxXP/1000).toFixed(1) + 'k' : maxXP;
+            xpShort.textContent = `${shortCurrent}/${shortMax}`;
+        }
+    },
+    
+    /**
+     * Update progress indicators (heart and star)
+     * @param {number} heartProgress - In-game progress percentage (0-100)
+     * @param {number} starProgress - Academy progress percentage (0-100)
+     */
+    updateProgress(heartProgress, starProgress) {
+        const heartEl = document.getElementById('merlinHeartProgress');
+        const heartText = document.getElementById('merlinHeartText');
+        const starEl = document.getElementById('merlinStarProgress');
+        const starText = document.getElementById('merlinStarText');
+        
+        if (heartEl && heartText) {
+            heartText.textContent = Math.round(heartProgress) + '%';
+            heartEl.style.setProperty('--progress', heartProgress + '%');
+            if (heartProgress > 75) heartEl.classList.add('glow-active');
+            else heartEl.classList.remove('glow-active');
+        }
+        
+        if (starEl && starText) {
+            starText.textContent = Math.round(starProgress) + '%';
+            starEl.style.setProperty('--progress', starProgress + '%');
+            if (starProgress > 75) starEl.classList.add('glow-active');
+            else starEl.classList.remove('glow-active');
+        }
+    },
+    
+    /**
+     * Update gemstone color based on context/mood
+     * @param {string} color - Hex color or context keyword (success, error, thinking, neutral)
+     */
+    updateGemstoneColor(context) {
+        const gemstone = document.getElementById('merlinGemstone');
+        if (!gemstone) return;
+        
+        let color;
+        switch(context) {
+            case 'success':
+            case 'happy':
+                color = '#10b981'; // Green
+                break;
+            case 'error':
+            case 'warning':
+                color = '#ef4444'; // Red
+                break;
+            case 'thinking':
+            case 'processing':
+                color = '#3b82f6'; // Blue
+                break;
+            case 'question':
+                color = '#f59e0b'; // Amber
+                break;
+            case 'magic':
+            case 'special':
+                color = '#a855f7'; // Purple
+                break;
+            default:
+                color = context.startsWith('#') ? context : '#8b5cf6'; // Default purple
+        }
+        
+        gemstone.style.setProperty('--gem-color', color);
+        gemstone.classList.add('gem-pulse');
+        setTimeout(() => gemstone.classList.remove('gem-pulse'), 800);
+    },
+    
+    /**
+     * Animate wizard floating and pointing
+     * @param {object} options - Animation options {pointTo: {x,y}, intensity: 1-3}
+     */
+    animateWizard(options = {}) {
+        const wizard = document.getElementById('merlinAvatar');
+        const gemstone = document.getElementById('merlinGemstone');
+        if (!wizard) return;
+        
+        const intensity = options.intensity || 1;
+        
+        // Add floating animation class
+        wizard.classList.add('wizard-float-active');
+        
+        // If pointing to something, move gemstone
+        if (options.pointTo && gemstone) {
+            const container = wizard.parentElement;
+            const rect = container.getBoundingClientRect();
+            const x = (options.pointTo.x / rect.width) * 100;
+            const y = (options.pointTo.y / rect.height) * 100;
+            
+            gemstone.style.left = x + '%';
+            gemstone.style.top = y + '%';
+            gemstone.classList.add('gem-pointing');
+            
+            setTimeout(() => {
+                gemstone.classList.remove('gem-pointing');
+            }, 2000);
+        }
+        
+        // Add movement intensity
+        wizard.style.setProperty('--float-intensity', intensity);
+        
+        // Create magic particles
+        this.createMagicParticles(intensity * 5);
+        
+        setTimeout(() => {
+            wizard.classList.remove('wizard-float-active');
+        }, 3000);
+    },
+    
+    /**
+     * Create magic particle effect
+     */
+    createMagicParticles(count = 10) {
+        const container = document.querySelector('.merlin-wizard-container');
+        if (!container) return;
+        
+        for (let i = 0; i < count; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'magic-particle';
+            particle.style.left = (Math.random() * 100) + '%';
+            particle.style.top = (Math.random() * 100) + '%';
+            particle.style.animationDelay = (Math.random() * 0.5) + 's';
+            
+            container.appendChild(particle);
+            
+            setTimeout(() => particle.remove(), 2000);
+        }
     }
 };
 
 // Auto-initialize on load
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
-        setTimeout(() => MerlinAICard.init(), 1500);
+        setTimeout(() => {
+            MerlinAICard.init();
+            // Demo: Update with user data after init
+            setTimeout(() => {
+                // Example: Update level/XP from game data
+                const userData = window.merlin?.userProfile || {};
+                const level = userData.level || 1;
+                const xp = userData.xp || 0;
+                const maxXp = (level * 100) + 100; // Simple XP formula
+                const username = userData.username || 'Guest';
+                
+                MerlinAICard.updateLevel(level, xp, maxXp, username);
+                
+                // Example: Update progress indicators
+                // Heart = gems collected progress, Star = academy progress
+                const heartProgress = (userData.gemsCollected || 0) / 100 * 100; // 100 gems = 100%
+                const starProgress = (userData.academyProgress || 0); // Already in percentage
+                
+                MerlinAICard.updateProgress(heartProgress, starProgress);
+                
+                // Example: Update gemstone color based on context
+                MerlinAICard.updateGemstoneColor('magic'); // Start with magic purple
+            }, 2000);
+        }, 1500);
     });
 } else {
-    setTimeout(() => MerlinAICard.init(), 1500);
+    setTimeout(() => {
+        MerlinAICard.init();
+        // Demo: Update with user data after init
+        setTimeout(() => {
+            const userData = window.merlin?.userProfile || {};
+            const level = userData.level || 1;
+            const xp = userData.xp || 0;
+            const maxXp = (level * 100) + 100;
+            const username = userData.username || 'Guest';
+            
+            MerlinAICard.updateLevel(level, xp, maxXp, username);
+            
+            const heartProgress = (userData.gemsCollected || 0) / 100 * 100;
+            const starProgress = (userData.academyProgress || 0);
+            
+            MerlinAICard.updateProgress(heartProgress, starProgress);
+            MerlinAICard.updateGemstoneColor('magic');
+        }, 2000);
+    }, 1500);
 }
 
 // Export to window
 window.MerlinAICard = MerlinAICard;
+
+/**
+ * USAGE EXAMPLES:
+ * 
+ * // Update player level and XP
+ * MerlinAICard.updateLevel(7, 1850, 2500, 'Alice');
+ * 
+ * // Update progress (0-100)
+ * MerlinAICard.updateProgress(75, 60); // heart: 75%, star: 60%
+ * 
+ * // Change gemstone color
+ * MerlinAICard.updateGemstoneColor('success'); // green
+ * MerlinAICard.updateGemstoneColor('error'); // red
+ * MerlinAICard.updateGemstoneColor('thinking'); // blue
+ * MerlinAICard.updateGemstoneColor('#ff00ff'); // custom color
+ * 
+ * // Animate wizard
+ * MerlinAICard.animateWizard({
+ *     pointTo: { x: 300, y: 200 }, // pixel coordinates to point at
+ *     intensity: 2 // 1-3, higher = more dramatic
+ * });
+ */

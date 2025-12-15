@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Merlin AI Card - Enhanced Test</title>
+    <link rel="stylesheet" href="merlin-3d-card.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1f3a 0%, #0f1629 100%);
+            color: #fff;
+            min-height: 100vh;
+        }
+        
+        .test-controls {
+            position: fixed;
+            left: 20px;
+            top: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid #667eea;
+            max-width: 350px;
+            z-index: 8000;
+        }
+        
+        .test-controls h2 {
+            margin: 0 0 15px 0;
+            color: #4affff;
+        }
+        
+        .test-btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .test-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.5);
+        }
+        
+        .test-input {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid #667eea;
+            border-radius: 6px;
+            color: white;
+        }
+        
+        .test-label {
+            display: block;
+            margin: 10px 0 5px 0;
+            font-size: 0.9em;
+            color: #4affff;
+        }
+        
+        .color-btns {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+            margin: 10px 0;
+        }
+        
+        .color-btn {
+            padding: 8px;
+            border: 2px solid;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: transform 0.2s;
+        }
+        
+        .color-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .color-btn.success { background: #10b981; border-color: #10b981; }
+        .color-btn.error { background: #ef4444; border-color: #ef4444; }
+        .color-btn.thinking { background: #3b82f6; border-color: #3b82f6; }
+        .color-btn.question { background: #f59e0b; border-color: #f59e0b; }
+        .color-btn.magic { background: #a855f7; border-color: #a855f7; }
+        .color-btn.custom { background: #8b5cf6; border-color: #8b5cf6; }
+    </style>
+</head>
+<body>
+    <div class="test-controls">
+        <h2>🎴 Merlin Card Test</h2>
+        
+        <label class="test-label">Username:</label>
+        <input type="text" id="testUsername" class="test-input" value="Alice" placeholder="Enter username">
+        
+        <label class="test-label">Level:</label>
+        <input type="number" id="testLevel" class="test-input" value="7" min="1" max="100">
+        
+        <label class="test-label">Current XP:</label>
+        <input type="number" id="testXP" class="test-input" value="1850" min="0">
+        
+        <label class="test-label">Max XP:</label>
+        <input type="number" id="testMaxXP" class="test-input" value="2500" min="100">
+        
+        <button class="test-btn" onclick="testUpdateLevel()">📊 Update Level/XP</button>
+        
+        <hr style="margin: 15px 0; border-color: #667eea;">
+        
+        <label class="test-label">Heart Progress (%):</label>
+        <input type="range" id="testHeart" class="test-input" value="75" min="0" max="100">
+        <span id="heartValue">75%</span>
+        
+        <label class="test-label">Star Progress (%):</label>
+        <input type="range" id="testStar" class="test-input" value="60" min="0" max="100">
+        <span id="starValue">60%</span>
+        
+        <button class="test-btn" onclick="testUpdateProgress()">💖 Update Progress</button>
+        
+        <hr style="margin: 15px 0; border-color: #667eea;">
+        
+        <label class="test-label">Gemstone Colors:</label>
+        <div class="color-btns">
+            <button class="color-btn success" onclick="testGemColor('success')">✅ Success</button>
+            <button class="color-btn error" onclick="testGemColor('error')">❌ Error</button>
+            <button class="color-btn thinking" onclick="testGemColor('thinking')">🤔 Think</button>
+            <button class="color-btn question" onclick="testGemColor('question')">❓ Quest</button>
+            <button class="color-btn magic" onclick="testGemColor('magic')">✨ Magic</button>
+            <button class="color-btn custom" onclick="testGemColor('#ff00ff')">🎨 Custom</button>
+        </div>
+        
+        <hr style="margin: 15px 0; border-color: #667eea;">
+        
+        <label class="test-label">Wizard Animation Intensity:</label>
+        <input type="range" id="testIntensity" class="test-input" value="2" min="1" max="3">
+        <span id="intensityValue">2</span>
+        
+        <button class="test-btn" onclick="testAnimateWizard()">🧙‍♂️ Animate Wizard</button>
+        
+        <button class="test-btn" onclick="testMessage()">💬 Test Message</button>
+    </div>
+
+    <script src="merlin-3d-card.js"></script>
+    <script>
+        // Update range displays
+        document.getElementById('testHeart').oninput = function() {
+            document.getElementById('heartValue').textContent = this.value + '%';
+        };
+        document.getElementById('testStar').oninput = function() {
+            document.getElementById('starValue').textContent = this.value + '%';
+        };
+        document.getElementById('testIntensity').oninput = function() {
+            document.getElementById('intensityValue').textContent = this.value;
+        };
+        
+        // Test functions
+        function testUpdateLevel() {
+            const username = document.getElementById('testUsername').value;
+            const level = parseInt(document.getElementById('testLevel').value);
+            const xp = parseInt(document.getElementById('testXP').value);
+            const maxXP = parseInt(document.getElementById('testMaxXP').value);
+            
+            MerlinAICard.updateLevel(level, xp, maxXP, username);
+            console.log('✅ Level updated:', { username, level, xp, maxXP });
+        }
+        
+        function testUpdateProgress() {
+            const heart = parseInt(document.getElementById('testHeart').value);
+            const star = parseInt(document.getElementById('testStar').value);
+            
+            MerlinAICard.updateProgress(heart, star);
+            console.log('✅ Progress updated:', { heart, star });
+        }
+        
+        function testGemColor(color) {
+            MerlinAICard.updateGemstoneColor(color);
+            console.log('✅ Gemstone color:', color);
+        }
+        
+        function testAnimateWizard() {
+            const intensity = parseInt(document.getElementById('testIntensity').value);
+            
+            // Point at random location
+            const x = Math.random() * window.innerWidth;
+            const y = Math.random() * window.innerHeight;
+            
+            MerlinAICard.animateWizard({
+                pointTo: { x, y },
+                intensity: intensity
+            });
+            
+            console.log('✅ Wizard animated:', { intensity, pointTo: { x, y } });
+        }
+        
+        function testMessage() {
+            const messages = [
+                'Welcome to the enhanced Merlin AI card! ✨',
+                'I can now show your level and XP progress! 📊',
+                'The gemstone changes color based on context! 💎',
+                'Try the different test controls on the left! 🎮',
+                'I\'m here to help you on your GemBot journey! 🤖'
+            ];
+            
+            const msg = messages[Math.floor(Math.random() * messages.length)];
+            MerlinAICard.addMessage(msg, 'ai');
+            
+            // Random gem color
+            const colors = ['success', 'magic', 'thinking', 'question'];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            MerlinAICard.updateGemstoneColor(color);
+        }
+        
+        // Auto-demo on load
+        setTimeout(() => {
+            console.log('🎴 Merlin Card Enhanced Features Loaded!');
+            console.log('Use the controls on the left to test features');
+            
+            // Auto-populate with demo data
+            testUpdateLevel();
+            testUpdateProgress();
+            MerlinAICard.updateGemstoneColor('magic');
+            
+            setTimeout(() => {
+                testMessage();
+            }, 1000);
+        }, 2500);
+    </script>
+</body>
+</html>
