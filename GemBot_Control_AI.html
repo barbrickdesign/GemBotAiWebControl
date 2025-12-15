@@ -6837,9 +6837,9 @@
                     <select id="portSelect" title="Select Arduino port" class="port-select">
                         <option value="">🔍 Select Arduino...</option>
                     </select>
-                <button id="scanBtn" class="btn-primary btn-compact" onclick="console.log('DEBUG: scanBtn clicked'); serial.scanPorts()">🔍 Scan</button>
-                <button id="connectBtn" class="btn-primary btn-compact" onclick="console.log('DEBUG: connectBtn clicked'); serial.connect()">🔌 Connect</button>
-                <button id="disconnectBtn" class="btn-danger btn-compact hidden" onclick="console.log('DEBUG: disconnectBtn clicked'); serial.disconnect()">⏹️ Disconnect</button>
+                <button id="scanBtn" class="btn-primary btn-compact">🔍 Scan</button>
+                <button id="connectBtn" class="btn-primary btn-compact">🔌 Connect</button>
+                <button id="disconnectBtn" class="btn-danger btn-compact hidden">⏹️ Disconnect</button>
                 </div>
             </div>
 
@@ -23355,8 +23355,32 @@
             };
         }
         
+        // ==================== CONSOLE DEBUG FOR ALL BUTTON CLICKS ====================
+        // Add console logging to all button clicks to help with debugging
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get all buttons and interactive elements
+            const buttons = document.querySelectorAll('button, .btn-control, .dpad-btn, .mobile-joy-btn');
+            buttons.forEach(button => {
+                if (button.onclick) {
+                    // Preserve existing onclick handler and add logging
+                    const originalHandler = button.onclick;
+                    button.onclick = function(event) {
+                        console.log('DEBUG: ' + (button.id || button.className || 'button') + ' clicked');
+                        return originalHandler.call(this, event);
+                    };
+                } else {
+                    // Add logging for buttons without onclick
+                    button.addEventListener('click', function() {
+                        console.log('DEBUG: ' + (button.id || button.className || 'button') + ' clicked');
+                    });
+                }
+            });
+
+            console.log('✅ Console debug logging enabled for all buttons (' + buttons.length + ' buttons found)');
+        });
+
         // Merlin greeting will be given on window load, no duplicate welcome needed
-        
+
         // ═══════════════════════════════════════════════════════════════════
         // CONSOLE DEBUG HELPER - Type merlinDebug() in browser console
         // ═══════════════════════════════════════════════════════════════════
