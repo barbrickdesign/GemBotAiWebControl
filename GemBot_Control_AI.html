@@ -205,6 +205,11 @@
     <script src="./comprehensive-test.js"></script>
     <link rel="stylesheet" href="./gembot-3d-world.css">
     
+    <!-- Academy System & Panel Manager -->
+    <script src="./gembot-academy.js"></script>
+    <script src="./gembot-panel-manager.js"></script>
+    <link rel="stylesheet" href="./gembot-academy.css">
+    
     <!-- TensorFlow.js for ML Analysis (Desktop Only) -->
     <script>
         // Only load TensorFlow on desktop version
@@ -23577,23 +23582,63 @@
             }
         }
         
-        // Academy panel - opens 3D World from within game mode
+        // Academy panel - opens enhanced Academy System with tasks and courses
         function openAcademyPanel() {
             console.log('🎓 Opening Academy from Game Mode...');
             
-            // Sync game state to Academy
-            if (gameFarm && window.GemBot3DWorld) {
-                // Sync gems and level
-                window.GemBot3DWorld.player.gems = gameFarm.state.player.gems;
-                // Give Academy XP based on game level
-                if (gameFarm.state.player.level > window.GemBot3DWorld.player.level) {
-                    window.GemBot3DWorld.player.level = Math.min(gameFarm.state.player.level, 10);
-                    addMessage(`🎓 Academy synced to your GemBot Farm level ${gameFarm.state.player.level}!`, 'system');
+            // Check if new Academy system is available
+            if (window.GemBotAcademy) {
+                // Sync game state to Academy
+                if (gameFarm) {
+                    // Sync gems and level
+                    GemBotAcademy.player.gems = gameFarm.state.player.gems;
+                    GemBotAcademy.player.tokens = gameFarm.state.player.tokens || 0;
+                    
+                    // Sync level if game level is higher
+                    if (gameFarm.state.player.level > GemBotAcademy.player.level) {
+                        GemBotAcademy.player.level = gameFarm.state.player.level;
+                        addMessage(`🎓 Academy synced to your GemBot Farm level ${gameFarm.state.player.level}!`, 'system');
+                    }
+                }
+                
+                // Create Academy modal
+                let academyModal = document.getElementById('academyModal');
+                if (!academyModal) {
+                    academyModal = document.createElement('div');
+                    academyModal.id = 'academyModal';
+                    academyModal.className = 'modal-overlay';
+                    academyModal.style.cssText = 'display:none;position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:10000;overflow:auto;padding:20px;';
+                    document.body.appendChild(academyModal);
+                }
+                
+                // Render Academy content
+                const academyContent = GemBotAcademy.renderAcademyPanel();
+                academyModal.innerHTML = `
+                    <div class="academy-modal-content" style="max-width:1000px;margin:0 auto;position:relative;">
+                        <button onclick="document.getElementById('academyModal').style.display='none'" 
+                            style="position:absolute;right:15px;top:15px;background:rgba(255,255,255,0.1);border:none;color:white;
+                            width:40px;height:40px;border-radius:50%;cursor:pointer;font-size:20px;z-index:10;">×</button>
+                        ${academyContent}
+                    </div>
+                `;
+                academyModal.style.display = 'block';
+                
+                // Initialize Academy if not done
+                GemBotAcademy.init();
+            } else {
+                // Fallback to 3D World if Academy not loaded
+                if (window.GemBot3DWorld) {
+                    if (gameFarm) {
+                        window.GemBot3DWorld.player.gems = gameFarm.state.player.gems;
+                        if (gameFarm.state.player.level > window.GemBot3DWorld.player.level) {
+                            window.GemBot3DWorld.player.level = Math.min(gameFarm.state.player.level, 10);
+                        }
+                    }
+                    open3DWorld();
+                } else {
+                    addMessage('🎓 Academy is loading... Please try again in a moment.', 'system');
                 }
             }
-            
-            // Open the 3D World
-            open3DWorld();
         }
         
         function showShopTab(tab) {
