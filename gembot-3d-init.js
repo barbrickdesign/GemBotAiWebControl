@@ -36,13 +36,26 @@ function initializeGemBot3DVisualizer() {
         }
     }
     
+    // Track retry attempts to prevent infinite loops
+    window.__gembot3dRetryCount = (window.__gembot3dRetryCount || 0) + 1;
+    const maxRetries = 10;
+    
     // Initialize visualizer
     try {
         if (typeof BABYLON === 'undefined') {
-            console.error('❌ Babylon.js not loaded. Retrying in 1s...');
-            setTimeout(initializeGemBot3DVisualizer, 1000);
+            if (window.__gembot3dRetryCount < maxRetries) {
+                console.warn(`⏳ Babylon.js not loaded yet. Retry ${window.__gembot3dRetryCount}/${maxRetries}...`);
+                setTimeout(initializeGemBot3DVisualizer, 1000);
+            } else {
+                console.error('❌ Babylon.js failed to load after', maxRetries, 'attempts. 3D features disabled.');
+                // Clean up to prevent further issues
+                window.__gembot3dInitFailed = true;
+            }
             return;
         }
+        
+        // Reset retry counter on success
+        window.__gembot3dRetryCount = 0;
         
         // Use correct container ID
         const containerId = container3D.id || 'machineViewContainer';

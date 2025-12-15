@@ -59,9 +59,22 @@
     </script>
     
     <!-- Babylon.js for 3D Virtual Machine -->
-    <script src="https://cdn.babylonjs.com/babylon.js"></script>
-    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
-    <script src="https://cdn.babylonjs.com/cannon.js"></script>
+    <script>
+        // Babylon.js load monitor
+        window.babylonLoadAttempted = false;
+        window.babylonLoadError = null;
+    </script>
+    <script src="https://cdn.babylonjs.com/babylon.js" onerror="window.babylonLoadError='babylon.js failed'; console.error('❌ Failed to load babylon.js from CDN')"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js" onerror="console.error('❌ Failed to load babylonjs.loaders')"></script>
+    <script src="https://cdn.babylonjs.com/cannon.js" onerror="console.error('❌ Failed to load cannon.js')"></script>
+    <script>
+        // Verify Babylon loaded
+        if (typeof BABYLON !== 'undefined') {
+            console.log('✅ Babylon.js loaded successfully:', BABYLON.Engine ? 'Engine available' : 'Partial load');
+        } else {
+            console.error('❌ Babylon.js did not load - BABYLON is undefined');
+        }
+    </script>
     
     <!-- QR Code Library -->
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3"></script>
