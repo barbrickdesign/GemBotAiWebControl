@@ -2,6 +2,31 @@
 <html lang="en">
 <!-- BUILD: v2025.12.10.001 - Firebase Auth + Enhanced Game Systems Integration -->
 <head>
+        <script>
+            // Global diagnostic logger
+            window.GemBotLogger = {
+                logs: [],
+                log: function(msg, data) {
+                    const entry = { msg, data, ts: new Date().toISOString() };
+                    this.logs.push(entry);
+                    if (this.logs.length > 200) this.logs.shift();
+                    console.log('[GemBotLog]', msg, data || '');
+                    const el = document.getElementById('gembotImplementationLog');
+                    if (el) {
+                        const div = document.createElement('div');
+                        div.textContent = `[${entry.ts}] ${msg}`;
+                        el.appendChild(div);
+                        if (el.childNodes.length > 200) el.removeChild(el.firstChild);
+                    }
+                },
+                clear: function() {
+                    this.logs = [];
+                    const el = document.getElementById('gembotImplementationLog');
+                    if (el) el.innerHTML = '';
+                },
+                list: function() { return this.logs; }
+            };
+        </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="screen-orientation" content="landscape">
@@ -44,6 +69,7 @@
 
             // Initialize Firebase
             window.firebaseApp = initializeApp(firebaseConfig);
+                window.GemBotLogger?.log('Firebase initialized', window.firebaseApp);
             window.firebaseAuth = getAuth(window.firebaseApp);
             window.firebaseDb = getFirestore(window.firebaseApp);
             window.firebaseAnalytics = getAnalytics(window.firebaseApp);
@@ -124,6 +150,11 @@
     
     <!-- Core API/Logging (centralizes fetch + persistent implementation log) -->
     <script src="./gembot-api.js" defer></script>
+    <script>
+        window.addEventListener('DOMContentLoaded', function() {
+            window.GemBotLogger?.log('DOMContentLoaded event fired');
+        });
+    </script>
 
     <!-- Enhanced 3D Configuration -->
     <script src="./enhanced-3d-config.js" defer></script>
@@ -167,6 +198,17 @@
     <script src="./gembot-changelog.js" defer></script>
     <script src="./merlin-knowledge-base.js" defer></script>
     <script src="./gembot-app-bootstrap.js" defer></script>
+        <script>
+            // Log main system init
+            window.GemBotLogger?.log('Main HTML loaded, all scripts included');
+            // Log errors globally
+            window.addEventListener('error', function(e) {
+                window.GemBotLogger?.log('Global error', { message: e.message, filename: e.filename, lineno: e.lineno, colno: e.colno });
+            });
+            window.addEventListener('unhandledrejection', function(e) {
+                window.GemBotLogger?.log('Unhandled promise rejection', e.reason);
+            });
+        </script>
     <link rel="stylesheet" href="./gembot-3d-world.css">
     
     <!-- TensorFlow.js for ML Analysis (Desktop Only) -->
