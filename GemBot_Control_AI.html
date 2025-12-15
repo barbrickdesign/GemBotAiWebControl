@@ -215,6 +215,10 @@
     <script src="./gembot-animations.js"></script>
     <link rel="stylesheet" href="./gembot-academy.css">
     
+    <!-- Merlin 3D Card System -->
+    <link rel="stylesheet" href="./merlin-3d-card.css">
+    <script src="./merlin-3d-card.js"></script>
+    
     <!-- TensorFlow.js for ML Analysis (Desktop Only) -->
     <script>
         // Only load TensorFlow on desktop version
@@ -9623,6 +9627,23 @@
             renderMarketplace() {
                 const gf = merlin?.userProfile?.gemForge;
                 const mp = window.GemBotMarketplace;
+                
+                // If marketplace not initialized, show initialization message
+                if (!mp || !mp.initialized) {
+                    return `
+                        <div style="text-align: center; padding: 60px 20px;">
+                            <div style="font-size: 48px; margin-bottom: 20px;">🏪</div>
+                            <h3 style="color: #4affff; margin-bottom: 16px;">Marketplace Initializing...</h3>
+                            <p style="color: #888; font-size: 14px;">Loading Earth Art Gems catalog and $GBUV token system</p>
+                            <div style="margin-top: 20px;">
+                                <button onclick="if(window.GemBotMarketplace) GemBotMarketplace.init(); leaderboardUI.switchTab('marketplace');" class="btn-primary">
+                                    🔄 Retry Initialization
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }
+                
                 const stats = mp?.getMarketStats() || {};
                 const inventory = mp?.getInventorySummary() || {};
                 
@@ -12207,13 +12228,9 @@
                 mobileOrientationHandler.handleOrientationChange();
                 // Initialize mobile tab navigation
                 mobileTabNavigation.init();
-                // Initialize panel manager for draggable/resizable panels
-                if (window.GemBotPanelManager) {
-                    setTimeout(() => {
-                        GemBotPanelManager.init();
-                        console.log('✅ Panel Manager initialized');
-                    }, 1000);
-                }
+                // Panel Manager available (not auto-enabled - panels with .panel-draggable already functional)
+                // Panels with drag handles (⋮⋮) are already draggable!
+                console.log('%c🎛️ Panel System: Individual drag handles active', 'color: #9f7aea; font-weight: bold');
             });
         } else {
             mobileOrientationHandler.init();
@@ -12221,13 +12238,8 @@
             mobileOrientationHandler.handleOrientationChange();
             // Initialize mobile tab navigation
             mobileTabNavigation.init();
-            // Initialize panel manager for draggable/resizable panels
-            if (window.GemBotPanelManager) {
-                setTimeout(() => {
-                    GemBotPanelManager.init();
-                    console.log('✅ Panel Manager initialized');
-                }, 1000);
-            }
+            // Panel Manager available (not auto-enabled - panels with .panel-draggable already functional)
+            console.log('%c🎛️ Panel System: Individual drag handles active', 'color: #9f7aea; font-weight: bold');
         }
 
         // ==================== GLOBAL STATE ====================
@@ -21456,6 +21468,12 @@
                 GemBotAnimations.message.add(msg);
             }
             
+            // Also add message to Merlin 3D card if initialized
+            if (window.MerlinAICard && MerlinAICard.initialized) {
+                const cardType = type === 'assistant' ? 'ai' : (type === 'user' ? 'user' : 'system');
+                MerlinAICard.addMessage(text, cardType);
+            }
+            
             // Speak AI responses (not user queries or system messages)
             if (type === 'assistant') {
                 // Only speak if we have a valid voice manager
@@ -23014,6 +23032,12 @@
             console.log("4. Wait for ML model to load (~5-10 seconds)");
             console.log("5. Point camera at objects to test detection");
             console.log("6. Use DPAD buttons to test motor commands");
+            
+            // Initialize marketplace system
+            if (window.GemBotMarketplace && typeof GemBotMarketplace.init === 'function') {
+                console.log('%c🏪 Initializing GemBot Marketplace...', 'color: #ffd700; font-weight: bold');
+                GemBotMarketplace.init();
+            }
             
         }, 500);
 
