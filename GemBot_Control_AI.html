@@ -8572,11 +8572,11 @@
             // Render featured items from Earth Art Gems catalog
             renderFeaturedItems() {
                 const mp = window.GemBotMarketplace;
-                if (!mp || !mp.catalog.items.length) {
+                if (!mp || !mp.catalog || !mp.catalog.items || !mp.catalog.items.length) {
                     return '<div class="loading-items">Loading catalog...</div>';
                 }
                 
-                const items = mp.getCatalogForUI({ available: true }).slice(0, 6);
+                const items = (mp.getCatalogForUI ? mp.getCatalogForUI({ available: true }) : mp.catalog.items).slice(0, 6);
                 
                 return items.map(item => `
                     <div class="featured-item-card" onclick="marketplaceUI.viewItem('${item.id}')">
@@ -8747,7 +8747,7 @@
                 return `
                     <div class="catalog-item ${item.soldOut ? 'sold-out' : ''}" onclick="marketplaceUI.viewItem('${item.id}')">
                         <div class="catalog-item-image">
-                            <img src="${item.imageUrl || ''}" alt="${item.name}" loading="lazy" onerror="this.style.display='none'">
+                            ${item.imageUrl ? `<img src="${item.imageUrl}" alt="${item.name}" loading="lazy" onerror="this.style.display='none'">` : ''}
                             ${item.soldOut ? '<div class="sold-out-badge">SOLD OUT</div>' : ''}
                             ${item.virtualCopiesOwned > 0 ? `<div class="virtual-progress">${item.virtualCopiesOwned}/10</div>` : ''}
                         </div>
@@ -8795,7 +8795,7 @@
                     
                     <div class="item-detail-view">
                         <div class="item-detail-image">
-                            <img src="${item.imageUrl || ''}" alt="${item.name}" onerror="this.style.display='none'">
+                            ${item.imageUrl ? `<img src="${item.imageUrl}" alt="${item.name}" onerror="this.style.display='none'">` : ''}
                             ${item.soldOut ? '<div class="sold-out-overlay">SOLD OUT</div>' : ''}
                         </div>
                         
@@ -8945,7 +8945,7 @@
                             <div class="forged-items-grid">
                                 ${mp.resources.forgedItems.map(item => `
                                     <div class="forged-item-card">
-                                        <img src="${item.imageUrl || ''}" alt="${item.name}" onerror="this.style.display='none'">
+                                        ${item.imageUrl ? `<img src="${item.imageUrl}" alt="${item.name}" onerror="this.style.display='none'">` : ''}
                                         <div class="forged-item-name">${item.name}</div>
                                         <div class="forged-item-quality">Quality: ${item.quality}%</div>
                                         <div class="forged-item-value">${item.virtualValue} $GBUV value</div>
@@ -9702,7 +9702,7 @@
                 const itemCategory = item.itemType || 'jewelry';
                 
                 body.innerHTML = `
-                    <img src="${item.imageUrl || ''}" alt="${item.name}" class="item-detail-image" onerror="this.style.display='none'">
+                    ${item.imageUrl ? `<img src="${item.imageUrl}" alt="${item.name}" class="item-detail-image" onerror="this.style.display='none'">` : ''}
                     <div class="item-detail-body">
                         <h3 class="item-detail-name">${item.name}</h3>
                         
@@ -18753,8 +18753,9 @@
 
             detectCutCompletion() {
                 // Analyze if user might be done with current cut
-                if (!window.machineState || !machineState.stateHistory) return;
-                const history = machineState.stateHistory;
+                if (!window.machineState) return;
+                if (!window.machineState.stateHistory) return;
+                const history = window.machineState.stateHistory;
                 if (history.length < 10) return;
                 
                 // Look for stabilization pattern (position not changing much)
