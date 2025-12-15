@@ -63,6 +63,14 @@ An interactive AI-powered learning platform with real-time control capabilities,
 - **Gamified Learning**: Earn gems, level up, and track streaks
 - **Knowledge Persistence**: AI remembers what you've learned
 
+### 🤖 GemBot Machine Farm (Idle Tycoon Game)
+- **Build a Machine Farm**: Deploy automated gemstone cutting machines
+- **Idle Mechanics**: Machines work 24/7, even when you're offline
+- **Play-to-Earn**: Earn $GBUV cryptocurrency tokens
+- **Real-World Assets**: Link physical GemBot machines for bonuses
+- **Web3 Integration**: Solana-based token economy
+- **See**: [MACHINE_FARM_IDLE_TYCOON.md](MACHINE_FARM_IDLE_TYCOON.md)
+
 ### 📱 Mobile Integration
 - **Cross-Device Support**: Use desktop and mobile devices together
 - **QR Code Connection**: Easy one-tap mobile access via QR code
