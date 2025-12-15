@@ -129,10 +129,10 @@ const GemBotSystemTest = {
             fm.metalPrices ? `Gold: $${fm.metalPrices.gold?.pricePerOz}/oz` : 'Not set');
         
         // Test functions
-        this.log('Fantasy', 'formatTokens()', typeof fm.formatTokens === 'function', 
-            typeof fm.formatTokens === 'function' ? fm.formatTokens(10000) : 'Missing');
-        this.log('Fantasy', 'applyeCryptoFee()', typeof fm.applyCryptoFee === 'function', 
-            typeof fm.applyCryptoFee === 'function' ? `$100 → $${fm.applyCryptoFee(100)}` : 'Missing');
+        this.log('Fantasy', 'formatPrice()', typeof fm.formatPrice === 'function', 
+            typeof fm.formatPrice === 'function' ? fm.formatPrice(10000) : 'Missing');
+        this.log('Fantasy', 'applyeCryptoFee()', typeof fm.applyeCryptoFee === 'function', 
+            typeof fm.applyeCryptoFee === 'function' ? `$100 → $${fm.applyeCryptoFee(100)}` : 'Missing');
     },
     
     testAryaIntel() {
@@ -229,6 +229,36 @@ const GemBotSystemTest = {
         this.log('Auth', 'sessionToken', !!authSystem.sessionToken, 'Present');
     },
     
+    testMachineControl() {
+        console.log('\n=== 11. MACHINE CONTROL INTERFACE TESTS ===');
+        
+        // Test serial object
+        this.log('Machine', 'serial object', typeof serial !== 'undefined', 
+            typeof serial !== 'undefined' ? 'Loaded' : 'NOT FOUND');
+        
+        if (typeof serial !== 'undefined') {
+            this.log('Machine', 'serial.sendCommand()', typeof serial.sendCommand === 'function', 'Available');
+            this.log('Machine', 'serial.scanPorts()', typeof serial.scanPorts === 'function', 'Available');
+            this.log('Machine', 'serial.connect()', typeof serial.connect === 'function', 'Available');
+            this.log('Machine', 'serial.disconnect()', typeof serial.disconnect === 'function', 'Available');
+        }
+        
+        // Test control variables
+        this.log('Machine', 'motorSpeed variable', typeof motorSpeed !== 'undefined', 
+            typeof motorSpeed !== 'undefined' ? `Speed: ${motorSpeed}` : 'Not defined');
+        this.log('Machine', 'motorMode variable', typeof motorMode !== 'undefined',
+            typeof motorMode !== 'undefined' ? `Mode: ${motorMode}` : 'Not defined');
+        this.log('Machine', 'isConnected variable', typeof isConnected !== 'undefined',
+            typeof isConnected !== 'undefined' ? `Connected: ${isConnected}` : 'Not defined');
+            
+        // Test control buttons
+        this.log('Machine', 'X+ button', !!document.querySelector('[data-cmd="d"]'), 'Found');
+        this.log('Machine', 'X- button', !!document.querySelector('[data-cmd="a"]'), 'Found');
+        this.log('Machine', 'Y+ button', !!document.querySelector('[data-cmd="w"]'), 'Found');
+        this.log('Machine', 'Y- button', !!document.querySelector('[data-cmd="s"]'), 'Found');
+        this.log('Machine', 'Home button', !!document.querySelector('[data-cmd="h"]'), 'Found');
+    },
+    
     // ==================== RUN ALL TESTS ====================
     
     runAll() {
@@ -253,6 +283,7 @@ const GemBotSystemTest = {
         this.testMarketplaceUI();
         this.test3DVisualization();
         this.testAuthentication();
+        this.testMachineControl();
         
         // Summary
         console.log('\n═══════════════════════════════════════════════════════════════');
