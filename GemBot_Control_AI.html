@@ -2,31 +2,6 @@
 <html lang="en">
 <!-- BUILD: v2025.12.10.001 - Firebase Auth + Enhanced Game Systems Integration -->
 <head>
-        <script>
-            // Global diagnostic logger
-            window.GemBotLogger = {
-                logs: [],
-                log: function(msg, data) {
-                    const entry = { msg, data, ts: new Date().toISOString() };
-                    this.logs.push(entry);
-                    if (this.logs.length > 200) this.logs.shift();
-                    console.log('[GemBotLog]', msg, data || '');
-                    const el = document.getElementById('gembotImplementationLog');
-                    if (el) {
-                        const div = document.createElement('div');
-                        div.textContent = `[${entry.ts}] ${msg}`;
-                        el.appendChild(div);
-                        if (el.childNodes.length > 200) el.removeChild(el.firstChild);
-                    }
-                },
-                clear: function() {
-                    this.logs = [];
-                    const el = document.getElementById('gembotImplementationLog');
-                    if (el) el.innerHTML = '';
-                },
-                list: function() { return this.logs; }
-            };
-        </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="screen-orientation" content="landscape">
@@ -37,11 +12,37 @@
     <title>GemBot AI Control System</title>
     <link rel="icon" href="./favicon.ico">
 
+    <!-- Global diagnostic logger -->
+    <script>
+        window.GemBotLogger = {
+            logs: [],
+            log: function(msg, data) {
+                const entry = { msg, data, ts: new Date().toISOString() };
+                this.logs.push(entry);
+                if (this.logs.length > 200) this.logs.shift();
+                console.log('[GemBotLog]', msg, data || '');
+                const el = document.getElementById('gembotImplementationLog');
+                if (el) {
+                    const div = document.createElement('div');
+                    div.textContent = '[' + entry.ts + '] ' + msg;
+                    el.appendChild(div);
+                    if (el.childNodes.length > 200) el.removeChild(el.firstChild);
+                }
+            },
+            clear: function() {
+                this.logs = [];
+                const el = document.getElementById('gembotImplementationLog');
+                if (el) el.innerHTML = '';
+            },
+            list: function() { return this.logs; }
+        };
+    </script>
+
     <!-- Deterministic boot: prevent legacy modules from self-initializing -->
     <script>
         window.GemBotAutoInit = false;
         // Explicitly run deterministic bootstrap after all defer scripts loaded
-        window.addEventListener('load', () => {
+        window.addEventListener('load', function() {
             try {
                 window.GemBotApp?.init?.();
             } catch (e) {
