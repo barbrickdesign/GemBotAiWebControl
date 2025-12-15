@@ -212,6 +212,7 @@
     <script src="./gembot-academy.js"></script>
     <script src="./gembot-panel-manager.js"></script>
     <script src="./gembot-3d-mirror.js"></script>
+    <script src="./gembot-animations.js"></script>
     <link rel="stylesheet" href="./gembot-academy.css">
     
     <!-- TensorFlow.js for ML Analysis (Desktop Only) -->
@@ -21168,6 +21169,11 @@
             messagesDiv.insertBefore(msg, messagesDiv.firstChild);
             messagesDiv.scrollTop = 0; // Scroll to top where newest message is
             console.log(`✓ Message prepended to DOM (newest at top). Total messages: ${messagesDiv.children.length}`);
+            
+            // Animate message appearance
+            if (window.GemBotAnimations) {
+                GemBotAnimations.message.add(msg);
+            }
             
             // Speak AI responses (not user queries or system messages)
             if (type === 'assistant') {
