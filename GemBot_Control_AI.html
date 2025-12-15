@@ -8,49 +8,9 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="mobile-web-app-capable" content="yes">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https: blob: https://www.gstatic.com https://www.googleapis.com https://*.firebaseio.com https://*.firebase.com https://*.firebaseapp.com https://accounts.google.com https://apis.google.com; style-src 'self' 'unsafe-inline'; media-src 'self' blob:; connect-src 'self' blob: indexeddb: https: ws: wss: http://localhost:* http://127.0.0.1:* https://*.firebaseio.com https://*.googleapis.com https://*.firebase.com https://*.firebaseapp.com https://www.googleapis.com https://www.gstatic.com https://accounts.google.com https://apis.google.com; frame-src 'self' https://*.firebaseapp.com https://*.firebaseio.com https://accounts.google.com https://apis.google.com https://www.gstatic.com; object-src 'none'; img-src 'self' data: blob: https:; font-src 'self' https:;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https: blob:; style-src 'self' 'unsafe-inline'; media-src 'self' blob:; connect-src 'self' blob: indexeddb: https: ws: wss: http://localhost:* https://*.firebaseio.com https://*.googleapis.com https://*.firebase.com https://*.firebaseapp.com; object-src 'none'; img-src 'self' data: blob: https:; font-src 'self' https:;">
     <title>GemBot AI Control System</title>
-    <link rel="icon" href="./favicon.ico">
-
-    <!-- Global diagnostic logger -->
-    <script>
-        window.GemBotLogger = {
-            logs: [],
-            log: function(msg, data) {
-                const entry = { msg, data, ts: new Date().toISOString() };
-                this.logs.push(entry);
-                if (this.logs.length > 200) this.logs.shift();
-                console.log('[GemBotLog]', msg, data || '');
-                const el = document.getElementById('gembotImplementationLog');
-                if (el) {
-                    const div = document.createElement('div');
-                    div.textContent = '[' + entry.ts + '] ' + msg;
-                    el.appendChild(div);
-                    if (el.childNodes.length > 200) el.removeChild(el.firstChild);
-                }
-            },
-            clear: function() {
-                this.logs = [];
-                const el = document.getElementById('gembotImplementationLog');
-                if (el) el.innerHTML = '';
-            },
-            list: function() { return this.logs; }
-        };
-    </script>
-
-    <!-- Deterministic boot: prevent legacy modules from self-initializing -->
-    <script>
-        window.GemBotAutoInit = false;
-        // Explicitly run deterministic bootstrap after all defer scripts loaded
-        window.addEventListener('load', function() {
-            try {
-                window.GemBotApp?.init?.();
-            } catch (e) {
-                console.warn('[GemBotApp] init failed', e);
-            }
-        }, { once: true });
-    </script>
-
+    
         <!-- Firebase Modular SDK v12.6.0 -->
         <script type="module">
             import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
@@ -70,7 +30,6 @@
 
             // Initialize Firebase
             window.firebaseApp = initializeApp(firebaseConfig);
-                window.GemBotLogger?.log('Firebase initialized', window.firebaseApp);
             window.firebaseAuth = getAuth(window.firebaseApp);
             window.firebaseDb = getFirestore(window.firebaseApp);
             window.firebaseAnalytics = getAnalytics(window.firebaseApp);
@@ -82,134 +41,40 @@
     <script src="https://cdn.babylonjs.com/babylon.js"></script>
     <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
     <script src="https://cdn.babylonjs.com/cannon.js"></script>
-
-    <!-- Three.js for additional 3D functionality -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-
+    
     <!-- QR Code Library -->
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3"></script>
-
-    <!-- Enhanced compatibility shim for Node.js require() calls in browser -->
-    <script>
-        // Provide browser-compatible require function
-        window.require = window.require || function (name) {
-            console.warn('[GemBot] require(...) called in browser for:', name);
-
-            // Handle specific modules that might be expected
-            const moduleStubs = {
-                'fs': {
-                    readFileSync: () => '',
-                    writeFileSync: () => {},
-                    existsSync: () => false
-                },
-                'path': {
-                    join: (...args) => args.join('/'),
-                    resolve: (...args) => args.join('/'),
-                    dirname: (p) => p.split('/').slice(0, -1).join('/'),
-                    basename: (p) => p.split('/').pop(),
-                    extname: (p) => '.' + p.split('.').pop()
-                },
-                'os': {
-                    platform: () => 'browser',
-                    homedir: () => '/',
-                    tmpdir: () => '/tmp'
-                },
-                'process': {
-                    env: {},
-                    platform: 'browser',
-                    cwd: () => '/',
-                    exit: () => {}
-                },
-                'url': {
-                    parse: (url) => ({ pathname: url }),
-                    format: (obj) => obj.pathname
-                },
-                'crypto': {
-                    randomBytes: (size) => new Uint8Array(size).map(() => Math.floor(Math.random() * 256)),
-                    createHash: () => ({
-                        update: () => ({}),
-                        digest: () => new ArrayBuffer(32)
-                    })
-                }
-            };
-
-            // Return stub if available, otherwise empty object
-            return moduleStubs[name] || {};
-        };
-
-        // Also provide global process object for compatibility
-        if (!window.process) {
-            window.process = {
-                env: {},
-                platform: 'browser',
-                cwd: () => '/',
-                exit: () => {}
-            };
-        }
-    </script>
     
-    <!-- Core API/Logging (centralizes fetch + persistent implementation log) -->
-    <script src="./gembot-api.js" defer></script>
-    <script>
-        window.addEventListener('DOMContentLoaded', function() {
-            window.GemBotLogger?.log('DOMContentLoaded event fired');
-        });
-    </script>
-
-    <!-- Enhanced 3D Configuration -->
-    <script src="./enhanced-3d-config.js" defer></script>
-
     <!-- Virtual Machine 3D Module -->
-    <script src="./virtual-machine-3d.js" defer></script>
-
-    <!-- Machine Farm 3D Module -->
-    <script src="./machine-farm-3d.js" defer></script>
-
-    <!-- NOTE: gembot-3d-init.js defines a *different* GemBot3DVisualizer stub that conflicts with
-         gembot-3d-visualizer.js (Three.js) and with our Babylon-based VirtualMachine3D.
-         It is intentionally NOT loaded here. -->
-    <!-- <script src="./gembot-3d-init.js" defer></script> -->
-
-    <script src="./gembot-farm-game.js" defer></script>
+    <script src="./virtual-machine-3d.js"></script>
+    <script src="./gembot-3d-init.js"></script>
+    <script src="./gembot-farm-game.js"></script>
 
     <!-- Multi-Device Synchronization -->
-    <script src="./gembot-sync-manager.js" defer></script>
-    <script src="./gembot-sync-ui.js" defer></script>
+    <script src="./gembot-sync-manager.js"></script>
+    <script src="./gembot-sync-ui.js"></script>
 
     <!-- Knowledge Base System -->
-    <script src="./knowledge-loader.js" defer></script>
-    <script src="./merlin-knowledge-integration.js" defer></script>
-    <script src="./knowledge-integration-examples.js" defer></script>
+    <script src="./knowledge-loader.js"></script>
+    <script src="./merlin-knowledge-integration.js"></script>
+    <script src="./knowledge-integration-examples.js"></script>
 
     <!-- GemBot Game Systems -->
-    <script src="./gembot-parts-database.js" defer></script>
-    <script src="./gembot-faceting-designs.js" defer></script>
-    <script src="./gembot-stl-catalog.js" defer></script>
-    <script src="./gembot-game-cards.js" defer></script>
-    <script src="./gembot-3d-printing.js" defer></script>
-    <script src="./gembot-troubleshooting.js" defer></script>
-    <script src="./gembot-game-master.js" defer></script>
-    <script src="./merlin-enhanced-responses.js" defer></script>
-    <script src="./gembot-game-integration.js" defer></script>
-    <script src="./gembot-marketplace.js" defer></script>
-    <script src="./arya-intel-system.js" defer></script>
-    <script src="./gembot-3d-world.js" defer></script>
-    <script src="./quantum-gem-visualizer.js" defer></script>
-    <script src="./gembot-changelog.js" defer></script>
-    <script src="./merlin-knowledge-base.js" defer></script>
-    <script src="./gembot-app-bootstrap.js" defer></script>
-        <script>
-            // Log main system init
-            window.GemBotLogger?.log('Main HTML loaded, all scripts included');
-            // Log errors globally
-            window.addEventListener('error', function(e) {
-                window.GemBotLogger?.log('Global error', { message: e.message, filename: e.filename, lineno: e.lineno, colno: e.colno });
-            });
-            window.addEventListener('unhandledrejection', function(e) {
-                window.GemBotLogger?.log('Unhandled promise rejection', e.reason);
-            });
-        </script>
+    <script src="./gembot-parts-database.js"></script>
+    <script src="./gembot-faceting-designs.js"></script>
+    <script src="./gembot-stl-catalog.js"></script>
+    <script src="./gembot-game-cards.js"></script>
+    <script src="./gembot-3d-printing.js"></script>
+    <script src="./gembot-troubleshooting.js"></script>
+    <script src="./gembot-game-master.js"></script>
+    <script src="./merlin-enhanced-responses.js"></script>
+    <script src="./gembot-game-integration.js"></script>
+    <script src="./gembot-marketplace.js"></script>
+    <script src="./arya-intel-system.js"></script>
+    <script src="./gembot-3d-world.js"></script>
+    <script src="./quantum-gem-visualizer.js"></script>
+    <script src="./gembot-changelog.js"></script>
+    <script src="./merlin-knowledge-base.js"></script>
     <link rel="stylesheet" href="./gembot-3d-world.css">
     
     <!-- TensorFlow.js for ML Analysis (Desktop Only) -->
