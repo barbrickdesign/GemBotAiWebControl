@@ -7838,6 +7838,9 @@
                 <button class="leaderboard-tab" onclick="leaderboardUI.switchTab('achievements')">🎖️ Achievements</button>
                 <button class="leaderboard-tab" onclick="leaderboardUI.switchTab('activity')">📜 Activity Log</button>
                 <button class="leaderboard-tab" onclick="leaderboardUI.switchTab('marketplace')">🏪 Marketplace</button>
+                <button class="leaderboard-tab" onclick="leaderboardUI.switchTab('game')">🎮 Game Hub</button>
+                <button class="leaderboard-tab" onclick="leaderboardUI.switchTab('academy')">🎓 Academy</button>
+                <button class="leaderboard-tab" onclick="leaderboardUI.switchTab('settings')">⚙️ Settings</button>
             </div>
 
             <div class="leaderboard-content" id="leaderboardContent">
@@ -8109,12 +8112,14 @@
 
             <!-- CENTER: 3D VIRTUAL MACHINE & WEBCAM -->
             <div class="center-panel">
-                <!-- 3D Virtual Machine View -->
-                <div id="machineViewContainer" class="machine-view-container">
+                <!-- 3D Virtual Machine View (Draggable/Resizable) -->
+                <div id="machineViewContainer" class="machine-view-container panel-draggable panel-resizable" data-panel-name="3D Virtual Machine">
+                    <div class="panel-drag-handle">⋮⋮ 3D Virtual Machine</div>
                     <canvas id="babylon-canvas" class="canvas-full"></canvas>
                     <div id="machineLoadingStatus" class="loading-overlay">
                         ⏳ Initializing 3D Virtual Machine...
                     </div>
+                    <div class="panel-resize-handle"></div>
                     
                     <!-- MOBILE IN-VIEW CONTROLS (hidden on desktop) -->
                     <div id="mobileInViewControls" class="mobile-inview-controls hidden">
@@ -8158,10 +8163,12 @@
                     <button id="btnHomeAll" class="btn-home">🏠 HOME ALL</button>
                 </div>
                 
-                <!-- Webcam & ML Analysis -->
-                <div class="camera-container">
+                <!-- Webcam & ML Analysis (Draggable/Resizable) -->
+                <div class="camera-container panel-draggable panel-resizable" data-panel-name="Camera Feed">
+                    <div class="panel-drag-handle">⋮⋮ Camera Feed & ML Analysis</div>
                     <video id="cameraFeed" playsinline autoplay muted></video>
                     <canvas id="mlCanvas" class="camera-overlay"></canvas>
+                    <div class="panel-resize-handle"></div>
                 </div>
                 <div class="camera-controls">
                     <button id="cameraStartBtn" class="btn-camera-start">📷 START CAMERA</button>
@@ -9146,6 +9153,14 @@
                         case 'achievements': content.innerHTML = this.renderAchievements(); break;
                         case 'activity': content.innerHTML = this.renderActivityLog(); break;
                         case 'marketplace': content.innerHTML = this.renderMarketplace(); break;
+                        case 'game': content.innerHTML = this.renderGameHub(); break;
+                        case 'academy': content.innerHTML = this.renderAcademyHub(); break;
+                        case 'settings': content.innerHTML = this.renderSettings(); break;
+                    }
+                    
+                    // Animate content appearance
+                    if (window.GemBotAnimations) {
+                        GemBotAnimations.panel.open(content);
                     }
                 }
             },
@@ -9871,6 +9886,252 @@
                 if (diff < 3600000) return Math.floor(diff / 60000) + 'm ago';
                 if (diff < 86400000) return Math.floor(diff / 3600000) + 'h ago';
                 return Math.floor(diff / 86400000) + 'd ago';
+            },
+            
+            // Render Game Hub tab (unified game access)
+            renderGameHub() {
+                return `
+                    <div class="game-hub">
+                        <h2 style="text-align:center;color:#00ffff;margin-bottom:20px;">🎮 GemBot Game Hub</h2>
+                        
+                        <div class="game-modes-grid">
+                            <div class="game-mode-card" onclick="enterGameMode(); leaderboardUI.close();">
+                                <div class="game-mode-icon">💎</div>
+                                <h3>GemBot Farm</h3>
+                                <p>Manage your own gem cutting operation. Cut stones, upgrade machines, and build your empire!</p>
+                                <button class="game-mode-btn">▶ Play Now</button>
+                            </div>
+                            
+                            <div class="game-mode-card" onclick="if(window.GemBot3DWorld) { open3DWorld(); leaderboardUI.close(); }">
+                                <div class="game-mode-icon">🌍</div>
+                                <h3>3D World Explorer</h3>
+                                <p>Explore the GemBot universe in 3D. Visit different rooms and unlock new areas.</p>
+                                <button class="game-mode-btn">🚀 Enter World</button>
+                            </div>
+                            
+                            <div class="game-mode-card" onclick="leaderboardUI.switchTab('marketplace');">
+                                <div class="game-mode-icon">🏪</div>
+                                <h3>Marketplace</h3>
+                                <p>Trade gems, stones, and NFTs. Buy and sell with other players globally.</p>
+                                <button class="game-mode-btn">🛒 Browse</button>
+                            </div>
+                            
+                            <div class="game-mode-card" onclick="leaderboardUI.switchTab('academy');">
+                                <div class="game-mode-icon">🎓</div>
+                                <h3>Academy</h3>
+                                <p>Learn gem cutting, complete courses, earn XP and unlock new techniques.</p>
+                                <button class="game-mode-btn">📚 Learn</button>
+                            </div>
+                        </div>
+                        
+                        <div class="game-stats-summary">
+                            <h3>Your Game Progress</h3>
+                            <div class="stats-summary">
+                                <div class="stat-card">
+                                    <div class="stat-card-icon">⭐</div>
+                                    <div class="stat-card-value">${merlin?.userProfile?.gemForge ? this.calculateLevel(merlin.userProfile.gemForge) : 0}</div>
+                                    <div class="stat-card-label">Game Level</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-card-icon">💎</div>
+                                    <div class="stat-card-value">${this.formatNumber(merlin?.userProfile?.gemForge?.wallet?.lifetimeEarned || 0)}</div>
+                                    <div class="stat-card-label">Total Gems</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-card-icon">✂️</div>
+                                    <div class="stat-card-value">${merlin?.userProfile?.gemForge?.stoneAccess?.stonesCompleted || 0}</div>
+                                    <div class="stat-card-label">Stones Cut</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-card-icon">🏆</div>
+                                    <div class="stat-card-value">${merlin?.userProfile?.gemForge?.achievements?.unlocked?.length || 0}</div>
+                                    <div class="stat-card-label">Achievements</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            },
+            
+            // Render Academy Hub tab
+            renderAcademyHub() {
+                const academy = window.GemBotAcademy;
+                const player = academy?.player || {};
+                
+                return `
+                    <div class="academy-hub">
+                        <h2 style="text-align:center;color:#667eea;margin-bottom:20px;">🎓 GemBot Academy</h2>
+                        
+                        <div class="academy-launch-section">
+                            <div class="academy-status-card">
+                                <div class="academy-level-display">
+                                    <span class="level-badge" style="background:linear-gradient(135deg,#667eea,#764ba2);color:white;padding:10px 20px;border-radius:50px;font-size:24px;font-weight:bold;">
+                                        Level ${player.level || 1}
+                                    </span>
+                                </div>
+                                <div class="academy-xp-display" style="margin-top:15px;">
+                                    <div style="background:rgba(255,255,255,0.1);height:10px;border-radius:5px;overflow:hidden;">
+                                        <div style="background:linear-gradient(90deg,#667eea,#00ffff);height:100%;width:${((player.xp || 0) / (player.nextLevelXP || 100)) * 100}%;transition:width 0.3s;"></div>
+                                    </div>
+                                    <p style="margin-top:5px;font-size:12px;color:#888;">${player.xp || 0} / ${player.nextLevelXP || 100} XP</p>
+                                </div>
+                                <button class="game-mode-btn" style="margin-top:20px;width:100%;" onclick="openAcademyPanel(); leaderboardUI.close();">
+                                    📚 Open Full Academy
+                                </button>
+                            </div>
+                            
+                            <div class="academy-quick-stats">
+                                <div class="stat-item">
+                                    <span class="stat-icon">🔥</span>
+                                    <span class="stat-label">Streak:</span>
+                                    <span class="stat-value">${player.streak || 0} days</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-icon">📖</span>
+                                    <span class="stat-label">Courses:</span>
+                                    <span class="stat-value">${Object.keys(player.courses || {}).length} active</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-icon">✅</span>
+                                    <span class="stat-label">Tasks Done:</span>
+                                    <span class="stat-value">${Object.values(player.dailyTasks || {}).filter(t => t.completed).length}/4</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="academy-courses-preview">
+                            <h3>Available Courses</h3>
+                            <div class="courses-grid">
+                                <div class="course-preview-card">
+                                    <div class="course-icon">📐</div>
+                                    <h4>Cutting Basics</h4>
+                                    <p>5 lessons • Beginner</p>
+                                </div>
+                                <div class="course-preview-card">
+                                    <div class="course-icon">💎</div>
+                                    <h4>Cutting Fundamentals</h4>
+                                    <p>8 lessons • Intermediate</p>
+                                </div>
+                                <div class="course-preview-card">
+                                    <div class="course-icon">✨</div>
+                                    <h4>Polishing Mastery</h4>
+                                    <p>6 lessons • Advanced</p>
+                                </div>
+                                <div class="course-preview-card">
+                                    <div class="course-icon">🏆</div>
+                                    <h4>Advanced Designs</h4>
+                                    <p>10 lessons • Expert</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            },
+            
+            // Render Settings tab
+            renderSettings() {
+                return `
+                    <div class="settings-hub">
+                        <h2 style="text-align:center;color:#00ffff;margin-bottom:20px;">⚙️ GemBot Settings</h2>
+                        
+                        <div class="settings-sections">
+                            <div class="settings-section">
+                                <h3>🎨 Display & Layout</h3>
+                                <div class="setting-item">
+                                    <label>
+                                        <input type="checkbox" id="settingAnimations" ${localStorage.getItem('animations') !== 'false' ? 'checked' : ''} 
+                                            onchange="localStorage.setItem('animations', this.checked); window.GemBotAnimations.defaultSpeed = this.checked ? 'animate__faster' : '';">
+                                        Enable Animations
+                                    </label>
+                                </div>
+                                <div class="setting-item">
+                                    <label>
+                                        <input type="checkbox" id="settingPanelDrag" ${localStorage.getItem('panelDrag') !== 'false' ? 'checked' : ''}
+                                            onchange="localStorage.setItem('panelDrag', this.checked); if(window.GemBotPanelManager) window.GemBotPanelManager.init();">
+                                        Draggable Panels
+                                    </label>
+                                </div>
+                                <div class="setting-item">
+                                    <button class="btn-control" onclick="if(window.GemBotPanelManager) { GemBotPanelManager.resetLayout(); alert('Layout reset to default!'); }">
+                                        🔄 Reset Panel Layout
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="settings-section">
+                                <h3>🎮 Game Settings</h3>
+                                <div class="setting-item">
+                                    <label>
+                                        Game Difficulty:
+                                        <select id="settingDifficulty" onchange="localStorage.setItem('gameDifficulty', this.value);">
+                                            <option value="easy" ${localStorage.getItem('gameDifficulty') === 'easy' ? 'selected' : ''}>Easy</option>
+                                            <option value="normal" ${!localStorage.getItem('gameDifficulty') || localStorage.getItem('gameDifficulty') === 'normal' ? 'selected' : ''}>Normal</option>
+                                            <option value="hard" ${localStorage.getItem('gameDifficulty') === 'hard' ? 'selected' : ''}>Hard</option>
+                                        </select>
+                                    </label>
+                                </div>
+                                <div class="setting-item">
+                                    <label>
+                                        <input type="checkbox" id="settingAutoSave" ${localStorage.getItem('autoSave') !== 'false' ? 'checked' : ''}
+                                            onchange="localStorage.setItem('autoSave', this.checked);">
+                                        Auto-Save Game Progress
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="settings-section">
+                                <h3>🔊 Audio & Voice</h3>
+                                <div class="setting-item">
+                                    <label>
+                                        <input type="checkbox" id="settingVoice" ${voice?.voiceEnabled ? 'checked' : ''}
+                                            onchange="if(window.voice) voice.toggleVoice();">
+                                        Enable Merlin Voice
+                                    </label>
+                                </div>
+                                <div class="setting-item">
+                                    <label>
+                                        Voice Speed: <span id="voiceSpeedValue">${voice?.merlinSettings?.speechRate ? Math.round(voice.merlinSettings.speechRate * 100) : 100}%</span>
+                                        <input type="range" min="50" max="150" value="${voice?.merlinSettings?.speechRate ? voice.merlinSettings.speechRate * 100 : 100}"
+                                            oninput="document.getElementById('voiceSpeedValue').textContent = this.value + '%'; if(window.voice && voice.merlinSettings) voice.merlinSettings.speechRate = this.value / 100;">
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="settings-section">
+                                <h3>💾 Data Management</h3>
+                                <div class="setting-item">
+                                    <button class="btn-control" onclick="if(gameFarm) gameFarm.save(); alert('Game saved!');">
+                                        💾 Save Game Now
+                                    </button>
+                                    <button class="btn-control" onclick="if(confirm('Export all data? This will download a JSON file.')) { const data = {merlin: merlin?.userProfile, game: gameFarm?.state}; const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'gembot-backup-' + Date.now() + '.json'; a.click(); }">
+                                        📤 Export Data
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="settings-section">
+                                <h3>📊 Statistics</h3>
+                                <div class="stats-summary">
+                                    <div class="stat-card">
+                                        <div class="stat-card-icon">⏱️</div>
+                                        <div class="stat-card-value">${this.formatNumber(merlin?.userProfile?.gemForge?.machineAccess?.machineTimeMinutes || 0)}m</div>
+                                        <div class="stat-card-label">Machine Time</div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <div class="stat-card-icon">🗓️</div>
+                                        <div class="stat-card-value">${merlin?.userProfile?.gemForge?.certification?.streakDays || 0}</div>
+                                        <div class="stat-card-label">Day Streak</div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <div class="stat-card-icon">💬</div>
+                                        <div class="stat-card-value">${document.querySelectorAll('.ai-message').length || 0}</div>
+                                        <div class="stat-card-label">Messages</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
             }
         };
 
@@ -11940,6 +12201,13 @@
                 mobileOrientationHandler.handleOrientationChange();
                 // Initialize mobile tab navigation
                 mobileTabNavigation.init();
+                // Initialize panel manager for draggable/resizable panels
+                if (window.GemBotPanelManager) {
+                    setTimeout(() => {
+                        GemBotPanelManager.init();
+                        console.log('✅ Panel Manager initialized');
+                    }, 1000);
+                }
             });
         } else {
             mobileOrientationHandler.init();
@@ -11947,6 +12215,13 @@
             mobileOrientationHandler.handleOrientationChange();
             // Initialize mobile tab navigation
             mobileTabNavigation.init();
+            // Initialize panel manager for draggable/resizable panels
+            if (window.GemBotPanelManager) {
+                setTimeout(() => {
+                    GemBotPanelManager.init();
+                    console.log('✅ Panel Manager initialized');
+                }, 1000);
+            }
         }
 
         // ==================== GLOBAL STATE ====================
