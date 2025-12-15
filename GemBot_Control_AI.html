@@ -274,6 +274,9 @@
                 const password = document.getElementById('loginPassword')?.value;
                 try {
                     await window.authSystem?.login?.(email, password);
+                    // Hide overlay after successful login
+                    const overlay = document.getElementById('authOverlay');
+                    if (overlay) overlay.style.display = 'none';
                 } catch (err) {
                     const el = document.getElementById('authError');
                     if (el) el.textContent = err?.message || 'Login failed.';
@@ -292,6 +295,9 @@
                 }
                 try {
                     await window.authSystem?.register?.(username, email, password);
+                    // Hide overlay after successful registration
+                    const overlay = document.getElementById('authOverlay');
+                    if (overlay) overlay.style.display = 'none';
                 } catch (err) {
                     const el = document.getElementById('authError');
                     if (el) el.textContent = err?.message || 'Registration failed.';
@@ -304,6 +310,9 @@
                 const password = document.getElementById('linkPassword')?.value;
                 try {
                     await window.authSystem?.linkDeviceWithCode?.(code, email, password);
+                    // Hide overlay after successful device link
+                    const overlay = document.getElementById('authOverlay');
+                    if (overlay) overlay.style.display = 'none';
                 } catch (err) {
                     const el = document.getElementById('authError');
                     if (el) el.textContent = err?.message || 'Device link failed.';
@@ -313,6 +322,9 @@
                 const code = document.getElementById('guestCode')?.value;
                 try {
                     await window.authSystem?.joinWithCode?.(code);
+                    // Hide overlay after successful join
+                    const overlay = document.getElementById('authOverlay');
+                    if (overlay) overlay.style.display = 'none';
                 } catch (err) {
                     const el = document.getElementById('authError');
                     if (el) el.textContent = err?.message || 'Join failed.';
@@ -320,6 +332,9 @@
             },
             continueAsGuest() {
                 window.authSystem?.continueAsGuest?.();
+                // Hide overlay after continuing as guest
+                const overlay = document.getElementById('authOverlay');
+                if (overlay) overlay.style.display = 'none';
             },
             toggleUserMenu() {
                 const menu = document.getElementById('userMenu');
