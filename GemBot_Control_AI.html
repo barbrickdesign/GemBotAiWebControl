@@ -7940,6 +7940,7 @@
         // Auth UI Controller
         const authUI = {
             switchTab(tab) {
+                console.log('[authUI] switchTab called with:', tab);
                 const loginTab = document.getElementById('loginTab');
                 const registerTab = document.getElementById('registerTab');
                 const linkDeviceTab = document.getElementById('linkDeviceTab');
@@ -7987,17 +7988,17 @@
             async login(event) {
                 event.preventDefault();
                 this.clearError();
-                
                 const email = document.getElementById('loginEmail').value;
                 const password = document.getElementById('loginPassword').value;
                 const btn = document.getElementById('loginBtn');
-                
                 btn.disabled = true;
                 btn.textContent = '⏳ Signing in...';
-                
                 try {
                     await authSystem.login(email, password);
                     addMessage('✅ Welcome back, ' + authSystem.currentUser.username + '!', 'success');
+                    // Hide overlay after successful login
+                    const overlay = document.getElementById('authOverlay');
+                    if (overlay) overlay.style.display = 'none';
                 } catch (error) {
                     this.showError(error.message);
                     btn.disabled = false;
@@ -8008,24 +8009,23 @@
             async register(event) {
                 event.preventDefault();
                 this.clearError();
-                
                 const username = document.getElementById('registerUsername').value;
                 const email = document.getElementById('registerEmail').value;
                 const password = document.getElementById('registerPassword').value;
                 const confirm = document.getElementById('registerConfirm').value;
                 const btn = document.getElementById('registerBtn');
-                
                 if (password !== confirm) {
                     this.showError('Passwords do not match');
                     return;
                 }
-                
                 btn.disabled = true;
                 btn.textContent = '⏳ Creating account...';
-                
                 try {
                     await authSystem.register(username, email, password);
                     addMessage('✅ Welcome to GemBot, ' + authSystem.currentUser.username + '! Your machine access code is: ' + authSystem.currentUser.machineAccessCode, 'success');
+                    // Hide overlay after successful registration
+                    const overlay = document.getElementById('authOverlay');
+                    if (overlay) overlay.style.display = 'none';
                 } catch (error) {
                     this.showError(error.message);
                     btn.disabled = false;
@@ -8080,6 +8080,9 @@
             continueAsGuest() {
                 authSystem.continueAsGuest();
                 addMessage('👁️ Viewing as guest (view-only). To control: Join with an Access Code (6 characters) or connect locally via USB/bridge.', 'system');
+                // Hide overlay after continuing as guest
+                const overlay = document.getElementById('authOverlay');
+                if (overlay) overlay.style.display = 'none';
             },
             
             toggleUserMenu() {
@@ -8118,6 +8121,11 @@
         };
         // Ensure authUI is globally accessible for inline handlers
         window.authUI = authUI;
+
+        // Extra safety: re-attach after DOMContentLoaded in case of reloads or script order issues
+        document.addEventListener('DOMContentLoaded', function() {
+            window.authUI = authUI;
+        });
 
         // ==================== GLOBAL LEADERBOARD SYSTEM ====================
         const leaderboardUI = {
@@ -18136,44 +18144,54 @@
 
     const speechInput = new SpeechInputManager();
             
-            // Spend gem coins (returns false if insufficient)
-            spendGemCoins(amount, reason, details = {}) {
-                if (!this.userProfile.gemForge) this.initializeGemForge();
-                
-                const wallet = this.userProfile.gemForge.wallet;
-                
-                if (wallet.balance < amount) {
-                    return {
-                        success: false,
-                        error: 'insufficient_funds',
-                        required: amount,
-                        available: wallet.balance,
-                        shortfall: amount - wallet.balance
-                    };
-                }
-                
-                wallet.balance -= amount;
-                wallet.lifetimeSpent += amount;
-                
-                const transaction = {
-                    type: 'spend',
-                    amount: amount,
-                    reason: reason,
-                    details: details,
-                    balance: wallet.balance,
-                    timestamp: new Date().toISOString()
-                };
-                wallet.transactionHistory.push(transaction);
-                
-                this.saveUserProfile();
-                
-                return {
-                    success: true,
-                    newBalance: wallet.balance,
-                    spent: amount,
-                    reason: reason
-                };
-            }
+
+// Fallback: Standalone spendGemCoins function if not available as a method
+function spendGemCoins(amount, reason, details = {}) {
+    // Try to use as a method if possible
+    if (typeof userProfile !== 'undefined' && typeof userProfile.spendGemCoins === 'function') {
+        return userProfile.spendGemCoins(amount, reason, details);
+    }
+    // Otherwise, fallback logic (replace with actual logic as needed)
+    if (!window.userProfile || !window.userProfile.gemForge) return { success: false, error: 'no_profile' };
+    const wallet = window.userProfile.gemForge.wallet;
+    if (wallet.balance < amount) {
+        return {
+            success: false,
+            error: 'insufficient_funds',
+            required: amount,
+            available: wallet.balance,
+            shortfall: amount - wallet.balance
+        };
+    }
+    wallet.balance -= amount;
+    wallet.lifetimeSpent += amount;
+    const transaction = {
+        type: 'spend',
+        amount: amount,
+        reason: reason,
+        details: details,
+        balance: wallet.balance,
+        timestamp: new Date().toISOString()
+    };
+    wallet.transactionHistory.push(transaction);
+    if (wallet.transactionHistory.length > 100) {
+        wallet.transactionHistory = wallet.transactionHistory.slice(-100);
+    }
+    if (typeof saveUserProfile === 'function') saveUserProfile();
+    if (typeof leaderboardUI !== 'undefined' && leaderboardUI.recordActivity) {
+        leaderboardUI.recordActivity('spend', {
+            amount: amount,
+            reason: reason,
+            newBalance: wallet.balance
+        });
+    }
+    return {
+        success: true,
+        newBalance: wallet.balance,
+        spent: amount,
+        reason: reason
+    };
+}
             
             // Check and claim daily bonus
             claimDailyBonus() {
