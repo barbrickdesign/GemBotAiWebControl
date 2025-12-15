@@ -332,6 +332,16 @@ const FantasyMarketplace = {
         return tokens / this.config.usdToToken;
     },
     
+    formatTokens(amount) {
+        // Format token amount for display
+        if (amount >= 1000000) {
+            return (amount / 1000000).toFixed(2) + 'M';
+        } else if (amount >= 1000) {
+            return (amount / 1000).toFixed(1) + 'K';
+        }
+        return amount.toLocaleString();
+    },
+    
     applyeCryptoFee(usdAmount) {
         return usdAmount * (1 + this.config.cryptoFeePercent);
     },
