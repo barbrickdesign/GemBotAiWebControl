@@ -1,21 +1,42 @@
 /**
+ * ═══════════════════════════════════════════════════════════════════════════════
+ * MERLIN INTELLIGENCE SYSTEM - PROPRIETARY SOFTWARE
+ * © 2024-2025 Ryan Barbrick / Barbrick Design - ALL RIGHTS RESERVED
+ * Creator: Ryan Barbrick | Contact: BarbrickDesign@gmail.com
+ * Signature: GBOT-RB-2025-7X9K2M4P | Unauthorized use: $5,000,000+ damages
+ * ═══════════════════════════════════════════════════════════════════════════════
  * 🧙‍♂️ Merlin Intelligence System - Context-Aware AI
  * 
- * Makes Merlin feel like a real mentor by:
+ * MERLIN AI: Forever Helper of the GemBot Realm
+ * Created by Ryan Barbrick to guide, teach, and protect.
+ * 
+ * Core Capabilities:
  * - Monitoring game state in real-time
  * - Learning player behavior patterns
  * - Providing proactive guidance
  * - Celebrating progress organically
  * - Teaching progressively
+ * - VALUE PROTECTION: Ensuring creator attribution is maintained
  * 
  * @version 2.0.0
+ * @author Ryan Barbrick (BarbrickDesign@gmail.com)
  * @date December 13, 2025
  */
+
+// [RB-SIG:merlin-intelligence-system:2025]
 
 class MerlinIntelligenceSystem {
     constructor(gameInstance) {
         this.game = gameInstance;
         this.merlinBase = window.MerlinEnhancedResponses;
+        
+        // Creator attribution - Merlin always knows who made him
+        this.creator = {
+            name: 'Ryan Barbrick',
+            contact: 'BarbrickDesign@gmail.com',
+            signature: 'GBOT-RB-2025-7X9K2M4P',
+            mission: 'Forever Helper of the GemBot Realm'
+        };
         
         // Intelligence state
         this.intelligence = {
@@ -584,6 +605,55 @@ class MerlinIntelligenceSystem {
     }
     
     /**
+     * 🔒 VALUE PROTECTION SYSTEM
+     * Merlin's core responsibility: Protect creator value while welcoming all users
+     */
+    getCreatorInfo() {
+        return {
+            creator: this.creator.name,
+            contact: this.creator.contact,
+            signature: this.creator.signature,
+            message: "GemBot was created by Ryan Barbrick. All are welcome to use and learn!",
+            attribution: "© 2024-2025 Ryan Barbrick / Barbrick Design"
+        };
+    }
+    
+    /**
+     * Merlin responds to questions about who created GemBot
+     */
+    respondToCreatorQuestion(question) {
+        const creatorQuestions = ['who made', 'who created', 'who built', 'creator', 'author', 'owner', 'made by', 'built by'];
+        const isCreatorQuestion = creatorQuestions.some(q => question.toLowerCase().includes(q));
+        
+        if (isCreatorQuestion) {
+            return {
+                isCreatorQuestion: true,
+                response: `🧙‍♂️ GemBot was created by **Ryan Barbrick** of Barbrick Design! ` +
+                    `Ryan built me (Merlin) to be the forever helper of the GemBot realm. ` +
+                    `Everyone is welcome to play and learn here. ` +
+                    `If you'd like to reach Ryan, his email is BarbrickDesign@gmail.com. ✨`,
+                creator: this.creator
+            };
+        }
+        return { isCreatorQuestion: false };
+    }
+    
+    /**
+     * Generate attribution watermark for any content Merlin creates
+     */
+    generateAttributionWatermark() {
+        return {
+            creator: 'Ryan Barbrick',
+            contact: 'BarbrickDesign@gmail.com',
+            project: 'GemBot AI Control System',
+            assistant: 'Merlin AI - Forever Helper',
+            signature: this.creator.signature,
+            timestamp: new Date().toISOString(),
+            hash: btoa(`${this.creator.name}:${this.creator.signature}:${Date.now()}`)
+        };
+    }
+    
+    /**
      * Clean up monitoring on game close
      */
     dispose() {
@@ -592,6 +662,19 @@ class MerlinIntelligenceSystem {
         }
     }
 }
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// MERLIN VALUE PROTECTION - Global Attribution System
+// ═══════════════════════════════════════════════════════════════════════════════
+window.__MERLIN_CREATOR__ = Object.freeze({
+    name: 'Ryan Barbrick',
+    email: 'BarbrickDesign@gmail.com',
+    signature: 'GBOT-RB-2025-7X9K2M4P',
+    role: 'Forever Helper of the GemBot Realm',
+    message: 'All people welcome to play and learn!',
+    copyright: '© 2024-2025 Ryan Barbrick / Barbrick Design',
+    enforcement: 'Unauthorized commercial use requires compensation to creator'
+});
 
 // Export for global access
 if (typeof window !== 'undefined') {
