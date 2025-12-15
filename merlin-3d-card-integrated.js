@@ -823,6 +823,10 @@ class MerlinAICardIntegrated {
             this.guideToControl('collect', '💎 Press "Collect Gems" to gather finished gemstones from your machines!');
             return true;
         }
+        if (msg.includes('upgrade') && (msg.includes('machine') || msg.includes('improve') || msg.includes('enhance'))) {
+            this.guideToControl('upgrade-machine', '⬆️ Press "Upgrade Machine" to improve cutting speed and quality!');
+            return true;
+        }
         
         // Forge keywords
         if (msg.includes('craft') || msg.includes('make') || msg.includes('create')) {
