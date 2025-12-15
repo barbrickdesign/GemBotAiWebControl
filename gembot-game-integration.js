@@ -153,20 +153,17 @@ const GemBotGameIntegration = {
      * Enhance the existing Merlin AI with new response system
      */
     enhanceMerlin() {
-        if (!window.merlin) {
+        // Check both global variable patterns
+        const merlinInstance = window.merlin || window.Merlin || window.MerlinPersonality;
+        
+        if (!merlinInstance) {
             console.warn('⚠️ Merlin not found - will enhance when available');
-            // User-facing error banner
-            if (!document.getElementById('merlin-error-banner')) {
-                const banner = document.createElement('div');
-                banner.id = 'merlin-error-banner';
-                banner.style = 'background:#b71c1c;color:#fff;padding:8px 16px;margin:8px 0;border-radius:4px;font-weight:bold;z-index:9999;position:relative;';
-                banner.textContent = 'Critical: Merlin AI module not found. Some features will be unavailable.';
-                document.body.prepend(banner);
-            }
+            // Don't show error banner immediately - Merlin may just not be initialized yet
+            // The user can still use the app without enhanced Merlin responses
             return;
         }
 
-        const originalMerlin = window.merlin;
+        const originalMerlin = merlinInstance;
         const enhancedResponses = this.modules.merlinResponses;
 
         if (!enhancedResponses) {
@@ -255,26 +252,21 @@ const GemBotGameIntegration = {
      * Integrate with existing Farm Game
      */
     integrateFarmGame() {
-        if (!window.gemBotFarmGame) {
+        // Check multiple possible variable names
+        const farmGameInstance = window.gemBotFarmGame || window.GemBotFarmGame || window.gameFarm;
+        
+        if (!farmGameInstance) {
             console.warn('⚠️ Farm Game not found - will integrate when available');
-            // Set up observer for when it loads
+            // Set up observer for when it loads (but don't show error banner)
             const checkInterval = setInterval(() => {
-                if (window.gemBotFarmGame) {
+                const fg = window.gemBotFarmGame || window.GemBotFarmGame || window.gameFarm;
+                if (fg) {
                     clearInterval(checkInterval);
                     this.doFarmGameIntegration();
                 }
             }, 1000);
-            // Stop checking after 30 seconds
-            setTimeout(() => {
-                clearInterval(checkInterval);
-                if (!window.gemBotFarmGame && !document.getElementById('farmgame-error-banner')) {
-                    const banner = document.createElement('div');
-                    banner.id = 'farmgame-error-banner';
-                    banner.style = 'background:#b71c1c;color:#fff;padding:8px 16px;margin:8px 0;border-radius:4px;font-weight:bold;z-index:9999;position:relative;';
-                    banner.textContent = 'Critical: Farm Game module not found. Game features will be unavailable.';
-                    document.body.prepend(banner);
-                }
-            }, 30000);
+            // Stop checking after 30 seconds (no error banner needed - game features are optional)
+            setTimeout(() => clearInterval(checkInterval), 30000);
             return;
         }
 
@@ -523,15 +515,13 @@ const GemBotGameIntegration = {
     }
 };
 
-// Auto-initialize when DOM is ready
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
+// Auto-initialize when page is fully loaded (including all scripts)
+window.addEventListener('load', () => {
+    // Give inline scripts time to initialize
+    setTimeout(() => {
         GemBotGameIntegration.init();
-    });
-} else {
-    // DOM already ready
-    GemBotGameIntegration.init();
-}
+    }, 500);
+});
 
 // Export for use in other modules
 if (typeof module !== 'undefined' && module.exports) {
