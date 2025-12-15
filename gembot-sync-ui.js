@@ -180,6 +180,14 @@ class GemBotSyncUI {
                 setTimeout(() => this.attachListeners(), 1000);
             } else {
                 console.warn('⚠️ gembotSync not available after max retries - sync features disabled');
+                // User-facing error banner
+                if (!document.getElementById('sync-error-banner')) {
+                    const banner = document.createElement('div');
+                    banner.id = 'sync-error-banner';
+                    banner.style = 'background:#b71c1c;color:#fff;padding:8px 16px;margin:8px 0;border-radius:4px;font-weight:bold;z-index:9999;position:relative;';
+                    banner.textContent = 'Critical: Device Sync module not found. Multi-device sync features are unavailable.';
+                    document.body.prepend(banner);
+                }
             }
             return;
         }

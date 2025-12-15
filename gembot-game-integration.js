@@ -155,6 +155,14 @@ const GemBotGameIntegration = {
     enhanceMerlin() {
         if (!window.merlin) {
             console.warn('⚠️ Merlin not found - will enhance when available');
+            // User-facing error banner
+            if (!document.getElementById('merlin-error-banner')) {
+                const banner = document.createElement('div');
+                banner.id = 'merlin-error-banner';
+                banner.style = 'background:#b71c1c;color:#fff;padding:8px 16px;margin:8px 0;border-radius:4px;font-weight:bold;z-index:9999;position:relative;';
+                banner.textContent = 'Critical: Merlin AI module not found. Some features will be unavailable.';
+                document.body.prepend(banner);
+            }
             return;
         }
 
@@ -249,7 +257,6 @@ const GemBotGameIntegration = {
     integrateFarmGame() {
         if (!window.gemBotFarmGame) {
             console.warn('⚠️ Farm Game not found - will integrate when available');
-            
             // Set up observer for when it loads
             const checkInterval = setInterval(() => {
                 if (window.gemBotFarmGame) {
@@ -257,9 +264,17 @@ const GemBotGameIntegration = {
                     this.doFarmGameIntegration();
                 }
             }, 1000);
-            
             // Stop checking after 30 seconds
-            setTimeout(() => clearInterval(checkInterval), 30000);
+            setTimeout(() => {
+                clearInterval(checkInterval);
+                if (!window.gemBotFarmGame && !document.getElementById('farmgame-error-banner')) {
+                    const banner = document.createElement('div');
+                    banner.id = 'farmgame-error-banner';
+                    banner.style = 'background:#b71c1c;color:#fff;padding:8px 16px;margin:8px 0;border-radius:4px;font-weight:bold;z-index:9999;position:relative;';
+                    banner.textContent = 'Critical: Farm Game module not found. Game features will be unavailable.';
+                    document.body.prepend(banner);
+                }
+            }, 30000);
             return;
         }
 
