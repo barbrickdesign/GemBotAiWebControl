@@ -8,7 +8,7 @@ An interactive AI-powered learning platform with real-time control capabilities,
 | Feature | Status | Notes |
 |---------|--------|-------|
 | Page Load | ✅ Working | Site loads correctly |
-| Authentication UI | ✅ Working | Login/Register tabs, overlay hides after auth |
+| Authentication UI | ✅ Working | Auto-continues as guest after 3 seconds |
 | Merlin AI Responses | ✅ Working | AI chat and responses functional |
 | 3D Visualization | ✅ Working | Babylon.js virtual machine renders |
 | Mobile Detection | ✅ Working | Lightweight mode on mobile devices |
@@ -16,19 +16,20 @@ An interactive AI-powered learning platform with real-time control capabilities,
 | Local Storage | ✅ Working | Saves user progress and settings |
 | Game Integration | ✅ Working | Optional enhancement module |
 | Console Logging | ✅ Working | Debug output visible in F12 console |
+| GemBot Farm Game | ✅ Working | Access via profile menu → 🎮 GemBot Farm |
 
-### ⚠️ Known Issues / In Progress
+### ⚠️ Known Issues / Expected Warnings
 | Feature | Status | Notes |
 |---------|--------|-------|
-| Firebase Auth | ⚠️ Limited | Falls back to localStorage when Firebase unavailable |
+| Firebase Auth | ⚠️ Limited | Falls back to localStorage (expected on GitHub Pages) |
+| WebSocket Sync | ⚠️ Expected | 404 errors normal - no WebSocket server on static hosting |
 | Multi-device Sync | ⚠️ Optional | Requires server setup for full functionality |
-| Farm Game | ⚠️ Optional | Enhanced features load when available |
 
 ### 🔧 Recent Fixes (December 15, 2025)
-- Fixed auth overlay not hiding after login/register
-- Removed critical syntax errors (duplicate orphaned methods)
-- Simplified script loading (removed Three.js, require shim)
-- Fixed game integration timing (waits for page load)
+- Removed 740 lines of duplicate/corrupted code
+- Added early stubs for `authSystem` and `leaderboardUI` to prevent reference errors
+- Fixed duplicate `AccessibilityMode` class declaration
+- Fixed auth overlay auto-continuing as guest after 3 seconds
 - Removed unnecessary error banners for optional modules
 
 ---
