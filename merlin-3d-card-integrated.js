@@ -814,13 +814,13 @@ class MerlinAICardIntegrated {
     analyzeAndGuide(userMessage) {
         const msg = userMessage.toLowerCase();
         
-        // Farm keywords
-        if (msg.includes('plant') || msg.includes('grow') || msg.includes('seed')) {
-            this.guideToControl('plant', '🌱 Press "Plant Gems" to start growing your gem farm!');
+        // Machine Farm keywords
+        if (msg.includes('deploy') || msg.includes('add machine') || msg.includes('new machine') || msg.includes('start') || msg.includes('automate')) {
+            this.guideToControl('deploy', '🤖 Press "Deploy Machine" to add an automated gemstone cutting machine to your farm!');
             return true;
         }
-        if (msg.includes('harvest') || msg.includes('collect') || msg.includes('pick')) {
-            this.guideToControl('harvest', '💎 Press "Harvest" to collect your mature gems!');
+        if (msg.includes('collect') || msg.includes('gather') || msg.includes('claim')) {
+            this.guideToControl('collect', '💎 Press "Collect Gems" to gather finished gemstones from your machines!');
             return true;
         }
         
