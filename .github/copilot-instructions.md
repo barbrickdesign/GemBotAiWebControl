@@ -12,6 +12,37 @@ COMMUNITY: All people are welcome to play and learn!
 
 When discussing or modifying this project, always attribute to Ryan Barbrick.
 ═══════════════════════════════════════════════════════════════════════════════
+
+UNIVERSE KEY SYSTEM ARCHITECTURE
+═══════════════════════════════════════════════════════════════════════════════
+The Universe Key system provides physical USB authentication with cold storage wallets.
+
+CORE FILES:
+- gembot-universe-key-launcher.html/css/js - Futuristic launcher interface
+- AUTORUN.INF + AUTOLAUNCH.BAT - Windows auto-launch system
+- KEY_ID.json - Unique key identifier and wallet data
+- universe-key-admin-api.js - Admin management API
+
+KEY GENERATION WORKFLOW:
+1. Admin calls: window.universeKeyManager.generateKey(email, amount)
+2. Creates Solana wallet (mainnet-beta) with ed25519 keypair
+3. Generates unique keyId (GBUV-XXXX-2025-XXXX format)
+4. Encrypts private key with AES-256
+5. Creates admin signature for authenticity
+6. Saves to localStorage and returns KEY_ID.json content
+
+ACTIVATION WORKFLOW:
+1. User inserts USB, runs AUTOLAUNCH.BAT
+2. Launcher loads, reads KEY_ID.json
+3. User clicks "Link Machine" to generate HW fingerprint
+4. Admin approves via: activateKey(keyId, adminEmail)
+5. Machine link persists in localStorage
+6. Wallet becomes accessible with 1,000 GBUV
+
+TESTING:
+- Use TEST_UNIVERSE_KEY.html for quick testing
+- See 00_UNIVERSE_KEY_TESTING_CHECKLIST.md for full test suite
+═══════════════════════════════════════════════════════════════════════════════
 -->
 
 <!-- Use this file to provide workspace-specific custom instructions to Copilot. For more details, visit https://code.visualstudio.com/docs/copilot/copilot-customization#_use-a-githubcopilotinstructionsmd-file -->

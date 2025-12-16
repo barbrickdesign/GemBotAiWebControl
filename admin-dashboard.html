@@ -2550,8 +2550,10 @@
             // Track modifications
             editor.on('change', updateModifiedIndicator);
             
-            // Load initial file
-            loadFile('GemBot_Control_AI.html');
+            // Show welcome message instead of auto-loading
+            editor.setValue(`// GemBot Admin Dashboard - Code Editor\n// \n// Welcome! This editor connects to your GitHub repository.\n// \n// 📁 To get started:\n// 1. Click a file in the left sidebar to load it\n// 2. OR configure GitHub token in Settings → GitHub Config\n// \n// 💡 Features:\n// - Syntax highlighting for HTML, JS, CSS, MD, JSON\n// - Ctrl+S to save and push to GitHub\n// - Ctrl+F to search\n// - Ctrl+G to go to line\n// \n// Select a file from the left to begin editing...`);
+            document.getElementById('editorStatus').textContent = 'Ready';
+            document.getElementById('fileMode').textContent = 'Text';
         }
         
         async function loadFile(filename) {
@@ -2592,6 +2594,14 @@
             
             // Try to load from GitHub
             try {
+                // Check if GitHub is configured
+                if (!githubConfig.token || githubConfig.token.trim() === '') {
+                    document.getElementById('editorStatus').textContent = 'GitHub Not Configured';
+                    editor.setValue(`// GitHub Code Editor\n// \n// To use this feature:\n// 1. Go to Settings section\n// 2. Enter your GitHub Personal Access Token\n// 3. Configure repository details\n// 4. Click "Save Config"\n// 5. Click "Test Connection"\n// \n// Files will then load from your GitHub repository.\n// \n// File: ${filename}\n// Status: GitHub token not configured`);
+                    showToast('⚠️ GitHub not configured. See editor for setup instructions.', 'warning');
+                    return;
+                }
+                
                 document.getElementById('editorStatus').textContent = 'Loading...';
                 const content = await fetchFileFromGitHub(filename);
                 editor.setValue(content);
@@ -2602,8 +2612,9 @@
                 addLog(`Loaded file: ${filename}`, 'info');
             } catch (error) {
                 document.getElementById('editorStatus').textContent = 'Error';
-                showToast('Failed to load file. Check GitHub config.', 'error');
-                editor.setValue(`// Failed to load ${filename}\n// Error: ${error.message}\n\n// Make sure GitHub token is configured in Settings`);
+                console.error('Failed to load file from GitHub:', error);
+                showToast('Failed to load file. Check GitHub config in Settings.', 'error');
+                editor.setValue(`// Failed to load ${filename}\n// Error: ${error.message}\n// \n// Troubleshooting:\n// 1. Go to Settings → GitHub Config\n// 2. Make sure token is valid (check https://github.com/settings/tokens)\n// 3. Token needs 'repo' scope for private repos\n// 4. Click "Test Connection" to verify\n// \n// For local development:\n// - Files must be committed to GitHub first\n// - Or edit files directly in VS Code`);
             }
         }
         
@@ -2736,6 +2747,13 @@
         
         async function testGitHubConnection() {
             try {
+                // Check if token is configured
+                if (!githubConfig.token || githubConfig.token.trim() === '') {
+                    showToast('⚠️ No GitHub token configured. GitHub features disabled.', 'warning');
+                    addLog('GitHub token not configured - skipping connection test', 'warning');
+                    return;
+                }
+                
                 showToast('Testing connection...', 'info');
                 const response = await fetch(
                     `https://api.github.com/repos/${githubConfig.owner}/${githubConfig.repo}`,
@@ -2751,11 +2769,16 @@
                     const data = await response.json();
                     showToast(`✅ Connected to ${data.full_name}`, 'success');
                     addLog('GitHub connection successful', 'success');
+                } else if (response.status === 401) {
+                    showToast('❌ Invalid GitHub token. Check Settings → GitHub Config.', 'error');
+                    addLog('GitHub authentication failed - token may be invalid or expired', 'error');
                 } else {
                     throw new Error(`Status ${response.status}`);
                 }
             } catch (error) {
-                showToast(`❌ Connection failed: ${error.message}`, 'error');
+                console.warn('GitHub connection test failed:', error);
+                showToast(`⚠️ GitHub features unavailable: ${error.message}`, 'warning');
+                addLog('GitHub connection failed - features disabled', 'warning');
             }
         }
         

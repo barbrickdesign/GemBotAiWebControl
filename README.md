@@ -77,12 +77,40 @@ An interactive AI-powered learning platform with real-time control capabilities,
 - **Responsive Design**: Works on desktop, tablet, and mobile
 - **Real-time Status**: Live feedback from connected hardware
 
+### 🔑 Universe Key System (NEW!)
+- **Physical USB Authentication**: Collectible USB keys with cold storage wallets
+- **1,000 GBUV Preloaded**: Each key contains 1,000 GemBot Universe tokens
+- **Machine Linking**: Secure hardware fingerprinting for single-machine activation
+- **Futuristic Launcher**: Animated starfield interface with 8-button action grid
+- **Admin Management API**: Complete key generation, activation, and tracking system
+- **Auto-Launch**: Windows AUTORUN.INF + BAT script for one-click access
+- **Cold Storage**: AES-256 encrypted Solana wallet with private keys
+- **Warranty & Support**: 1-year warranty included with each physical key
+
 ### 🔬 AI Vision System
 - **Object Detection**: TensorFlow.js-powered COCO-SSD model (desktop only)
 - **Real-time Analysis**: Live video processing and detection
 - **Image Adjustment**: Brightness, contrast, and saturation controls
 - **Mobile Camera Support**: Use iPhone/Android cameras
 - **Lightweight Mobile Mode**: No ML overhead for fast mobile access
+
+### 🛡️ Security & Anti-Fraud System
+- **Multi-Layer Detection**: 6-layer fraud detection (IP, fingerprinting, email validation)
+- **Suspicion Scoring**: 0-100 score based on behavior patterns
+- **Automated Wallet Allocation**: 100 GBUV for safe users, 10 GBUV for suspicious accounts
+- **Admin Dashboard**: Complete security monitoring with IP tracking and flagged accounts
+- **Rate Limiting**: Prevents spam and abuse
+- **Real-time Alerts**: Instant notifications for high-risk registrations
+
+### 📊 Admin Dashboard
+- **AI Agent Management**: Monitor and control all AI agents (security, wallet, academy, support)
+- **Security Dashboard**: View fraud detection stats, IP tracking, and flagged accounts
+- **Wallet Management**: Track all user wallets, balances, and transactions
+- **Code Editor**: Built-in Monaco editor with GitHub integration
+- **Visual Editor**: Direct DOM manipulation for live site updates
+- **User Management**: View and manage all registered users
+- **Game Control**: Monitor in-game activity and statistics
+- **Settings**: Configure GitHub tokens, deployment options, and system settings
 
 ## 🚀 Quick Start
 
@@ -103,6 +131,35 @@ npm start
 Then open:
 - **Desktop**: `http://localhost:8000`
 - **Mobile (same WiFi)**: Scan QR code or visit `http://{your-ip}:8000`
+
+### 🔑 Universe Key Quick Start
+
+**If you have a physical Universe Key USB:**
+1. Insert USB into your Windows PC
+2. Double-click `AUTOLAUNCH.BAT` on the USB drive
+3. Launcher opens automatically in your browser
+4. Click "🔗 Link Machine" to activate on your device
+5. Access your 1,000 GBUV wallet and project files
+
+**Testing the Universe Key System:**
+1. Open `TEST_UNIVERSE_KEY.html` in your browser
+2. Click "🔑 Open Universe Key Launcher" to test the interface
+3. Click "⚙️ Test Admin API" to test key generation and management
+4. See `00_UNIVERSE_KEY_TESTING_CHECKLIST.md` for complete testing guide
+
+**Admin: Generate New Universe Keys:**
+```javascript
+// Load admin API in browser console
+const script = document.createElement('script');
+script.src = 'universe-key-admin-api.js';
+document.head.appendChild(script);
+
+// Generate new key
+const newKey = await window.universeKeyManager.generateKey('owner@email.com', 1000);
+console.log(newKey);
+
+// Copy KEY_ID.json output to USB drive
+```
 
 ### Public Deployment (Render.com)
 
@@ -217,7 +274,36 @@ MIT - Free for personal and commercial use
 
 ## 📝 Changelog
 
-### December 15, 2025
+### December 15, 2025 (Evening Update - Universe Key Launch!)
+
+**NEW: Universe Key System** 🔑
+- Created complete physical USB authentication system (11 files, 1,873+ lines)
+- Launcher interface: HTML/CSS/JS with animated starfield and 8-button grid
+- Auto-launch system: AUTORUN.INF + AUTOLAUNCH.BAT for Windows
+- Admin API: Full key generation, activation, and management (400 lines)
+- Testing suite: Comprehensive 6-phase testing checklist
+- Documentation: 7,000+ words across 4 markdown files
+
+**Admin Dashboard Complete** 📊
+- Added AI Agents section: Monitor and control all AI agents
+- Added Security section: Fraud dashboard with IP tracking and suspicion scores
+- Added Wallets section: Complete wallet management with balances and transactions
+- 320+ lines of JavaScript: refreshAIAgents(), refreshSecurity(), refreshWallets()
+- Full CSS styling: Tables, badges, action buttons, search/filter functionality
+
+**3D Visualization Fixed** ✨
+- Fixed camera distance (250 → 200 units) for better viewing angle
+- Increased ambient light (0.6 → 1.0) for proper illumination
+- Added forced mesh visibility to all loaded models
+- Added diagnostic console logging for debugging
+
+**Academy Content Expansion** 📚
+- cutting_fundamentals: Added 4 detailed lessons (angles, facet sequence, table size, girdle)
+- polishing_mastery: Added 4 lessons (compounds, lap speed, scratch removal, mirror polish)
+- advanced_designs: Added 4 lessons (fancy shapes, custom faceting, concave, fantasy cuts)
+- All lessons now have complete interactive content, quizzes, and practice exercises
+
+**Previous (Morning Update)**
 - Fixed authentication UI overlay persistence issue
 - Removed Three.js and Node.js require() shim (not needed)
 - Fixed game integration module timing
