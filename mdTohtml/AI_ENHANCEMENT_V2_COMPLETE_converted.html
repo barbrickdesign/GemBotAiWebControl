@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI_ENHANCEMENT_V2_COMPLETE - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        <h1>GemBot Enhanced AI System v2 - Complete Implementation</h1>
+
+<h2>Overview</h2>
+<p>This implementation adds a sophisticated, Jarvis-like AI assistant with natural conversation abilities, failure detection, helper buttons, accessibility features, and proactive guidance for gem cutting operations.</p>
+
+<h2>🎭 Jarvis Personality System</h2>
+
+<h3>What It Does</h3>
+<p>The AI responds like a sophisticated British AI butler - helpful, accurate, anticipatory, and polite.</p>
+
+<h3>Voice Configuration (Auto-Setup)</h3>
+<ul><li class="ul-item"><strong>Voice</strong>: Automatically selects first available English voice</li>
+<li class="ul-item"><strong>Speed</strong>: 0.85x (slightly slower for clarity)</li>
+<li class="ul-item"><strong>Pitch</strong>: 0.9 (slightly lower for sophistication)</li>
+<li class="ul-item"><strong>Volume</strong>: 0.9 (confident presence)</li></ul>
+
+<h3>Jarvis Responses</h3>
+<p>Uses conversational phrases like:</p>
+<ul><li class="ul-item">"Good morning, sir. I am your GemBot assistant. All systems are nominal."</li>
+<li class="ul-item">"Welcome back. I am ready to assist you. Shall we begin?"</li>
+<li class="ul-item">"Understood. I am monitoring the situation."</li>
+<li class="ul-item">"I must bring something to your attention."</li></ul>
+
+<h2>💬 Enhanced Conversation System</h2>
+
+<h3>Intent Detection</h3>
+<p>The AI understands 9 different types of queries:</p>
+
+<ol><li class="ol-item"><strong>Asking for Help</strong>: "how", "what", "help", "guide", "explain"</li></ol>
+<p>   - Provides detailed contextual guidance</p>
+<p>   - Shows helper buttons for next steps</p>
+
+<ol><li class="ol-item"><strong>Position Queries</strong>: "position", "where", "coordinate"</li></ol>
+<p>   - Returns current X, Y, Rotation, Index values</p>
+<p>   - References machine state directly</p>
+
+<ol><li class="ol-item"><strong>Mode Questions</strong>: "mode", "continuous", "step", "click", "hold"</li></ol>
+<p>   - Explains current mode</p>
+<p>   - Compares with alternative mode</p>
+
+<ol><li class="ol-item"><strong>Speed Adjustment</strong>: "speed", "fast", "slow", "quick"</li></ol>
+<p>   - Shows current level (1-5)</p>
+<p>   - Explains implications for precision vs speed</p>
+
+<ol><li class="ol-item"><strong>Recovery</strong>: "recover", "resume", "load", "power loss"</li></ol>
+<p>   - Displays last saved position and settings</p>
+<p>   - Shows past issues if any</p>
+
+<ol><li class="ol-item"><strong>Cutting Guidance</strong>: "cut", "cutting", "process", "facet", "stone"</li></ol>
+<p>   - Detailed cutting technique advice</p>
+<p>   - References manual knowledge base</p>
+
+<ol><li class="ol-item"><strong>Stone Switching</strong>: "stone", "switch", "change", "lap", "polish"</li></ol>
+<p>   - Step-by-step switching procedure</p>
+<p>   - Shows context-appropriate helper buttons</p>
+
+<ol><li class="ol-item"><strong>Emergency</strong>: "emergency", "stop", "stuck", "danger"</li></ol>
+<p>   - Immediate guidance for crisis situations</p>
+<p>   - Clear action steps</p>
+
+<ol><li class="ol-item"><strong>Problem Reports</strong>: "not work", "wrong", "broken", "error", "stuck"</li></ol>
+<p>   - Analyzes situation</p>
+<p>   - Records failure for pattern detection</p>
+<p>   - Suggests troubleshooting steps</p>
+
+<h3>Conversational Responses</h3>
+<p>When query intent is unclear, AI responds conversationally:</p>
+<ul><li class="ul-item">"I appreciate your inquiry. I am monitoring all systems and standing ready to assist."</li>
+<li class="ul-item">"How may I be of service in your cutting endeavor?"</li>
+<li class="ul-item">"I note your statement. Please advise if you require technical guidance."</li></ul>
+
+<h2>🎯 Helper Button System</h2>
+
+<h3>What Are Helper Buttons?</h3>
+<p>Context-aware suggestion buttons that appear when user seems stuck or needs guidance.</p>
+
+<h3>Button Types</h3>
+<ol><li class="ol-item"><strong>How to Cut</strong> 📚</li></ol>
+<p>   - Step-by-step cutting procedure</p>
+<p>   - Appears when discussing cutting, process, technique</p>
+
+<ol><li class="ol-item"><strong>Switch Stone/Lap</strong> 🔄</li></ol>
+<p>   - Stone switching procedure with HOME button</p>
+<p>   - Appears when discussing stone changes</p>
+
+<ol><li class="ol-item"><strong>Emergency Help</strong> 🛑</li></ol>
+<p>   - Crisis response and recovery</p>
+<p>   - Always available, contextually suggested</p>
+
+<ol><li class="ol-item"><strong>Troubleshoot</strong> 🔧</li></ol>
+<p>   - Systematic problem diagnosis</p>
+<p>   - Appears on stuck motor, connection issues</p>
+
+<ol><li class="ol-item"><strong>Go Home</strong> 🏠</li></ol>
+<p>   - Direct action button to execute HOME command</p>
+<p>   - Appears in troubleshooting contexts</p>
+
+<ol><li class="ol-item"><strong>Quick Guide</strong> 📖</li></ol>
+<p>   - One-minute orientation to modes, speeds, positioning</p>
+<p>   - Appears when basics are questioned</p>
+
+<h3>When Buttons Appear</h3>
+<ul><li class="ul-item">User asks "how to..." or "help with..."</li>
+<li class="ul-item">User reports stuck motor or connection issues</li>
+<li class="ul-item">User asks about stone switching</li>
+<li class="ul-item">User asks about mode/speed/position basics</li></ul>
+
+<h3>Button Styling</h3>
+<ul><li class="ul-item">Blue background (#667eea) with hover effect</li>
+<li class="ul-item">Purple on hover (#764ba2)</li>
+<li class="ul-item">Located below AI messages</li>
+<li class="ul-item">Clear emoji labels for accessibility</li></ul>
+
+<h2>🔍 Failure Detection System</h2>
+
+<h3>Failure Types Tracked</h3>
+<ol><li class="ol-item"><strong>Stuck Motor</strong> - Motor unresponsive, repeated same command</li>
+<li class="ol-item"><strong>Connection Loss</strong> - Serial port disconnected</li>
+<li class="ol-item"><strong>Command Ignored</strong> - Sent but not executed</li>
+<li class="ol-item"><strong>Camera Issue</strong> - Video feed unavailable</li></ol>
+
+<h3>Pattern Recognition</h3>
+<ul><li class="ul-item">Tracks last 20 failures</li>
+<li class="ul-item">Alerts when same failure occurs 3+ times</li>
+<li class="ul-item">Learns from command history (500 last commands)</li>
+<li class="ul-item">Suggests recovery based on pattern</li></ul>
+
+<h3>Proactive Alerts</h3>
+<p>When pattern detected:</p>
+<ul><li class="ul-item">"I have observed a recurring issue: The motor has become unresponsive 3 times."</li>
+<li class="ul-item">Suggests specific recovery steps</li>
+<li class="ul-item">Monitors for future occurrences</li>
+<li class="ul-item">Escalates if pattern continues</li></ul>
+
+<h3>Failure Recording</h3>
+<p>Automatically captures:</p>
+<ul><li class="ul-item">Failure type and context</li>
+<li class="ul-item">Machine position at failure</li>
+<li class="ul-item">Timestamp</li>
+<li class="ul-item">Last command executed</li>
+<li class="ul-item">Connection state</li></ul>
+
+<h2>🏠 Power-Up Sequence</h2>
+
+<h3>On Page Load (1-2 seconds)</h3>
+<ol><li class="ol-item"><strong>Jarvis Greeting</strong> (auto-spoken via voice)</li></ol>
+<p>   - "Good morning. I am your GemBot assistant..."</p>
+<p>   - Friendly, sophisticated British tone</p>
+<p>   - Sets expectation for AI personality</p>
+
+<ol><li class="ol-item"><strong>System Status</strong></li></ol>
+<p>   - All classes initialized</p>
+<p>   - Machine state loaded from localStorage (if available)</p>
+<p>   - Voice system ready</p>
+<p>   - AI ready for input</p>
+
+<h3>On Connection Success</h3>
+<ol><li class="ol-item"><strong>Connection Confirmation</strong> (auto-spoken)</li></ol>
+<p>   - "Connection established. All systems green."</p>
+<p>   - "Communication link is secure. Machine is prepared."</p>
+
+<ol><li class="ol-item"><strong>Helpful Tip</strong> (after 2 seconds)</li></ol>
+<p>   - "May I suggest beginning with HOME button?"</p>
+<p>   - "Use STEP mode for optimal positioning"</p>
+<p>   - "Camera is available for visual verification"</p>
+<p>   - Random contextual suggestion</p>
+
+<h3>On Connection Loss</h3>
+<ul><li class="ul-item"><strong>Warning Message</strong> (auto-spoken)</li>
+<li class="ul-item">"I have detected connection loss. Machine state has been saved. Upon reconnection, I will restore your session."</li>
+<li class="ul-item">Automatic state recovery on reconnect</li></ul>
+
+<h2>♿ Accessibility Mode for Elderly Users</h2>
+
+<h3>What It Does</h3>
+<p>Simplifies UI and language for users who may be less experienced with technology.</p>
+
+<h3>Enables</h3>
+<ol><li class="ol-item"><strong>Larger Text</strong> </li></ol>
+<p>   - Messages: 16px (default 14px)</p>
+<p>   - Input field: 16px</p>
+<p>   - Line height: 1.8 (increased spacing)</p>
+
+<ol><li class="ol-item"><strong>Simplified Language</strong></li></ol>
+<p>   - Shorter sentences</p>
+<p>   - Direct instructions</p>
+<p>   - Less technical jargon</p>
+
+<ol><li class="ol-item"><strong>Extra Guidance</strong></li></ol>
+<p>   - Button tooltips on hover</p>
+<p>   - More confirmation messages</p>
+<p>   - Step-by-step explanations</p>
+<p>   - Encouragement and positive feedback</p>
+
+<ol><li class="ol-item"><strong>Visual Help</strong></li></ol>
+<p>   - Larger button padding</p>
+<p>   - High contrast labels</p>
+<p>   - Clear, readable fonts</p>
+
+<h3>Activation</h3>
+<p>Button in top right of AI panel: "♿ Accessibility"</p>
+<ul><li class="ul-item">Click to enable</li>
+<li class="ul-item">Click again to disable</li>
+<li class="ul-item">Setting persists in localStorage (<code class="inline-code">gembot<em>accessibility</em>enabled</code>)</li></ul>
+
+<h3>Example: Normal vs Accessibility</h3>
+<p><strong>Normal</strong>: "Position: X=23, Y=45, Angle=12°, Index=3"</p>
+<p><strong>Accessibility</strong>: "Your current position is: X-axis: 23 | Y-axis: 45 | Rotation: 12 degrees | Index position: 3"</p>
+
+<h2>🎬 Scenario Detection System</h2>
+
+<h3>Monitors Every 5 Seconds For</h3>
+
+<ol><li class="ol-item"><strong>Cut Completion</strong></li></ol>
+<p>   - Watches for position stabilization (no change for 10 commands)</p>
+<p>   - When stable, suggests:</p>
+<p>     - "You appear to be near your final position. Is the cut complete?"</p>
+<p>     - "The cutting is progressing well. Let me know when ready to switch."</p>
+<p>   - Helps user know when next step is appropriate</p>
+
+<ol><li class="ol-item"><strong>Stuck User Detection</strong></li></ol>
+<p>   - Identifies repeated same command (8+ times in 15 commands)</p>
+<p>   - Suggests:</p>
+<p>     - "I notice you are repeating the same movement."</p>
+<p>     - "Try a different axis, or use helper buttons for guidance"</p>
+<p>   - Shows relevant helper buttons</p>
+
+<ol><li class="ol-item"><strong>Excessive Issues</strong></li></ol>
+<p>   - Tracks cumulative failures</p>
+<p>   - When multiple issues detected:</p>
+<p>     - Offers complete troubleshooting guide</p>
+<p>     - Offers step-by-step test sequence</p>
+<p>     - Shows emergency help buttons</p>
+
+<h2>📚 Manual Knowledge Base</h2>
+
+<h3>Included Topics</h3>
+
+<p><strong>Cutting Process</strong></p>
+<ul><li class="ul-item">Introduction to gem cutting</li>
+<li class="ul-item">Positioning techniques</li>
+<li class="ul-item">Stone and lap selection</li>
+<li class="ul-item">Safety considerations</li>
+<li class="ul-item">Completion detection</li></ul>
+
+<p><strong>Movement & Control</strong></p>
+<ul><li class="ul-item">Mode selection (CONTINUOUS vs STEP)</li>
+<li class="ul-item">Speed adjustment (Levels 1-5)</li>
+<li class="ul-item">Axis control (X, Y, Rotation, Index)</li>
+<li class="ul-item">Emergency procedures</li></ul>
+
+<p><strong>Recovery & Troubleshooting</strong></p>
+<ul><li class="ul-item">Lost connection recovery</li>
+<li class="ul-item">Motor timeout recovery</li>
+<li class="ul-item">Position recovery</li>
+<li class="ul-item">Command history analysis</li></ul>
+
+<p><strong>Indexing & Stone Switching</strong></p>
+<ul><li class="ul-item">Index position navigation</li>
+<li class="ul-item">Safe stone removal</li>
+<li class="ul-item">Proper stone positioning</li>
+<li class="ul-item">Lap selection</li></ul>
+
+<h3>Knowledge Source</h3>
+<ul><li class="ul-item">Built from typical gem-cutting machine operation</li>
+<li class="ul-item">References Gem Bot User Manual.pdf</li>
+<li class="ul-item">Covers beginner through advanced operations</li></ul>
+
+<h2>🔧 Technical Implementation</h2>
+
+<h3>Classes Implemented</h3>
+
+<h4>GemBotAI (Enhanced v2)</h4>
+<ul><li class="ul-item"><strong>Constructor</strong>: Initializes knowledge base, context history, skill level tracking, detected issues</li>
+<li class="ul-item"><strong>handleUserQuery()</strong>: Routes query by intent type</li>
+<li class="ul-item"><strong>Intent Detection Methods</strong>: 9 different query type detectors</li>
+<li class="ul-item"><strong>Response Methods</strong>: Specific guidance for each intent type</li>
+<li class="ul-item"><strong>showHelperButtons()</strong>: Displays contextual buttons based on query</li></ul>
+
+<p><strong>Key Methods</strong>:</p>
+<ul><li class="ul-item"><code class="inline-code">provideContextualHelp()</code> - General help guidance</li>
+<li class="ul-item"><code class="inline-code">getCuttingGuidance()</code> - Technique advice</li>
+<li class="ul-item"><code class="inline-code">getStoneSwitchingGuide()</code> - Step-by-step stone switching</li>
+<li class="ul-item"><code class="inline-code">getEmergencyGuidance()</code> - Crisis response</li>
+<li class="ul-item"><code class="inline-code">handleProblemReport()</code> - Failure detection integration</li>
+<li class="ul-item"><code class="inline-code">getConversationalResponse()</code> - Jarvis personality responses</li></ul>
+
+<h4>HelperButtons</h4>
+<ul><li class="ul-item"><strong>Constructor</strong>: Defines 7 button types with actions</li>
+<li class="ul-item"><strong>show(buttonIds)</strong>: Creates and displays buttons</li>
+<li class="ul-item"><strong>hide()</strong>: Hides button container</li>
+<li class="ul-item"><strong>Buttons</strong>: How to Cut, Stone Switching, Emergency Help, Troubleshoot, Go Home, Quick Guide</li></ul>
+
+<h4>FailureDetector</h4>
+<ul><li class="ul-item"><strong>recordFailure()</strong>: Logs failure with context and position</li>
+<li class="ul-item"><strong>analyzePatterns()</strong>: Identifies recurring issues</li>
+<li class="ul-item"><strong>alertRecurringFailure()</strong>: Notifies user of patterns</li>
+<li class="ul-item"><strong>getFailureHistory()</strong>: Returns last 10 failures</li></ul>
+
+<h4>JarvisPersonality</h4>
+<ul><li class="ul-item"><strong>initialize()</strong>: Sets up voice and greeting on page load</li>
+<li class="ul-item"><strong>setupJarvisVoice()</strong>: Configures optimal voice settings</li>
+<li class="ul-item"><strong>giveGreeting()</strong>: Speaks welcoming greeting</li>
+<li class="ul-item"><strong>onConnectionSuccess()</strong>: Confirms connection and gives tip</li>
+<li class="ul-item"><strong>onConnectionLoss()</strong>: Warns about disconnection</li></ul>
+
+<h4>AccessibilityMode</h4>
+<ul><li class="ul-item"><strong>enable()</strong>: Applies large text, simplified language, extra guidance</li>
+<li class="ul-item"><strong>disable()</strong>: Reverts to normal styling</li>
+<li class="ul-item"><strong>applyStyling()</strong>: Increases font size, spacing, padding</li>
+<li class="ul-item"><strong>simplifyLanguage()</strong>: Prepares for simple response format</li>
+<li class="ul-item"><strong>addExtraGuidance()</strong>: Adds tooltips and confirmation</li>
+<li class="ul-item"><strong>saveSettings()</strong>: Persists to localStorage</li>
+<li class="ul-item"><strong>loadSettings()</strong>: Loads on page reload</li></ul>
+
+<h4>ScenarioDetector</h4>
+<ul><li class="ul-item"><strong>monitor()</strong>: Runs every 5 seconds</li>
+<li class="ul-item"><strong>detectCutCompletion()</strong>: Watches for position stabilization</li>
+<li class="ul-item"><strong>detectStuckUser()</strong>: Identifies repeated commands</li>
+<li class="ul-item"><strong>detectExcessiveRepeatedCommands()</strong>: Tracks cumulative issues</li></ul>
+
+<h3>Integration Points</h3>
+
+<ol><li class="ol-item"><strong>With VoiceManager</strong></li></ol>
+<p>   - Auto-speaks AI responses (assistant type messages)</p>
+<p>   - Removes emojis for cleaner speech</p>
+<p>   - Uses configured voice, speed, pitch, volume</p>
+
+<ol><li class="ol-item"><strong>With MachineStateManager</strong></li></ol>
+<p>   - References current position (X, Y, Angle, Index)</p>
+<p>   - Accesses command history (500 last commands)</p>
+<p>   - Triggers saves on failures</p>
+
+<ol><li class="ol-item"><strong>With Serial Communication</strong></li></ol>
+<p>   - Records every command sent</p>
+<p>   - Monitors for ignored commands</p>
+<p>   - Tracks connection state</p>
+
+<ol><li class="ol-item"><strong>With Event Listeners</strong></li></ol>
+<p>   - Responds to aiSendBtn click</p>
+<p>   - Responds to aiInput Enter key</p>
+<p>   - Accessibility toggle button</p>
+
+<ol><li class="ol-item"><strong>With Page Load</strong></li></ol>
+<p>   - Window load event triggers Jarvis greeting</p>
+<p>   - Connection monitor watches for success</p>
+<p>   - Scenario detector starts monitoring</p>
+
+<h2>📊 Data Flow</h2>
+
+<h3>User Asks Question</h3>
+<ol><li class="ol-item">User types message and clicks SEND (or presses Enter)</li>
+<li class="ol-item">Message displayed as "user" type</li>
+<li class="ol-item"><code class="inline-code">ai.handleUserQuery(message)</code> called</li>
+<li class="ol-item">Intent detection identifies query type</li>
+<li class="ol-item">Appropriate response method called</li>
+<li class="ol-item">Response added as "assistant" type message</li>
+<li class="ol-item">If assistant message, auto-spoken by VoiceManager</li>
+<li class="ol-item">If context suggests, helper buttons shown</li>
+<li class="ol-item">Context history updated (max 10 recent queries)</li></ol>
+
+<h3>Failure Occurs</h3>
+<ol><li class="ol-item">Serial command fails or times out</li>
+<li class="ol-item"><code class="inline-code">failureDetector.recordFailure(type, context)</code> called</li>
+<li class="ol-item">Failure stored with timestamp and position</li>
+<li class="ol-item">Pattern analysis runs</li>
+<li class="ol-item">If 3+ same type failures: alert shown</li>
+<li class="ol-item">User may ask "what went wrong?" or AI suggests recovery</li>
+<li class="ol-item">Helper buttons shown for troubleshooting</li></ol>
+
+<h3>Power-Up Sequence</h3>
+<ol><li class="ol-item">Page loads</li>
+<li class="ol-item">JavaScript executes, classes instantiated</li>
+<li class="ol-item">Event listeners attached</li>
+<li class="ol-item">Window load event fires</li>
+<li class="ol-item"><code class="inline-code">jarvis.initialize()</code> called (1 second delay)</li>
+<li class="ol-item"><code class="inline-code">setupJarvisVoice()</code> configures voice settings</li>
+<li class="ol-item"><code class="inline-code">giveGreeting()</code> displays and speaks greeting</li>
+<li class="ol-item"><code class="inline-code">scenarioDetector.monitor()</code> starts 5-second loop</li>
+<li class="ol-item">Connection monitor watches for <code class="inline-code">isConnected = true</code></li>
+<li class="ol-item">When connected, <code class="inline-code">jarvis.onConnectionSuccess()</code> fires</li>
+<li class="ol-item">Connection confirmation spoken</li>
+<li class="ol-item">Helpful tip given after 2 seconds</li></ol>
+
+<h2>🎬 Example Interactions</h2>
+
+<h3>Scenario 1: User Asks "How do I switch stones?"</h3>
+<pre class="code-block " data-lang="text"><code>User: &quot;How do I switch stones?&quot;
+<p>AI: &quot;When switching to a new stone or lap, follow these steps: First, press the HOME </p>
+<p>    button to return to the origin position. Then, carefully remove the current stone. </p>
+<p>    Position your new stone on the new lap or index position. Use STEP mode to carefully </p>
+<p>    position it against the lap. Once positioned, resume your cutting at the appropriate speed.&quot;</p>
+<p>[Helper buttons appear: 🔄 Switch Stone/Lap | 🏠 Go Home | 🛑 Emergency Help]</code></pre></p>
+
+<h3>Scenario 2: Motor Stuck (3rd occurrence)</h3>
+<pre class="code-block " data-lang="text"><code>[After 3rd stuck motor failure]
+<p>AI: &quot;⚠️ I have observed a recurring issue: The motor has become unresponsive 3 times. </p>
+<p>    This suggests a connection or position issue. May I suggest: First try HOME button, </p>
+<p>    then EMERGENCY STOP if unresponsive, then reconnect.&quot;</p>
+<p>[Helper buttons appear: 🔧 Troubleshoot | 🏠 Go Home | 🛑 Emergency Help]</code></pre></p>
+
+<h3>Scenario 3: Power-Up (Auto)</h3>
+<pre class="code-block " data-lang="text"><code>[Page loads]
+<p>Voice (Jarvis): &quot;Good morning. I am your GemBot assistant. All systems are nominal </p>
+<p>                 and prepared for operation.&quot;</p>
+
+<p>[User connects to Arduino]</p>
+<p>Voice (Jarvis): &quot;Connection established. All systems green. Ready to proceed with </p>
+<p>                 your cutting session.&quot;</p>
+
+<p>[After 2 seconds]</p>
+<p>Voice (Jarvis): &quot;For optimal results, use STEP mode during initial positioning. </p>
+<p>                 You may increase speed once aligned.&quot;</code></pre></p>
+
+<h3>Scenario 4: Accessibility Mode Enabled</h3>
+<pre class="code-block " data-lang="text"><code>User: Clicks ♿ Accessibility button
+
+<p>AI: &quot;✅ Accessibility Mode ENABLED. Text is larger and language is simplified. </p>
+<p>     I will provide extra guidance.&quot;</p>
+
+<p>[Text size increases from 14px to 16px]</p>
+<p>[All input fields increase to 16px]</p>
+<p>[Extra explanation provided in future messages]</p>
+<p>[Button tooltips added: &quot;Click to START CAMERA&quot;, etc.]</code></pre></p>
+
+<h2>📈 Monitoring & Logging</h2>
+
+<h3>Console Logging</h3>
+<p>All major events logged to browser console:</p>
+<ul><li class="ul-item"><code class="inline-code">🎤 Jarvis voice configured: ...</code></li>
+<li class="ul-item"><code class="inline-code">💬 Enhanced AI response system active</code></li>
+<li class="ul-item"><code class="inline-code">📍 Failure recorded: stuck_motor - Motor unresponsive</code></li>
+<li class="ul-item"><code class="inline-code">🔍 Failure pattern detected: 3 occurrences of command_ignored</code></li>
+<li class="ul-item"><code class="inline-code">✨ Accessibility styling applied</code></li>
+<li class="ul-item"><code class="inline-code">🎬 Scenario monitor: Detecting cut completion</code></li></ul>
+
+<h3>localStorage Persistence</h3>
+<ul><li class="ul-item"><code class="inline-code">gembot<em>machine</em>state</code>: Position, mode, speed (auto-save every 2 sec)</li>
+<li class="ul-item"><code class="inline-code">gembot<em>voice</em>settings</code>: Voice selection, speed, pitch, volume</li>
+<li class="ul-item"><code class="inline-code">gembot<em>accessibility</em>enabled</code>: Accessibility mode state</li></ul>
+
+<h3>Session History</h3>
+<ul><li class="ul-item">Full command history (500 max) in memory</li>
+<li class="ul-item">Failure patterns (20 max) tracked</li>
+<li class="ul-item">Context history (10 max queries) retained</li>
+<li class="ul-item">All indexed by timestamp for recovery</li></ul>
+
+<h2>✨ Features Summary</h2>
+
+<p>| Feature | Description | Status |</p>
+<p>|---------|-------------|--------|</p>
+<p>| <strong>Jarvis Personality</strong> | Sophisticated AI responses in British butler style | ✅ Complete |</p>
+<p>| <strong>9 Intent Types</strong> | Help, Position, Mode, Speed, Recovery, Cutting, Stone, Emergency, Problems | ✅ Complete |</p>
+<p>| <strong>Helper Buttons</strong> | 7 types of contextual suggestion buttons | ✅ Complete |</p>
+<p>| <strong>Failure Detection</strong> | Tracks 4 failure types with pattern recognition | ✅ Complete |</p>
+<p>| <strong>Power-Up Sequence</strong> | Auto greeting on load, connection confirmation | ✅ Complete |</p>
+<p>| <strong>Voice Configuration</strong> | Auto-Jarvis voice setup (0.85x speed, 0.9 pitch) | ✅ Complete |</p>
+<p>| <strong>Accessibility Mode</strong> | Large text, simplified language for elderly users | ✅ Complete |</p>
+<p>| <strong>Scenario Detection</strong> | Monitors for cut completion, stuck users, issues | ✅ Complete |</p>
+<p>| <strong>Manual Knowledge</strong> | Knowledge base covering cutting, control, recovery | ✅ Complete |</p>
+<p>| <strong>Persistence</strong> | Settings saved to localStorage, auto-recovered | ✅ Complete |</p>
+
+<h2>🚀 Usage Instructions</h2>
+
+<h3>For End Users</h3>
+
+<ol><li class="ol-item"><strong>Load Page</strong>: AI greets you automatically in Jarvis voice</li>
+<li class="ol-item"><strong>Connect Machine</strong>: Click SCAN, select port, click CONNECT</li>
+<li class="ol-item"><strong>Get Guidance</strong>: </li></ol>
+<p>   - Ask questions: "How do I cut?", "How do I switch stones?"</p>
+<p>   - Click helper buttons for step-by-step guidance</p>
+<p>   - AI monitors and alerts if problems detected</p>
+<ol><li class="ol-item"><strong>Enable Accessibility</strong>: Click ♿ Accessibility if text too small</li>
+<li class="ol-item"><strong>Emergency</strong>: Press EMERGENCY STOP - Jarvis will assist recovery</li></ol>
+
+<h3>For Developers</h3>
+
+<p><strong>Adding Custom Knowledge</strong>:</p>
+<pre class="code-block javascript" data-lang="javascript"><code>// Edit AI knowledge base in GemBotAI constructor
+<p>this.knowledge.cutting[&#039;advanced&#039;] = &#039;Your custom knowledge here...&#039;;</code></pre></p>
+
+<p><strong>Customizing Jarvis Voice</strong>:</p>
+<pre class="code-block javascript" data-lang="javascript"><code>// Edit in JarvisPersonality.jarvisSettings
+<p>this.jarvisSettings.speechRate = 0.75; // Even slower</p>
+<p>this.jarvisSettings.pitch = 0.7; // Deeper voice</code></pre></p>
+
+<p><strong>Adding New Helper Button</strong>:</p>
+<pre class="code-block javascript" data-lang="javascript"><code>// Add to HelperButtons.buttonDefinitions
+<p>&#039;custom_guide&#039;: {</p>
+<p>    label: &#039;📚 Custom Guide&#039;,</p>
+<p>    action: () =&gt; addMessage(&#039;Your custom guidance...&#039;, &#039;assistant&#039;)</p>
+<p>}</p>
+
+<p>// Show button:</p>
+<p>helpers.show([&#039;custom&lt;em&gt;guide&#039;, &#039;other&lt;/em&gt;button&#039;]);</code></pre></p>
+
+<h2>📝 Notes</h2>
+
+<ul><li class="ul-item">All features work offline (no external dependencies for AI)</li>
+<li class="ul-item">Voice uses Web Speech API (browser built-in, no setup needed)</li>
+<li class="ul-item">Machine state recovers automatically from localStorage</li>
+<li class="ul-item">Failure detection learns from session history</li>
+<li class="ul-item">Accessibility mode respects all existing functionality</li>
+<li class="ul-item">Helper buttons integrate with all AI responses</li></ul>
+
+<h2>🎯 Next Steps</h2>
+
+<ol><li class="ol-item"><strong>Test on Hardware</strong> - Verify all features with Arduino</li>
+<li class="ol-item"><strong>Voice Testing</strong> - Confirm Jarvis voice quality on different systems</li>
+<li class="ol-item"><strong>Elderly User Testing</strong> - Get feedback on accessibility mode</li>
+<li class="ol-item"><strong>Manual Integration</strong> - Extract specific sections from User Manual PDF</li>
+<li class="ol-item"><strong>Scenario Refinement</strong> - Adjust detection algorithms based on real usage</li></ol>
+
+<hr>
+
+<p><strong>Version</strong>: 2.0 Enhanced AI System  </p>
+<p><strong>Date</strong>: 2025  </p>
+<p><strong>Status</strong>: ✅ COMPLETE AND INTEGRATED</p>
+
+        <div class="generated-notice">
+            🤖 Auto-generated from AI_ENHANCEMENT_V2_COMPLETE.md by GemBot Neural Dashboard Agent<br>
+            Generated: 2025-12-16T13:51:59.525Z
+        </div>
+    </div>
+</body>
+</html>

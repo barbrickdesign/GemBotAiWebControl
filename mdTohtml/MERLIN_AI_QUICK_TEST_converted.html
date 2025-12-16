@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MERLIN_AI_QUICK_TEST - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        <h1>🧙‍♂️ MERLIN AI - YOUR 5-MINUTE TEST GUIDE</h1>
+
+<p><strong>Created:</strong> December 16, 2025  </p>
+<p><strong>Status:</strong> ✅ Ready for Testing  </p>
+<p><strong>Your Mission:</strong> Test Merlin AI in 5 minutes!  </p>
+
+<hr>
+
+<h2>⚡ FASTEST WAY TO TEST (30 SECONDS)</h2>
+
+<h3>Step 1: Open the Test Demo</h3>
+<pre class="code-block bash" data-lang="bash"><code>&lt;h1&gt;Open this file in your browser:&lt;/h1&gt;
+<p>MERLIN&lt;em&gt;AI&lt;/em&gt;TEST_DEMO.html</code></pre></p>
+
+<h3>Step 2: Wait for Green Status</h3>
+<p>You should see:</p>
+<pre class="code-block " data-lang="text"><code>✅ Merlin AI Online - All Systems Ready</code></pre>
+
+<h3>Step 3: Click "Run Hello Test"</h3>
+<p>Merlin will introduce himself! 🧙‍♂️</p>
+
+<p><strong>That's it! Merlin AI is working!</strong></p>
+
+<hr>
+
+<h2>🎯 FULL TEST SUITE (5 Minutes)</h2>
+
+<h3>Test 1: 🎤 Hello Flow (30 seconds)</h3>
+<p><strong>Purpose:</strong> Verify connection  </p>
+<p><strong>Action:</strong> Click "Run Hello Test"  </p>
+<p><strong>Expected:</strong> Merlin introduces himself and explains his role  </p>
+<p><strong>Pass Criteria:</strong> ✅ Response received, no errors  </p>
+
+<h3>Test 2: 🔍 Code Analysis (45 seconds)</h3>
+<p><strong>Purpose:</strong> Test quality assessment  </p>
+<p><strong>Action:</strong> Click "Analyze Sample Code"  </p>
+<p><strong>Expected:</strong> </p>
+<ul><li class="ul-item">Quality score (1-10)</li>
+<li class="ul-item">3 specific suggestions</li>
+<li class="ul-item">Security concerns (if any)</li>
+<li class="ul-item">Performance optimizations</li>
+<li class="ul-item">Estimated refactor time</li></ul>
+
+<p><strong>Pass Criteria:</strong> </p>
+<p>✅ Quality score between 1-10  </p>
+<p>✅ At least 2 suggestions  </p>
+<p>✅ Refactor hours estimated  </p>
+
+<h3>Test 3: 📊 Repository Summary (60 seconds)</h3>
+<p><strong>Purpose:</strong> Test full repo analysis  </p>
+<p><strong>Action:</strong> Click "Generate Summary"  </p>
+<p><strong>Expected:</strong> Markdown report with:</p>
+<ul><li class="ul-item">Executive summary</li>
+<li class="ul-item">Architecture quality (X/10)</li>
+<li class="ul-item">3 key strengths</li>
+<li class="ul-item">3 critical issues</li>
+<li class="ul-item">Technology assessment</li>
+<li class="ul-item">5 next steps with time estimates</li>
+<li class="ul-item">Fair market value</li>
+<li class="ul-item">Merlin's verdict</li></ul>
+
+<p><strong>Pass Criteria:</strong>  </p>
+<p>✅ Architecture score provided  </p>
+<p>✅ All sections present  </p>
+<p>✅ Actionable recommendations  </p>
+
+<h3>Test 4: 🔧 Fix Suggestion (45 seconds)</h3>
+<p><strong>Purpose:</strong> Test issue resolution  </p>
+<p><strong>Action:</strong> Click "Get Fix Plan"  </p>
+<p><strong>Expected:</strong></p>
+<ul><li class="ul-item">Root cause analysis</li>
+<li class="ul-item">Proposed solution</li>
+<li class="ul-item">Implementation steps (numbered)</li>
+<li class="ul-item">Testing approach</li>
+<li class="ul-item">Time estimate</li>
+<li class="ul-item">Risk level</li>
+<li class="ul-item">Recommendation</li></ul>
+
+<p><strong>Pass Criteria:</strong>  </p>
+<p>✅ Step-by-step instructions  </p>
+<p>✅ Time estimate provided  </p>
+<p>✅ Risk level assessed  </p>
+
+<h3>Test 5: 💎 Value Prediction (45 seconds)</h3>
+<p><strong>Purpose:</strong> Test value forecasting  </p>
+<p><strong>Action:</strong> Click "Predict Value"  </p>
+<p><strong>Expected:</strong></p>
+<ul><li class="ul-item">Current value</li>
+<li class="ul-item">Predicted new value</li>
+<li class="ul-item">Delta (difference)</li>
+<li class="ul-item">Confidence percentage</li>
+<li class="ul-item">Impact per change</li>
+<li class="ul-item">Recommendations</li></ul>
+
+<p><strong>Pass Criteria:</strong>  </p>
+<p>✅ New value estimate provided  </p>
+<p>✅ Delta calculated  </p>
+<p>✅ Per-change impact shown  </p>
+
+<h3>Test 6: ⚖️ Repo Comparison (45 seconds)</h3>
+<p><strong>Purpose:</strong> Test comparison logic  </p>
+<p><strong>Action:</strong> Click "Compare Repos"  </p>
+<p><strong>Expected:</strong></p>
+<ul><li class="ul-item">Side-by-side comparison table</li>
+<li class="ul-item">Winner declaration</li>
+<li class="ul-item">Specific recommendations for each repo</li></ul>
+
+<p><strong>Pass Criteria:</strong>  </p>
+<p>✅ Comparison table present  </p>
+<p>✅ Clear winner declared  </p>
+<p>✅ Unique recommendations per repo  </p>
+
+<hr>
+
+<h2>✅ WHAT TO CHECK</h2>
+
+<h3>Visual Checks:</h3>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Status badge turns GREEN ✅</li>
+<li class="checkbox"><input type="checkbox" disabled> All 6 test buttons are enabled</li>
+<li class="checkbox"><input type="checkbox" disabled> Results appear in the bottom panel</li>
+<li class="checkbox"><input type="checkbox" disabled> Model badge shows "gemini-1.5-flash"</li>
+<li class="checkbox"><input type="checkbox" disabled> Timestamp updates with each test</li>
+<li class="checkbox"><input type="checkbox" disabled> Token count displayed (if available)</li></ul>
+
+<h3>Console Checks:</h3>
+<p>Open browser console (F12) and verify:</p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> "🧙‍♂️ Merlin AI module loaded"</li>
+<li class="checkbox"><input type="checkbox" disabled> "🧙‍♂️ Initializing Merlin AI..."</li>
+<li class="checkbox"><input type="checkbox" disabled> "✅ Merlin AI initialized successfully"</li>
+<li class="checkbox"><input type="checkbox" disabled> "🧙‍♂️ Merlin says: [introduction text]"</li>
+<li class="checkbox"><input type="checkbox" disabled> No red error messages</li></ul>
+
+<h3>Response Quality Checks:</h3>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Responses are relevant (not generic)</li>
+<li class="checkbox"><input type="checkbox" disabled> Suggestions are specific and actionable</li>
+<li class="checkbox"><input type="checkbox" disabled> Numbers make sense (scores 1-10, hours realistic)</li>
+<li class="checkbox"><input type="checkbox" disabled> Markdown formatting is clean</li>
+<li class="checkbox"><input type="checkbox" disabled> Security/performance items are code-specific</li></ul>
+
+<hr>
+
+<h2>🐛 IF SOMETHING GOES WRONG</h2>
+
+<h3>Problem: Status stays "Initializing..."</h3>
+
+<p><strong>Solution 1:</strong> Check internet connection</p>
+<pre class="code-block bash" data-lang="bash"><code>&lt;h1&gt;Gemini API requires internet&lt;/h1&gt;
+<p>ping google.com</code></pre></p>
+
+<p><strong>Solution 2:</strong> Check API key</p>
+<pre class="code-block javascript" data-lang="javascript"><code>// Open browser console and run:
+<p>console.log(window.merlinAI.apiKey);</p>
+<p>// Should show: AIzaSyCKuf5EVZ-ldHErhG3OkIw9Zz6jb_w3nMc</code></pre></p>
+
+<p><strong>Solution 3:</strong> Check browser console for errors</p>
+<pre class="code-block bash" data-lang="bash"><code>F12 → Console tab → Look for red errors</code></pre>
+
+<h3>Problem: Test returns error message</h3>
+
+<p><strong>Check:</strong></p>
+<ol><li class="ol-item">API key is valid (not expired)</li>
+<li class="ol-item">Gemini API is enabled in Google Cloud Console</li>
+<li class="ol-item">No CORS errors in console</li>
+<li class="ol-item">Internet connection is stable</li></ol>
+
+<p><strong>Try:</strong></p>
+<pre class="code-block javascript" data-lang="javascript"><code>// Manual test in console:
+<p>window.merlinAI.generate(&#039;Hello&#039;).then(r =&gt; console.log(r));</code></pre></p>
+
+<h3>Problem: Response is generic or off-topic</h3>
+
+<p><strong>This is OK!</strong> Sometimes AI responses vary. Try:</p>
+<ol><li class="ol-item">Run the test again (AI is non-deterministic)</li>
+<li class="ol-item">Different runs may give different insights</li>
+<li class="ol-item">As long as structure is correct, it's working</li></ol>
+
+<h3>Problem: Taking too long (>10 seconds)</h3>
+
+<p><strong>Normal:</strong> 2-6 seconds per request  </p>
+<p><strong>Slow:</strong> 7-10 seconds (acceptable)  </p>
+<p><strong>Too Slow:</strong> >10 seconds  </p>
+
+<p><strong>Solution:</strong></p>
+<ul><li class="ul-item">Check network speed</li>
+<li class="ul-item">Try different test (some are faster)</li>
+<li class="ul-item">Gemini API might be under load (retry in 1 minute)</li></ul>
+
+<hr>
+
+<h2>📊 EXPECTED TIMINGS</h2>
+
+<p>| Test | Expected Time | Acceptable | Too Slow |</p>
+<p>|------|---------------|------------|----------|</p>
+<p>| Hello Flow | 2s | <5s | >10s |</p>
+<p>| Code Analysis | 3-4s | <7s | >12s |</p>
+<p>| Repository Summary | 5-6s | <10s | >15s |</p>
+<p>| Fix Suggestion | 4-5s | <8s | >12s |</p>
+<p>| Value Prediction | 5s | <9s | >15s |</p>
+<p>| Repo Comparison | 5-6s | <10s | >15s |</p>
+
+<p><strong>Total Test Time:</strong> ~5 minutes for all 6 tests</p>
+
+<hr>
+
+<h2>🎯 SUCCESS CHECKLIST</h2>
+
+<p>After running all tests, you should have:</p>
+
+<ul class="checklist"><li class="checkbox checked"><input type="checkbox" checked disabled> ✅ Green status badge</li>
+<li class="checkbox checked"><input type="checkbox" checked disabled> 🎤 Hello response received</li>
+<li class="checkbox checked"><input type="checkbox" checked disabled> 🔍 Quality score 1-10 for sample code</li>
+<li class="checkbox checked"><input type="checkbox" checked disabled> 📊 Full repository summary with all sections</li>
+<li class="checkbox checked"><input type="checkbox" checked disabled> 🔧 Step-by-step fix plan</li>
+<li class="checkbox checked"><input type="checkbox" checked disabled> 💎 Value prediction with delta</li>
+<li class="checkbox checked"><input type="checkbox" checked disabled> ⚖️ Repository comparison with winner</li></ul>
+
+<p><strong>If you have all 6 checkmarks: CONGRATULATIONS! 🎉</strong></p>
+
+<p>Merlin AI is fully operational and ready to integrate into the admin dashboard!</p>
+
+<hr>
+
+<h2>🚀 NEXT: INTEGRATE INTO DASHBOARD</h2>
+
+<p>Once all tests pass, you're ready to integrate:</p>
+
+<h3>Quick Integration (5 minutes):</h3>
+
+<ol><li class="ol-item"><strong>Add to ADMIN<em>NEURAL</em>DASHBOARD.html:</strong></li></ol>
+<pre class="code-block html" data-lang="html"><code>&lt;!-- Add before closing &lt;/head&gt; tag --&gt;
+<p>&lt;script src=&quot;merlin-ai-integration.js&quot;&gt;&lt;/script&gt;</code></pre></p>
+
+<ol><li class="ol-item"><strong>Add Merlin Summary Button:</strong></li></ol>
+<pre class="code-block html" data-lang="html"><code>&lt;!-- In AI Agents section --&gt;
+<p>&lt;button id=&quot;merlinSummaryBtn&quot; class=&quot;btn&quot; </p>
+<p>        style=&quot;background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);&quot;&gt;</p>
+<p>  🧙‍♂️ Merlin AI Summary</p>
+<p>&lt;/button&gt;</code></pre></p>
+
+<ol><li class="ol-item"><strong>Wire Up Button:</strong></li></ol>
+<pre class="code-block javascript" data-lang="javascript"><code>// Add to event listeners section
+<p>document.getElementById(&#039;merlinSummaryBtn&#039;).addEventListener(&#039;click&#039;, async () =&gt; {</p>
+<p>  const summary = await window.merlinAI.summarizeRepositoryFlow({</p>
+<p>    name: currentRepo,</p>
+<p>    totalValue: repositoryValue.total,</p>
+<p>    totalHours: repositoryValue.hours,</p>
+<p>    nodeCount: nodes.length,</p>
+<p>    avgComplexity: nodes.reduce((s, n) =&gt; s + (n.metrics?.complexity || 0), 0) / nodes.length,</p>
+<p>    topNodes: nodes.sort((a, b) =&gt; b.value - a.value).slice(0, 10)</p>
+<p>  });</p>
+  
+<p>  // Show in inspector</p>
+<p>  document.getElementById(&#039;inspectorContent&#039;).innerHTML = <code class="inline-code"></p>
+<p>    &lt;h2&gt;🧙‍♂️ Merlin AI Analysis&lt;/h2&gt;</p>
+<p>    &lt;div style=&quot;white-space: pre-wrap;&quot;&gt;${summary.text}&lt;/div&gt;</p>
+<p>  </code>;</p>
+<p>});</code></pre></p>
+
+<p><strong>Done! Merlin AI is now integrated!</strong></p>
+
+<hr>
+
+<h2>📞 REPORT YOUR RESULTS</h2>
+
+<p><strong>After testing, report:</strong></p>
+
+<p>✅ <strong>What worked:</strong></p>
+<ul><li class="ul-item">Which tests passed?</li>
+<li class="ul-item">Response quality good?</li>
+<li class="ul-item">Timings acceptable?</li></ul>
+
+<p>❌ <strong>What didn't work:</strong></p>
+<ul><li class="ul-item">Which tests failed?</li>
+<li class="ul-item">Error messages?</li>
+<li class="ul-item">Console errors?</li></ul>
+
+<p>💡 <strong>Suggestions:</strong></p>
+<ul><li class="ul-item">Features you want?</li>
+<li class="ul-item">UI improvements?</li>
+<li class="ul-item">Additional flows?</li></ul>
+
+<p><strong>Contact:</strong> BarbrickDesign@gmail.com  </p>
+<p><strong>Project:</strong> GemBot AI Control System  </p>
+<p><strong>Date:</strong> December 16, 2025  </p>
+
+<hr>
+
+<h2>🎉 YOU'RE READY!</h2>
+
+<p>Open <strong>MERLIN<em>AI</em>TEST_DEMO.html</strong> right now and run Test 1! 🧙‍♂️</p>
+
+<p>It takes 30 seconds. Go! ⚡</p>
+
+        <div class="generated-notice">
+            🤖 Auto-generated from MERLIN_AI_QUICK_TEST.md by GemBot Neural Dashboard Agent<br>
+            Generated: 2025-12-16T13:52:14.417Z
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SECURITY_QUICK_REFERENCE - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        <h1>🛡️ ANTI-FRAUD SECURITY - QUICK REFERENCE</h1>
+
+<h2>🚨 INSTANT SECURITY STATUS CHECK</h2>
+
+<p>Open browser console (F12) and run:</p>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// View all wallets with security scores
+<p>const wallets = JSON.parse(localStorage.getItem(&#039;gembot_wallets&#039;) || &#039;{}&#039;);</p>
+<p>const securityReport = Object.values(wallets).map(w =&gt; ({</p>
+<p>    username: w.username,</p>
+<p>    email: w.email,</p>
+<p>    bonus: w.welcomeBonus || 100,</p>
+<p>    score: w.security?.score || 0,</p>
+<p>    flagged: w.security?.flagged ? &#039;⚠️ YES&#039; : &#039;✅ NO&#039;</p>
+<p>}));</p>
+<p>console.table(securityReport);</code></pre></p>
+
+<hr>
+
+<h2>📊 DETECTION THRESHOLDS</h2>
+
+<p>| Score | Status | Bonus | Action |</p>
+<p>|-------|--------|-------|--------|</p>
+<p>| 0-49 | 🟢 <strong>SAFE</strong> | 100 GBUV | Account approved |</p>
+<p>| 50-79 | 🟡 <strong>FLAGGED</strong> | 10 GBUV | Reduced bonus + review |</p>
+<p>| 80-100 | 🔴 <strong>BLOCKED</strong> | 0 GBUV | Registration prevented |</p>
+
+<hr>
+
+<h2>🔍 RISK FACTORS</h2>
+
+<h3>IP Address (+50 points max)</h3>
+<ul><li class="ul-item">5+ accounts from IP: <strong>+30</strong></li>
+<li class="ul-item">3-4 accounts: <strong>+20</strong></li>
+<li class="ul-item">2 accounts: <strong>+10</strong></li>
+<li class="ul-item">VPN detected: <strong>+15</strong></li>
+<li class="ul-item">Proxy detected: <strong>+15</strong></li>
+<li class="ul-item">Tor detected: <strong>+20</strong></li>
+<li class="ul-item">Datacenter IP: <strong>+10</strong></li></ul>
+
+<h3>Device Fingerprint (+30 points max)</h3>
+<ul><li class="ul-item">3+ accounts from device: <strong>+30</strong></li>
+<li class="ul-item">2 accounts: <strong>+20</strong></li></ul>
+
+<h3>Email Pattern (+25 points max)</h3>
+<ul><li class="ul-item">Disposable email (tempmail, guerrillamail): <strong>+25</strong></li>
+<li class="ul-item">Sequential pattern (user1@, user2@): <strong>+15</strong></li>
+<li class="ul-item">Suspicious keywords (test, fake, bot): <strong>+10</strong></li>
+<li class="ul-item">Temp mail domain: <strong>+20</strong></li></ul>
+
+<h3>Behavior (+20 points max)</h3>
+<ul><li class="ul-item">Bot-like mouse movements: <strong>+10</strong></li>
+<li class="ul-item">Perfect keyboard timing: <strong>+5</strong></li>
+<li class="ul-item">Less than 10 seconds on site: <strong>+10</strong></li>
+<li class="ul-item">Less than 3 interactions: <strong>+10</strong></li></ul>
+
+<h3>Rate Limiting (+20 points)</h3>
+<ul><li class="ul-item">Registration within 5 minutes: <strong>+20</strong></li></ul>
+
+<hr>
+
+<h2>🧪 TESTING SCENARIOS</h2>
+
+<h3>Test 1: Normal User (100 GBUV)</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>Username: alice
+<p>Email: alice@gmail.com</p>
+<p>Expected Score: 0-20</p>
+<p>Bonus: 100 GBUV ✅</code></pre></p>
+
+<h3>Test 2: Second Account (100 GBUV)</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>Username: bob
+<p>Email: bob@outlook.com</p>
+<p>Expected Score: 10-30</p>
+<p>Bonus: 100 GBUV ✅</code></pre></p>
+
+<h3>Test 3: Third Account (10 GBUV)</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>Username: charlie
+<p>Email: test123@tempmail.com</p>
+<p>Expected Score: 50-70</p>
+<p>Bonus: 10 GBUV ⚠️</code></pre></p>
+
+<h3>Test 4: Fourth Account (BLOCKED)</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>Username: dave
+<p>Email: bot5@throwaway.email</p>
+<p>Expected Score: 80-100</p>
+<p>Result: ❌ &quot;Security violation detected&quot;</code></pre></p>
+
+<hr>
+
+<h2>🔧 ADMIN COMMANDS</h2>
+
+<h3>View Flagged Accounts</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>const flagged = Object.values(wallets).filter(w =&gt; w.security?.flagged);
+<p>console.table(flagged.map(w =&gt; ({</p>
+<p>    user: w.username,</p>
+<p>    score: w.security.score,</p>
+<p>    bonus: w.welcomeBonus,</p>
+<p>    created: new Date(w.created).toLocaleString()</p>
+<p>})));</code></pre></p>
+
+<h3>View IP Tracking Data</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>const ipData = JSON.parse(localStorage.getItem(&#039;ip_tracking&#039;) || &#039;{}&#039;);
+<p>console.log(&#039;Accounts per IP:&#039;, </p>
+<p>    Object.entries(ipData).map(([ip, accounts]) =&gt; </p>
+<p>        <code class="inline-code">${ip}: ${accounts.length} accounts</code></p>
+<p>    )</p>
+<p>);</code></pre></p>
+
+<h3>View Device Fingerprints</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>const prints = JSON.parse(localStorage.getItem(&#039;fingerprint_tracking&#039;) || &#039;{}&#039;);
+<p>console.log(&#039;Accounts per device:&#039;, </p>
+<p>    Object.entries(prints).map(([fp, accounts]) =&gt; </p>
+<p>        <code class="inline-code">${fp.substring(0,16)}...: ${accounts.length} accounts</code></p>
+<p>    )</p>
+<p>);</code></pre></p>
+
+<h3>Check Current Device Fingerprint</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>const fp = await window.securitySystem.generateDeviceFingerprint();
+<p>console.log(&#039;Your device fingerprint:&#039;, fp);</code></pre></p>
+
+<h3>Manually Grant Bonus (False Positive)</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>const wallet = window.walletFactory.getWalletByUsername(&#039;username&#039;);
+<p>await window.walletFactory.rewardUser(</p>
+<p>    wallet.publicKey, </p>
+<p>    90,  // Remainder to reach 100 GBUV</p>
+<p>    &#039;Manual review - false positive&#039;</p>
+<p>);</code></pre></p>
+
+<h3>Clear All Security Data (Testing Only)</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>localStorage.removeItem(&#039;ip_tracking&#039;);
+<p>localStorage.removeItem(&#039;fingerprint_tracking&#039;);</p>
+<p>localStorage.removeItem(&#039;mouse_tracking&#039;);</p>
+<p>localStorage.removeItem(&#039;keyboard_timing&#039;);</p>
+<p>localStorage.removeItem(&#039;interaction_count&#039;);</p>
+<p>localStorage.removeItem(&#039;session_start&#039;);</p>
+<p>localStorage.removeItem(&#039;last&lt;em&gt;registration&lt;/em&gt;attempt&#039;);</p>
+<p>console.log(&#039;✅ Security data cleared&#039;);</code></pre></p>
+
+<hr>
+
+<h2>⚙️ CONFIGURATION</h2>
+
+<p><strong>File:</strong> <code class="inline-code">anti-fraud-system.js</code></p>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Adjust these values in constructor:
+<p>this.maxAccountsPerIP = 3;        // Max accounts per IP</p>
+<p>this.maxAccountsPerDevice = 2;    // Max accounts per device</p>
+<p>this.suspicionThreshold = 50;     // Score for reduced bonus</p>
+<p>this.banThreshold = 80;           // Score for blocking</p>
+<p>this.registrationCooldown = 300000; // 5 minutes</code></pre></p>
+
+<p><strong>File:</strong> <code class="inline-code">automated-wallet-system.js</code></p>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Adjust bonus amounts:
+<p>let welcomeBonus = 100;           // Standard bonus</p>
+<p>if (securityCheck.flagged) {</p>
+<p>    welcomeBonus = 10;            // Reduced bonus</p>
+<p>}</code></pre></p>
+
+<hr>
+
+<h2>📱 ACTIVITY FEED MESSAGES</h2>
+
+<p>| Icon | Message | Meaning |</p>
+<p>|------|---------|---------|</p>
+<p>| 💎 | "New user X joined! Wallet created." | Normal registration (100 GBUV) |</p>
+<p>| ⚠️ | "Flagged account X created (10 GBUV)" | Suspicious account (reduced) |</p>
+<p>| ❌ | "Suspicious registration attempt blocked" | High-risk blocked |</p>
+
+<hr>
+
+<h2>🚨 COMMON FALSE POSITIVES</h2>
+
+<h3>Shared Internet (Office/School)</h3>
+<p><strong>Problem:</strong> Multiple legitimate users from same IP</p>
+<p><strong>Detection:</strong> 3+ accounts from IP</p>
+<p><strong>Solution:</strong> Increase <code class="inline-code">maxAccountsPerIP</code> to 5</p>
+
+<h3>Public WiFi</h3>
+<p><strong>Problem:</strong> Many users on same network</p>
+<p><strong>Detection:</strong> High account count per IP</p>
+<p><strong>Solution:</strong> Whitelist known public WiFi IPs</p>
+
+<h3>VPN Users (Privacy)</h3>
+<p><strong>Problem:</strong> Legitimate user using VPN for privacy</p>
+<p><strong>Detection:</strong> VPN/proxy flag</p>
+<p><strong>Solution:</strong> Manual review + grant full bonus</p>
+
+<h3>Shared Computer</h3>
+<p><strong>Problem:</strong> Family members on same device</p>
+<p><strong>Detection:</strong> Multiple accounts per device</p>
+<p><strong>Solution:</strong> Increase <code class="inline-code">maxAccountsPerDevice</code> to 3</p>
+
+<hr>
+
+<h2>📈 STATISTICS DASHBOARD</h2>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Run this weekly for security report
+<p>const wallets = Object.values(JSON.parse(localStorage.getItem(&#039;gembot_wallets&#039;) || &#039;{}&#039;));</p>
+<p>const total = wallets.length;</p>
+<p>const flagged = wallets.filter(w =&gt; w.security?.flagged).length;</p>
+<p>const blocked = 0; // Blocked users don&#039;t create wallets</p>
+<p>const bonusDistributed = wallets.reduce((sum, w) =&gt; sum + (w.welcomeBonus || 100), 0);</p>
+<p>const averageScore = wallets.reduce((sum, w) =&gt; sum + (w.security?.score || 0), 0) / total;</p>
+
+<p>console.log(<code class="inline-code"></p>
+<p>═══════════════════════════════════════</p>
+<p>   GEMBOT SECURITY REPORT</p>
+<p>═══════════════════════════════════════</p>
+<p>📊 Total Accounts: ${total}</p>
+<p>✅ Normal: ${total - flagged} (${((total-flagged)/total*100).toFixed(1)}%)</p>
+<p>⚠️  Flagged: ${flagged} (${(flagged/total*100).toFixed(1)}%)</p>
+<p>❌ Blocked: ${blocked}</p>
+<p>💰 Bonus Distributed: ${bonusDistributed} GBUV</p>
+<p>📈 Average Security Score: ${averageScore.toFixed(1)}/100</p>
+<p>═══════════════════════════════════════</p>
+</code>);</code></pre>
+
+<hr>
+
+<h2>🎯 DEPLOYMENT STATUS</h2>
+
+<h3>Integrated Files:</h3>
+<ul><li class="ul-item">✅ anti-fraud-system.js (600+ lines)</li>
+<li class="ul-item">✅ automated-wallet-system.js (security checks)</li>
+<li class="ul-item">✅ GemBot<em>Control</em>AI.html (script loaded)</li>
+<li class="ul-item">✅ DOMAIN_TEMPLATE.html (script loaded)</li>
+<li class="ul-item">✅ All 15 domain configs (regenerated)</li></ul>
+
+<h3>Protection Coverage:</h3>
+<ul><li class="ul-item">✅ Main GemBot Control Panel</li>
+<li class="ul-item">✅ betterbook.co.uk</li>
+<li class="ul-item">✅ electrical-airplane.com</li>
+<li class="ul-item">✅ hermeticmicro.com</li>
+<li class="ul-item">✅ madeinnatoalliance.org</li>
+<li class="ul-item">✅ messier-45.com</li>
+<li class="ul-item">✅ oc-tc.com</li>
+<li class="ul-item">✅ orioncrusader.com</li>
+<li class="ul-item">✅ realhogwarts.com</li>
+<li class="ul-item">✅ robertcrobertsoniii.com</li>
+<li class="ul-item">✅ the-autobots.com</li>
+<li class="ul-item">✅ theduesenberg.com</li>
+<li class="ul-item">✅ topofthepyramid.org</li>
+<li class="ul-item">✅ trismegistus-capital.com</li>
+<li class="ul-item">✅ trismegistustech.com</li>
+<li class="ul-item">✅ truetemple.org</li></ul>
+
+<p><strong>100% Network Coverage</strong> 🛡️</p>
+
+<hr>
+
+<h2>📞 EMERGENCY PROCEDURES</h2>
+
+<h3>Massive Attack Detected</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>// Temporarily block ALL registrations
+<p>window.securitySystem.banThreshold = 0;</p>
+<p>console.log(&#039;⛔ All registrations blocked until further notice&#039;);</code></pre></p>
+
+<h3>Mass False Positives</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>// Temporarily disable security (use with caution!)
+<p>window.securitySystem.suspicionThreshold = 999;</p>
+<p>window.securitySystem.banThreshold = 999;</p>
+<p>console.log(&#039;⚠️ Security temporarily disabled - monitor closely!&#039;);</code></pre></p>
+
+<h3>Reset to Defaults</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>window.securitySystem.maxAccountsPerIP = 3;
+<p>window.securitySystem.maxAccountsPerDevice = 2;</p>
+<p>window.securitySystem.suspicionThreshold = 50;</p>
+<p>window.securitySystem.banThreshold = 80;</p>
+<p>console.log(&#039;✅ Security reset to default settings&#039;);</code></pre></p>
+
+<hr>
+
+<h2>🔔 MONITORING ALERTS</h2>
+
+<p>Set up these checks in your monitoring system:</p>
+
+<p><strong>Alert 1: High Fraud Rate</strong></p>
+<pre class="code-block javascript" data-lang="javascript"><code>// If &gt;20% accounts flagged in last hour
+<p>if (flaggedRate &gt; 0.2) {</p>
+<p>    alert(&#039;⚠️ High fraud rate detected!&#039;);</p>
+<p>}</code></pre></p>
+
+<p><strong>Alert 2: Unusual IP Activity</strong></p>
+<pre class="code-block javascript" data-lang="javascript"><code>// If any single IP has 5+ accounts
+<p>const maxPerIP = Math.max(...Object.values(ipData).map(a =&gt; a.length));</p>
+<p>if (maxPerIP &gt;= 5) {</p>
+<p>    alert(&#039;🚨 Potential bonus farm detected!&#039;);</p>
+<p>}</code></pre></p>
+
+<p><strong>Alert 3: Bot Attack</strong></p>
+<pre class="code-block javascript" data-lang="javascript"><code>// If 5+ registrations in 5 minutes
+<p>const recent = wallets.filter(w =&gt; </p>
+<p>    Date.now() - new Date(w.created) &lt; 300000</p>
+<p>);</p>
+<p>if (recent.length &gt;= 5) {</p>
+<p>    alert(&#039;🤖 Possible bot attack!&#039;);</p>
+<p>}</code></pre></p>
+
+<hr>
+
+<h2>🎓 TRAINING DATA</h2>
+
+<p>After 30 days, export data for ML training:</p>
+
+<pre class="code-block javascript" data-lang="javascript"><code>const trainingData = wallets.map(w =&gt; ({
+<p>    features: w.security,</p>
+<p>    label: w.security.flagged ? &#039;fraud&#039; : &#039;legitimate&#039;</p>
+<p>}));</p>
+<p>console.log(JSON.stringify(trainingData, null, 2));</p>
+<p>// Use this to train ML model for improved detection</code></pre></p>
+
+<hr>
+
+<h2>✅ SECURITY SYSTEM IS LIVE!</h2>
+
+<p><strong>Protection Active On:</strong></p>
+<ul><li class="ul-item">All 15 Squarespace domains ✅</li>
+<li class="ul-item">Main control panel ✅</li>
+<li class="ul-item">Automated wallet creation ✅</li>
+<li class="ul-item">Welcome bonus distribution ✅</li></ul>
+
+<p><strong>Your network is now secured against bonus farming!</strong> 🛡️🚀</p>
+
+        <div class="generated-notice">
+            🤖 Auto-generated from SECURITY_QUICK_REFERENCE.md by GemBot Neural Dashboard Agent<br>
+            Generated: 2025-12-16T13:52:24.209Z
+        </div>
+    </div>
+</body>
+</html>

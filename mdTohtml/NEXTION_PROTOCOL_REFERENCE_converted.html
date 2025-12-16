@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEXTION_PROTOCOL_REFERENCE - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        <h1>📱 Nextion Protocol & Command Details</h1>
+
+<h2>Overview</h2>
+
+<p>The Nextion HMI (Human Machine Interface) communicates with the Arduino via serial protocol. The web controller can send commands to the Nextion through the Arduino bridge.</p>
+
+<h2>Command Protocol</h2>
+
+<h3>Basic Command Format</h3>
+
+<p><strong>Nextion Command Structure:</strong></p>
+<pre class="code-block " data-lang="text"><code>command [parameters] [0xFF 0xFF 0xFF]</code></pre>
+
+<p>The three <code class="inline-code">0xFF</code> bytes are the command terminator (required by Nextion protocol).</p>
+
+<h3>Menu Navigation Commands</h3>
+
+<p>These commands navigate the Nextion touch screen menu:</p>
+
+<pre class="code-block " data-lang="text"><code>Command: 0       (Navigate Left)
+<p>Command: 1       (Select/Enter)</p>
+<p>Command: 3       (Navigate Right)</code></pre></p>
+
+<p><strong>Implementation:</strong></p>
+<pre class="code-block javascript" data-lang="javascript"><code>serial.sendCommand(&#039;0&#039;);  // Left
+<p>serial.sendCommand(&#039;1&#039;);  // Enter</p>
+<p>serial.sendCommand(&#039;3&#039;);  // Right</code></pre></p>
+
+<h2>Variable System</h2>
+
+<h3>Getting Variables</h3>
+
+<p><strong>Format:</strong></p>
+<pre class="code-block " data-lang="text"><code>get variable_name</code></pre>
+
+<p><strong>Example:</strong></p>
+<pre class="code-block " data-lang="text"><code>get motorSpeed
+<p>get motorMode</p>
+<p>get positionX</p>
+<p>get selectedStone</code></pre></p>
+
+<p><strong>Nextion Response:</strong></p>
+<pre class="code-block " data-lang="text"><code>variable_name=value</code></pre>
+
+<p><strong>Examples:</strong></p>
+<pre class="code-block " data-lang="text"><code>motorSpeed=3
+<p>motorMode=step</p>
+<p>positionX=125</p>
+<p>selectedStone=Ruby</code></pre></p>
+
+<h3>Setting Variables</h3>
+
+<p><strong>Format:</strong></p>
+<pre class="code-block " data-lang="text"><code>set variable_name value</code></pre>
+
+<p><strong>Examples:</strong></p>
+<pre class="code-block " data-lang="text"><code>set motorSpeed 4
+<p>set motorMode continuous</p>
+<p>set selectedStone Emerald</code></pre></p>
+
+<h2>Communication Protocol</h2>
+
+<h3>Serial Port Configuration</h3>
+
+<ul><li class="ul-item"><strong>Baud Rate:</strong> 9600 (default Nextion) or 115200</li>
+<li class="ul-item"><strong>Data Bits:</strong> 8</li>
+<li class="ul-item"><strong>Stop Bits:</strong> 1</li>
+<li class="ul-item"><strong>Parity:</strong> None</li>
+<li class="ul-item"><strong>Flow Control:</strong> None</li></ul>
+
+<h3>Message Format</h3>
+
+<p>All messages to Nextion should end with newline (<code class="inline-code">\n</code>) or the 3-byte terminator:</p>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Method 1: Newline termination (used in implementation)
+<p>&quot;get motorSpeed\n&quot;</p>
+
+<p>// Method 2: 0xFF 0xFF 0xFF termination (Nextion native)</p>
+<p>&quot;get motorSpeed&quot; + String.fromCharCode(0xFF, 0xFF, 0xFF)</code></pre></p>
+
+<h2>Implemented Variables</h2>
+
+<h3>Motor Control Variables</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>motorSpeed        // Type: Number (1-5)
+<p>                 // Description: Motor speed level</p>
+<p>                 // Default: 1</p>
+
+<p>motorMode        // Type: String (&#039;step&#039; or &#039;continuous&#039;)</p>
+<p>                // Description: Motor operation mode</p>
+<p>                // Default: &#039;continuous&#039;</p>
+
+<p>motorStepSize    // Type: Number (1-70)</p>
+<p>                // Description: Step size in step mode</p>
+<p>                // Default: 1</code></pre></p>
+
+<h3>Position Variables</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>positionX        // Type: Number
+<p>                // Description: X-axis position</p>
+<p>                // Default: 0</p>
+<p>                // Range: Depends on hardware</p>
+
+<p>positionY        // Type: Number</p>
+<p>                // Description: Y-axis position</p>
+<p>                // Default: 0</p>
+<p>                // Range: Depends on hardware</p>
+
+<p>rotationAngle    // Type: Number</p>
+<p>                // Description: Stone rotation angle in degrees</p>
+<p>                // Default: 0</p>
+<p>                // Range: 0-360</p>
+
+<p>indexPosition    // Type: Number</p>
+<p>                // Description: Index/lap position</p>
+<p>                // Default: 0</p>
+<p>                // Range: Depends on hardware</code></pre></p>
+
+<h3>System Variables</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>connectionStatus // Type: String
+<p>                // Values: &#039;connected&#039;, &#039;disconnected&#039;, &#039;error&#039;</p>
+<p>                // Default: &#039;disconnected&#039;</p>
+
+<p>machineMode     // Type: String</p>
+<p>                // Values: &#039;idle&#039;, &#039;running&#039;, &#039;homing&#039;, &#039;error&#039;</p>
+<p>                // Default: &#039;idle&#039;</p>
+
+<p>systemVoltage   // Type: Number</p>
+<p>                // Description: System supply voltage (V)</p>
+<p>                // Default: 0</p>
+
+<p>systemCurrent   // Type: Number</p>
+<p>                // Description: System current draw (A)</p>
+<p>                // Default: 0</code></pre></p>
+
+<h3>Touch Screen State Variables</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>currentMenu      // Type: String
+<p>                // Description: Current menu page</p>
+<p>                // Examples: &#039;main&#039;, &#039;settings&#039;, &#039;cut_mode&#039;</p>
+<p>                // Default: &#039;main&#039;</p>
+
+<p>selectedStone    // Type: String</p>
+<p>                // Description: Currently selected gemstone</p>
+<p>                // Examples: &#039;Diamond&#039;, &#039;Ruby&#039;, &#039;Sapphire&#039;</p>
+<p>                // Default: &#039;&#039;</p>
+
+<p>cuttingPhase     // Type: String</p>
+<p>                // Values: &#039;roughing&#039;, &#039;fine_cutting&#039;, &#039;polishing&#039;</p>
+<p>                // Default: &#039;roughing&#039;</code></pre></p>
+
+<h2>Variable Response Processing</h2>
+
+<h3>Response Format</h3>
+
+<p>When Nextion responds to a <code class="inline-code">get</code> command:</p>
+
+<pre class="code-block " data-lang="text"><code>variable_name=value\n</code></pre>
+
+<h3>Parsing</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// In NextionInterface.processVariableResponse(data):
+<p>const parts = data.trim().split(&#039;=&#039;);</p>
+<p>const [varName, varValue] = parts;</p>
+
+<p>// Try parsing as number first</p>
+<p>const numVal = parseInt(varValue, 10);</p>
+<p>const finalValue = isNaN(numVal) ? varValue : numVal;</p>
+
+<p>// Update internal cache</p>
+<p>this.variables[varName] = finalValue;</code></pre></p>
+
+<h2>Command Examples</h2>
+
+<h3>Complete Variable Fetch Sequence</h3>
+
+<pre class="code-block " data-lang="text"><code>WEB CONTROLLER → ARDUINO → NEXTION
+<p>get motorSpeed</p>
+<p>get motorMode</p>
+<p>get motorStepSize</p>
+<p>get positionX</p>
+<p>get positionY</p>
+<p>get rotationAngle</p>
+<p>get indexPosition</p>
+<p>get currentMenu</p>
+<p>get selectedStone</p>
+<p>get cuttingPhase</p>
+
+<p>NEXTION → ARDUINO → WEB CONTROLLER</p>
+<p>motorSpeed=3</p>
+<p>motorMode=step</p>
+<p>motorStepSize=1</p>
+<p>positionX=125</p>
+<p>positionY=87</p>
+<p>rotationAngle=45</p>
+<p>indexPosition=0</p>
+<p>currentMenu=main</p>
+<p>selectedStone=Ruby</p>
+<p>cuttingPhase=fine_cutting</code></pre></p>
+
+<h3>Menu Navigation Sequence</h3>
+
+<pre class="code-block " data-lang="text"><code>User clicks &quot;Right&quot; button
+<p>WEB → ARDUINO → NEXTION</p>
+<p>3</p>
+
+<p>NEXTION UPDATES DISPLAY</p>
+<p>(Menu moves right)</p>
+
+<p>WEB → ARDUINO → NEXTION</p>
+<p>1</p>
+
+<p>NEXTION RESPONDS</p>
+<p>(Selects menu item)</code></pre></p>
+
+<h2>Error Handling</h2>
+
+<h3>Response Timeout</h3>
+
+<p>If Nextion doesn't respond within <code class="inline-code">responseTimeout</code> (1000ms):</p>
+
+<pre class="code-block javascript" data-lang="javascript"><code>reject(new Error(<code class="inline-code">Timeout waiting for ${variableName}</code>));</code></pre>
+
+<h3>No Response</h3>
+
+<p>If command is sent but no response received:</p>
+
+<pre class="code-block " data-lang="text"><code>Status: &quot;❌ Sync failed&quot;
+<p>Console: &quot;❌ Sync error: Timeout&quot;</code></pre></p>
+
+<h3>Invalid Variable Name</h3>
+
+<p>If variable doesn't exist on Nextion:</p>
+
+<pre class="code-block " data-lang="text"><code>NEXTION → ARDUINO: (No response)
+<p>TIMEOUT after 1000ms</p>
+<p>ERROR: &quot;Timeout waiting for nonexistentVariable&quot;</code></pre></p>
+
+<h2>Hardware Communication Flow</h2>
+
+<h3>Complete Data Flow</h3>
+
+<pre class="code-block " data-lang="text"><code>┌─────────────────────────────────────────────┐
+<p>│        WEB BROWSER (JavaScript)             │</p>
+<p>│  ┌─────────────────────────────────────┐   │</p>
+<p>│  │ NextionInterface (nextion)          │   │</p>
+<p>│  │ - sendCommand()                     │   │</p>
+<p>│  │ - requestVariable()                 │   │</p>
+<p>│  │ - fetchAllVariables()               │   │</p>
+<p>│  │ - setVariable()                     │   │</p>
+<p>│  └──────────────┬──────────────────────┘   │</p>
+<p>└─────────────────┼──────────────────────────┘</p>
+<p>                  │ WebSerial API</p>
+<p>                  ↓</p>
+<p>┌─────────────────────────────────────────────┐</p>
+<p>│        ARDUINO (Serial Bridge)              │</p>
+<p>│  ┌─────────────────────────────────────┐   │</p>
+<p>│  │ Serial Input (from Web)             │   │</p>
+<p>│  │ Process: Forward to Nextion         │   │</p>
+<p>│  │ Serial Output (from Nextion)        │   │</p>
+<p>│  │ Process: Forward to Web             │   │</p>
+<p>│  └──────────────┬──────────────────────┘   │</p>
+<p>└─────────────────┼──────────────────────────┘</p>
+<p>                  │ UART/Serial</p>
+<p>                  ↓</p>
+<p>┌─────────────────────────────────────────────┐</p>
+<p>│     NEXTION DISPLAY (HMI)                   │</p>
+<p>│  ┌─────────────────────────────────────┐   │</p>
+<p>│  │ Command Processor                   │   │</p>
+<p>│  │ - Parse commands (0, 1, 3)          │   │</p>
+<p>│  │ - Get variable values               │   │</p>
+<p>│  │ - Set variable values               │   │</p>
+<p>│  │ - Update display                    │   │</p>
+<p>│  └──────────────┬──────────────────────┘   │</p>
+<p>│                 │                           │</p>
+<p>│  ┌──────────────↓──────────────────────┐   │</p>
+<p>│  │ Touch Screen Display                │   │</p>
+<p>│  │ - Current menu                      │   │</p>
+<p>│  │ - Position display                  │   │</p>
+<p>│  │ - Status indicators                 │   │</p>
+<p>│  └─────────────────────────────────────┘   │</p>
+<p>└─────────────────────────────────────────────┘</code></pre></p>
+
+<h2>Synchronization Strategy</h2>
+
+<h3>Auto-Sync on Connection</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// When Arduino connects:
+<p>setTimeout(() =&gt; {</p>
+<p>    nextion.initialize();  // Fetch all variables</p>
+<p>}, 1000);</code></pre></p>
+
+<h3>Manual Sync</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// User clicks SYNC button:
+<p>document.getElementById(&#039;btnSyncVariables&#039;).click();</p>
+<p>→ nextion.fetchAllVariables();</p>
+<p>→ Sends 10 get commands</p>
+<p>→ Waits 500ms for responses</p>
+<p>→ Updates UI automatically</code></pre></p>
+
+<h3>Continuous Polling (Optional)</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Update every 5 seconds:
+<p>setInterval(() =&gt; {</p>
+<p>    if (isConnected) {</p>
+<p>        nextion.fetchAllVariables();</p>
+<p>    }</p>
+<p>}, 5000);</code></pre></p>
+
+<h2>Nextion Configuration Requirements</h2>
+
+<p>To use these commands with your Nextion display, ensure:</p>
+
+<ol><li class="ol-item"><strong>Serial Communication Enabled</strong></li></ol>
+<p>   - Nextion firmware supports serial input</p>
+<p>   - Serial port configured correctly</p>
+
+<ol><li class="ol-item"><strong>Variable Names Match</strong></li></ol>
+<p>   - All variable names in code match Nextion variable names</p>
+<p>   - Case-sensitive matching required</p>
+
+<ol><li class="ol-item"><strong>Baud Rate Consistency</strong></li></ol>
+<p>   - Arduino → Nextion: Default 9600 or configured rate</p>
+<p>   - Web → Arduino: Auto-detected (9600, 115200, etc.)</p>
+
+<ol><li class="ol-item"><strong>Nextion Code (Sample)</strong></li></ol>
+<p>   <pre class="code-block " data-lang="text"><code>// In Nextion Editor, create variables:</p>
+<p>   int motorSpeed = 1;</p>
+<p>   text motorMode = &quot;continuous&quot;;</p>
+<p>   int positionX = 0;</p>
+<p>   int positionY = 0;</p>
+   
+<p>   // Add touch commands to buttons:</p>
+<p>   On Click: recvCommand(&quot;0&quot;)  // Left</p>
+<p>   On Click: recvCommand(&quot;1&quot;)  // Enter</p>
+<p>   On Click: recvCommand(&quot;3&quot;)  // Right</code></pre></p>
+
+<h2>Troubleshooting Guide</h2>
+
+<h3>Commands Not Reaching Nextion</h3>
+
+<p><strong>Check:</strong></p>
+<ol><li class="ol-item">Arduino is connected (web console shows "Connected")</li>
+<li class="ol-item">Nextion is powered and responsive</li>
+<li class="ol-item">Serial cable is properly connected</li>
+<li class="ol-item">Baud rate matches configuration</li></ol>
+
+<p><strong>Debug:</strong></p>
+<pre class="code-block javascript" data-lang="javascript"><code>// Check serial connection
+<p>console.log(serial.isConnected);        // Should be true</p>
+<p>console.log(serial.port);               // Should show port info</p>
+
+<p>// Manually send command</p>
+<p>serial.sendCommand(&#039;0&#039;);                // Should log: &quot;📡 TRANSMITTING: &#039;0&#039;&quot;</code></pre></p>
+
+<h3>Variables Not Updating</h3>
+
+<p><strong>Check:</strong></p>
+<ol><li class="ol-item">Variable names match exactly (case-sensitive)</li>
+<li class="ol-item">Nextion has these variables defined</li>
+<li class="ol-item">Sync button shows "✅ Synced" status</li>
+<li class="ol-item">Check browser console for errors</li></ol>
+
+<p><strong>Debug:</strong></p>
+<pre class="code-block javascript" data-lang="javascript"><code>// Check current variables
+<p>console.log(nextion.variables);         // Should show fetched values</p>
+
+<p>// Manually request a variable</p>
+<p>await nextion.requestVariable(&#039;motorSpeed&#039;);</p>
+<p>console.log(nextion.variables.motorSpeed);</code></pre></p>
+
+<h3>Sync Timeout</h3>
+
+<p><strong>Check:</strong></p>
+<ol><li class="ol-item">Nextion is responding to serial input</li>
+<li class="ol-item">Arduino serial monitor shows responses</li>
+<li class="ol-item">Nextion variable names are correct</li></ol>
+
+<p><strong>Debug:</strong></p>
+<pre class="code-block javascript" data-lang="javascript"><code>// Increase timeout and try again
+<p>nextion.responseTimeout = 2000;         // 2 seconds</p>
+<p>await nextion.fetchAllVariables();</code></pre></p>
+
+<h2>Implementation Checklist</h2>
+
+<ul><li class="ul-item">✅ Menu navigation commands (0, 1, 3)</li>
+<li class="ul-item">✅ Variable get/set protocol</li>
+<li class="ul-item">✅ Response parsing</li>
+<li class="ul-item">✅ Error handling</li>
+<li class="ul-item">✅ Timeout handling</li>
+<li class="ul-item">✅ UI updates</li>
+<li class="ul-item">✅ Status indicators</li>
+<li class="ul-item">✅ Auto-sync on connection</li>
+<li class="ul-item">✅ Console logging</li></ul>
+
+<h2>Reference Documents</h2>
+
+<ul><li class="ul-item"><strong>MENU<em>CONTROLS</em>IMPLEMENTATION.md</strong> - Full feature documentation</li>
+<li class="ul-item"><strong>MENU<em>CONTROLS</em>QUICK_START.md</strong> - Quick usage guide</li>
+<li class="ul-item"><strong>GemBot<em>Control</em>AI.html</strong> - Implementation code</li></ul>
+
+<hr>
+
+<p><strong>Nextion Protocol Version:</strong> 1.0  </p>
+<p><strong>Implementation Date:</strong> December 8, 2025  </p>
+<p><strong>Status:</strong> ✅ Complete</p>
+
+        <div class="generated-notice">
+            🤖 Auto-generated from NEXTION_PROTOCOL_REFERENCE.md by GemBot Neural Dashboard Agent<br>
+            Generated: 2025-12-16T13:52:19.073Z
+        </div>
+    </div>
+</body>
+</html>

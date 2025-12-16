@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADMIN_DASHBOARD_ENHANCEMENT_PLAN - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        <h1>🎯 ENHANCED ADMIN DASHBOARD - IMPLEMENTATION PLAN</h1>
+
+<h2>What Needs to Be Added</h2>
+
+<h3>1. <strong>AI Agents Section</strong> (PRIORITY)</h3>
+<ul><li class="ul-item">Display all active AI agents from <code class="inline-code">window.AIAgentManager</code></li>
+<li class="ul-item">Show agent stats: name, personality, level, gems, machines</li>
+<li class="ul-item">Real-time updates from agent activity</li>
+<li class="ul-item">Control buttons: spawn, stop, analyze</li>
+<li class="ul-item">Link to automated wallet system for each agent</li></ul>
+
+<h3>2. <strong>Live Site Editor</strong> (NEW FEATURE)</h3>
+<ul><li class="ul-item">Click any element on rendered site to edit</li>
+<li class="ul-item">Change text, colors, dimensions, positions</li>
+<li class="ul-item">Save states to localStorage</li>
+<li class="ul-item">Export/import configurations</li>
+<li class="ul-item">Push updates based on AI agent logs</li></ul>
+
+<h3>3. <strong>All Users + All Agents Combined View</strong></h3>
+<ul><li class="ul-item">Merge real users with AI agents</li>
+<li class="ul-item">Show wallets, security scores, GBUV balances</li>
+<li class="ul-item">Filter by type (human/AI), status (active/flagged)</li>
+<li class="ul-item">Bulk actions (reward, ban, promote)</li></ul>
+
+<h3>4. <strong>Machine Control Panel</strong></h3>
+<ul><li class="ul-item">Display all deployed machines (user + AI)</li>
+<li class="ul-item">Control machine states (pause/resume/delete)</li>
+<li class="ul-item">View machine logs and earnings</li>
+<li class="ul-item">Optimize machine performance</li></ul>
+
+<h3>5. <strong>Enhanced Authentication</strong></h3>
+<ul><li class="ul-item">Update login to use: barbrickdesign@gmail.com</li>
+<li class="ul-item">Add GitHub Personal Access Token integration</li>
+<li class="ul-item">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</li></ul>
+
+<h3>6. <strong>Script Management</strong></h3>
+<ul><li class="ul-item">View all loaded scripts</li>
+<li class="ul-item">Create new scripts from AI agent logs</li>
+<li class="ul-item">Edit scripts in CodeMirror</li>
+<li class="ul-item">Deploy scripts with hot reload</li>
+<li class="ul-item">Version control integration</li></ul>
+
+<h3>7. <strong>Recent Enhancements Integration</strong></h3>
+<ul><li class="ul-item">Anti-Fraud Security Dashboard (scores, flagged accounts)</li>
+<li class="ul-item">Automated Wallet System (view all wallets, balances)</li>
+<li class="ul-item">Multi-Domain Network (deploy to 15 domains)</li>
+<li class="ul-item">Token Distribution (GBUV analytics)</li></ul>
+
+<h3>8. <strong>Visual Layout Editor</strong></h3>
+<ul><li class="ul-item">Drag-and-drop div elements</li>
+<li class="ul-item">Resize with handles</li>
+<li class="ul-item">Change z-index layering</li>
+<li class="ul-item">Snap-to-grid</li>
+<li class="ul-item">Export CSS</li></ul>
+
+<hr>
+
+<h2>Files That Will Be Created/Modified</h2>
+
+<ol><li class="ol-item"><strong>admin-dashboard-ENHANCED.html</strong> (NEW - complete rewrite)</li></ol>
+<p>   - All sections above integrated</p>
+<p>   - Modern UI with live updates</p>
+<p>   - Connected to all GemBot systems</p>
+
+<ol><li class="ol-item"><strong>admin-api.js</strong> (NEW)</li></ol>
+<p>   - Backend API for admin operations</p>
+<p>   - Firebase integration for multi-user admin</p>
+<p>   - Real-time sync across admin sessions</p>
+
+<ol><li class="ol-item"><strong>live-editor.js</strong> (NEW)</li></ol>
+<p>   - Click-to-edit functionality</p>
+<p>   - Visual element selection</p>
+<p>   - CSS live editing</p>
+<p>   - State management</p>
+
+<ol><li class="ol-item"><strong>admin-dashboard.html</strong> (BACKUP)</li></ol>
+<p>   - Keep existing as fallback</p>
+<p>   - Rename to admin-dashboard-OLD.html</p>
+
+<hr>
+
+<h2>Implementation Steps</h2>
+
+<h3>Phase 1: AI Agents Integration (15 min)</h3>
+<ul><li class="ul-item">Connect to window.AIAgentManager</li>
+<li class="ul-item">Display agent table with real-time data</li>
+<li class="ul-item">Add spawn/stop/analyze controls</li>
+<li class="ul-item">Show agent wallets and GBUV</li></ul>
+
+<h3>Phase 2: Enhanced Authentication (10 min)</h3>
+<ul><li class="ul-item">Update login credentials</li>
+<li class="ul-item">Add GitHub token integration</li>
+<li class="ul-item">Implement role-based access</li>
+<li class="ul-item">Add session management</li></ul>
+
+<h3>Phase 3: Live Editor (30 min)</h3>
+<ul><li class="ul-item">Implement click-to-edit</li>
+<li class="ul-item">Add CSS live editing</li>
+<li class="ul-item">Build state save/load system</li>
+<li class="ul-item">Create export/import features</li></ul>
+
+<h3>Phase 4: Complete Dashboard UI (20 min)</h3>
+<ul><li class="ul-item">Redesign all sections</li>
+<li class="ul-item">Add real-time charts</li>
+<li class="ul-item">Integrate security dashboard</li>
+<li class="ul-item">Connect to wallet system</li></ul>
+
+<h3>Phase 5: Script Management (15 min)</h3>
+<ul><li class="ul-item">List all loaded scripts</li>
+<li class="ul-item">Add script editor with syntax highlighting</li>
+<li class="ul-item">Implement hot reload</li>
+<li class="ul-item">Add version control</li></ul>
+
+<h3>Phase 6: Testing & Polish (10 min)</h3>
+<ul><li class="ul-item">Test all features</li>
+<li class="ul-item">Fix bugs</li>
+<li class="ul-item">Add tooltips and help</li>
+<li class="ul-item">Write documentation</li></ul>
+
+<p><strong>Total Time: ~2 hours</strong></p>
+
+<hr>
+
+<h2>Quick Start After Implementation</h2>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Open enhanced admin dashboard
+<p>// https://gembotaiwebcontrol.onrender.com/admin-dashboard-ENHANCED.html</p>
+
+<p>// Login with:</p>
+<p>// Email: barbrickdesign@gmail.com</p>
+<p>// Token: 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</p>
+
+<p>// View AI agents</p>
+<p>const agents = window.AIAgentManager.getAllData();</p>
+<p>console.table(agents);</p>
+
+<p>// Live edit mode</p>
+<p>enableLiveEditor();</p>
+
+<p>// Click any element to edit</p>
+<p>// Changes save automatically</p>
+
+<p>// View all users + agents</p>
+<p>refreshAllEntities();</p>
+
+<p>// Deploy to all 15 domains</p>
+<p>deployToAllDomains();</code></pre></p>
+
+<hr>
+
+<h2>Next Action</h2>
+
+<p>Creating <code class="inline-code">admin-dashboard-ENHANCED.html</code> with all features...</p>
+
+        <div class="generated-notice">
+            🤖 Auto-generated from ADMIN_DASHBOARD_ENHANCEMENT_PLAN.md by GemBot Neural Dashboard Agent<br>
+            Generated: 2025-12-16T13:51:58.110Z
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADMIN_DASHBOARD_IMPLEMENTATION_GUIDE - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        <h1>🎯 ADMIN DASHBOARD ENHANCEMENT - COMPLETE IMPLEMENTATION GUIDE</h1>
+
+<p><strong>Status:</strong> Ready to implement</p>
+<p><strong>Target File:</strong> <code class="inline-code">admin-dashboard.html</code>  </p>
+<p><strong>New Files Created:</strong></p>
+<ul><li class="ul-item">✅ <code class="inline-code">admin-api.js</code> - Complete API connecting all GemBot systems</li>
+<li class="ul-item">✅ <code class="inline-code">ADMIN<em>DASHBOARD</em>ENHANCEMENT_PLAN.md</code> - Planning document</li>
+<li class="ul-item">✅ This guide</li></ul>
+
+<hr>
+
+<h2>🚀 CRITICAL CHANGES NEEDED</h2>
+
+<h3>1. <strong>Update Login Authentication</strong></h3>
+
+<p><strong>Location:</strong> Lines 1269-1274 in <code class="inline-code">admin-dashboard.html</code></p>
+
+<p><strong>Current Code:</strong></p>
+<pre class="code-block html" data-lang="html"><code>&lt;div class=&quot;login-box&quot;&gt;
+<p>    &lt;h1&gt;🔐 ADMIN ACCESS&lt;/h1&gt;</p>
+<p>    &lt;p&gt;GemBot Control Center&lt;/p&gt;</p>
+<p>    &lt;input type=&quot;password&quot; id=&quot;adminPassword&quot; class=&quot;login-input&quot; placeholder=&quot;Enter Admin Key&quot; onkeypress=&quot;if(event.key===&#039;Enter&#039;)attemptLogin()&quot;&gt;</p>
+<p>    &lt;button class=&quot;login-btn&quot; onclick=&quot;attemptLogin()&quot;&gt;AUTHENTICATE&lt;/button&gt;</p>
+<p>    &lt;p class=&quot;login-error&quot; id=&quot;loginError&quot;&gt;❌ Invalid credentials&lt;/p&gt;</p>
+<p>&lt;/div&gt;</code></pre></p>
+
+<p><strong>Replace With:</strong></p>
+<pre class="code-block html" data-lang="html"><code>&lt;div class=&quot;login-box&quot;&gt;
+<p>    &lt;h1&gt;🔐 ADMIN ACCESS&lt;/h1&gt;</p>
+<p>    &lt;p style=&quot;color: var(--accent-cyan); font-size: 14px; font-weight: 600; margin-bottom: 5px;&quot;&gt;barbrickdesign@gmail.com&lt;/p&gt;</p>
+<p>    &lt;p style=&quot;color: var(--text-secondary); font-size: 12px;&quot;&gt;GitHub Personal Access Token Required&lt;/p&gt;</p>
+<p>    &lt;input type=&quot;password&quot; id=&quot;adminPassword&quot; class=&quot;login-input&quot; placeholder=&quot;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&quot; onkeypress=&quot;if(event.key===&#039;Enter&#039;)attemptLogin()&quot;&gt;</p>
+<p>    &lt;button class=&quot;login-btn&quot; onclick=&quot;attemptLogin()&quot;&gt;AUTHENTICATE&lt;/button&gt;</p>
+<p>    &lt;p class=&quot;login-error&quot; id=&quot;loginError&quot;&gt;❌ Invalid credentials&lt;/p&gt;</p>
+<p>&lt;/div&gt;</code></pre></p>
+
+<hr>
+
+<h3>2. <strong>Add Admin API Script</strong></h3>
+
+<p><strong>Location:</strong> After line 8 (after codemirror includes)</p>
+
+<p><strong>Add:</strong></p>
+<pre class="code-block html" data-lang="html"><code>&lt;!-- GemBot Admin API - Connects ALL systems --&gt;
+<p>&lt;script src=&quot;./admin-api.js&quot;&gt;&lt;/script&gt;</p>
+<p>&lt;script src=&quot;./ai-agent-players.js&quot;&gt;&lt;/script&gt;</p>
+<p>&lt;script src=&quot;./ai-agent-systems.js&quot;&gt;&lt;/script&gt;</p>
+<p>&lt;script src=&quot;./automated-wallet-system.js&quot;&gt;&lt;/script&gt;</p>
+<p>&lt;script src=&quot;./anti-fraud-system.js&quot;&gt;&lt;/script&gt;</code></pre></p>
+
+<hr>
+
+<h3>3. <strong>Add Navigation Buttons</strong></h3>
+
+<p><strong>Location:</strong> Lines 1283-1289 (header navigation)</p>
+
+<p><strong>Current:</strong></p>
+<pre class="code-block html" data-lang="html"><code>&lt;nav class=&quot;header-nav&quot;&gt;
+<p>    &lt;button class=&quot;nav-btn active&quot; onclick=&quot;showSection(&#039;overview&#039;)&quot;&gt;📊 Overview&lt;/button&gt;</p>
+<p>    &lt;button class=&quot;nav-btn&quot; onclick=&quot;showSection(&#039;editor&#039;)&quot;&gt;💻 Code Editor&lt;/button&gt;</p>
+<p>    &lt;button class=&quot;nav-btn&quot; onclick=&quot;showSection(&#039;visual&#039;)&quot;&gt;🎨 Visual Editor&lt;/button&gt;</p>
+<p>    &lt;button class=&quot;nav-btn&quot; onclick=&quot;showSection(&#039;users&#039;)&quot;&gt;👥 Users&lt;/button&gt;</p>
+<p>    &lt;button class=&quot;nav-btn&quot; onclick=&quot;showSection(&#039;game&#039;)&quot;&gt;🎮 Game Control&lt;/button&gt;</p>
+<p>    &lt;button class=&quot;nav-btn&quot; onclick=&quot;showSection(&#039;settings&#039;)&quot;&gt;⚙️ Settings&lt;/button&gt;</p>
+<p>&lt;/nav&gt;</code></pre></p>
+
+<p><strong>Replace With:</strong></p>
+<pre class="code-block html" data-lang="html"><code>&lt;nav class=&quot;header-nav&quot;&gt;
+<p>    &lt;button class=&quot;nav-btn active&quot; onclick=&quot;showSection(&#039;overview&#039;)&quot;&gt;📊 Overview&lt;/button&gt;</p>
+<p>    &lt;button class=&quot;nav-btn&quot; onclick=&quot;showSection(&#039;ai-agents&#039;)&quot;&gt;🤖 AI Agents&lt;/button&gt;</p>
+<p>    &lt;button class=&quot;nav-btn&quot; onclick=&quot;showSection(&#039;security&#039;)&quot;&gt;🛡️ Security&lt;/button&gt;</p>
+<p>    &lt;button class=&quot;nav-btn&quot; onclick=&quot;showSection(&#039;wallets&#039;)&quot;&gt;💎 Wallets&lt;/button&gt;</p>
+<p>    &lt;button class=&quot;nav-btn&quot; onclick=&quot;showSection(&#039;editor&#039;)&quot;&gt;💻 Code Editor&lt;/button&gt;</p>
+<p>    &lt;button class=&quot;nav-btn&quot; onclick=&quot;showSection(&#039;users&#039;)&quot;&gt;👥 Users&lt;/button&gt;</p>
+<p>    &lt;button class=&quot;nav-btn&quot; onclick=&quot;showSection(&#039;game&#039;)&quot;&gt;🎮 Game Control&lt;/button&gt;</p>
+<p>    &lt;button class=&quot;nav-btn&quot; onclick=&quot;showSection(&#039;settings&#039;)&quot;&gt;⚙️ Settings&lt;/button&gt;</p>
+<p>&lt;/nav&gt;</code></pre></p>
+
+<hr>
+
+<h3>4. <strong>Add AI Agents Section</strong></h3>
+
+<p><strong>Location:</strong> After line 1584 (before "User Management" section)</p>
+
+<p><strong>Add Complete New Section:</strong></p>
+<pre class="code-block html" data-lang="html"><code>&lt;!-- AI AGENTS SECTION --&gt;
+<p>&lt;section id=&quot;section-ai-agents&quot; class=&quot;section&quot;&gt;</p>
+<p>    &lt;h2 style=&quot;margin-bottom: 20px;&quot;&gt;🤖 AI Agent Management&lt;/h2&gt;</p>
+    
+<p>    &lt;!-- Agent Controls --&gt;</p>
+<p>    &lt;div class=&quot;panel&quot;&gt;</p>
+<p>        &lt;div class=&quot;panel-header&quot;&gt;</p>
+<p>            &lt;h3 class=&quot;panel-title&quot;&gt;Agent Controls&lt;/h3&gt;</p>
+<p>            &lt;div&gt;</p>
+<p>                &lt;button class=&quot;action-btn&quot; onclick=&quot;spawnAgentsFromAdmin(10)&quot;&gt;➕ Spawn 10 Agents&lt;/button&gt;</p>
+<p>                &lt;button class=&quot;action-btn&quot; onclick=&quot;stopAllAgentsFromAdmin()&quot;&gt;⏹️ Stop All&lt;/button&gt;</p>
+<p>                &lt;button class=&quot;action-btn&quot; onclick=&quot;refreshAIAgents()&quot;&gt;🔄 Refresh&lt;/button&gt;</p>
+<p>            &lt;/div&gt;</p>
+<p>        &lt;/div&gt;</p>
+<p>        &lt;div class=&quot;panel-body&quot; style=&quot;display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;&quot;&gt;</p>
+<p>            &lt;div class=&quot;stat-card&quot;&gt;</p>
+<p>                &lt;div class=&quot;stat-value&quot; id=&quot;aiTotalAgents&quot;&gt;0&lt;/div&gt;</p>
+<p>                &lt;div class=&quot;stat-label&quot;&gt;Total AI Agents&lt;/div&gt;</p>
+<p>            &lt;/div&gt;</p>
+<p>            &lt;div class=&quot;stat-card&quot;&gt;</p>
+<p>                &lt;div class=&quot;stat-value&quot; id=&quot;aiActiveAgents&quot;&gt;0&lt;/div&gt;</p>
+<p>                &lt;div class=&quot;stat-label&quot;&gt;Active Now&lt;/div&gt;</p>
+<p>            &lt;/div&gt;</p>
+<p>            &lt;div class=&quot;stat-card&quot;&gt;</p>
+<p>                &lt;div class=&quot;stat-value&quot; id=&quot;aiTotalGems&quot;&gt;0&lt;/div&gt;</p>
+<p>                &lt;div class=&quot;stat-label&quot;&gt;Total Gems Collected&lt;/div&gt;</p>
+<p>            &lt;/div&gt;</p>
+<p>            &lt;div class=&quot;stat-card&quot;&gt;</p>
+<p>                &lt;div class=&quot;stat-value&quot; id=&quot;aiTotalMachines&quot;&gt;0&lt;/div&gt;</p>
+<p>                &lt;div class=&quot;stat-label&quot;&gt;Machines Deployed&lt;/div&gt;</p>
+<p>            &lt;/div&gt;</p>
+<p>        &lt;/div&gt;</p>
+<p>    &lt;/div&gt;</p>
+    
+<p>    &lt;!-- AI Agents Table --&gt;</p>
+<p>    &lt;div class=&quot;panel&quot; style=&quot;margin-top: 20px;&quot;&gt;</p>
+<p>        &lt;div class=&quot;panel-header&quot;&gt;</p>
+<p>            &lt;h3 class=&quot;panel-title&quot;&gt;All AI Agents&lt;/h3&gt;</p>
+<p>        &lt;/div&gt;</p>
+<p>        &lt;div class=&quot;panel-body&quot;&gt;</p>
+<p>            &lt;table class=&quot;users-table&quot;&gt;</p>
+<p>                &lt;thead&gt;</p>
+<p>                    &lt;tr&gt;</p>
+<p>                        &lt;th&gt;Agent ID&lt;/th&gt;</p>
+<p>                        &lt;th&gt;Personality&lt;/th&gt;</p>
+<p>                        &lt;th&gt;Level&lt;/th&gt;</p>
+<p>                        &lt;th&gt;Gems&lt;/th&gt;</p>
+<p>                        &lt;th&gt;Machines&lt;/th&gt;</p>
+<p>                        &lt;th&gt;Wallet&lt;/th&gt;</p>
+<p>                        &lt;th&gt;Status&lt;/th&gt;</p>
+<p>                        &lt;th&gt;Actions&lt;/th&gt;</p>
+<p>                    &lt;/tr&gt;</p>
+<p>                &lt;/thead&gt;</p>
+<p>                &lt;tbody id=&quot;aiAgentsTableBody&quot;&gt;</p>
+<p>                    &lt;tr&gt;</p>
+<p>                        &lt;td colspan=&quot;8&quot; style=&quot;text-align: center; padding: 40px; color: var(--text-secondary);&quot;&gt;</p>
+<p>                            No AI agents spawned yet. Click &quot;Spawn 10 Agents&quot; to create AI players.</p>
+<p>                        &lt;/td&gt;</p>
+<p>                    &lt;/tr&gt;</p>
+<p>                &lt;/tbody&gt;</p>
+<p>            &lt;/table&gt;</p>
+<p>        &lt;/div&gt;</p>
+<p>    &lt;/div&gt;</p>
+<p>&lt;/section&gt;</code></pre></p>
+
+<hr>
+
+<h3>5. <strong>Add Security Dashboard Section</strong></h3>
+
+<p><strong>Location:</strong> After AI Agents section</p>
+
+<p><strong>Add Complete New Section:</strong></p>
+<pre class="code-block html" data-lang="html"><code>&lt;!-- SECURITY SECTION --&gt;
+<p>&lt;section id=&quot;section-security&quot; class=&quot;section&quot;&gt;</p>
+<p>    &lt;h2 style=&quot;margin-bottom: 20px;&quot;&gt;🛡️ Security &amp; Fraud Detection&lt;/h2&gt;</p>
+    
+<p>    &lt;!-- Security Stats --&gt;</p>
+<p>    &lt;div class=&quot;panel&quot;&gt;</p>
+<p>        &lt;div class=&quot;panel-header&quot;&gt;</p>
+<p>            &lt;h3 class=&quot;panel-title&quot;&gt;Security Overview&lt;/h3&gt;</p>
+<p>            &lt;button class=&quot;action-btn&quot; onclick=&quot;refreshSecurityDashboard()&quot;&gt;🔄 Refresh&lt;/button&gt;</p>
+<p>        &lt;/div&gt;</p>
+<p>        &lt;div class=&quot;panel-body&quot; style=&quot;display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;&quot;&gt;</p>
+<p>            &lt;div class=&quot;stat-card&quot;&gt;</p>
+<p>                &lt;div class=&quot;stat-value&quot; id=&quot;securityTotalAccounts&quot;&gt;0&lt;/div&gt;</p>
+<p>                &lt;div class=&quot;stat-label&quot;&gt;Total Accounts&lt;/div&gt;</p>
+<p>            &lt;/div&gt;</p>
+<p>            &lt;div class=&quot;stat-card&quot;&gt;</p>
+<p>                &lt;div class=&quot;stat-value&quot; style=&quot;color: var(--accent-green);&quot; id=&quot;securitySafeAccounts&quot;&gt;0&lt;/div&gt;</p>
+<p>                &lt;div class=&quot;stat-label&quot;&gt;Safe Accounts&lt;/div&gt;</p>
+<p>            &lt;/div&gt;</p>
+<p>            &lt;div class=&quot;stat-card&quot;&gt;</p>
+<p>                &lt;div class=&quot;stat-value&quot; style=&quot;color: var(--accent-yellow);&quot; id=&quot;securityFlaggedAccounts&quot;&gt;0&lt;/div&gt;</p>
+<p>                &lt;div class=&quot;stat-label&quot;&gt;Flagged Accounts&lt;/div&gt;</p>
+<p>            &lt;/div&gt;</p>
+<p>            &lt;div class=&quot;stat-card&quot;&gt;</p>
+<p>                &lt;div class=&quot;stat-value&quot; id=&quot;securityAvgScore&quot;&gt;0&lt;/div&gt;</p>
+<p>                &lt;div class=&quot;stat-label&quot;&gt;Avg Security Score&lt;/div&gt;</p>
+<p>            &lt;/div&gt;</p>
+<p>            &lt;div class=&quot;stat-card&quot;&gt;</p>
+<p>                &lt;div class=&quot;stat-value&quot; id=&quot;securityTotalBonus&quot;&gt;0&lt;/div&gt;</p>
+<p>                &lt;div class=&quot;stat-label&quot;&gt;GBUV Distributed&lt;/div&gt;</p>
+<p>            &lt;/div&gt;</p>
+<p>        &lt;/div&gt;</p>
+<p>    &lt;/div&gt;</p>
+    
+<p>    &lt;!-- Flagged Accounts --&gt;</p>
+<p>    &lt;div class=&quot;panel&quot; style=&quot;margin-top: 20px;&quot;&gt;</p>
+<p>        &lt;div class=&quot;panel-header&quot;&gt;</p>
+<p>            &lt;h3 class=&quot;panel-title&quot;&gt;⚠️ Flagged Accounts&lt;/h3&gt;</p>
+<p>        &lt;/div&gt;</p>
+<p>        &lt;div class=&quot;panel-body&quot;&gt;</p>
+<p>            &lt;table class=&quot;users-table&quot;&gt;</p>
+<p>                &lt;thead&gt;</p>
+<p>                    &lt;tr&gt;</p>
+<p>                        &lt;th&gt;Username&lt;/th&gt;</p>
+<p>                        &lt;th&gt;Email&lt;/th&gt;</p>
+<p>                        &lt;th&gt;Security Score&lt;/th&gt;</p>
+<p>                        &lt;th&gt;Bonus Given&lt;/th&gt;</p>
+<p>                        &lt;th&gt;Created&lt;/th&gt;</p>
+<p>                        &lt;th&gt;Actions&lt;/th&gt;</p>
+<p>                    &lt;/tr&gt;</p>
+<p>                &lt;/thead&gt;</p>
+<p>                &lt;tbody id=&quot;flaggedAccountsTableBody&quot;&gt;</p>
+<p>                    &lt;!-- Populated by JS --&gt;</p>
+<p>                &lt;/tbody&gt;</p>
+<p>            &lt;/table&gt;</p>
+<p>        &lt;/div&gt;</p>
+<p>    &lt;/div&gt;</p>
+    
+<p>    &lt;!-- IP Tracking --&gt;</p>
+<p>    &lt;div class=&quot;panel&quot; style=&quot;margin-top: 20px;&quot;&gt;</p>
+<p>        &lt;div class=&quot;panel-header&quot;&gt;</p>
+<p>            &lt;h3 class=&quot;panel-title&quot;&gt;🌐 IP Address Tracking&lt;/h3&gt;</p>
+<p>        &lt;/div&gt;</p>
+<p>        &lt;div class=&quot;panel-body&quot;&gt;</p>
+<p>            &lt;table class=&quot;users-table&quot;&gt;</p>
+<p>                &lt;thead&gt;</p>
+<p>                    &lt;tr&gt;</p>
+<p>                        &lt;th&gt;IP Address&lt;/th&gt;</p>
+<p>                        &lt;th&gt;Accounts&lt;/th&gt;</p>
+<p>                        &lt;th&gt;Status&lt;/th&gt;</p>
+<p>                        &lt;th&gt;First Seen&lt;/th&gt;</p>
+<p>                        &lt;th&gt;Last Seen&lt;/th&gt;</p>
+<p>                    &lt;/tr&gt;</p>
+<p>                &lt;/thead&gt;</p>
+<p>                &lt;tbody id=&quot;ipTrackingTableBody&quot;&gt;</p>
+<p>                    &lt;!-- Populated by JS --&gt;</p>
+<p>                &lt;/tbody&gt;</p>
+<p>            &lt;/table&gt;</p>
+<p>        &lt;/div&gt;</p>
+<p>    &lt;/div&gt;</p>
+<p>&lt;/section&gt;</code></pre></p>
+
+<hr>
+
+<h3>6. <strong>Add Wallets Section</strong></h3>
+
+<p><strong>Location:</strong> After Security section</p>
+
+<p><strong>Add Complete New Section:</strong></p>
+<pre class="code-block html" data-lang="html"><code>&lt;!-- WALLETS SECTION --&gt;
+<p>&lt;section id=&quot;section-wallets&quot; class=&quot;section&quot;&gt;</p>
+<p>    &lt;h2 style=&quot;margin-bottom: 20px;&quot;&gt;💎 Wallet Management&lt;/h2&gt;</p>
+    
+<p>    &lt;!-- Wallet Stats --&gt;</p>
+<p>    &lt;div class=&quot;panel&quot;&gt;</p>
+<p>        &lt;div class=&quot;panel-header&quot;&gt;</p>
+<p>            &lt;h3 class=&quot;panel-title&quot;&gt;Wallet Overview&lt;/h3&gt;</p>
+<p>            &lt;button class=&quot;action-btn&quot; onclick=&quot;refreshWallets()&quot;&gt;🔄 Refresh&lt;/button&gt;</p>
+<p>        &lt;/div&gt;</p>
+<p>        &lt;div class=&quot;panel-body&quot; style=&quot;display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;&quot;&gt;</p>
+<p>            &lt;div class=&quot;stat-card&quot;&gt;</p>
+<p>                &lt;div class=&quot;stat-value&quot; id=&quot;walletTotalCount&quot;&gt;0&lt;/div&gt;</p>
+<p>                &lt;div class=&quot;stat-label&quot;&gt;Total Wallets&lt;/div&gt;</p>
+<p>            &lt;/div&gt;</p>
+<p>            &lt;div class=&quot;stat-card&quot;&gt;</p>
+<p>                &lt;div class=&quot;stat-value&quot; id=&quot;walletTotalGBUV&quot;&gt;0&lt;/div&gt;</p>
+<p>                &lt;div class=&quot;stat-label&quot;&gt;Total GBUV&lt;/div&gt;</p>
+<p>            &lt;/div&gt;</p>
+<p>            &lt;div class=&quot;stat-card&quot;&gt;</p>
+<p>                &lt;div class=&quot;stat-value&quot; id=&quot;walletAvgBalance&quot;&gt;0&lt;/div&gt;</p>
+<p>                &lt;div class=&quot;stat-label&quot;&gt;Avg Balance&lt;/div&gt;</p>
+<p>            &lt;/div&gt;</p>
+<p>            &lt;div class=&quot;stat-card&quot;&gt;</p>
+<p>                &lt;div class=&quot;stat-value&quot; id=&quot;walletNewToday&quot;&gt;0&lt;/div&gt;</p>
+<p>                &lt;div class=&quot;stat-label&quot;&gt;New Today&lt;/div&gt;</p>
+<p>            &lt;/div&gt;</p>
+<p>        &lt;/div&gt;</p>
+<p>    &lt;/div&gt;</p>
+    
+<p>    &lt;!-- All Wallets Table --&gt;</p>
+<p>    &lt;div class=&quot;panel&quot; style=&quot;margin-top: 20px;&quot;&gt;</p>
+<p>        &lt;div class=&quot;panel-header&quot;&gt;</p>
+<p>            &lt;h3 class=&quot;panel-title&quot;&gt;All Wallets (Users + AI Agents)&lt;/h3&gt;</p>
+<p>        &lt;/div&gt;</p>
+<p>        &lt;div class=&quot;panel-body&quot;&gt;</p>
+<p>            &lt;table class=&quot;users-table&quot;&gt;</p>
+<p>                &lt;thead&gt;</p>
+<p>                    &lt;tr&gt;</p>
+<p>                        &lt;th&gt;Type&lt;/th&gt;</p>
+<p>                        &lt;th&gt;Username/Agent ID&lt;/th&gt;</p>
+<p>                        &lt;th&gt;Wallet Address&lt;/th&gt;</p>
+<p>                        &lt;th&gt;GBUV Balance&lt;/th&gt;</p>
+<p>                        &lt;th&gt;Welcome Bonus&lt;/th&gt;</p>
+<p>                        &lt;th&gt;Security Score&lt;/th&gt;</p>
+<p>                        &lt;th&gt;Created&lt;/th&gt;</p>
+<p>                        &lt;th&gt;Actions&lt;/th&gt;</p>
+<p>                    &lt;/tr&gt;</p>
+<p>                &lt;/thead&gt;</p>
+<p>                &lt;tbody id=&quot;walletsTableBody&quot;&gt;</p>
+<p>                    &lt;!-- Populated by JS --&gt;</p>
+<p>                &lt;/tbody&gt;</p>
+<p>            &lt;/table&gt;</p>
+<p>        &lt;/div&gt;</p>
+<p>    &lt;/div&gt;</p>
+<p>&lt;/section&gt;</code></pre></p>
+
+<hr>
+
+<h3>7. <strong>Update refreshUsers() Function</strong></h3>
+
+<p><strong>Location:</strong> Around line 2172</p>
+
+<p><strong>Current Function:</strong></p>
+<pre class="code-block javascript" data-lang="javascript"><code>function refreshUsers() {
+<p>    const tbody = document.getElementById(&#039;usersTableBody&#039;);</p>
+<p>    tbody.innerHTML = &#039;&#039;;</p>
+    
+<p>    // Get user data from localStorage</p>
+<p>    const allKeys = Object.keys(localStorage);</p>
+<p>    const userKeys = allKeys.filter(k =&gt; k.includes(&#039;gembot&lt;em&gt;farm&lt;/em&gt;save&#039;));</p>
+    
+<p>    // ... rest of code</p>
+<p>}</code></pre></p>
+
+<p><strong>Replace With:</strong></p>
+<pre class="code-block javascript" data-lang="javascript"><code>function refreshUsers() {
+<p>    const tbody = document.getElementById(&#039;usersTableBody&#039;);</p>
+<p>    tbody.innerHTML = &#039;&#039;;</p>
+    
+<p>    // Use admin API to get all users</p>
+<p>    if (!window.gemBotAdminAPI) {</p>
+<p>        console.error(&#039;Admin API not loaded&#039;);</p>
+<p>        return;</p>
+<p>    }</p>
+    
+<p>    const users = window.gemBotAdminAPI.getAllUsers();</p>
+    
+<p>    if (users.length === 0) {</p>
+<p>        tbody.innerHTML = <code class="inline-code"></p>
+<p>            &lt;tr&gt;</p>
+<p>                &lt;td colspan=&quot;7&quot; style=&quot;text-align: center; padding: 40px; color: var(--text-secondary);&quot;&gt;</p>
+<p>                    No users registered yet.</p>
+<p>                &lt;/td&gt;</p>
+<p>            &lt;/tr&gt;</p>
+<p>        </code>;</p>
+<p>        return;</p>
+<p>    }</p>
+    
+<p>    users.forEach(user =&gt; {</p>
+<p>        const row = document.createElement(&#039;tr&#039;);</p>
+<p>        row.innerHTML = <code class="inline-code"></p>
+<p>            &lt;td&gt;${user.username}&lt;/td&gt;</p>
+<p>            &lt;td style=&quot;color: ${user.security.flagged ? &#039;var(--accent-yellow)&#039; : &#039;var(--accent-green)&#039;};&quot;&gt;</p>
+<p>                ${user.security.flagged ? &#039;⚠️&#039; : &#039;✅&#039;} ${user.security.score}/100</p>
+<p>            &lt;/td&gt;</p>
+<p>            &lt;td&gt;${user.balance.toLocaleString()} GBUV&lt;/td&gt;</p>
+<p>            &lt;td&gt;${user.welcomeBonus} GBUV&lt;/td&gt;</p>
+<p>            &lt;td&gt;${user.email}&lt;/td&gt;</p>
+<p>            &lt;td&gt;${new Date(user.created).toLocaleString()}&lt;/td&gt;</p>
+<p>            &lt;td&gt;</p>
+<p>                &lt;button class=&quot;action-btn&quot; onclick=&quot;viewUserDetails(&#039;${user.id}&#039;)&quot;&gt;👁️&lt;/button&gt;</p>
+<p>                &lt;button class=&quot;action-btn&quot; onclick=&quot;rewardUser(&#039;${user.id}&#039;)&quot;&gt;💰&lt;/button&gt;</p>
+<p>            &lt;/td&gt;</p>
+<p>        </code>;</p>
+<p>        tbody.appendChild(row);</p>
+<p>    });</p>
+<p>}</code></pre></p>
+
+<hr>
+
+<h3>8. <strong>Add New JavaScript Functions</strong></h3>
+
+<p><strong>Location:</strong> Before the <code class="inline-code">initializeDashboard()</code> function (around line 1897)</p>
+
+<p><strong>Add All New Functions:</strong></p>
+<pre class="code-block javascript" data-lang="javascript"><code>// ==================== AI AGENTS MANAGEMENT ====================
+<p>function refreshAIAgents() {</p>
+<p>    if (!window.gemBotAdminAPI) {</p>
+<p>        showToast(&#039;Admin API not loaded&#039;, &#039;error&#039;);</p>
+<p>        return;</p>
+<p>    }</p>
+    
+<p>    const agents = window.gemBotAdminAPI.getAllAIAgents();</p>
+<p>    const stats = window.gemBotAdminAPI.getAIStats();</p>
+    
+<p>    // Update stats</p>
+<p>    document.getElementById(&#039;aiTotalAgents&#039;).textContent = stats?.totalAgents || 0;</p>
+<p>    document.getElementById(&#039;aiActiveAgents&#039;).textContent = stats?.activeAgents || 0;</p>
+<p>    document.getElementById(&#039;aiTotalGems&#039;).textContent = (stats?.totalGems || 0).toLocaleString();</p>
+<p>    document.getElementById(&#039;aiTotalMachines&#039;).textContent = stats?.totalMachines || 0;</p>
+    
+<p>    // Update table</p>
+<p>    const tbody = document.getElementById(&#039;aiAgentsTableBody&#039;);</p>
+<p>    tbody.innerHTML = &#039;&#039;;</p>
+    
+<p>    if (agents.length === 0) {</p>
+<p>        tbody.innerHTML = <code class="inline-code"></p>
+<p>            &lt;tr&gt;</p>
+<p>                &lt;td colspan=&quot;8&quot; style=&quot;text-align: center; padding: 40px; color: var(--text-secondary);&quot;&gt;</p>
+<p>                    No AI agents spawned yet. Click &quot;Spawn 10 Agents&quot; to create AI players.</p>
+<p>                &lt;/td&gt;</p>
+<p>            &lt;/tr&gt;</p>
+<p>        </code>;</p>
+<p>        return;</p>
+<p>    }</p>
+    
+<p>    agents.forEach(agent =&gt; {</p>
+<p>        const row = document.createElement(&#039;tr&#039;);</p>
+<p>        row.innerHTML = <code class="inline-code"></p>
+<p>            &lt;td&gt;${agent.id}&lt;/td&gt;</p>
+<p>            &lt;td&gt;${agent.personality}&lt;/td&gt;</p>
+<p>            &lt;td&gt;${agent.level || 1}&lt;/td&gt;</p>
+<p>            &lt;td&gt;${(agent.stats?.gemsCollected || 0).toLocaleString()}&lt;/td&gt;</p>
+<p>            &lt;td&gt;${agent.stats?.machinesDeployed || 0}&lt;/td&gt;</p>
+<p>            &lt;td title=&quot;${agent.wallet?.publicKey || &#039;No wallet&#039;}&quot;&gt;${agent.wallet ? agent.wallet.publicKey.substring(0, 8) + &#039;...&#039; : &#039;None&#039;}&lt;/td&gt;</p>
+<p>            &lt;td&gt;&lt;span style=&quot;color: ${agent.state === &#039;playing&#039; ? &#039;var(--accent-green)&#039; : &#039;var(--text-secondary)&#039;};&quot;&gt;${agent.state}&lt;/span&gt;&lt;/td&gt;</p>
+<p>            &lt;td&gt;</p>
+<p>                &lt;button class=&quot;action-btn&quot; onclick=&quot;viewAgentDetails(&#039;${agent.id}&#039;)&quot;&gt;👁️&lt;/button&gt;</p>
+<p>                &lt;button class=&quot;action-btn&quot; onclick=&quot;stopAgent(&#039;${agent.id}&#039;)&quot;&gt;⏹️&lt;/button&gt;</p>
+<p>            &lt;/td&gt;</p>
+<p>        </code>;</p>
+<p>        tbody.appendChild(row);</p>
+<p>    });</p>
+    
+<p>    showToast(<code class="inline-code">Loaded ${agents.length} AI agents</code>, &#039;success&#039;);</p>
+<p>}</p>
+
+<p>function spawnAgentsFromAdmin(count) {</p>
+<p>    if (!window.gemBotAdminAPI) {</p>
+<p>        showToast(&#039;Admin API not loaded&#039;, &#039;error&#039;);</p>
+<p>        return;</p>
+<p>    }</p>
+    
+<p>    const success = window.gemBotAdminAPI.spawnAIAgents(count);</p>
+<p>    if (success) {</p>
+<p>        showToast(<code class="inline-code">Spawning ${count} AI agents...</code>, &#039;success&#039;);</p>
+<p>        setTimeout(() =&gt; refreshAIAgents(), 2000);</p>
+<p>    } else {</p>
+<p>        showToast(&#039;Failed to spawn agents&#039;, &#039;error&#039;);</p>
+<p>    }</p>
+<p>}</p>
+
+<p>function stopAllAgentsFromAdmin() {</p>
+<p>    if (!window.gemBotAdminAPI) {</p>
+<p>        showToast(&#039;Admin API not loaded&#039;, &#039;error&#039;);</p>
+<p>        return;</p>
+<p>    }</p>
+    
+<p>    const success = window.gemBotAdminAPI.stopAllAIAgents();</p>
+<p>    if (success) {</p>
+<p>        showToast(&#039;All AI agents stopped&#039;, &#039;success&#039;);</p>
+<p>        setTimeout(() =&gt; refreshAIAgents(), 1000);</p>
+<p>    } else {</p>
+<p>        showToast(&#039;Failed to stop agents&#039;, &#039;error&#039;);</p>
+<p>    }</p>
+<p>}</p>
+
+<p>function viewAgentDetails(agentId) {</p>
+<p>    console.log(&#039;View agent:&#039;, agentId);</p>
+<p>    showToast(<code class="inline-code">Viewing agent: ${agentId}</code>, &#039;info&#039;);</p>
+<p>    // TODO: Open modal with full agent details</p>
+<p>}</p>
+
+<p>function stopAgent(agentId) {</p>
+<p>    console.log(&#039;Stop agent:&#039;, agentId);</p>
+<p>    showToast(<code class="inline-code">Stopped agent: ${agentId}</code>, &#039;info&#039;);</p>
+<p>    // TODO: Implement single agent stop</p>
+<p>}</p>
+
+<p>// ==================== SECURITY DASHBOARD ====================</p>
+<p>function refreshSecurityDashboard() {</p>
+<p>    if (!window.gemBotAdminAPI) {</p>
+<p>        showToast(&#039;Admin API not loaded&#039;, &#039;error&#039;);</p>
+<p>        return;</p>
+<p>    }</p>
+    
+<p>    const security = window.gemBotAdminAPI.getSecurityDashboard();</p>
+    
+<p>    // Update stats</p>
+<p>    document.getElementById(&#039;securityTotalAccounts&#039;).textContent = security.total;</p>
+<p>    document.getElementById(&#039;securitySafeAccounts&#039;).textContent = security.safe;</p>
+<p>    document.getElementById(&#039;securityFlaggedAccounts&#039;).textContent = security.flagged;</p>
+<p>    document.getElementById(&#039;securityAvgScore&#039;).textContent = security.averageSecurityScore;</p>
+<p>    document.getElementById(&#039;securityTotalBonus&#039;).textContent = security.totalBonusDistributed.toLocaleString() + &#039; GBUV&#039;;</p>
+    
+<p>    // Update flagged accounts table</p>
+<p>    const flaggedTbody = document.getElementById(&#039;flaggedAccountsTableBody&#039;);</p>
+<p>    flaggedTbody.innerHTML = &#039;&#039;;</p>
+    
+<p>    if (security.recentFlagged.length === 0) {</p>
+<p>        flaggedTbody.innerHTML = <code class="inline-code"></p>
+<p>            &lt;tr&gt;</p>
+<p>                &lt;td colspan=&quot;6&quot; style=&quot;text-align: center; padding: 20px; color: var(--accent-green);&quot;&gt;</p>
+<p>                    ✅ No flagged accounts - security system working perfectly!</p>
+<p>                &lt;/td&gt;</p>
+<p>            &lt;/tr&gt;</p>
+<p>        </code>;</p>
+<p>    } else {</p>
+<p>        security.recentFlagged.forEach(account =&gt; {</p>
+<p>            const row = document.createElement(&#039;tr&#039;);</p>
+<p>            row.innerHTML = <code class="inline-code"></p>
+<p>                &lt;td&gt;${account.username}&lt;/td&gt;</p>
+<p>                &lt;td&gt;${account.email}&lt;/td&gt;</p>
+<p>                &lt;td style=&quot;color: var(--accent-yellow);&quot;&gt;${account.score}/100&lt;/td&gt;</p>
+<p>                &lt;td&gt;${account.bonus} GBUV&lt;/td&gt;</p>
+<p>                &lt;td&gt;${new Date(account.created).toLocaleString()}&lt;/td&gt;</p>
+<p>                &lt;td&gt;</p>
+<p>                    &lt;button class=&quot;action-btn&quot; onclick=&quot;reviewAccount(&#039;${account.username}&#039;)&quot;&gt;👁️&lt;/button&gt;</p>
+<p>                    &lt;button class=&quot;action-btn&quot; onclick=&quot;approveAccount(&#039;${account.username}&#039;)&quot;&gt;✅&lt;/button&gt;</p>
+<p>                &lt;/td&gt;</p>
+<p>            </code>;</p>
+<p>            flaggedTbody.appendChild(row);</p>
+<p>        });</p>
+<p>    }</p>
+    
+<p>    // Update IP tracking table</p>
+<p>    const ipTbody = document.getElementById(&#039;ipTrackingTableBody&#039;);</p>
+<p>    ipTbody.innerHTML = &#039;&#039;;</p>
+    
+<p>    const ipTracking = window.gemBotAdminAPI.getIPTracking();</p>
+<p>    ipTracking.slice(0, 10).forEach(ipData =&gt; {</p>
+<p>        const row = document.createElement(&#039;tr&#039;);</p>
+<p>        row.innerHTML = <code class="inline-code"></p>
+<p>            &lt;td&gt;${ipData.ip}&lt;/td&gt;</p>
+<p>            &lt;td&gt;${ipData.accountCount}&lt;/td&gt;</p>
+<p>            &lt;td&gt;&lt;span style=&quot;color: ${ipData.suspicious ? &#039;var(--accent-yellow)&#039; : &#039;var(--accent-green)&#039;};&quot;&gt;${ipData.suspicious ? &#039;⚠️ Suspicious&#039; : &#039;✅ Safe&#039;}&lt;/span&gt;&lt;/td&gt;</p>
+<p>            &lt;td&gt;${new Date(ipData.firstSeen).toLocaleString()}&lt;/td&gt;</p>
+<p>            &lt;td&gt;${new Date(ipData.lastSeen).toLocaleString()}&lt;/td&gt;</p>
+<p>        </code>;</p>
+<p>        ipTbody.appendChild(row);</p>
+<p>    });</p>
+    
+<p>    showToast(&#039;Security dashboard refreshed&#039;, &#039;success&#039;);</p>
+<p>}</p>
+
+<p>function reviewAccount(username) {</p>
+<p>    console.log(&#039;Review account:&#039;, username);</p>
+<p>    showToast(<code class="inline-code">Reviewing account: ${username}</code>, &#039;info&#039;);</p>
+<p>    // TODO: Open modal with full security analysis</p>
+<p>}</p>
+
+<p>function approveAccount(username) {</p>
+<p>    console.log(&#039;Approve account:&#039;, username);</p>
+<p>    showToast(<code class="inline-code">Approved account: ${username}</code>, &#039;success&#039;);</p>
+<p>    // TODO: Implement account approval (grant full bonus)</p>
+<p>}</p>
+
+<p>// ==================== WALLET MANAGEMENT ====================</p>
+<p>function refreshWallets() {</p>
+<p>    if (!window.gemBotAdminAPI) {</p>
+<p>        showToast(&#039;Admin API not loaded&#039;, &#039;error&#039;);</p>
+<p>        return;</p>
+<p>    }</p>
+    
+<p>    const entities = window.gemBotAdminAPI.getAllEntities();</p>
+    
+<p>    // Calculate stats</p>
+<p>    const totalWallets = entities.length;</p>
+<p>    const totalGBUV = entities.reduce((sum, e) =&gt; sum + (e.balance || 0), 0);</p>
+<p>    const avgBalance = totalWallets &gt; 0 ? Math.round(totalGBUV / totalWallets) : 0;</p>
+<p>    const newToday = entities.filter(e =&gt; {</p>
+<p>        const created = new Date(e.created);</p>
+<p>        const today = new Date();</p>
+<p>        return created.toDateString() === today.toDateString();</p>
+<p>    }).length;</p>
+    
+<p>    // Update stats</p>
+<p>    document.getElementById(&#039;walletTotalCount&#039;).textContent = totalWallets;</p>
+<p>    document.getElementById(&#039;walletTotalGBUV&#039;).textContent = totalGBUV.toLocaleString();</p>
+<p>    document.getElementById(&#039;walletAvgBalance&#039;).textContent = avgBalance.toLocaleString();</p>
+<p>    document.getElementById(&#039;walletNewToday&#039;).textContent = newToday;</p>
+    
+<p>    // Update table</p>
+<p>    const tbody = document.getElementById(&#039;walletsTableBody&#039;);</p>
+<p>    tbody.innerHTML = &#039;&#039;;</p>
+    
+<p>    entities.forEach(entity =&gt; {</p>
+<p>        const row = document.createElement(&#039;tr&#039;);</p>
+<p>        const typeIcon = entity.type === &#039;AI&#039; ? &#039;🤖&#039; : &#039;👤&#039;;</p>
+<p>        const securityColor = entity.security.flagged ? &#039;var(--accent-yellow)&#039; : &#039;var(--accent-green)&#039;;</p>
+        
+<p>        row.innerHTML = <code class="inline-code"></p>
+<p>            &lt;td&gt;${typeIcon} ${entity.type}&lt;/td&gt;</p>
+<p>            &lt;td&gt;${entity.username || entity.id}&lt;/td&gt;</p>
+<p>            &lt;td style=&quot;font-family: monospace; font-size: 12px;&quot; title=&quot;${entity.walletAddress}&quot;&gt;${entity.walletAddress ? entity.walletAddress.substring(0, 12) + &#039;...&#039; : &#039;N/A&#039;}&lt;/td&gt;</p>
+<p>            &lt;td&gt;${(entity.balance || 0).toLocaleString()} GBUV&lt;/td&gt;</p>
+<p>            &lt;td&gt;${entity.welcomeBonus || 0} GBUV&lt;/td&gt;</p>
+<p>            &lt;td style=&quot;color: ${securityColor};&quot;&gt;${entity.security.score}/100 ${entity.security.flagged ? &#039;⚠️&#039; : &#039;&#039;}&lt;/td&gt;</p>
+<p>            &lt;td&gt;${entity.created ? new Date(entity.created).toLocaleString() : &#039;N/A&#039;}&lt;/td&gt;</p>
+<p>            &lt;td&gt;</p>
+<p>                &lt;button class=&quot;action-btn&quot; onclick=&quot;viewWallet(&#039;${entity.id}&#039;)&quot;&gt;👁️&lt;/button&gt;</p>
+<p>                &lt;button class=&quot;action-btn&quot; onclick=&quot;sendGBUV(&#039;${entity.id}&#039;)&quot;&gt;💰&lt;/button&gt;</p>
+<p>            &lt;/td&gt;</p>
+<p>        </code>;</p>
+<p>        tbody.appendChild(row);</p>
+<p>    });</p>
+    
+<p>    showToast(<code class="inline-code">Loaded ${totalWallets} wallets</code>, &#039;success&#039;);</p>
+<p>}</p>
+
+<p>function viewWallet(id) {</p>
+<p>    console.log(&#039;View wallet:&#039;, id);</p>
+<p>    showToast(<code class="inline-code">Viewing wallet: ${id}</code>, &#039;info&#039;);</p>
+<p>    // TODO: Open modal with full wallet details</p>
+<p>}</p>
+
+<p>function sendGBUV(id) {</p>
+<p>    const amount = prompt(&#039;Enter GBUV amount to send:&#039;);</p>
+<p>    if (amount &amp;&amp; !isNaN(amount)) {</p>
+<p>        console.log(<code class="inline-code">Send ${amount} GBUV to ${id}</code>);</p>
+<p>        showToast(<code class="inline-code">Sent ${amount} GBUV</code>, &#039;success&#039;);</p>
+<p>        // TODO: Implement GBUV transfer</p>
+<p>    }</p>
+<p>}</p>
+
+<p>function rewardUser(id) {</p>
+<p>    const amount = prompt(&#039;Enter reward amount (GBUV):&#039;);</p>
+<p>    if (amount &amp;&amp; !isNaN(amount)) {</p>
+<p>        console.log(<code class="inline-code">Reward ${amount} GBUV to ${id}</code>);</p>
+<p>        showToast(<code class="inline-code">Rewarded ${amount} GBUV</code>, &#039;success&#039;);</p>
+<p>        // TODO: Implement user reward</p>
+<p>    }</p>
+<p>}</p>
+
+<p>function viewUserDetails(id) {</p>
+<p>    console.log(&#039;View user:&#039;, id);</p>
+<p>    showToast(<code class="inline-code">Viewing user: ${id}</code>, &#039;info&#039;);</p>
+<p>    // TODO: Open modal with full user details</p>
+<p>}</code></pre></p>
+
+<hr>
+
+<h3>9. <strong>Update initializeDashboard() Function</strong></h3>
+
+<p><strong>Current:</strong></p>
+<pre class="code-block javascript" data-lang="javascript"><code>function initializeDashboard() {
+<p>    loadGitHubConfig();</p>
+<p>    initCodeEditor();</p>
+<p>    refreshStats();</p>
+<p>    refreshUsers();</p>
+<p>    loadActivityLog();</p>
+<p>}</code></pre></p>
+
+<p><strong>Replace With:</strong></p>
+<pre class="code-block javascript" data-lang="javascript"><code>function initializeDashboard() {
+<p>    console.log(&#039;🚀 Initializing Enhanced Admin Dashboard...&#039;);</p>
+    
+<p>    // Check if admin API loaded</p>
+<p>    if (!window.gemBotAdminAPI) {</p>
+<p>        console.error(&#039;❌ Admin API not loaded!&#039;);</p>
+<p>        showToast(&#039;Admin API missing - some features disabled&#039;, &#039;error&#039;);</p>
+<p>    }</p>
+    
+<p>    // Initialize existing features</p>
+<p>    loadGitHubConfig();</p>
+<p>    initCodeEditor();</p>
+<p>    refreshStats();</p>
+<p>    refreshUsers();</p>
+<p>    loadActivityLog();</p>
+    
+<p>    // Initialize new features</p>
+<p>    refreshAIAgents();</p>
+<p>    refreshSecurityDashboard();</p>
+<p>    refreshWallets();</p>
+    
+<p>    console.log(&#039;✅ Admin Dashboard initialized&#039;);</p>
+<p>    showToast(&#039;Admin Dashboard Ready&#039;, &#039;success&#039;);</p>
+<p>}</code></pre></p>
+
+<hr>
+
+<h3>10. <strong>Update attemptLogin() Function</strong></h3>
+
+<p><strong>Location:</strong> Around line 1851</p>
+
+<p><strong>Current:</strong></p>
+<pre class="code-block javascript" data-lang="javascript"><code>async function attemptLogin() {
+<p>    const password = document.getElementById(&#039;adminPassword&#039;).value;</p>
+<p>    const hash = await hashPassword(password);</p>
+    
+<p>    // Check against stored hash</p>
+<p>    const storedHash = localStorage.getItem(&#039;gembot&lt;em&gt;admin&lt;/em&gt;hash&#039;) || ADMIN&lt;em&gt;PASSWORD&lt;/em&gt;HASH;</p>
+    
+<p>    if (hash === storedHash) {</p>
+<p>        isAuthenticated = true;</p>
+<p>        sessionStorage.setItem(&#039;gembot&lt;em&gt;admin&lt;/em&gt;auth&#039;, &#039;true&#039;);</p>
+<p>        document.getElementById(&#039;loginScreen&#039;).style.display = &#039;none&#039;;</p>
+<p>        document.getElementById(&#039;dashboard&#039;).style.display = &#039;block&#039;;</p>
+<p>        initializeDashboard();</p>
+<p>        addLog(&#039;Admin logged in&#039;, &#039;success&#039;);</p>
+<p>    } else {</p>
+<p>        document.getElementById(&#039;loginError&#039;).style.display = &#039;block&#039;;</p>
+<p>        setTimeout(() =&gt; {</p>
+<p>            document.getElementById(&#039;loginError&#039;).style.display = &#039;none&#039;;</p>
+<p>        }, 3000);</p>
+<p>    }</p>
+<p>}</code></pre></p>
+
+<p><strong>Replace With:</strong></p>
+<pre class="code-block javascript" data-lang="javascript"><code>async function attemptLogin() {
+<p>    const token = document.getElementById(&#039;adminPassword&#039;).value;</p>
+    
+<p>    // NEW: Use admin API authentication</p>
+<p>    if (window.gemBotAdminAPI) {</p>
+<p>        const result = await window.gemBotAdminAPI.authenticate(&#039;barbrickdesign@gmail.com&#039;, token);</p>
+        
+<p>        if (result.success) {</p>
+<p>            isAuthenticated = true;</p>
+<p>            document.getElementById(&#039;loginScreen&#039;).style.display = &#039;none&#039;;</p>
+<p>            document.getElementById(&#039;dashboard&#039;).style.display = &#039;block&#039;;</p>
+<p>            initializeDashboard();</p>
+<p>            addLog(&#039;Admin logged in (barbrickdesign@gmail.com)&#039;, &#039;success&#039;);</p>
+<p>            showToast(&#039;Welcome back, Ryan!&#039;, &#039;success&#039;);</p>
+<p>            return;</p>
+<p>        }</p>
+<p>    }</p>
+    
+<p>    // Fallback to old method if API not loaded</p>
+<p>    const hash = await hashPassword(token);</p>
+<p>    const storedHash = localStorage.getItem(&#039;gembot&lt;em&gt;admin&lt;/em&gt;hash&#039;) || ADMIN&lt;em&gt;PASSWORD&lt;/em&gt;HASH;</p>
+    
+<p>    if (hash === storedHash) {</p>
+<p>        isAuthenticated = true;</p>
+<p>        sessionStorage.setItem(&#039;gembot&lt;em&gt;admin&lt;/em&gt;auth&#039;, &#039;true&#039;);</p>
+<p>        document.getElementById(&#039;loginScreen&#039;).style.display = &#039;none&#039;;</p>
+<p>        document.getElementById(&#039;dashboard&#039;).style.display = &#039;block&#039;;</p>
+<p>        initializeDashboard();</p>
+<p>        addLog(&#039;Admin logged in&#039;, &#039;success&#039;);</p>
+<p>    } else {</p>
+<p>        document.getElementById(&#039;loginError&#039;).style.display = &#039;block&#039;;</p>
+<p>        setTimeout(() =&gt; {</p>
+<p>            document.getElementById(&#039;loginError&#039;).style.display = &#039;none&#039;;</p>
+<p>        }, 3000);</p>
+<p>    }</p>
+<p>}</code></pre></p>
+
+<hr>
+
+<h2>🧪 TESTING AFTER IMPLEMENTATION</h2>
+
+<h3>1. Test Login</h3>
+<pre class="code-block " data-lang="text"><code>1. Open admin-dashboard.html
+<ol><li class="ol-item">Enter token: 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</li>
+<li class="ol-item">Click AUTHENTICATE</li>
+<li class="ol-item">Should show: &quot;Welcome back, Ryan!&quot;</code></pre></li></ol>
+
+<h3>2. Test AI Agents</h3>
+<pre class="code-block " data-lang="text"><code>1. Click &quot;🤖 AI Agents&quot; tab
+<ol><li class="ol-item">Click &quot;Spawn 10 Agents&quot;</li>
+<li class="ol-item">Wait 2 seconds</li>
+<li class="ol-item">Table should populate with 10 AI agents</li>
+<li class="ol-item">Each should have: ID, personality, level, gems, wallet</code></pre></li></ol>
+
+<h3>3. Test Security Dashboard</h3>
+<pre class="code-block " data-lang="text"><code>1. Click &quot;🛡️ Security&quot; tab
+<ol><li class="ol-item">Should show:</li></ol>
+<p>   - Total accounts</p>
+<p>   - Safe/flagged counts</p>
+<p>   - Average security score</p>
+<p>   - GBUV distributed</p>
+<ol><li class="ol-item">Flagged accounts table (if any)</li>
+<li class="ol-item">IP tracking table</code></pre></li></ol>
+
+<h3>4. Test Wallets</h3>
+<pre class="code-block " data-lang="text"><code>1. Click &quot;💎 Wallets&quot; tab
+<ol><li class="ol-item">Should show all users + AI agents</li>
+<li class="ol-item">Each row: Type (👤/🤖), username, wallet address, GBUV balance</li>
+<li class="ol-item">Security score with color coding</li>
+<li class="ol-item">Actions: View, Send GBUV</code></pre></li></ol>
+
+<h3>5. Test Users (Enhanced)</h3>
+<pre class="code-block " data-lang="text"><code>1. Click &quot;👥 Users&quot; tab
+<ol><li class="ol-item">Now includes:</li></ol>
+<p>   - Security scores</p>
+<p>   - GBUV balances</p>
+<p>   - Welcome bonus amounts</p>
+<p>   - Flagged status</code></pre></p>
+
+<hr>
+
+<h2>✅ COMPLETION CHECKLIST</h2>
+
+<p>After implementing all changes above:</p>
+
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> admin-api.js loaded and functional</li>
+<li class="checkbox"><input type="checkbox" disabled> Login works with barbrickdesign@gmail.com</li>
+<li class="checkbox"><input type="checkbox" disabled> AI Agents tab displays agents</li>
+<li class="checkbox"><input type="checkbox" disabled> Security tab shows security dashboard</li>
+<li class="checkbox"><input type="checkbox" disabled> Wallets tab shows all entities</li>
+<li class="checkbox"><input type="checkbox" disabled> Users tab enhanced with security/wallet info</li>
+<li class="checkbox"><input type="checkbox" disabled> All refresh buttons work</li>
+<li class="checkbox"><input type="checkbox" disabled> Spawn agents button works</li>
+<li class="checkbox"><input type="checkbox" disabled> Stop agents button works</li>
+<li class="checkbox"><input type="checkbox" disabled> No console errors</li>
+<li class="checkbox"><input type="checkbox" disabled> Toast notifications working</li>
+<li class="checkbox"><input type="checkbox" disabled> All stats updating correctly</li></ul>
+
+<hr>
+
+<h2>🚀 DEPLOYMENT</h2>
+
+<p>Once tested locally:</p>
+
+<ol><li class="ol-item"><strong>Commit Changes:</strong></li></ol>
+<pre class="code-block bash" data-lang="bash"><code>git add admin-dashboard.html admin-api.js
+<p>git commit -m &quot;🎯 Enhanced admin dashboard with AI agents, security, and wallet management&quot;</p>
+<p>git push</code></pre></p>
+
+<ol><li class="ol-item"><strong>Deploy to Render:</strong></li></ol>
+<ul><li class="ul-item">Render will auto-deploy from GitHub</li>
+<li class="ul-item">Wait 2-3 minutes for deployment</li>
+<li class="ul-item">Visit: https://gembotaiwebcontrol.onrender.com/admin-dashboard.html</li></ul>
+
+<ol><li class="ol-item"><strong>Verify Live:</strong></li></ol>
+<ul><li class="ul-item">Login with GitHub token</li>
+<li class="ul-item">Test all new features</li>
+<li class="ul-item">Monitor for errors</li></ul>
+
+<hr>
+
+<h2>📞 SUPPORT</h2>
+
+<p>If you encounter any issues:</p>
+
+<ol><li class="ol-item"><strong>Check Console:</strong> Press F12, look for errors</li>
+<li class="ol-item"><strong>Verify Scripts Loaded:</strong> Check Network tab for 404s</li>
+<li class="ol-item"><strong>Test Admin API:</strong> Run in console: <code class="inline-code">console.log(window.gemBotAdminAPI)</code></li>
+<li class="ol-item"><strong>Clear Cache:</strong> Hard refresh with Ctrl+Shift+R</li></ol>
+
+<hr>
+
+<p><strong>STATUS:</strong> Ready to implement! All code provided above. ✅</p>
+
+        <div class="generated-notice">
+            🤖 Auto-generated from ADMIN_DASHBOARD_IMPLEMENTATION_GUIDE.md by GemBot Neural Dashboard Agent<br>
+            Generated: 2025-12-16T13:51:58.417Z
+        </div>
+    </div>
+</body>
+</html>

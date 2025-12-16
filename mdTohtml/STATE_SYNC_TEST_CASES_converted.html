@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STATE_SYNC_TEST_CASES - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        <h1>State Synchronization - Test Cases</h1>
+
+<h2>Pre-Testing Setup</h2>
+
+<p><strong>Requirements</strong>:</p>
+<ol><li class="ol-item">GemBot<em>Control</em>AI.html with MACHINE<em>STATE</em>SYNC_CODE.js integrated</li>
+<li class="ol-item">Arduino code with broadcastMachineState() function</li>
+<li class="ol-item">Both devices connected (Arduino via USB, web interface loaded)</li>
+<li class="ol-item">Browser DevTools Console open (F12)</li></ol>
+
+<hr>
+
+<h2>Test Suite 1: Initial State Validation</h2>
+
+<h3>Test 1.1: State Object Exists</h3>
+<p><strong>Expected</strong>: machineGlobalState object initialized on page load</p>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Run in console:
+<p>typeof machineGlobalState === &#039;object&#039;</p>
+<p>// Expected result: true</p>
+
+<p>machineGlobalState.hardware.motorSpeed</p>
+<p>// Expected result: 1 (default)</p>
+
+<p>machineGlobalState.hardware.motorMode</p>
+<p>// Expected result: &quot;continuous&quot; (default)</p>
+
+<p>machineGlobalState.hardware.position.x</p>
+<p>// Expected result: 0 (default)</code></pre></p>
+
+<p><strong>Pass Criteria</strong>: All properties accessible, default values correct</p>
+
+<hr>
+
+<h3>Test 1.2: AI Context Object Callable</h3>
+<p><strong>Expected</strong>: getAIContextObject() returns properly formatted context</p>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Run in console:
+<p>const ctx = getAIContextObject();</p>
+<p>console.log(ctx);</p>
+
+<p>// Expected output:</p>
+<p>{</p>
+<p>  connectionStatus: &quot;disconnected&quot;,</p>
+<p>  currentSpeed: 1,</p>
+<p>  currentMode: &quot;continuous&quot;,</p>
+<p>  position: { x: 0, y: 0, rotation: 0, index: 0 },</p>
+<p>  currentPhase: &quot;none&quot;,</p>
+<p>  stoneType: null,</p>
+<p>  stoneHardness: null,</p>
+<p>  lapType: null,</p>
+<p>  gritGrade: null,</p>
+<p>  totalFacets: 0,</p>
+<p>  facetsRemaining: 0,</p>
+<p>  estimatedTimeRemaining: &quot;0m&quot;</p>
+<p>}</code></pre></p>
+
+<p><strong>Pass Criteria</strong>: All fields present, defaults are reasonable</p>
+
+<hr>
+
+<h3>Test 1.3: All Update Functions Exist</h3>
+<p><strong>Expected</strong>: All 8 state functions are callable</p>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Run in console - should not error:
+<p>typeof updateHardwareStateFromArduino === &#039;function&#039;  // true</p>
+<p>typeof updateMenuModeFromTouchScreen === &#039;function&#039;   // true</p>
+<p>typeof detectCuttingPhase === &#039;function&#039;               // true</p>
+<p>typeof updateGuidanceState === &#039;function&#039;              // true</p>
+<p>typeof initializeDesign === &#039;function&#039;                 // true</p>
+<p>typeof markFacetComplete === &#039;function&#039;                // true</p>
+<p>typeof setLapConfiguration === &#039;function&#039;              // true</p>
+<p>typeof updateTimeRemaining === &#039;function&#039;              // true</code></pre></p>
+
+<p><strong>Pass Criteria</strong>: All functions callable, no syntax errors</p>
+
+<hr>
+
+<h2>Test Suite 2: Hardware State Synchronization</h2>
+
+<h3>Test 2.1: Arduino Connection Detection</h3>
+<p><strong>Expected</strong>: When Arduino connects, state updates</p>
+
+<p><strong>Steps</strong>:</p>
+<ol><li class="ol-item">Open page with Arduino NOT connected</li>
+<li class="ol-item">Run: <code class="inline-code">logMachineState()</code> (should show "connectionStatus: disconnected")</li>
+<li class="ol-item">Connect Arduino via USB</li>
+<li class="ol-item">Click SCAN then CONNECT in web interface</li>
+<li class="ol-item">Run: <code class="inline-code">logMachineState()</code></li></ol>
+
+<p><strong>Expected Result</strong>:</p>
+<pre class="code-block " data-lang="text"><code>connectionStatus: &quot;connected&quot;
+<p>lastUpdate: [recent timestamp]</code></pre></p>
+
+<p><strong>Pass Criteria</strong>: connectionStatus changes from "disconnected" to "connected"</p>
+
+<hr>
+
+<h3>Test 2.2: Position Sync from Arduino</h3>
+<p><strong>Expected</strong>: When Arduino position changes, web state updates</p>
+
+<p><strong>Steps</strong>:</p>
+<ol><li class="ol-item">Arduino connected</li>
+<li class="ol-item">Record: <code class="inline-code">machineGlobalState.hardware.position.x</code></li>
+<li class="ol-item">Using Nextion touch screen, move X axis (press X+ or X- buttons 5 times)</li>
+<li class="ol-item">Record: <code class="inline-code">machineGlobalState.hardware.position.x</code></li></ol>
+
+<p><strong>Expected Result</strong>: Second reading > First reading (position increased)</p>
+
+<p><strong>Pass Criteria</strong>: Position value changed to match Arduino movement</p>
+
+<hr>
+
+<h3>Test 2.3: Speed Sync from Slider</h3>
+<p><strong>Expected</strong>: When user changes speed slider, global state updates</p>
+
+<p><strong>Steps</strong>:</p>
+<ol><li class="ol-item">Record initial: <code class="inline-code">machineGlobalState.hardware.motorSpeed</code></li>
+<li class="ol-item">Move speed slider from 1 to 4</li>
+<li class="ol-item">Record new value: <code class="inline-code">machineGlobalState.hardware.motorSpeed</code></li></ol>
+
+<p><strong>Expected Result</strong>: Value changes from 1 to 4</p>
+
+<p><strong>Pass Criteria</strong>: Speed value matches slider position</p>
+
+<hr>
+
+<h3>Test 2.4: Mode Sync from Toggle</h3>
+<p><strong>Expected</strong>: When user toggles mode, global state updates</p>
+
+<p><strong>Steps</strong>:</p>
+<ol><li class="ol-item">Record: <code class="inline-code">machineGlobalState.hardware.motorMode</code> (should be "continuous")</li>
+<li class="ol-item">Click "Step Mode" button</li>
+<li class="ol-item">Record: <code class="inline-code">machineGlobalState.hardware.motorMode</code></li></ol>
+
+<p><strong>Expected Result</strong>: Value changes to "step"</p>
+
+<p><strong>Pass Criteria</strong>: Mode matches button state</p>
+
+<hr>
+
+<h3>Test 2.5: Rapid State Changes</h3>
+<p><strong>Expected</strong>: State updates don't miss rapid changes</p>
+
+<p><strong>Steps</strong>:</p>
+<ol><li class="ol-item">Rapidly click X+ button 20 times</li>
+<li class="ol-item">Record final position: <code class="inline-code">machineGlobalState.hardware.position.x</code></li>
+<li class="ol-item">Compare to Nextion display position</li></ol>
+
+<p><strong>Expected Result</strong>: Web position matches Nextion position (within 1-2 steps)</p>
+
+<p><strong>Pass Criteria</strong>: No position values skipped</p>
+
+<hr>
+
+<h2>Test Suite 3: Phase Detection</h2>
+
+<h3>Test 3.1: Roughing Phase Detection</h3>
+<p><strong>Expected</strong>: Speed 4-5 + Continuous mode = Roughing phase</p>
+
+<p><strong>Steps</strong>:</p>
+<ol><li class="ol-item">Set speed slider to 4</li>
+<li class="ol-item">Ensure mode is CONTINUOUS</li>
+<li class="ol-item">Run: <code class="inline-code">detectCuttingPhase()</code></li>
+<li class="ol-item">Run: <code class="inline-code">console.log(machineGlobalState.touchScreen.detectedPhase)</code></li></ol>
+
+<p><strong>Expected Result</strong>: "roughing"</p>
+
+<p><strong>Pass Criteria</strong>: Phase matches speed/mode pattern</p>
+
+<hr>
+
+<h3>Test 3.2: Fine Cutting Phase Detection</h3>
+<p><strong>Expected</strong>: Speed 2-3 + Step mode = Fine cutting phase</p>
+
+<p><strong>Steps</strong>:</p>
+<ol><li class="ol-item">Set speed slider to 3</li>
+<li class="ol-item">Click Step Mode button</li>
+<li class="ol-item">Run: <code class="inline-code">detectCuttingPhase()</code></li>
+<li class="ol-item">Run: <code class="inline-code">console.log(machineGlobalState.touchScreen.detectedPhase)</code></li></ol>
+
+<p><strong>Expected Result</strong>: "fine_cutting"</p>
+
+<p><strong>Pass Criteria</strong>: Phase matches speed/mode pattern</p>
+
+<hr>
+
+<h3>Test 3.3: Polishing Phase Detection</h3>
+<p><strong>Expected</strong>: Speed 1-2 + Step mode = Polishing phase</p>
+
+<p><strong>Steps</strong>:</p>
+<ol><li class="ol-item">Set speed slider to 1</li>
+<li class="ol-item">Ensure mode is STEP</li>
+<li class="ol-item">Run: <code class="inline-code">detectCuttingPhase()</code></li>
+<li class="ol-item">Run: <code class="inline-code">console.log(machineGlobalState.touchScreen.detectedPhase)</code></li></ol>
+
+<p><strong>Expected Result</strong>: "polishing"</p>
+
+<p><strong>Pass Criteria</strong>: Phase matches speed/mode pattern</p>
+
+<hr>
+
+<h2>Test Suite 4: Stone Database</h2>
+
+<h3>Test 4.1: Stone Properties Load</h3>
+<p><strong>Expected</strong>: Stone data accessible and correct</p>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Run in console:
+<p>stoneDatabase[&#039;diamond&#039;]</p>
+<p>// Expected:</p>
+<p>{</p>
+<p>  hardness: 10,</p>
+<p>  color: &#039;various&#039;,</p>
+<p>  characteristics: &#039;Hardest natural mineral. Excellent polish.&#039;,</p>
+<p>  requiresWater: false,</p>
+<p>  speedRange: [3, 5],</p>
+<p>  bestLap: &#039;copper&#039;,</p>
+<p>  polishingTime: 1.0</p>
+<p>}</code></pre></p>
+
+<p><strong>Pass Criteria</strong>: Stone properties load correctly</p>
+
+<hr>
+
+<h3>Test 4.2: Stone Selection Updates Context</h3>
+<p><strong>Expected</strong>: Selecting stone updates AI context</p>
+
+<p><strong>Steps</strong>:</p>
+<ol><li class="ol-item">Run: <code class="inline-code">initializeDesign('standard_rb', 'diamond', 'round')</code></li>
+<li class="ol-item">Run: <code class="inline-code">getAIContextObject()</code></li></ol>
+
+<p><strong>Expected Result</strong>:</p>
+<pre class="code-block " data-lang="text"><code>stoneType: &quot;diamond&quot;
+<p>stoneHardness: 10</p>
+<p>totalFacets: 58</code></pre></p>
+
+<p><strong>Pass Criteria</strong>: Stone data reflected in AI context</p>
+
+<hr>
+
+<h3>Test 4.3: Emerald Special Handling</h3>
+<p><strong>Expected</strong>: Emerald shows water requirement</p>
+
+<p><strong>Steps</strong>:</p>
+<ol><li class="ol-item">Run: <code class="inline-code">const ctx = getAIContextObject(); ctx.stoneType = 'emerald'; updateGuidanceState();</code></li>
+<li class="ol-item">Ask AI: "What precautions do I need for this stone?"</li>
+<li class="ol-item">AI should mention water/cooling</li></ol>
+
+<p><strong>Expected Result</strong>: AI mentions "Requires water cooling" for emerald</p>
+
+<p><strong>Pass Criteria</strong>: Stone-specific guidance appears</p>
+
+<hr>
+
+<h2>Test Suite 5: AI Context Integration</h2>
+
+<h3>Test 5.1: AI Uses Real Speed</h3>
+<p><strong>Expected</strong>: AI response mentions actual speed, not default</p>
+
+<p><strong>Setup</strong>:</p>
+<ol><li class="ol-item">Set speed slider to 4</li>
+<li class="ol-item">Set mode to CONTINUOUS</li>
+<li class="ol-item">Ask AI: "What speed am I using?"</li></ol>
+
+<p><strong>Expected Response</strong>: Should say "speed: 4/5" or "fastest"</p>
+
+<p><strong>FAIL Condition</strong>: AI says "speed: 1" or "slowest"</p>
+
+<p><strong>Pass Criteria</strong>: AI uses actual speed value</p>
+
+<hr>
+
+<h3>Test 5.2: AI Uses Real Mode</h3>
+<p><strong>Expected</strong>: AI response mentions actual mode</p>
+
+<p><strong>Setup</strong>:</p>
+<ol><li class="ol-item">Click Step Mode button</li>
+<li class="ol-item">Ask AI: "What mode am I in?"</li></ol>
+
+<p><strong>Expected Response</strong>: Should mention "STEP" mode</p>
+
+<p><strong>FAIL Condition</strong>: AI says "continuous" or ignores mode</p>
+
+<p><strong>Pass Criteria</strong>: AI uses actual mode value</p>
+
+<hr>
+
+<h3>Test 5.3: AI Uses Real Position</h3>
+<p><strong>Expected</strong>: AI response mentions actual position</p>
+
+<p><strong>Setup</strong>:</p>
+<ol><li class="ol-item">Move X axis to position 100 (using buttons)</li>
+<li class="ol-item">Ask AI: "What is my current position?"</li></ol>
+
+<p><strong>Expected Response</strong>: Should mention X=100 in response</p>
+
+<p><strong>FAIL Condition</strong>: AI says "position: 0,0"</p>
+
+<p><strong>Pass Criteria</strong>: AI uses actual position values</p>
+
+<hr>
+
+<h3>Test 5.4: Speed Question Contextual</h3>
+<p><strong>Expected</strong>: AI adapts speed explanation to current state</p>
+
+<p><strong>Test A - High Speed</strong>:</p>
+<ul><li class="ul-item">Set speed to 5, mode continuous</li>
+<li class="ul-item">Ask: "Should I go faster?"</li>
+<li class="ul-item">AI should mention: "Already at maximum"</li></ul>
+
+<p><strong>Test B - Low Speed</strong>:</p>
+<ul><li class="ul-item">Set speed to 1, mode step</li>
+<li class="ul-item">Ask: "Can I go faster?"</li>
+<li class="ul-item">AI should mention: "Can increase for different work"</li></ul>
+
+<p><strong>Pass Criteria</strong>: Response adapts to current state</p>
+
+<hr>
+
+<h3>Test 5.5: Mode Question Contextual</h3>
+<p><strong>Expected</strong>: AI adapts mode explanation to current state</p>
+
+<p><strong>Test A - Step Mode</strong>:</p>
+<ul><li class="ul-item">Select Step mode</li>
+<li class="ul-item">Ask: "What mode am I in?"</li>
+<li class="ul-item">AI should confirm: "STEP mode"</li></ul>
+
+<p><strong>Test B - Continuous Mode</strong>:</p>
+<ul><li class="ul-item">Select Continuous mode</li>
+<li class="ul-item">Ask: "What mode am I in?"</li>
+<li class="ul-item">AI should confirm: "CONTINUOUS mode"</li></ul>
+
+<p><strong>Pass Criteria</strong>: Response matches actual mode</p>
+
+<hr>
+
+<h2>Test Suite 6: Design & Facets</h2>
+
+<h3>Test 6.1: Design Initialization</h3>
+<p><strong>Expected</strong>: Design setup calculates correct facet count</p>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Run:
+<p>initializeDesign(&#039;standard_rb&#039;, &#039;diamond&#039;, &#039;round&#039;);</p>
+
+<p>// Check:</p>
+<p>machineGlobalState.touchScreen.totalFacets</p>
+<p>// Expected: 58</p>
+
+<p>machineGlobalState.touchScreen.facetsRemaining</p>
+<p>// Expected: 58</p>
+
+<p>machineGlobalState.touchScreen.currentFacet</p>
+<p>// Expected: 1</code></pre></p>
+
+<p><strong>Pass Criteria</strong>: All facet counts correct</p>
+
+<hr>
+
+<h3>Test 6.2: Facet Progress Tracking</h3>
+<p><strong>Expected</strong>: Completing facets updates remaining count</p>
+
+<p><strong>Steps</strong>:</p>
+<ol><li class="ol-item">Initialize design (58 facets)</li>
+<li class="ol-item">Run 5 times: <code class="inline-code">markFacetComplete()</code></li>
+<li class="ol-item">Check: <code class="inline-code">machineGlobalState.touchScreen.facetsRemaining</code></li></ol>
+
+<p><strong>Expected Result</strong>: 53 (58 - 5)</p>
+
+<p><strong>Pass Criteria</strong>: Facet count decrements correctly</p>
+
+<hr>
+
+<h3>Test 6.3: Time Estimation Updates</h3>
+<p><strong>Expected</strong>: Time remaining decreases as facets complete</p>
+
+<p><strong>Steps</strong>:</p>
+<ol><li class="ol-item">Initialize design</li>
+<li class="ol-item">Record: <code class="inline-code">machineGlobalState.touchScreen.estimatedTimeRemaining</code></li>
+<li class="ol-item">Complete 10 facets: <code class="inline-code">markFacetComplete()</code> x 10</li>
+<li class="ol-item">Record: <code class="inline-code">machineGlobalState.touchScreen.estimatedTimeRemaining</code></li></ol>
+
+<p><strong>Expected Result</strong>: Second time is less than first time</p>
+
+<p><strong>Pass Criteria</strong>: Time remaining decreases appropriately</p>
+
+<hr>
+
+<h2>Test Suite 7: Lap & Grit Configuration</h2>
+
+<h3>Test 7.1: Lap Configuration Sets Correctly</h3>
+<p><strong>Expected</strong>: Setting lap updates global state</p>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Run:
+<p>setLapConfiguration(&#039;copper&#039;, 220);</p>
+
+<p>// Check:</p>
+<p>machineGlobalState.touchScreen.lapType</p>
+<p>// Expected: &quot;copper&quot;</p>
+
+<p>machineGlobalState.touchScreen.gritGrade</p>
+<p>// Expected: 220</code></pre></p>
+
+<p><strong>Pass Criteria</strong>: Lap type and grit stored correctly</p>
+
+<hr>
+
+<h3>Test 7.2: AI References Lap Type</h3>
+<p><strong>Expected</strong>: AI mentions configured lap in responses</p>
+
+<p><strong>Setup</strong>:</p>
+<ol><li class="ol-item">Run: <code class="inline-code">setLapConfiguration('copper', 600)</code></li>
+<li class="ol-item">Ask AI: "What lap should I use?"</li></ol>
+
+<p><strong>Expected Response</strong>: Should mention "copper lap" and "600 grit"</p>
+
+<p><strong>Pass Criteria</strong>: AI references actual lap configuration</p>
+
+<hr>
+
+<h2>Test Suite 8: Complete Workflow</h2>
+
+<h3>Test 8.1: Full Cutting Workflow</h3>
+<p><strong>Scenario</strong>: User cuts a diamond</p>
+
+<p><strong>Steps</strong>:</p>
+<ol><li class="ol-item">Connect Arduino (verify connection status)</li>
+<li class="ol-item">Initialize design: <code class="inline-code">initializeDesign('standard_rb', 'diamond', 'round')</code></li>
+<li class="ol-item">Set speed to 5, mode to CONTINUOUS</li>
+<li class="ol-item">Ask AI: "What lap should I use?" → AI says "60 grit rough lap" (roughing phase)</li>
+<li class="ol-item">Complete 10 facets</li>
+<li class="ol-item">Ask AI: "How many facets remain?" → AI says "48 remaining"</li>
+<li class="ol-item">Set speed to 2, mode to STEP</li>
+<li class="ol-item">Ask AI: "What phase am I in now?" → AI says "fine cutting phase"</li>
+<li class="ol-item">Set lap to 220 grit</li>
+<li class="ol-item">Ask AI: "Should I change my technique?" → AI mentions step mode, fine lap</li></ol>
+
+<p><strong>Expected Result</strong>: Every response is contextually accurate throughout</p>
+
+<p><strong>Pass Criteria</strong>: AI guidance is accurate at every step</p>
+
+<hr>
+
+<h3>Test 8.2: Stone-Specific Workflow</h3>
+<p><strong>Scenario</strong>: User switches stones</p>
+
+<p><strong>Setup</strong>:</p>
+<ol><li class="ol-item">Initialize diamond (speed 5, continuous)</li>
+<li class="ol-item">Ask AI: "Can I use maximum speed?" → AI says "Yes, diamond is hard"</li>
+<li class="ol-item">Change to emerald</li>
+<li class="ol-item">Ask AI: "Can I use maximum speed?" → AI says "No, emerald is fragile"</li>
+<li class="ol-item">Set lap to fine (600) → AI should adjust guidance</li></ol>
+
+<p><strong>Expected Result</strong>: AI guidance changes based on stone type</p>
+
+<p><strong>Pass Criteria</strong>: Stone-specific recommendations accurate</p>
+
+<hr>
+
+<h2>Test Suite 9: Console Debugging</h2>
+
+<h3>Test 9.1: State Logging Function</h3>
+<p><strong>Expected</strong>: logMachineState() produces readable output</p>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Run:
+<p>logMachineState();</p>
+
+<p>// Expected output in console:</p>
+<p>=== MACHINE STATE ===</p>
+<p>HARDWARE:</p>
+<p>  Connection: connected</p>
+<p>  Speed: 4</p>
+<p>  Mode: step</p>
+<p>  Position: X=150, Y=200, Angle=45°, Index=32</p>
+<p>TOUCH SCREEN:</p>
+<p>  Stone: diamond</p>
+<p>  Design: standard_rb</p>
+<p>  Phase: fine_cutting</p>
+<p>  Lap: copper, 600 grit</p>
+<p>  Progress: Facet 15 of 58 (43 remaining)</p>
+<p>  Time Est: 2h 15m</code></pre></p>
+
+<p><strong>Pass Criteria</strong>: Output shows all current state clearly</p>
+
+<hr>
+
+<h3>Test 9.2: AI Context Logging</h3>
+<p><strong>Expected</strong>: AI context object shows what AI sees</p>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Run:
+<p>console.log(getAIContextObject());</p>
+
+<p>// Check that it shows:</p>
+<ul><li class="ul-item">Current speed</li>
+<li class="ul-item">Current mode</li>
+<li class="ul-item">Current position</li>
+<li class="ul-item">Current stone</li>
+<li class="ul-item">Current phase</li>
+<li class="ul-item">Time remaining</code></pre></li></ul>
+
+<p><strong>Pass Criteria</strong>: AI context contains all required fields</p>
+
+<hr>
+
+<h2>Summary Table</h2>
+
+<p>| Test Suite | Focus | Count | Critical? |</p>
+<p>|-----------|-------|-------|-----------|</p>
+<p>| Suite 1 | Initialization | 3 | YES |</p>
+<p>| Suite 2 | Hardware Sync | 5 | YES |</p>
+<p>| Suite 3 | Phase Detection | 3 | YES |</p>
+<p>| Suite 4 | Stone Database | 3 | NO |</p>
+<p>| Suite 5 | AI Integration | 5 | YES |</p>
+<p>| Suite 6 | Design/Facets | 3 | YES |</p>
+<p>| Suite 7 | Lap/Grit | 2 | YES |</p>
+<p>| Suite 8 | Complete Workflows | 2 | YES |</p>
+<p>| Suite 9 | Debugging | 2 | NO |</p>
+
+<p><strong>Critical Tests</strong> (must pass): Suites 1, 2, 3, 5, 6, 7, 8</p>
+<p><strong>Total Tests</strong>: 28</p>
+<p><strong>Estimated Time</strong>: 3-4 hours</p>
+
+<hr>
+
+<h2>Pass/Fail Criteria</h2>
+
+<h3>PASS: All Critical Tests Pass</h3>
+<ul><li class="ul-item">Initialization works</li>
+<li class="ul-item">Hardware state syncs</li>
+<li class="ul-item">Phase detection accurate</li>
+<li class="ul-item">AI uses real state (not defaults)</li>
+<li class="ul-item">Facet tracking works</li>
+<li class="ul-item">Lap/grit tracking works</li>
+<li class="ul-item">Complete workflows accurate</li></ul>
+
+<h3>FAIL: Any Critical Test Fails</h3>
+<ul><li class="ul-item">If initialization fails, nothing works</li>
+<li class="ul-item">If hardware sync fails, AI context wrong</li>
+<li class="ul-item">If AI uses defaults, guidance inaccurate</li>
+<li class="ul-item">If facet tracking fails, progress not shown</li></ul>
+
+<hr>
+
+<h2>Regression Testing</h2>
+
+<p>After each change, run these quick tests:</p>
+
+<p><strong>Quick Check 1</strong>: </p>
+<pre class="code-block javascript" data-lang="javascript"><code>typeof getAIContextObject === &#039;function&#039; &amp;&amp; 
+<p>machineGlobalState !== undefined</p>
+<p>// Must be true</code></pre></p>
+
+<p><strong>Quick Check 2</strong>: </p>
+<ul><li class="ul-item">Move Arduino position</li>
+<li class="ul-item">Verify: <code class="inline-code">machineGlobalState.hardware.position</code> updates</li></ul>
+
+<p><strong>Quick Check 3</strong>: </p>
+<ul><li class="ul-item">Ask AI a speed question</li>
+<li class="ul-item">Verify: AI mentions actual speed, not "1"</li></ul>
+
+<p><strong>Quick Check 4</strong>: </p>
+<ul><li class="ul-item">Set speed=4, mode=continuous</li>
+<li class="ul-item">Verify: detectCuttingPhase() returns "roughing"</li></ul>
+
+<hr>
+
+<h2>Troubleshooting Test Failures</h2>
+
+<p><strong>If Suite 1 fails</strong>: MACHINE<em>STATE</em>SYNC_CODE.js not included in HTML</p>
+
+<p><strong>If Suite 2 fails</strong>: Arduino serial messages not being parsed</p>
+
+<p><strong>If Suite 3 fails</strong>: Phase detection logic has incorrect thresholds</p>
+
+<p><strong>If Suite 5 fails</strong>: getSmartContextResponse() not calling getAIContextObject()</p>
+
+<p><strong>If Suite 6 fails</strong>: Design database not loading or facet math wrong</p>
+
+<p><strong>If Suite 7 fails</strong>: setLapConfiguration() not updating global state</p>
+
+<p><strong>If Suite 8 fails</strong>: Multiple integration points broken, test suites 2-7 first</p>
+
+
+        <div class="generated-notice">
+            🤖 Auto-generated from STATE_SYNC_TEST_CASES.md by GemBot Neural Dashboard Agent<br>
+            Generated: 2025-12-16T13:52:27.712Z
+        </div>
+    </div>
+</body>
+</html>

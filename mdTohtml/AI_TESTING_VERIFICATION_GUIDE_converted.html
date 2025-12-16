@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI_TESTING_VERIFICATION_GUIDE - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        <h1>🧪 AI Enhancement v2 - Testing & Verification Guide</h1>
+
+<h2>Verification Checklist</h2>
+
+<p>Use this checklist to verify all features are working correctly.</p>
+
+<h3>✅ Power-Up Sequence</h3>
+
+<p><strong>Test</strong>: Load the page in browser</p>
+
+<p><strong>Expected</strong>:</p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Page loads without errors</li>
+<li class="checkbox"><input type="checkbox" disabled> After 1-2 seconds, Jarvis speaks greeting: "Good morning..."</li>
+<li class="checkbox"><input type="checkbox" disabled> AI chat area shows welcome message</li>
+<li class="checkbox"><input type="checkbox" disabled> Voice indicator shows "🔊 Ready"</li></ul>
+
+<p><strong>Console Check</strong>:</p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> No JavaScript errors</li>
+<li class="checkbox"><input type="checkbox" disabled> Log shows: "✅ All systems initialized - Jarvis AI online"</li></ul>
+
+<hr>
+
+<h3>✅ Voice Configuration</h3>
+
+<p><strong>Test</strong>: Check voice settings after page load</p>
+
+<p><strong>Expected</strong>:</p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Voice dropdown populated with system voices</li>
+<li class="checkbox"><input type="checkbox" disabled> Speed slider set to ~0.85 (85%)</li>
+<li class="checkbox"><input type="checkbox" disabled> Pitch slider set to ~0.9</li>
+<li class="checkbox"><input type="checkbox" disabled> Volume slider set to ~0.9</li>
+<li class="checkbox"><input type="checkbox" disabled> Voice should sound clear and sophisticated</li></ul>
+
+<p><strong>Check localStorage</strong>:</p>
+<pre class="code-block javascript" data-lang="javascript"><code>// In browser console:
+<p>JSON.parse(localStorage.getItem(&#039;gembot&lt;em&gt;voice&lt;/em&gt;settings&#039;))</p>
+<p>// Should show: {voiceEnabled: true, speechRate: 0.85, pitch: 0.9, volume: 0.9}</code></pre></p>
+
+<hr>
+
+<h3>✅ Connection Success Message</h3>
+
+<p><strong>Test</strong>: Connect Arduino via SCAN/CONNECT buttons</p>
+
+<p><strong>Expected</strong>:</p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> When connection succeeds, AI speaks confirmation</li>
+<li class="checkbox"><input type="checkbox" disabled> Message appears: "Connection established. All systems green..."</li>
+<li class="checkbox"><input type="checkbox" disabled> After 2 seconds, helpful tip appears and is spoken</li>
+<li class="checkbox"><input type="checkbox" disabled> Examples of tips:</li></ul>
+<p>  - "For optimal results, use STEP mode during positioning"</p>
+<p>  - "The camera is available for visual verification"</p>
+<p>  - "Do not hesitate to ask for guidance"</p>
+
+<hr>
+
+<h3>✅ Basic Conversation - Help Intent</h3>
+
+<p><strong>Test</strong>: Type "How do I cut?" and click SEND</p>
+
+<p><strong>Expected</strong>:</p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Message sent, appears as "user" type</li>
+<li class="checkbox"><input type="checkbox" disabled> AI responds with detailed cutting guidance</li>
+<li class="checkbox"><input type="checkbox" disabled> Response includes: "positioning", "speed", "technique"</li>
+<li class="checkbox"><input type="checkbox" disabled> Helper buttons appear: 📚 How to Cut, 🔄 Switch Stone, 🏠 Go Home</li>
+<li class="checkbox"><input type="checkbox" disabled> Response is automatically spoken by voice</li>
+<li class="checkbox"><input type="checkbox" disabled> Text appears in AI messages area</li></ul>
+
+<hr>
+
+<h3>✅ Position Query</h3>
+
+<p><strong>Test</strong>: Type "What is my current position?" </p>
+
+<p><strong>Expected</strong>:</p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> AI responds with actual position values</li>
+<li class="checkbox"><input type="checkbox" disabled> Message includes: "X: [number], Y: [number], Rotation: [number]°, Index: [number]"</li>
+<li class="checkbox"><input type="checkbox" disabled> Values match status box on right side of screen</li></ul>
+
+<hr>
+
+<h3>✅ Mode Question</h3>
+
+<p><strong>Test</strong>: Type "Tell me about step mode"</p>
+
+<p><strong>Expected</strong>:</p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> AI explains current mode</li>
+<li class="checkbox"><input type="checkbox" disabled> Shows current mode is STEP or CONTINUOUS</li>
+<li class="checkbox"><input type="checkbox" disabled> Explains what each mode does</li>
+<li class="checkbox"><input type="checkbox" disabled> Compares with other mode</li>
+<li class="checkbox"><input type="checkbox" disabled> Helper buttons appear: 📖 Quick Guide</li></ul>
+
+<hr>
+
+<h3>✅ Speed Question</h3>
+
+<p><strong>Test</strong>: Type "What speed am I using?"</p>
+
+<p><strong>Expected</strong>:</p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> AI shows current speed level (1-5)</li>
+<li class="checkbox"><input type="checkbox" disabled> Explains what that speed level means</li>
+<li class="checkbox"><input type="checkbox" disabled> Gives guidance: "For beginners: use level 1-2"</li>
+<li class="checkbox"><input type="checkbox" disabled> Speed value matches speed slider on left panel</li></ul>
+
+<hr>
+
+<h3>✅ Stone Switching Request</h3>
+
+<p><strong>Test</strong>: Type "How do I switch stones?"</p>
+
+<p><strong>Expected</strong>:</p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> AI provides step-by-step procedure:</li></ul>
+<p>  1. Press HOME button</p>
+<p>  2. Remove current stone</p>
+<p>  3. Position new stone</p>
+<p>  4. Use STEP mode for fine adjustment</p>
+<p>  5. Resume cutting</p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Helper buttons: 🔄 Switch Stone | 🏠 Go Home | 🛑 Emergency</li>
+<li class="checkbox"><input type="checkbox" disabled> Response is spoken by Jarvis voice</li></ul>
+
+<hr>
+
+<h3>✅ Emergency Query</h3>
+
+<p><strong>Test</strong>: Type "Emergency!" or "Help! Stuck!"</p>
+
+<p><strong>Expected</strong>:</p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> AI provides immediate crisis guidance</li>
+<li class="checkbox"><input type="checkbox" disabled> Message mentions EMERGENCY STOP button</li>
+<li class="checkbox"><input type="checkbox" disabled> Suggests action sequence: STOP → Assess → Home → Reconnect</li>
+<li class="checkbox"><input type="checkbox" disabled> Helper buttons: 🛑 Emergency Help | 🔧 Troubleshoot | 🏠 Go Home</li></ul>
+
+<hr>
+
+<h3>✅ Helper Button Actions</h3>
+
+<p><strong>Test</strong>: Click each helper button</p>
+
+<p>| Button | Expected Action |</p>
+<p>|--------|-----------------|</p>
+<p>| 📚 How to Cut | Shows detailed cutting steps in new message |</p>
+<p>| 🔄 Switch Stone | Shows stone switching procedure with HOME instructions |</p>
+<p>| 🛑 Emergency Help | Shows emergency response procedure |</p>
+<p>| 🔧 Troubleshoot | Shows troubleshooting steps: check connection, try HOME, reconnect |</p>
+<p>| 🏠 Go Home | <strong>If connected</strong>: Executes HOME command, updates position to 0,0 |</p>
+<p>| 🏠 Go Home | <strong>If not connected</strong>: Shows error "Cannot execute HOME - not connected" |</p>
+<p>| 📖 Quick Guide | Shows quick orientation to modes, speeds, positioning |</p>
+
+<hr>
+
+<h3>✅ Failure Detection System</h3>
+
+<p><strong>Test Part 1: Single Failure</strong></p>
+<ol><li class="ol-item">Move motor with UP button (or any axis)</li>
+<li class="ol-item">Unplug USB or let it timeout 3 times</li>
+<li class="ol-item">Type "Motor won't work"</li></ol>
+
+<p><strong>Expected</strong>:</p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> AI records failure internally</li>
+<li class="checkbox"><input type="checkbox" disabled> Response includes troubleshooting steps</li>
+<li class="checkbox"><input type="checkbox" disabled> No alert yet (threshold is 3+)</li></ul>
+
+<p><strong>Test Part 2: Pattern Detection (Repeat 3+ times)</strong></p>
+<ol><li class="ol-item">Simulate same failure 2 more times (total 3)</li>
+<li class="ol-item">Type "Motor stuck again" </li></ol>
+
+<p><strong>Expected</strong>:</p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> AI alerts: "I have observed a recurring issue: The motor has become unresponsive 3 times"</li>
+<li class="checkbox"><input type="checkbox" disabled> Suggests: "This suggests a connection or position issue"</li>
+<li class="checkbox"><input type="checkbox" disabled> Recommends: "Try HOME button, then EMERGENCY STOP if unresponsive, then reconnect"</li>
+<li class="checkbox"><input type="checkbox" disabled> Helper buttons: 🔧 Troubleshoot | 🏠 Go Home | 🛑 Emergency Help</li></ul>
+
+<p><strong>Check localStorage</strong>:</p>
+<pre class="code-block javascript" data-lang="javascript"><code>// In browser console:
+<p>// Note: Failures stored in memory, but machine state saves</p>
+<p>JSON.parse(localStorage.getItem(&#039;gembot&lt;em&gt;machine&lt;/em&gt;state&#039;))</code></pre></p>
+
+<hr>
+
+<h3>✅ Accessibility Mode</h3>
+
+<p><strong>Test Part 1: Enable</strong></p>
+<ol><li class="ol-item">Look for ♿ Accessibility button (top right of AI panel)</li>
+<li class="ol-item">Click it</li></ol>
+
+<p><strong>Expected</strong>:</p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Button click confirmed</li>
+<li class="checkbox"><input type="checkbox" disabled> Message appears: "✅ Accessibility Mode ENABLED. Text is larger..."</li>
+<li class="checkbox"><input type="checkbox" disabled> Text in AI messages area noticeably larger (16px)</li>
+<li class="checkbox"><input type="checkbox" disabled> Input field becomes larger</li>
+<li class="checkbox"><input type="checkbox" disabled> Line spacing increases</li>
+<li class="checkbox"><input type="checkbox" disabled> Button appearance updates</li></ul>
+
+<p><strong>Test Part 2: Check Settings</strong></p>
+<ol><li class="ol-item">Hover over buttons (UP, DOWN, LEFT, RIGHT, etc.)</li>
+<li class="ol-item">Tooltips should appear: "Click to move UP" etc.</li></ol>
+
+<p><strong>Test Part 3: Persistence</strong></p>
+<ol><li class="ol-item">Enable accessibility mode</li>
+<li class="ol-item">Close browser tab</li>
+<li class="ol-item">Reopen page</li>
+<li class="ol-item">Check if accessibility still enabled</li></ol>
+
+<p><strong>Expected</strong>:</p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Setting persists in localStorage</li>
+<li class="checkbox"><input type="checkbox" disabled> Text still large on page reload</li>
+<li class="checkbox"><input type="checkbox" disabled> localStorage key: <code class="inline-code">gembot<em>accessibility</em>enabled</code> = <code class="inline-code">true</code></li></ul>
+
+<p><strong>Test Part 4: Disable</strong></p>
+<ol><li class="ol-item">Click ♿ Accessibility button again</li></ol>
+
+<p><strong>Expected</strong>:</p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Message: "✅ Accessibility Mode disabled."</li>
+<li class="checkbox"><input type="checkbox" disabled> Text returns to normal size</li>
+<li class="checkbox"><input type="checkbox" disabled> localStorage key: <code class="inline-code">gembot<em>accessibility</em>enabled</code> = <code class="inline-code">false</code></li></ul>
+
+<hr>
+
+<h3>✅ Cut Completion Detection</h3>
+
+<p><strong>Test</strong>: </p>
+<ol><li class="ol-item">Perform several moves (UP, DOWN, LEFT, RIGHT)</li>
+<li class="ol-item">Then <strong>stop moving</strong> and leave idle</li>
+<li class="ol-item">Wait 10+ seconds with no position changes</li></ol>
+
+<p><strong>Expected</strong>:</p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> AI monitors command history every 5 seconds</li>
+<li class="checkbox"><input type="checkbox" disabled> Detects position stabilization</li>
+<li class="checkbox"><input type="checkbox" disabled> Sends message like: "💡 You appear to be near your final position. Is the cut complete?"</li>
+<li class="checkbox"><input type="checkbox" disabled> Or: "Good positioning. Once you are satisfied, we can proceed to stone switching."</li></ul>
+
+<p><strong>Note</strong>: Detection requires 10+ recent commands with no position change</p>
+
+<hr>
+
+<h3>✅ Stuck User Detection</h3>
+
+<p><strong>Test</strong>:</p>
+<ol><li class="ol-item">Click UP button rapidly 8+ times in quick succession</li>
+<li class="ol-item">Do NOT click any other button</li>
+<li class="ol-item">Wait 5 seconds</li></ol>
+
+<p><strong>Expected</strong>:</p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> AI detects repeated same command</li>
+<li class="checkbox"><input type="checkbox" disabled> Message appears: "I notice you are repeating the same movement."</li>
+<li class="checkbox"><input type="checkbox" disabled> Suggests: "May I suggest: Try a different axis, or use helper buttons for step-by-step guidance?"</li>
+<li class="checkbox"><input type="checkbox" disabled> Helper buttons appear: 📖 Quick Guide, 🛑 Emergency Help</li></ul>
+
+<hr>
+
+<h3>✅ Conversational Responses</h3>
+
+<p><strong>Test</strong>: Ask open-ended questions that don't fit specific intents</p>
+
+<p>Examples:</p>
+<ul><li class="ul-item">"Hello"</li>
+<li class="ul-item">"Can you help?"</li>
+<li class="ul-item">"I'm learning"</li>
+<li class="ul-item">"Good morning"</li></ul>
+
+<p><strong>Expected</strong>:</p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> AI responds conversationally (not just error)</li>
+<li class="checkbox"><input type="checkbox" disabled> Responses use Jarvis personality:</li></ul>
+<p>  - "I appreciate your inquiry..."</p>
+<p>  - "How may I be of service..."</p>
+<p>  - "I note your statement..."</p>
+<p>  - "Understood. I remain vigilant..."</p>
+
+<hr>
+
+<h3>✅ Voice On/Off Toggle</h3>
+
+<p><strong>Test</strong>:</p>
+<ol><li class="ol-item">Click 🔊 Voice ON button (top right of voice panel)</li></ol>
+
+<p><strong>Expected</strong>:</p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Button text changes to 🔇 Voice OFF</li>
+<li class="checkbox"><input type="checkbox" disabled> Button color changes red (#7c2e2e)</li>
+<li class="checkbox"><input type="checkbox" disabled> Next AI response does NOT play audio</li>
+<li class="checkbox"><input type="checkbox" disabled> Message appears: "🔊 Voice disabled"</li></ul>
+
+<p><strong>Test Part 2: Re-enable</strong></p>
+<ol><li class="ol-item">Click 🔇 Voice OFF button</li></ol>
+
+<p><strong>Expected</strong>:</p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Button changes back to 🔊 Voice ON</li>
+<li class="checkbox"><input type="checkbox" disabled> Color changes green (#4a7c2e)</li>
+<li class="checkbox"><input type="checkbox" disabled> Next AI response plays audio again</li>
+<li class="checkbox"><input type="checkbox" disabled> Message: "🔊 Voice enabled"</li></ul>
+
+<hr>
+
+<h3>✅ Voice Control Sliders</h3>
+
+<p><strong>Test</strong>: Adjust each control while AI speaks</p>
+
+<p><strong>Speed Slider</strong> (0.5x - 2.0x):</p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Move to 0.5x → Next speech should be slower</li>
+<li class="checkbox"><input type="checkbox" disabled> Move to 2.0x → Next speech should be faster</li>
+<li class="checkbox"><input type="checkbox" disabled> Move to 1.0x → Normal speed</li></ul>
+
+<p><strong>Pitch Slider</strong> (0.5 - 2.0):</p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Move to 0.5 → Lower pitch voice</li>
+<li class="checkbox"><input type="checkbox" disabled> Move to 2.0 → Higher pitch voice</li>
+<li class="checkbox"><input type="checkbox" disabled> 1.0 = normal pitch</li></ul>
+
+<p><strong>Volume Slider</strong> (0% - 100%):</p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> 0% → Silent</li>
+<li class="checkbox"><input type="checkbox" disabled> 50% → Half volume</li>
+<li class="checkbox"><input type="checkbox" disabled> 100% → Full volume</li></ul>
+
+<p><strong>Tip</strong>: Ask AI to respond first, then adjust slider mid-speech to hear change</p>
+
+<hr>
+
+<h3>✅ Knowledge Base Coverage</h3>
+
+<p><strong>Test</strong>: Ask about different topics</p>
+
+<p>| Topic | Test Question | Should Know |</p>
+<p>|-------|--------------|------------|</p>
+<p>| Cutting | "How do I cut?" | Technique, positioning, speed, facets |</p>
+<p>| Mode | "What's continuous?" | Difference from STEP, when to use |</p>
+<p>| Speed | "What does speed 3 mean?" | It's standard speed, 20ms interval |</p>
+<p>| Position | "Where am I?" | Current X, Y, Rotation, Index |</p>
+<p>| Emergency | "What if I panic?" | EMERGENCY STOP will cut power |</p>
+<p>| Stone | "How to switch?" | HOME → Remove → Position → Resume |</p>
+<p>| Recovery | "Power failed, what now?" | State is saved, will recover |</p>
+<p>| Index | "How to navigate positions?" | Use INDEX buttons, navigate laps |</p>
+<p>| Rotation | "How does rotation work?" | CCW/CW buttons control spindle |</p>
+
+<hr>
+
+<h3>✅ Intent Detection Accuracy</h3>
+
+<p><strong>Test</strong>: Try different phrasings for same intent</p>
+
+<p><strong>Help Intent</strong>: "how", "what", "help", "explain", "tell me"</p>
+<pre class="code-block " data-lang="text"><code>&quot;How do I...?&quot; ✅ Detected
+<p>&quot;What&#039;s continuous?&quot; ✅ Detected</p>
+<p>&quot;Help me cut&quot; ✅ Detected</p>
+<p>&quot;Explain speed&quot; ✅ Detected</p>
+<p>&quot;Tell me about...&quot; ✅ Detected</code></pre></p>
+
+<p><strong>Position Intent</strong>: "position", "where", "coordinate", "location"</p>
+<pre class="code-block " data-lang="text"><code>&quot;Where am I?&quot; ✅ Should show position
+<p>&quot;Current position?&quot; ✅ Should show position</p>
+<p>&quot;Show me coordinates&quot; ✅ Should show position</p>
+<p>&quot;Location please&quot; ✅ Should show position</code></pre></p>
+
+<p><strong>Mode Intent</strong>: "mode", "continuous", "step", "click", "hold"</p>
+<pre class="code-block " data-lang="text"><code>&quot;What mode?&quot; ✅ Should explain modes
+<p>&quot;Continuous vs step?&quot; ✅ Should compare</p>
+<p>&quot;How to click?&quot; ✅ Should explain STEP</code></pre></p>
+
+<hr>
+
+<h3>✅ Connection Monitoring</h3>
+
+<p><strong>Test</strong>: Watch connection status indicator (top left)</p>
+
+<ol><li class="ol-item"><strong>Disconnected State</strong>:</li></ol>
+<p>   - [ ] Red indicator (pulsing)</p>
+<p>   - [ ] Status: "DISCONNECTED"</p>
+<p>   - [ ] Helper buttons disabled ("Cannot execute HOME - not connected")</p>
+
+<ol><li class="ol-item"><strong>After Connecting</strong>:</li></ol>
+<p>   - [ ] Indicator turns green</p>
+<p>   - [ ] Status: "CONNECTED"</p>
+<p>   - [ ] AI greeting for successful connection appears</p>
+<p>   - [ ] Helper buttons like "Go Home" become active</p>
+
+<ol><li class="ol-item"><strong>After Disconnecting</strong>:</li></ol>
+<p>   - [ ] Indicator back to red</p>
+<p>   - [ ] AI message: "Connection lost. Machine state saved."</p>
+<p>   - [ ] Position recovered automatically when reconnected</p>
+
+<hr>
+
+<h3>✅ localStorage Persistence</h3>
+
+<p><strong>Test</strong>: In browser console, check what's saved</p>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Check AI accessibility mode
+<p>localStorage.getItem(&#039;gembot&lt;em&gt;accessibility&lt;/em&gt;enabled&#039;)</p>
+<p>// Should be: &quot;true&quot; or &quot;false&quot;</p>
+
+<p>// Check voice settings</p>
+<p>JSON.parse(localStorage.getItem(&#039;gembot&lt;em&gt;voice&lt;/em&gt;settings&#039;))</p>
+<p>// Should show: {voiceEnabled, voiceIndex, speechRate, pitch, volume}</p>
+
+<p>// Check machine state</p>
+<p>JSON.parse(localStorage.getItem(&#039;gembot&lt;em&gt;machine&lt;/em&gt;state&#039;))</p>
+<p>// Should show: {positionX, positionY, angle, index, mode, speed, history, timestamp}</code></pre></p>
+
+<hr>
+
+<h3>✅ Message Types & Styling</h3>
+
+<p><strong>Test</strong>: Observe message appearance</p>
+
+<p><strong>User Message</strong> (what you type):</p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Aligned to right side</li>
+<li class="checkbox"><input type="checkbox" disabled> Dark background color</li>
+<li class="checkbox"><input type="checkbox" disabled> Your text appears clearly</li></ul>
+
+<p><strong>Assistant Message</strong> (AI response):</p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Aligned to left side</li>
+<li class="checkbox"><input type="checkbox" disabled> Different background color</li>
+<li class="checkbox"><input type="checkbox" disabled> Shows emoji to indicate context</li>
+<li class="checkbox"><input type="checkbox" disabled> Is automatically spoken</li></ul>
+
+<p><strong>System Message</strong> (connection, status):</p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Different styling</li>
+<li class="checkbox"><input type="checkbox" disabled> Informational messages</li>
+<li class="checkbox"><input type="checkbox" disabled> Status updates</li>
+<li class="checkbox"><input type="checkbox" disabled> NOT automatically spoken</li></ul>
+
+<hr>
+
+<h3>✅ Browser Compatibility</h3>
+
+<p><strong>Test on Different Browsers</strong>:</p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Chrome/Chromium → All features work</li>
+<li class="checkbox"><input type="checkbox" disabled> Firefox → All features work</li>
+<li class="checkbox"><input type="checkbox" disabled> Edge → All features work</li>
+<li class="checkbox"><input type="checkbox" disabled> Safari → Check Web Speech API support</li>
+<li class="checkbox"><input type="checkbox" disabled> Mobile browsers → Responsive design</li></ul>
+
+<p><strong>Known Limitations</strong>:</p>
+<ul><li class="ul-item">Web Speech API best supported on Chrome/Chromium</li>
+<li class="ul-item">Firefox may have different voice options</li>
+<li class="ul-item">Safari may have limited voices</li></ul>
+
+<hr>
+
+<h2>🐛 Troubleshooting</h2>
+
+<h3>Issue: No greeting on page load</h3>
+<p><strong>Solution</strong>: Check console for errors, refresh page, wait 2-3 seconds</p>
+
+<h3>Issue: Voice not speaking</h3>
+<p><strong>Solution</strong>: </p>
+<ul><li class="ul-item">Check 🔊 Voice ON button is green</li>
+<li class="ul-item">Check browser Web Speech API support (Chrome best)</li>
+<li class="ul-item">Try different voice in dropdown</li>
+<li class="ul-item">Check volume slider not at 0%</li></ul>
+
+<h3>Issue: Helper buttons not appearing</h3>
+<p><strong>Solution</strong>: </p>
+<ul><li class="ul-item">Buttons only show for certain intent types</li>
+<li class="ul-item">Try asking "How do I cut?" (definitely shows buttons)</li>
+<li class="ul-item">Check that aiMessages div exists in DOM</li></ul>
+
+<h3>Issue: Accessibility mode buttons missing</h3>
+<p><strong>Solution</strong>: </p>
+<ul><li class="ul-item">Button is top-right of AI panel</li>
+<li class="ul-item">May be hidden if AI panel too small</li>
+<li class="ul-item">Try maximizing browser window</li></ul>
+
+<h3>Issue: Failure detection not working</h3>
+<p><strong>Solution</strong>:</p>
+<ul><li class="ul-item">Threshold is 3 failures minimum</li>
+<li class="ul-item">Must be same type of failure</li>
+<li class="ul-item">Check console for: "🔍 Failure recorded:"</li></ul>
+
+<h3>Issue: Motor stuck detection not firing</h3>
+<p><strong>Solution</strong>:</p>
+<ul><li class="ul-item">Need 8+ of same command in 15 recent commands</li>
+<li class="ul-item">Try clicking UP button 8 times fast</li>
+<li class="ul-item">Wait 5 seconds for next check cycle</li></ul>
+
+<h3>Issue: Connection success message not showing</h3>
+<p><strong>Solution</strong>:</p>
+<ul><li class="ul-item">Arduino must be successfully connected (status green)</li>
+<li class="ul-item">Message appears ~500ms after connection</li>
+<li class="ul-item">Wait 2-3 seconds after seeing green indicator</li></ul>
+
+<hr>
+
+<h2>📊 Verification Report Template</h2>
+
+<p>Use this template to document testing:</p>
+
+<pre class="code-block " data-lang="text"><code>AI ENHANCEMENT V2 TESTING REPORT
+<p>Date: &lt;strong&gt;&lt;em&gt;&lt;em&gt;&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;&lt;em&gt;&lt;/em&gt;&lt;/em&gt;&lt;/strong&gt;_</p>
+<p>Tester: &lt;strong&gt;&lt;em&gt;&lt;em&gt;&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;&lt;em&gt;&lt;/em&gt;&lt;/em&gt;&lt;/strong&gt;_</p>
+<p>Browser: &lt;strong&gt;&lt;em&gt;&lt;em&gt;&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;&lt;em&gt;&lt;/em&gt;&lt;/em&gt;&lt;/strong&gt;_</p>
+
+<p>POWER-UP SEQUENCE: [ ] PASS [ ] FAIL</p>
+<ul><li class="ul-item">Greeting spoken: [ ]</li>
+<li class="ul-item">Voice working: [ ]</li>
+<li class="ul-item">No console errors: [ ]</li></ul>
+
+<p>CONVERSATION TESTING: [ ] PASS [ ] FAIL</p>
+<ul><li class="ul-item">Help intent: [ ]</li>
+<li class="ul-item">Position query: [ ]</li>
+<li class="ul-item">Mode question: [ ]</li>
+<li class="ul-item">Speed question: [ ]</li>
+<li class="ul-item">Stone switching: [ ]</li></ul>
+
+<p>HELPER BUTTONS: [ ] PASS [ ] FAIL</p>
+<ul><li class="ul-item">Buttons appear: [ ]</li>
+<li class="ul-item">All 7 buttons tested: [ ]</li>
+<li class="ul-item">Actions work: [ ]</li></ul>
+
+<p>FAILURE DETECTION: [ ] PASS [ ] FAIL</p>
+<ul><li class="ul-item">Single failure recorded: [ ]</li>
+<li class="ul-item">Pattern detection (3+): [ ]</li>
+<li class="ul-item">Alert message shows: [ ]</li></ul>
+
+<p>ACCESSIBILITY MODE: [ ] PASS [ ] FAIL</p>
+<ul><li class="ul-item">Enable button works: [ ]</li>
+<li class="ul-item">Text enlarges: [ ]</li>
+<li class="ul-item">Setting persists: [ ]</li>
+<li class="ul-item">Disable works: [ ]</li></ul>
+
+<p>VOICE CONTROLS: [ ] PASS [ ] FAIL</p>
+<ul><li class="ul-item">On/Off toggle: [ ]</li>
+<li class="ul-item">Speed slider: [ ]</li>
+<li class="ul-item">Pitch slider: [ ]</li>
+<li class="ul-item">Volume slider: [ ]</li></ul>
+
+<p>SCENARIO DETECTION: [ ] PASS [ ] FAIL</p>
+<ul><li class="ul-item">Cut completion detected: [ ]</li>
+<li class="ul-item">Stuck user detected: [ ]</li>
+<li class="ul-item">Helpful suggestion shown: [ ]</li></ul>
+
+<p>OVERALL: [ ] PRODUCTION READY [ ] NEEDS FIXES</p>
+
+<p>Notes:</p>
+<p>&lt;strong&gt;&lt;em&gt;&lt;em&gt;&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;&lt;em&gt;&lt;/em&gt;&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;&lt;em&gt;&lt;em&gt;&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;&lt;em&gt;&lt;/em&gt;&lt;/em&gt;&lt;/strong&gt;&lt;em&gt;_&lt;/em&gt;</p>
+<p>&lt;strong&gt;&lt;em&gt;&lt;em&gt;&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;&lt;em&gt;&lt;/em&gt;&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;&lt;em&gt;&lt;em&gt;&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;&lt;em&gt;&lt;/em&gt;&lt;/em&gt;&lt;/strong&gt;&lt;em&gt;_&lt;/em&gt;</code></pre></p>
+
+<hr>
+
+<h2>✅ Sign-Off</h2>
+
+<p>Once all checkboxes pass, the system is ready for:</p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Hardware integration testing</li>
+<li class="checkbox"><input type="checkbox" disabled> User acceptance testing with real operators</li>
+<li class="checkbox"><input type="checkbox" disabled> Elderly user accessibility testing</li>
+<li class="checkbox"><input type="checkbox" disabled> Production deployment</li></ul>
+
+<p><strong>Final Status</strong>: ✅ READY FOR TESTING</p>
+
+
+        <div class="generated-notice">
+            🤖 Auto-generated from AI_TESTING_VERIFICATION_GUIDE.md by GemBot Neural Dashboard Agent<br>
+            Generated: 2025-12-16T13:52:00.027Z
+        </div>
+    </div>
+</body>
+</html>

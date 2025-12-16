@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QUICK_TEST_GUIDE - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        <h1>Quick Start: Testing joystickRevert Updates</h1>
+
+<h2>What Changed</h2>
+<p>Added missing web motor control commands ('a', 'd', 'w', 'z', 'q', 'e', 'i', 'o') to joystickRevert so it now matches WorkingMini2025 functionality.</p>
+
+<h2>Quick Test</h2>
+
+<h3>Step 1: Upload Code</h3>
+<pre class="code-block " data-lang="text"><code>File → Upload to Arduino (Select joystickRevert&lt;em&gt;copy&lt;/em&gt;20251206152907.ino)</code></pre>
+
+<h3>Step 2: Open Serial Monitor</h3>
+<pre class="code-block " data-lang="text"><code>Tools → Serial Monitor (9600 baud)</code></pre>
+
+<h3>Step 3: Test Each Motor Command via Web Interface</h3>
+
+<h4>X-axis Tests (Should see counter change)</h4>
+<pre class="code-block " data-lang="text"><code>[WEB] Click X LEFT button
+<p>→ Serial shows: &quot;I received: a&quot; and &quot;4199&quot; (counter decreased)</p>
+<p>→ Physical X motor moves left</p>
+
+<p>[WEB] Click X RIGHT button  </p>
+<p>→ Serial shows: &quot;I received: d&quot; and &quot;4200&quot; (counter increased)</p>
+<p>→ Physical X motor moves right</code></pre></p>
+
+<h4>Y-axis Tests (Should see counter change) ⚠️ NEW</h4>
+<pre class="code-block " data-lang="text"><code>[WEB] Click Y UP button
+<p>→ Serial shows: &quot;I received: w&quot; and &quot;3299&quot; (counter decreased) </p>
+<p>→ Physical Y motor moves up</p>
+<p>→ If no output: Motor case not being reached!</p>
+
+<p>[WEB] Click Y DOWN button</p>
+<p>→ Serial shows: &quot;I received: z&quot; and &quot;3300&quot; (counter increased)</p>
+<p>→ Physical Y motor moves down</code></pre></p>
+
+<h4>P-axis Tests (Should show LIMITED response) ⚠️ NEW</h4>
+<pre class="code-block " data-lang="text"><code>[WEB] Click P CCW button (Y limit NOT pressed)
+<p>→ Serial shows: &quot;I received: q&quot;</p>
+<p>→ Physical P motor rotates counter-clockwise</p>
+<p>→ Counter should increment</p>
+
+<p>[WEB] Click P CCW button (Y limit IS pressed - stone at wheel)</p>
+<p>→ Serial shows: &quot;I received: q&quot;</p>
+<p>→ Physical P motor should NOT move (safety gate blocks it!)</p>
+
+<p>[WEB] Click P CW button (Y limit NOT pressed)</p>
+<p>→ Serial shows: &quot;I received: e&quot;  </p>
+<p>→ Physical P motor rotates clockwise</p>
+<p>→ Counter should decrement</code></pre></p>
+
+<h4>Index Tests (If available) ⚠️ NEW</h4>
+<pre class="code-block " data-lang="text"><code>[WEB] Click INDEX-- button
+<p>→ Serial shows: &quot;I received: i&quot;</p>
+<p>→ Index motor moves backward 5 units</p>
+
+<p>[WEB] Click INDEX++ button</p>
+<p>→ Serial shows: &quot;I received: o&quot;</p>
+<p>→ Index motor moves forward 5 units</code></pre></p>
+
+<hr>
+
+<h2>Expected Serial Output</h2>
+
+<p><strong>Good Output (everything working):</strong></p>
+<pre class="code-block " data-lang="text"><code>[✓] I received: a
+<p>[✓] 4199</p>
+<p>[✓] I received: d</p>
+<p>[✓] 4200</p>
+<p>[✓] I received: w</p>
+<p>[✓] 3299</p>
+<p>[✓] I received: z</p>
+<p>[✓] 3300</p>
+<p>[✓] I received: q</p>
+<p>[✓] I received: e</code></pre></p>
+
+<p><strong>Bad Output (missing commands):</strong></p>
+<pre class="code-block " data-lang="text"><code>[✗] No serial output for &#039;w&#039;, &#039;z&#039;, &#039;q&#039;, &#039;e&#039;, &#039;i&#039;, &#039;o&#039;
+<p>[✗] &quot;I received: w&quot; appears but countY doesn&#039;t change</p>
+<p>[✗] &quot;I received: z&quot; appears but motor doesn&#039;t move</code></pre></p>
+
+<hr>
+
+<h2>Troubleshooting</h2>
+
+<h3>Problem: Y UP/DOWN show "I received" but motor doesn't move</h3>
+
+<p><strong>Check 1:</strong> Verify YaxisMotor is initialized</p>
+<pre class="code-block cpp" data-lang="cpp"><code>YaxisMotor-&gt;setSpeed(100);  // in setup()</code></pre>
+
+<p><strong>Check 2:</strong> Verify MICROSTEP direction is correct</p>
+<pre class="code-block cpp" data-lang="cpp"><code>// Current code:
+<p>case &#039;w&#039;: YaxisMotor-&gt;step(1,BACKWARD,MICROSTEP);  // UP = BACKWARD</p>
+<p>case &#039;z&#039;: YaxisMotor-&gt;step(1,FORWARD,MICROSTEP);   // DOWN = FORWARD</code></pre></p>
+
+<h3>Problem: P CCW/CW don't respond</h3>
+
+<p><strong>Likely Cause:</strong> Y limit switch is pressed (safety gate is working!)</p>
+
+<p><strong>Test Fix:</strong> Press Y UP to lift stone away from wheel, then try P CCW/CW again</p>
+
+<p><strong>Alternative:</strong> Check if limit switch is stuck</p>
+<pre class="code-block cpp" data-lang="cpp"><code>// In serial monitor, type &#039;8&#039; to see limit switch status
+<p>Serial.println(digitalRead(LimitY));  // Should be HIGH when unpressed</code></pre></p>
+
+<h3>Problem: No INDEX movement</h3>
+
+<p><strong>Check:</strong> Verify indexMotor is initialized</p>
+<pre class="code-block cpp" data-lang="cpp"><code>indexMotor.setSpeed(300);  // in setup()</code></pre>
+
+<p><strong>Check:</strong> Verify step values are correct</p>
+<pre class="code-block cpp" data-lang="cpp"><code>case &#039;i&#039;: indexMotor.step(-5);   // Negative = backward
+<p>case &#039;o&#039;: indexMotor.step(5);    // Positive = forward</code></pre></p>
+
+<hr>
+
+<h2>Comparison: Before vs After</h2>
+
+<h3>Commands That Now Work (Were Broken Before)</h3>
+
+<p>| Command | Before | After | Status |</p>
+<p>|---------|--------|-------|--------|</p>
+<p>| 'w' (Y UP) | ❌ Not defined | ✅ Y motor moves up | NOW WORKS |</p>
+<p>| 'z' (Y DOWN) | ❌ Not defined | ✅ Y motor moves down | NOW WORKS |</p>
+<p>| 'q' (P CCW) | ❌ Modified Y width | ✅ P motor rotates CCW | NOW WORKS |</p>
+<p>| 'e' (P CW) | ⚠️ Modified Y width | ✅ P motor rotates CW | NOW WORKS |</p>
+<p>| 'i' (INDEX DEC) | ✅ Existed | ✅ Updated to web cmd | IMPROVED |</p>
+<p>| 'o' (INDEX INC) | ❌ Not defined | ✅ Index motor forward | NOW WORKS |</p>
+<p>| 'a' (X LEFT) | ⚠️ Calibration func | ✅ X motor moves left | NOW WORKS |</p>
+
+<h3>Commands That Already Worked</h3>
+
+<p>| Command | Before | After | Status |</p>
+<p>|---------|--------|-------|--------|</p>
+<p>| 'd' (X RIGHT) | ✅ X motor moves | ✅ X motor moves | UNCHANGED |</p>
+<p>| '0'-'3', '8' | ✅ Menu nav | ✅ Menu nav | UNCHANGED |</p>
+<p>| 'f' (X RIGHT backup) | ✅ X motor moves | ✅ X motor moves | UNCHANGED |</p>
+
+<hr>
+
+<h2>Success Criteria</h2>
+
+<p>✅ <strong>Full Success:</strong> All motor commands produce correct serial output AND motors move correctly</p>
+
+<p>🟡 <strong>Partial Success:</strong> Serial outputs appear but some motors don't move (likely hardware issue)</p>
+
+<p>❌ <strong>Failure:</strong> No serial output for new commands (code didn't upload or has syntax error)</p>
+
+<hr>
+
+<h2>File Locations</h2>
+
+<ul><li class="ul-item"><strong>Updated Code:</strong> <code class="inline-code">c:\Users\barbr\Desktop\GemBotMemory2025\joystickRevert<em>copy</em>20251206152907\joystickRevert<em>copy</em>20251206152907.ino</code></li>
+<li class="ul-item"><strong>Reference Code:</strong> <code class="inline-code">c:\Users\barbr\Desktop\GemBotMemory2025\GemBotArduinoMemoryUpgrade2025<em>copy</em>20251201233437\WorkingMini2025\WorkingMini2025.ino</code></li>
+<li class="ul-item"><strong>Web Interface:</strong> <code class="inline-code">c:\Users\barbr\Desktop\GemBotMemory2025\GemBot<em>Web</em>Control_DualMode.html</code></li></ul>
+
+<hr>
+
+<h2>Next: After Testing</h2>
+
+<ol><li class="ol-item">Document results in terminal output</li>
+<li class="ol-item">Compare with WorkingMini2025 behavior</li>
+<li class="ol-item">If different, identify which commands differ</li>
+<li class="ol-item">Create final working version based on whichever works best</li>
+<li class="ol-item">Mark as "PRODUCTION READY"</li></ol>
+
+
+        <div class="generated-notice">
+            🤖 Auto-generated from QUICK_TEST_GUIDE.md by GemBot Neural Dashboard Agent<br>
+            Generated: 2025-12-16T13:52:22.624Z
+        </div>
+    </div>
+</body>
+</html>

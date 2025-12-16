@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI_AGENT_TESTING_CHECKLIST - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        <h1>✅ AI Agent Systems - Testing Checklist</h1>
+
+<p><strong>Created by Ryan Barbrick / Barbrick Design</strong></p>
+
+<hr>
+
+<h2>🎯 Pre-Testing Setup</h2>
+
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> <strong>HTML Integration</strong>: Verify all 4 JS files linked in <code class="inline-code">GemBot<em>Control</em>AI.html</code></li></ul>
+<p>  - [ ] <code class="inline-code">ai-agent-players.js</code></p>
+<p>  - [ ] <code class="inline-code">ai-agent-logger.js</code></p>
+<p>  - [ ] <code class="inline-code">ai-agent-systems.js</code></p>
+<p>  - [ ] <code class="inline-code">ai-agent-news-referral.js</code></p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> <strong>CSS Loaded</strong>: Confirm <code class="inline-code">ai-agent-systems.css</code> linked</li>
+<li class="checkbox"><input type="checkbox" disabled> <strong>Dependencies</strong>: Check GBUV and Merlin systems loaded</li></ul>
+<p>  - [ ] <code class="inline-code">window.GBUV</code> exists</p>
+<p>  - [ ] <code class="inline-code">window.MerlinCardIntegrated</code> exists</p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> <strong>Browser Console</strong>: Open DevTools (F12) → Console tab</li></ul>
+
+<hr>
+
+<h2>🤖 AI Agent Player System Tests</h2>
+
+<h3>Test 1: Spawn Single Agent</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>spawnAIAgents(1);</code></pre>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Console shows: "✅ Spawned 1 AI agents"</li>
+<li class="checkbox"><input type="checkbox" disabled> Agent starts playing within 1-3 seconds</li>
+<li class="checkbox"><input type="checkbox" disabled> Console shows agent actions (deploy, collect, etc.)</li>
+<li class="checkbox"><input type="checkbox" disabled> No errors in console</li></ul>
+
+<h3>Test 2: Spawn Multiple Agents</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>spawnAIAgents(10);</code></pre>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Console shows: "✅ Spawned 10 AI agents"</li>
+<li class="checkbox"><input type="checkbox" disabled> All 10 agents start playing</li>
+<li class="checkbox"><input type="checkbox" disabled> Different personalities assigned (casual, hardcore, strategic, social)</li>
+<li class="checkbox"><input type="checkbox" disabled> Actions appear rapidly in console</li></ul>
+
+<h3>Test 3: Check AI Stats</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>const stats = getAIStats();
+<p>console.log(stats);</code></pre></p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Returns object with:</li></ul>
+<p>  - [ ] <code class="inline-code">totalAgents</code>: Correct count</p>
+<p>  - [ ] <code class="inline-code">totalGems</code>: Increasing number</p>
+<p>  - [ ] <code class="inline-code">totalMachines</code>: > 0</p>
+<p>  - [ ] <code class="inline-code">totalActions</code>: Increasing rapidly</p>
+<p>  - [ ] <code class="inline-code">topAgent</code>: Object with agent details</p>
+
+<h3>Test 4: Get Leaderboard</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>const leaderboard = getAILeaderboard();
+<p>console.log(leaderboard);</code></pre></p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Returns array of agents</li>
+<li class="checkbox"><input type="checkbox" disabled> Sorted by gems (highest first)</li>
+<li class="checkbox"><input type="checkbox" disabled> Each entry has: id, name, avatar, gems, level, achievements</li>
+<li class="checkbox"><input type="checkbox" disabled> Includes personality and isAI flags</li></ul>
+
+<h3>Test 5: Stop Agents</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>stopAIAgents();</code></pre>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Console shows: "🛑 Stopping all AI agents..."</li>
+<li class="checkbox"><input type="checkbox" disabled> Console shows: "✅ Stopped X AI agents"</li>
+<li class="checkbox"><input type="checkbox" disabled> No more action logs appearing</li>
+<li class="checkbox"><input type="checkbox" disabled> Can spawn new agents after stopping</li></ul>
+
+<hr>
+
+<h2>📝 Logging System Tests</h2>
+
+<h3>Test 6: Verify Logging Active</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>console.log(window.aiLogger.logs.length);</code></pre>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Returns number > 0</li>
+<li class="checkbox"><input type="checkbox" disabled> Number increases as agents play</li>
+<li class="checkbox"><input type="checkbox" disabled> Logs contain: agentId, action, timestamp, details</li></ul>
+
+<h3>Test 7: Check Log Storage</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>const savedLogs = localStorage.getItem(&#039;gembot&lt;em&gt;ai&lt;/em&gt;logs&#039;);
+<p>console.log(JSON.parse(savedLogs).length);</code></pre></p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Returns number > 0</li>
+<li class="checkbox"><input type="checkbox" disabled> Logs persist after page refresh</li>
+<li class="checkbox"><input type="checkbox" disabled> Maximum 10,000 logs stored</li></ul>
+
+<h3>Test 8: View Recent Logs</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>console.log(window.aiLogger.logs.slice(-10));</code></pre>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Shows last 10 log entries</li>
+<li class="checkbox"><input type="checkbox" disabled> Each log has: agentId, action, timestamp, success, details</li>
+<li class="checkbox"><input type="checkbox" disabled> Actions include: deploy<em>machine, collect</em>gems, upgrade_machine, etc.</li></ul>
+
+<hr>
+
+<h2>⏱️ 24-Hour Analysis Cycle Tests</h2>
+
+<h3>Test 9: First Analysis (Runs at 5 seconds)</h3>
+<p><strong>Wait 5 seconds after page load, then check console:</strong></p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Console shows: "📊 Running daily AI agent analysis..."</li>
+<li class="checkbox"><input type="checkbox" disabled> Analysis output appears with:</li></ul>
+<p>  - [ ] Metrics (totalActions, successRate, topActions)</p>
+<p>  - [ ] Error analysis (if any errors occurred)</p>
+<p>  - [ ] Generated fixes</p>
+<p>  - [ ] Improvement suggestions</p>
+<p>  - [ ] Generated news content</p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Console shows: "✅ Daily analysis complete"</li></ul>
+
+<h3>Test 10: Manual Analysis Trigger</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>window.aiLogger.runDailyAnalysis();</code></pre>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Analysis runs immediately</li>
+<li class="checkbox"><input type="checkbox" disabled> Full output logged to console</li>
+<li class="checkbox"><input type="checkbox" disabled> No errors during analysis</li>
+<li class="checkbox"><input type="checkbox" disabled> Changelog entry added</li></ul>
+
+<h3>Test 11: View Last Analysis</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>console.log(window.aiLogger.lastAnalysis);</code></pre>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Returns object with:</li></ul>
+<p>  - [ ] <code class="inline-code">timestamp</code>: Recent date/time</p>
+<p>  - [ ] <code class="inline-code">metrics</code>: Statistics object</p>
+<p>  - [ ] <code class="inline-code">errors</code>: Array (empty if no errors)</p>
+<p>  - [ ] <code class="inline-code">fixes</code>: Array of fix recommendations</p>
+<p>  - [ ] <code class="inline-code">improvements</code>: Array of suggestions</p>
+<p>  - [ ] <code class="inline-code">news</code>: Changelog content object</p>
+
+<hr>
+
+<h2>🏆 Leaderboard System Tests</h2>
+
+<h3>Test 12: Open Leaderboard</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>openLeaderboard();</code></pre>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Modal appears with leaderboard</li>
+<li class="checkbox"><input type="checkbox" disabled> Shows all AI agents + real players</li>
+<li class="checkbox"><input type="checkbox" disabled> Ranked by gems → level → achievements</li>
+<li class="checkbox"><input type="checkbox" disabled> Top 3 have gold styling</li>
+<li class="checkbox"><input type="checkbox" disabled> AI badges visible on AI agents</li>
+<li class="checkbox"><input type="checkbox" disabled> Personality badges visible</li></ul>
+
+<h3>Test 13: Leaderboard Auto-Update</h3>
+<p><strong>Wait 30 seconds with leaderboard open:</strong></p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Stats update automatically</li>
+<li class="checkbox"><input type="checkbox" disabled> Gem counts increase</li>
+<li class="checkbox"><input type="checkbox" disabled> Rankings may shift</li>
+<li class="checkbox"><input type="checkbox" disabled> No manual refresh needed</li></ul>
+
+<h3>Test 14: Close Leaderboard</h3>
+<p>Click X button or outside modal:</p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Modal closes smoothly</li>
+<li class="checkbox"><input type="checkbox" disabled> Page still functional</li>
+<li class="checkbox"><input type="checkbox" disabled> Can reopen with <code class="inline-code">openLeaderboard()</code></li></ul>
+
+<h3>Test 15: Manual Leaderboard Update</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>updateLeaderboard();</code></pre>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Leaderboard refreshes immediately (if open)</li>
+<li class="checkbox"><input type="checkbox" disabled> Latest stats pulled from AI agents</li>
+<li class="checkbox"><input type="checkbox" disabled> Rankings recalculated</li></ul>
+
+<h3>Test 16: Add Custom Entry</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>window.gemBotLeaderboard.addEntry({
+<p>    id: &#039;test-player&#039;,</p>
+<p>    name: &#039;Test Player&#039;,</p>
+<p>    avatar: &#039;👑&#039;,</p>
+<p>    gems: 999999,</p>
+<p>    level: 100,</p>
+<p>    achievements: 50,</p>
+<p>    isAI: false</p>
+<p>});</p>
+<p>openLeaderboard();</code></pre></p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Custom entry appears at top (highest gems)</li>
+<li class="checkbox"><input type="checkbox" disabled> No AI badge (isAI: false)</li>
+<li class="checkbox"><input type="checkbox" disabled> Shows correct stats</li></ul>
+
+<hr>
+
+<h2>📰 Changelog System Tests</h2>
+
+<h3>Test 17: Open Changelog</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>openChangelog();</code></pre>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Modal appears with changelog</li>
+<li class="checkbox"><input type="checkbox" disabled> Timeline view with date markers</li>
+<li class="checkbox"><input type="checkbox" disabled> At least one entry visible (from first analysis)</li>
+<li class="checkbox"><input type="checkbox" disabled> Sections: Stats, Fixes, Improvements, Achievements</li></ul>
+
+<h3>Test 18: View Changelog Content</h3>
+<p><strong>Inspect first entry:</strong></p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Title present (e.g., "Daily Update - Dec 7, 2025")</li>
+<li class="checkbox"><input type="checkbox" disabled> Date formatted correctly</li>
+<li class="checkbox"><input type="checkbox" disabled> Stats section has bullet points</li>
+<li class="checkbox"><input type="checkbox" disabled> Each section has relevant content</li>
+<li class="checkbox"><input type="checkbox" disabled> Styled with cyan/purple gradient</li></ul>
+
+<h3>Test 19: Manual Changelog Entry</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>window.changelogPublisher.publish({
+<p>    title: &#039;Test Update&#039;,</p>
+<p>    sections: {</p>
+<p>        stats: [&#039;Test stat 1&#039;, &#039;Test stat 2&#039;],</p>
+<p>        fixes: [&#039;Test fix 1&#039;],</p>
+<p>        improvements: [&#039;Test improvement 1&#039;],</p>
+<p>        achievements: [&#039;Test achievement 1&#039;]</p>
+<p>    }</p>
+<p>});</p>
+<p>openChangelog();</code></pre></p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> New entry appears at top</li>
+<li class="checkbox"><input type="checkbox" disabled> Contains all custom content</li>
+<li class="checkbox"><input type="checkbox" disabled> Properly formatted</li>
+<li class="checkbox"><input type="checkbox" disabled> Persists after page refresh</li></ul>
+
+<h3>Test 20: 30-Day Limit</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>// Check how many entries stored
+<p>const changelog = JSON.parse(localStorage.getItem(&#039;gembot_changelog&#039;));</p>
+<p>console.log(<code class="inline-code">Changelog entries: ${changelog.length}</code>);</code></pre></p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Maximum 30 entries stored</li>
+<li class="checkbox"><input type="checkbox" disabled> Oldest entries removed automatically</li>
+<li class="checkbox"><input type="checkbox" disabled> Most recent always present</li></ul>
+
+<hr>
+
+<h2>💰 Referral System Tests</h2>
+
+<h3>Test 21: Generate Referral Link</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>const link = generateReferralLink(&#039;test-player-123&#039;);
+<p>console.log(link);</code></pre></p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Returns string like: <code class="inline-code">?ref=REF-test-player-123-1733612345678</code></li>
+<li class="checkbox"><input type="checkbox" disabled> Contains player ID</li>
+<li class="checkbox"><input type="checkbox" disabled> Contains timestamp</li>
+<li class="checkbox"><input type="checkbox" disabled> Can copy/paste to URL bar</li></ul>
+
+<h3>Test 22: Test Referral URL Detection</h3>
+<p><strong>Manually add to URL</strong>: <code class="inline-code">http://localhost/?ref=REF-test-123-1733612345678</code></p>
+<p><strong>Then check console:</strong></p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Console shows: "🎁 Referral detected!"</li>
+<li class="checkbox"><input type="checkbox" disabled> Shows referrer ID and rewards</li>
+<li class="checkbox"><input type="checkbox" disabled> Referrer gets 1000 gems (if exists in system)</li>
+<li class="checkbox"><input type="checkbox" disabled> New player gets 500 gems</li></ul>
+
+<h3>Test 23: Check Referral Stats</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>const stats = window.referralSystem.getPlayerStats(&#039;test-player-123&#039;);
+<p>console.log(stats);</code></pre></p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Returns object with:</li></ul>
+<p>  - [ ] <code class="inline-code">conversions</code>: Number of successful referrals</p>
+<p>  - [ ] <code class="inline-code">totalRewards</code>: Total gems earned from referrals</p>
+
+<h3>Test 24: Referral Persistence</h3>
+<p><strong>After processing referral, refresh page and check:</strong></p>
+<pre class="code-block javascript" data-lang="javascript"><code>const referrals = JSON.parse(localStorage.getItem(&#039;gembot_referrals&#039;));
+<p>console.log(referrals);</code></pre></p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Referral links persisted</li>
+<li class="checkbox"><input type="checkbox" disabled> Conversions tracked</li>
+<li class="checkbox"><input type="checkbox" disabled> Rewards recorded</li></ul>
+
+<hr>
+
+<h2>📱 Social Media System Tests</h2>
+
+<h3>Test 25: Check Post Queue</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>console.log(window.socialMedia.postQueue);</code></pre>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Array of pending posts</li>
+<li class="checkbox"><input type="checkbox" disabled> Posts have: type, content, timestamp</li>
+<li class="checkbox"><input type="checkbox" disabled> Queue processes every 30 seconds</li></ul>
+
+<h3>Test 26: Manual Post</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>window.socialMedia.post({
+<p>    type: &#039;achievement&#039;,</p>
+<p>    playerName: &#039;Test Player&#039;,</p>
+<p>    achievement: &#039;Test Achievement&#039;,</p>
+<p>    referralLink: &#039;?ref=TEST-123&#039;</p>
+<p>});</code></pre></p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Post added to queue</li>
+<li class="checkbox"><input type="checkbox" disabled> Console shows: "📱 Social media post queued"</li>
+<li class="checkbox"><input type="checkbox" disabled> Post processed within 30 seconds (simulated)</li></ul>
+
+<h3>Test 27: Daily Update Post</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>window.socialMedia.postDailyUpdate({
+<p>    totalActions: 1000,</p>
+<p>    activePlayers: 50,</p>
+<p>    successRate: 95,</p>
+<p>    fixesImplemented: 3,</p>
+<p>    improvements: 5</p>
+<p>});</code></pre></p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Post added to queue</li>
+<li class="checkbox"><input type="checkbox" disabled> Contains all stats</li>
+<li class="checkbox"><input type="checkbox" disabled> Formatted correctly in console output</li></ul>
+
+<h3>Test 28: Milestone Post</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>window.socialMedia.postMilestone({
+<p>    title: &#039;1000 Players!&#039;,</p>
+<p>    description: &#039;We hit 1000 players!&#039;,</p>
+<p>    stats: { players: 1000 }</p>
+<p>});</code></pre></p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Milestone post created</li>
+<li class="checkbox"><input type="checkbox" disabled> Contains title and description</li>
+<li class="checkbox"><input type="checkbox" disabled> Stats included</li></ul>
+
+<h3>Test 29: Configure Platform (Optional - Real Posting)</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>window.socialMedia.configurePlatform(&#039;discord&#039;, {
+<p>    webhookUrl: &#039;https://discord.com/api/webhooks/YOUR-WEBHOOK-HERE&#039;</p>
+<p>});</code></pre></p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Platform configured</li>
+<li class="checkbox"><input type="checkbox" disabled> Saved to localStorage</li>
+<li class="checkbox"><input type="checkbox" disabled> Can retrieve: <code class="inline-code">window.socialMedia.platformConfig.discord</code></li></ul>
+
+<hr>
+
+<h2>🧙‍♂️ Merlin AI Learning Tests</h2>
+
+<h3>Test 30: Check Knowledge Base</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>console.log(window.merlinLearning.knowledgeBase);</code></pre>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Returns object with:</li></ul>
+<p>  - [ ] <code class="inline-code">commonActions</code>: Object with action counts</p>
+<p>  - [ ] <code class="inline-code">successfulStrategies</code>: Array of learned strategies</p>
+<p>  - [ ] <code class="inline-code">commonErrors</code>: Array of frequent errors</p>
+<p>  - [ ] <code class="inline-code">playerPatterns</code>: Object with per-personality data</p>
+<p>  - [ ] <code class="inline-code">improvements</code>: Array of suggested improvements</p>
+
+<h3>Test 31: Update Knowledge Base</h3>
+<p><strong>Let AI agents play for 2 minutes, then:</strong></p>
+<pre class="code-block javascript" data-lang="javascript"><code>window.aiLogger.runDailyAnalysis();</code></pre>
+<p><strong>Then check:</strong></p>
+<pre class="code-block javascript" data-lang="javascript"><code>console.log(window.merlinLearning.knowledgeBase.commonActions);</code></pre>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Action counts updated</li>
+<li class="checkbox"><input type="checkbox" disabled> Reflects recent AI activity</li>
+<li class="checkbox"><input type="checkbox" disabled> Strategies added (if patterns detected)</li></ul>
+
+<h3>Test 32: Get Personalized Advice</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>const advice = window.merlinLearning.getAdvice({
+<p>    gems: 5000,</p>
+<p>    level: 5,</p>
+<p>    machines: 2,</p>
+<p>    achievements: 1</p>
+<p>});</p>
+<p>console.log(advice);</code></pre></p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Returns relevant advice string</li>
+<li class="checkbox"><input type="checkbox" disabled> Based on learned patterns</li>
+<li class="checkbox"><input type="checkbox" disabled> Actionable recommendation</li>
+<li class="checkbox"><input type="checkbox" disabled> References commonActions or successfulStrategies</li></ul>
+
+<h3>Test 33: Merlin Learning Persistence</h3>
+<p><strong>Refresh page and check:</strong></p>
+<pre class="code-block javascript" data-lang="javascript"><code>const saved = localStorage.getItem(&#039;gembot&lt;em&gt;merlin&lt;/em&gt;knowledge&#039;);
+<p>console.log(JSON.parse(saved));</code></pre></p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Knowledge base persisted</li>
+<li class="checkbox"><input type="checkbox" disabled> All learned data present</li>
+<li class="checkbox"><input type="checkbox" disabled> Accumulates over sessions</li></ul>
+
+<hr>
+
+<h2>🔄 Integration Tests</h2>
+
+<h3>Test 34: Full Workflow (End-to-End)</h3>
+<p><strong>Execute in order:</strong></p>
+<pre class="code-block javascript" data-lang="javascript"><code>// 1. Spawn agents
+<p>spawnAIAgents(5);</p>
+
+<p>// 2. Wait 30 seconds (let them play)</p>
+<p>// ... wait ...</p>
+
+<p>// 3. Check stats</p>
+<p>console.log(getAIStats());</p>
+
+<p>// 4. Open leaderboard</p>
+<p>openLeaderboard();</p>
+
+<p>// 5. Wait 5 seconds, then trigger analysis</p>
+<p>setTimeout(() =&gt; window.aiLogger.runDailyAnalysis(), 5000);</p>
+
+<p>// 6. Open changelog (after analysis)</p>
+<p>setTimeout(() =&gt; openChangelog(), 10000);</p>
+
+<p>// 7. Generate referral</p>
+<p>const link = generateReferralLink(&#039;test-player&#039;);</p>
+<p>console.log(link);</code></pre></p>
+<p><strong>Verify:</strong></p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> All steps execute without errors</li>
+<li class="checkbox"><input type="checkbox" disabled> Agents play autonomously</li>
+<li class="checkbox"><input type="checkbox" disabled> Stats update correctly</li>
+<li class="checkbox"><input type="checkbox" disabled> Leaderboard shows agents</li>
+<li class="checkbox"><input type="checkbox" disabled> Analysis completes</li>
+<li class="checkbox"><input type="checkbox" disabled> Changelog has new entry</li>
+<li class="checkbox"><input type="checkbox" disabled> Referral link generated</li></ul>
+
+<h3>Test 35: Cross-System Communication</h3>
+<p><strong>Verify systems communicate:</strong></p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> AI agents → Logger (actions logged)</li>
+<li class="checkbox"><input type="checkbox" disabled> Logger → Merlin (analysis data fed)</li>
+<li class="checkbox"><input type="checkbox" disabled> Merlin → Advice (learned patterns used)</li>
+<li class="checkbox"><input type="checkbox" disabled> AI agents → Leaderboard (stats updated)</li>
+<li class="checkbox"><input type="checkbox" disabled> AI agents → Social Media (achievements posted)</li>
+<li class="checkbox"><input type="checkbox" disabled> Referral → GBUV (gems awarded)</li>
+<li class="checkbox"><input type="checkbox" disabled> Logger → Changelog (news published)</li></ul>
+
+<hr>
+
+<h2>🚀 Performance Tests</h2>
+
+<h3>Test 36: Spawn Many Agents</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>spawnAIAgents(50);</code></pre>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> All 50 agents spawn successfully</li>
+<li class="checkbox"><input type="checkbox" disabled> Page remains responsive</li>
+<li class="checkbox"><input type="checkbox" disabled> No browser lag</li>
+<li class="checkbox"><input type="checkbox" disabled> Console logs manageable (not overwhelming)</li>
+<li class="checkbox"><input type="checkbox" disabled> Can still open leaderboard/changelog</li></ul>
+
+<h3>Test 37: Memory Usage</h3>
+<p><strong>Open browser Task Manager (Shift+Esc in Chrome):</strong></p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Memory usage < 500MB with 50 agents</li>
+<li class="checkbox"><input type="checkbox" disabled> No memory leaks over time</li>
+<li class="checkbox"><input type="checkbox" disabled> Stabilizes after initial spike</li></ul>
+
+<h3>Test 38: localStorage Size</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>let totalSize = 0;
+<p>Object.keys(localStorage).forEach(key =&gt; {</p>
+<p>    if (key.startsWith(&#039;gembot_&#039;)) {</p>
+<p>        totalSize += localStorage.getItem(key).length;</p>
+<p>    }</p>
+<p>});</p>
+<p>console.log(<code class="inline-code">GemBot localStorage size: ${(totalSize / 1024).toFixed(2)} KB</code>);</code></pre></p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Size < 5 MB (5120 KB)</li>
+<li class="checkbox"><input type="checkbox" disabled> Doesn't grow infinitely</li>
+<li class="checkbox"><input type="checkbox" disabled> Old logs pruned automatically</li></ul>
+
+<hr>
+
+<h2>🔒 Error Handling Tests</h2>
+
+<h3>Test 39: Simulate Network Error</h3>
+<p><strong>Block network in DevTools (Network tab → Offline), then:</strong></p>
+<pre class="code-block javascript" data-lang="javascript"><code>spawnAIAgents(1);</code></pre>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Agent handles gracefully</li>
+<li class="checkbox"><input type="checkbox" disabled> Error logged with category: "network"</li>
+<li class="checkbox"><input type="checkbox" disabled> Agent continues trying other actions</li>
+<li class="checkbox"><input type="checkbox" disabled> Analysis detects pattern</li></ul>
+
+<h3>Test 40: Simulate Null Reference</h3>
+<p><strong>Temporarily break GBUV:</strong></p>
+<pre class="code-block javascript" data-lang="javascript"><code>const tempGBUV = window.GBUV;
+<p>window.GBUV = null;</p>
+<p>spawnAIAgents(1);</code></pre></p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Agent handles gracefully</li>
+<li class="checkbox"><input type="checkbox" disabled> Error logged with category: "null_reference"</li>
+<li class="checkbox"><input type="checkbox" disabled> Doesn't crash page</li></ul>
+<pre class="code-block javascript" data-lang="javascript"><code>// Restore
+<p>window.GBUV = tempGBUV;</code></pre></p>
+
+<h3>Test 41: Check Error Logging</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>// View all errors
+<p>window.aiLogger.logs.filter(log =&gt; !log.success).forEach(log =&gt; {</p>
+<p>    console.log(<code class="inline-code">Error: ${log.action} - ${log.error}</code>);</p>
+<p>});</code></pre></p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Errors logged with details</li>
+<li class="checkbox"><input type="checkbox" disabled> Categories assigned correctly</li>
+<li class="checkbox"><input type="checkbox" disabled> Timestamps present</li></ul>
+
+<hr>
+
+<h2>📱 Mobile/Responsive Tests</h2>
+
+<h3>Test 42: Mobile View</h3>
+<p><strong>Resize browser to 375px width (iPhone size):</strong></p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Leaderboard modal fits screen</li>
+<li class="checkbox"><input type="checkbox" disabled> Changelog modal scrolls properly</li>
+<li class="checkbox"><input type="checkbox" disabled> AI status indicator visible</li>
+<li class="checkbox"><input type="checkbox" disabled> Notification toasts appear correctly</li>
+<li class="checkbox"><input type="checkbox" disabled> All text readable</li></ul>
+
+<h3>Test 43: Tablet View</h3>
+<p><strong>Resize browser to 768px width (iPad size):</strong></p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Layouts adjust appropriately</li>
+<li class="checkbox"><input type="checkbox" disabled> Modals centered</li>
+<li class="checkbox"><input type="checkbox" disabled> Stats displayed properly</li>
+<li class="checkbox"><input type="checkbox" disabled> Touch-friendly buttons</li></ul>
+
+<hr>
+
+<h2>🎨 UI/Visual Tests</h2>
+
+<h3>Test 44: Leaderboard Styling</h3>
+<p><strong>Open leaderboard and check:</strong></p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Top 3 have gold glow</li>
+<li class="checkbox"><input type="checkbox" disabled> AI badges are blue</li>
+<li class="checkbox"><input type="checkbox" disabled> Personality badges are purple</li>
+<li class="checkbox"><input type="checkbox" disabled> Hover effects work</li>
+<li class="checkbox"><input type="checkbox" disabled> Smooth animations</li>
+<li class="checkbox"><input type="checkbox" disabled> Gradient header</li></ul>
+
+<h3>Test 45: Changelog Styling</h3>
+<p><strong>Open changelog and check:</strong></p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Timeline has vertical line</li>
+<li class="checkbox"><input type="checkbox" disabled> Date markers present</li>
+<li class="checkbox"><input type="checkbox" disabled> Cyan/purple gradient theme</li>
+<li class="checkbox"><input type="checkbox" disabled> Sections properly formatted</li>
+<li class="checkbox"><input type="checkbox" disabled> Bullet points visible</li>
+<li class="checkbox"><input type="checkbox" disabled> Smooth scrolling</li></ul>
+
+<h3>Test 46: Notification Toasts</h3>
+<p><strong>Trigger referral to see toast:</strong></p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Toast appears top-right</li>
+<li class="checkbox"><input type="checkbox" disabled> Slides in from right</li>
+<li class="checkbox"><input type="checkbox" disabled> Fades out after 5 seconds</li>
+<li class="checkbox"><input type="checkbox" disabled> Doesn't block UI</li></ul>
+
+<h3>Test 47: AI Status Indicator</h3>
+<p><strong>If implemented in HTML:</strong></p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Shows in bottom-right</li>
+<li class="checkbox"><input type="checkbox" disabled> Updates in real-time</li>
+<li class="checkbox"><input type="checkbox" disabled> Shows active agents count</li>
+<li class="checkbox"><input type="checkbox" disabled> Shows total actions</li>
+<li class="checkbox"><input type="checkbox" disabled> Styled with cyan border</li></ul>
+
+<hr>
+
+<h2>🔧 Cleanup Tests</h2>
+
+<h3>Test 48: Stop and Clear</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>// Stop agents
+<p>stopAIAgents();</p>
+
+<p>// Clear logs</p>
+<p>localStorage.removeItem(&#039;gembot&lt;em&gt;ai&lt;/em&gt;logs&#039;);</p>
+<p>localStorage.removeItem(&#039;gembot_leaderboard&#039;);</p>
+<p>localStorage.removeItem(&#039;gembot_changelog&#039;);</p>
+
+<p>// Verify cleared</p>
+<p>console.log(localStorage.getItem(&#039;gembot&lt;em&gt;ai&lt;/em&gt;logs&#039;)); // Should be null</code></pre></p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> All agents stopped</li>
+<li class="checkbox"><input type="checkbox" disabled> localStorage cleared</li>
+<li class="checkbox"><input type="checkbox" disabled> No errors</li>
+<li class="checkbox"><input type="checkbox" disabled> Can restart fresh</li></ul>
+
+<h3>Test 49: Page Refresh</h3>
+<p><strong>After running tests, refresh page:</strong></p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> All systems reload correctly</li>
+<li class="checkbox"><input type="checkbox" disabled> Persisted data loads from localStorage</li>
+<li class="checkbox"><input type="checkbox" disabled> No errors in console</li>
+<li class="checkbox"><input type="checkbox" disabled> Can spawn new agents immediately</li></ul>
+
+<h3>Test 50: Full Reset</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>// Clear ALL GemBot data
+<p>Object.keys(localStorage)</p>
+<p>    .filter(key =&gt; key.startsWith(&#039;gembot_&#039;))</p>
+<p>    .forEach(key =&gt; localStorage.removeItem(key));</p>
+
+<p>// Refresh page</p>
+<p>location.reload();</code></pre></p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> All GemBot data cleared</li>
+<li class="checkbox"><input type="checkbox" disabled> Page reloads fresh</li>
+<li class="checkbox"><input type="checkbox" disabled> No errors</li>
+<li class="checkbox"><input type="checkbox" disabled> Ready for new session</li></ul>
+
+<hr>
+
+<h2>✅ Final Checklist</h2>
+
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> <strong>All 50 tests passed</strong></li>
+<li class="checkbox"><input type="checkbox" disabled> <strong>No console errors</strong></li>
+<li class="checkbox"><input type="checkbox" disabled> <strong>Systems communicate correctly</strong></li>
+<li class="checkbox"><input type="checkbox" disabled> <strong>Performance acceptable</strong></li>
+<li class="checkbox"><input type="checkbox" disabled> <strong>Mobile responsive</strong></li>
+<li class="checkbox"><input type="checkbox" disabled> <strong>Data persists correctly</strong></li>
+<li class="checkbox"><input type="checkbox" disabled> <strong>UI looks professional</strong></li>
+<li class="checkbox"><input type="checkbox" disabled> <strong>Ready for production</strong></li></ul>
+
+<hr>
+
+<h2>📊 Expected Results Summary</h2>
+
+<p>After running all tests successfully:</p>
+
+<p>✅ <strong>AI Agents</strong>: Spawn and play autonomously  </p>
+<p>✅ <strong>Logging</strong>: All actions tracked and persisted  </p>
+<p>✅ <strong>Analysis</strong>: Runs every 24 hours automatically  </p>
+<p>✅ <strong>Leaderboard</strong>: Updates every 30 seconds  </p>
+<p>✅ <strong>Changelog</strong>: Published after each analysis  </p>
+<p>✅ <strong>Referrals</strong>: Generate links and track conversions  </p>
+<p>✅ <strong>Social Media</strong>: Queue posts and simulate posting  </p>
+<p>✅ <strong>Merlin Learning</strong>: Update knowledge base continuously  </p>
+<p>✅ <strong>Error Handling</strong>: Graceful degradation on failures  </p>
+<p>✅ <strong>Performance</strong>: Smooth with 50+ concurrent agents  </p>
+
+<hr>
+
+<h2>🐛 Bug Reporting</h2>
+
+<p>If any test fails, note:</p>
+<ol><li class="ol-item">Test number and name</li>
+<li class="ol-item">Expected behavior</li>
+<li class="ol-item">Actual behavior</li>
+<li class="ol-item">Console errors (screenshot)</li>
+<li class="ol-item">Steps to reproduce</li></ol>
+
+<p><strong>Report to</strong>: BarbrickDesign@gmail.com</p>
+
+<hr>
+
+<p><strong>© 2024-2025 Ryan Barbrick / Barbrick Design. All Rights Reserved.</strong></p>
+
+        <div class="generated-notice">
+            🤖 Auto-generated from AI_AGENT_TESTING_CHECKLIST.md by GemBot Neural Dashboard Agent<br>
+            Generated: 2025-12-16T13:51:58.917Z
+        </div>
+    </div>
+</body>
+</html>

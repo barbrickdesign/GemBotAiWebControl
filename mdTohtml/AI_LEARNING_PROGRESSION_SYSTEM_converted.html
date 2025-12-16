@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI_LEARNING_PROGRESSION_SYSTEM - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        <h1>GemBot AI Learning Progression System</h1>
+
+<h2>Overview</h2>
+
+<p>Merlin (the AI assistant) now implements a <strong>smart learning progression system</strong> that:</p>
+
+<ol><li class="ol-item"><strong>Tracks what you've learned</strong> - Never repeats the same lesson twice</li>
+<li class="ol-item"><strong>Teaches in logical order</strong> - Builds knowledge progressively</li>
+<li class="ol-item"><strong>Provides structured lessons</strong> - Organized, step-by-step instruction</li>
+<li class="ol-item"><strong>Highlights web features</strong> - Shows how web controls mirror touch screen functions</li>
+<li class="ol-item"><strong>Maintains context</strong> - Remembers completed lessons within the session</li></ol>
+
+<hr>
+
+<h2>Learning Progression Order</h2>
+
+<p>When you ask for help, Merlin will teach lessons in this sequence:</p>
+
+<h3>Lesson 1: Nextion Menu Structure</h3>
+<p><strong>Trigger</strong>: Ask for help, teach, learn, guide, tutorial, beginner, or lesson</p>
+<p><strong>Topics Covered</strong>:</p>
+<ul><li class="ul-item">Main Menu and its 5 options</li>
+<li class="ul-item">Design Menu (8 cutting phases)</li>
+<li class="ul-item">Manual Control Menu</li>
+<li class="ul-item">Settings Menu</li>
+<li class="ul-item">Menu navigation patterns</li></ul>
+
+<p><strong>What You Learn</strong>:</p>
+<ul><li class="ul-item">How the touch screen is organized</li>
+<li class="ul-item">What each menu section does</li>
+<li class="ul-item">How to navigate between menus</li></ul>
+
+<h3>Lesson 2: Web Menu Navigation</h3>
+<p><strong>Prerequisites</strong>: Completed Lesson 1</p>
+<p><strong>Topics Covered</strong>:</p>
+<ul><li class="ul-item">LEFT button (◀) - Command '1' - Navigate back/left</li>
+<li class="ul-item">ENTER button (✓) - Command '0' - Select/confirm</li>
+<li class="ul-item">RIGHT button (▶) - Command '3' - Navigate forward/right</li>
+<li class="ul-item">SYNC button - Update with touch screen state</li>
+<li class="ul-item">Step-by-step menu navigation technique</li></ul>
+
+<p><strong>What You Learn</strong>:</p>
+<ul><li class="ul-item">How to navigate menus from the web interface</li>
+<li class="ul-item">What each menu button does</li>
+<li class="ul-item">How to use the SYNC button to see current menu state</li></ul>
+
+<h3>Lesson 3: Manual Motion Control (D-PAD)</h3>
+<p><strong>Prerequisites</strong>: Completed Lesson 2</p>
+<p><strong>Topics Covered</strong>:</p>
+<ul><li class="ul-item">UP button (↑) - Y-axis forward (toward lap)</li>
+<li class="ul-item">DOWN button (↓) - Y-axis backward (away from lap)</li>
+<li class="ul-item">LEFT button (◀) - X-axis left (counter-clockwise rotation)</li>
+<li class="ul-item">RIGHT button (▶) - X-axis right (clockwise rotation)</li>
+<li class="ul-item">STEP vs CONTINUOUS modes for each axis</li></ul>
+
+<p><strong>What You Learn</strong>:</p>
+<ul><li class="ul-item">How to move each machine axis</li>
+<li class="ul-item">Difference between STEP (precise) and CONTINUOUS (smooth) movement</li>
+<li class="ul-item">When to use each mode for different tasks</li></ul>
+
+<h3>Lesson 4: Mode & Speed Control</h3>
+<p><strong>Prerequisites</strong>: Completed Lesson 3</p>
+<p><strong>Topics Covered</strong>:</p>
+<ul><li class="ul-item">STEP MODE: One movement per click (precision)</li>
+<li class="ul-item">CONTINUOUS MODE: Hold for smooth movement (flow)</li>
+<li class="ul-item">Speed Levels 1-5:</li></ul>
+<p>  - Level 1-2: Polishing precision</p>
+<p>  - Level 3: Balanced work</p>
+<p>  - Level 4-5: Aggressive roughing</p>
+
+<p><strong>What You Learn</strong>:</p>
+<ul><li class="ul-item">How to toggle between modes</li>
+<li class="ul-item">Speed levels for different cutting phases</li>
+<li class="ul-item">Control vs Speed tradeoff</li>
+<li class="ul-item">Best practices for each cutting phase</li></ul>
+
+<h3>Lesson 5: Cutting Phases (Unlocked after Lessons 1-4)</h3>
+<p><strong>Prerequisites</strong>: Completed Lessons 1-4</p>
+<p><strong>Topics Covered</strong>:</p>
+<ul><li class="ul-item">Roughing Phase (Speed 4-5, CONTINUOUS)</li>
+<li class="ul-item">Fine Cutting Phase (Speed 2-3, STEP)</li>
+<li class="ul-item">Polishing Phase (Speed 1-2, STEP)</li>
+<li class="ul-item">Phase-specific techniques and settings</li></ul>
+
+<h3>Lesson 6: Stone Properties (Unlocked after Lessons 1-5)</h3>
+<p><strong>Prerequisites</strong>: Completed Lessons 1-5</p>
+<p><strong>Topics Covered</strong>:</p>
+<ul><li class="ul-item">Diamond properties and cutting requirements</li>
+<li class="ul-item">Ruby/Sapphire properties and techniques</li>
+<li class="ul-item">Emerald handling (fragile stone)</li>
+<li class="ul-item">Opal characteristics (fragile, special care)</li>
+<li class="ul-item">Speed and technique for each stone type</li></ul>
+
+<h3>Lesson 7: Emergency Procedures (Available anytime)</h3>
+<p><strong>Trigger</strong>: Ask about emergency, stop, danger, stuck</p>
+<p><strong>Topics Covered</strong>:</p>
+<ul><li class="ul-item">Emergency stop button location and use</li>
+<li class="ul-item">Motor release procedures</li>
+<li class="ul-item">Safe recovery from emergency state</li>
+<li class="ul-item">When to call for help</li></ul>
+
+<hr>
+
+<h2>How to Use the Learning System</h2>
+
+<h3>Starting a Lesson</h3>
+<p>Simply ask Merlin one of these questions:</p>
+
+<pre class="code-block " data-lang="text"><code>&quot;Can you teach me?&quot;
+<p>&quot;Help me learn this&quot;</p>
+<p>&quot;Show me the tutorial&quot;</p>
+<p>&quot;How do I start?&quot;</p>
+<p>&quot;What should I learn first?&quot;</p>
+<p>&quot;Guide me through the basics&quot;</p>
+<p>&quot;Teach me the menu system&quot;</p>
+<p>&quot;I&#039;m a beginner&quot;</code></pre></p>
+
+<h3>Progressing Through Lessons</h3>
+<ul><li class="ul-item"><strong>Complete Lesson 1</strong> → Lesson 2 becomes available</li>
+<li class="ul-item"><strong>Complete Lesson 2</strong> → Lesson 3 becomes available</li>
+<li class="ul-item"><strong>Complete Lesson 3</strong> → Lesson 4 becomes available</li>
+<li class="ul-item"><strong>Complete Lesson 4</strong> → Lessons 5-6 unlock</li>
+<li class="ul-item"><strong>Complete All</strong> → Merlin recognizes mastery and shifts to advanced guidance</li></ul>
+
+<h3>Skipping Lessons</h3>
+<p>You don't have to learn in order! Ask about any specific topic:</p>
+<ul><li class="ul-item">"Tell me about mode and speed"</li>
+<li class="ul-item">"How do I control the D-PAD?"</li>
+<li class="ul-item">"What's the menu structure?"</li></ul>
+
+<p>Merlin will teach that topic and mark it as learned.</p>
+
+<h3>Resuming Learning</h3>
+<p>The system remembers within the session:</p>
+<ul><li class="ul-item">If you complete Lesson 1, it stays completed</li>
+<li class="ul-item">The next time you ask for help, you'll get Lesson 2</li>
+<li class="ul-item">Lessons completed in this session won't be repeated</li></ul>
+
+<hr>
+
+<h2>Web Control Features Highlighted in Each Lesson</h2>
+
+<h3>In Lesson 1: Menu Structure</h3>
+<p>Shows how web interface mirrors Nextion menu organization</p>
+
+<h3>In Lesson 2: Menu Navigation</h3>
+<p>Highlights the three web menu buttons:</p>
+<ul><li class="ul-item"><strong>LEFT button</strong> with icon ◀</li>
+<li class="ul-item"><strong>ENTER button</strong> with icon ✓</li>
+<li class="ul-item"><strong>RIGHT button</strong> with icon ▶</li>
+<li class="ul-item"><strong>SYNC button</strong> to verify state</li></ul>
+
+<h3>In Lesson 3: Motion Control</h3>
+<p>Shows the D-PAD button layout:</p>
+<pre class="code-block " data-lang="text"><code>↑ (UP)
+<p>    ← (LEFT)  → (RIGHT)</p>
+<p>        ↓ (DOWN)</code></pre></p>
+<p>Explains how each button maps to machine axes</p>
+
+<h3>In Lesson 4: Mode & Speed</h3>
+<p>Highlights:</p>
+<ul><li class="ul-item"><strong>MODE BUTTON</strong> - Toggle between STEP and CONTINUOUS</li>
+<li class="ul-item"><strong>SPEED SLIDER</strong> - Adjust levels 1-5</li>
+<li class="ul-item"><strong>Speed UP/DOWN buttons</strong> - Quick adjustments</li></ul>
+
+<hr>
+
+<h2>Learning Progression Data Structure</h2>
+
+<p>The system tracks progress in <code class="inline-code">learningProgress</code>:</p>
+
+<pre class="code-block javascript" data-lang="javascript"><code>this.learningProgress = {
+<p>    completedLessons: [</p>
+<p>        &#039;nextion&lt;em&gt;menu&lt;/em&gt;structure&#039;,</p>
+<p>        &#039;menu&lt;em&gt;navigation&lt;/em&gt;web_control&#039;,</p>
+<p>        // ... completed lessons stored here</p>
+<p>    ],</p>
+<p>    currentLesson: null,</p>
+<p>    maxContext: 20</p>
+<p>};</code></pre></p>
+
+<h3>Methods for Managing Learning</h3>
+
+<p><strong>Check if lesson completed</strong>:</p>
+<pre class="code-block javascript" data-lang="javascript"><code>gemBotAI.hasLearnedLesson(&#039;menu&lt;em&gt;navigation&lt;/em&gt;web_control&#039;) // true/false</code></pre>
+
+<p><strong>Mark lesson as completed</strong>:</p>
+<pre class="code-block javascript" data-lang="javascript"><code>gemBotAI.completeLesson(&#039;nextion&lt;em&gt;menu&lt;/em&gt;structure&#039;)</code></pre>
+
+<p><strong>Get next available lesson</strong>:</p>
+<pre class="code-block javascript" data-lang="javascript"><code>const nextLesson = gemBotAI.getNextLesson()
+<p>// Returns: &#039;menu&lt;em&gt;navigation&lt;/em&gt;web_control&#039; or null if all complete</code></pre></p>
+
+<hr>
+
+<h2>Automatic Lesson Teaching Methods</h2>
+
+<p>The AI now has dedicated teaching methods:</p>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Teach Nextion touch screen menu structure
+<p>gemBotAI.teachNextionMenuStructure()</p>
+
+<p>// Teach how to navigate using web controls</p>
+<p>gemBotAI.teachMenuNavigation()</p>
+
+<p>// Teach manual axis control with D-PAD</p>
+<p>gemBotAI.teachManualControl()</p>
+
+<p>// Teach mode switching and speed control</p>
+<p>gemBotAI.teachModeAndSpeed()</code></pre></p>
+
+<p>Each method returns a formatted lesson with:</p>
+<ul><li class="ul-item">Clear visual hierarchy</li>
+<li class="ul-item">Step-by-step instructions</li>
+<li class="ul-item">Web control button references</li>
+<li class="ul-item">Practical examples</li>
+<li class="ul-item">Pro tips and best practices</li></ul>
+
+<hr>
+
+<h2>Example Conversation Flow</h2>
+
+<h3>User asks for help as a beginner:</h3>
+
+<p><strong>User</strong>: "I don't know how to use this. Can you teach me?"</p>
+
+<p><strong>Merlin</strong> (Lesson 1): Shows complete Nextion menu structure with visual tree</p>
+<pre class="code-block " data-lang="text"><code>📍 &lt;strong&gt;MAIN MENU&lt;/strong&gt;
+<p>├─ ▶ DESIGN (Cutting phase selection)</p>
+<p>├─ ▶ HOME (Return to safe position)</p>
+<p>...</code></pre></p>
+<p>Explains each menu section and how to navigate.</p>
+
+<hr>
+
+<h3>User completes first lesson, asks for next help:</h3>
+
+<p><strong>User</strong>: "What's next?"</p>
+
+<p><strong>Merlin</strong> (Lesson 2): Shows the three menu buttons</p>
+<ul><li class="ul-item">Explains LEFT button (◀) - Command '1'</li>
+<li class="ul-item">Explains ENTER button (✓) - Command '0'</li>
+<li class="ul-item">Explains RIGHT button (▶) - Command '3'</li>
+<li class="ul-item">Shows how to use SYNC button</li></ul>
+
+<hr>
+
+<h3>User completes menu navigation, asks about motion:</h3>
+
+<p><strong>User</strong>: "How do I move the machine?"</p>
+
+<p><strong>Merlin</strong> (Lesson 3): Shows D-PAD control</p>
+<ul><li class="ul-item">UP moves Y-axis toward lap</li>
+<li class="ul-item">DOWN moves Y-axis away from lap</li>
+<li class="ul-item">LEFT rotates counter-clockwise</li>
+<li class="ul-item">RIGHT rotates clockwise</li>
+<li class="ul-item">Explains STEP vs CONTINUOUS difference</li></ul>
+
+<hr>
+
+<h3>User learns D-PAD, needs to understand control:</h3>
+
+<p><strong>User</strong>: "When do I use STEP mode?"</p>
+
+<p><strong>Merlin</strong> (Lesson 4): Teaches mode and speed</p>
+<ul><li class="ul-item">STEP = one click = one movement (precision)</li>
+<li class="ul-item">CONTINUOUS = hold = smooth flow (rough work)</li>
+<li class="ul-item">Speed 1-2 for polishing</li>
+<li class="ul-item">Speed 3 for balanced work</li>
+<li class="ul-item">Speed 4-5 for aggressive roughing</li></ul>
+
+<hr>
+
+<h3>All fundamentals learned, ready for advanced topics:</h3>
+
+<p><strong>User</strong>: "What do I learn now?"</p>
+
+<p><strong>Merlin</strong>: "You have mastered the fundamental lessons! You now understand the touch screen menus, web controls, manual operation, and speed/mode settings. You're ready for advanced cutting techniques. Ask me about: stone properties, cutting phases, or specific techniques."</p>
+
+<hr>
+
+<h2>Benefits of This System</h2>
+
+<p>✅ <strong>No Knowledge Duplication</strong> - Same lesson never repeated unless explicitly asked</p>
+<p>✅ <strong>Logical Progression</strong> - Fundamentals first, advanced topics after</p>
+<p>✅ <strong>User Confidence</strong> - Clear pathway from beginner to proficient</p>
+<p>✅ <strong>Organized Learning</strong> - Not overwhelming; lessons build on each other</p>
+<p>✅ <strong>Web-Centric</strong> - Emphasizes web control features alongside touch screen knowledge</p>
+<p>✅ <strong>Flexible</strong> - Can skip ahead to specific topics anytime</p>
+<p>✅ <strong>Session Memory</strong> - Progress tracked within the conversation session</p>
+
+<hr>
+
+<h2>Testing the Learning System</h2>
+
+<h3>To Test Lesson Progression:</h3>
+
+<ol><li class="ol-item">Open GemBot<em>Control</em>AI.html in browser</li>
+<li class="ol-item">In console (F12 → Console tab), test:</li></ol>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Check initial state
+<p>console.log(gemBotAI.learningProgress.completedLessons); // Should be empty []</p>
+
+<p>// Check next lesson</p>
+<p>console.log(gemBotAI.getNextLesson()); // &#039;nextion&lt;em&gt;menu&lt;/em&gt;structure&#039;</p>
+
+<p>// Ask for help</p>
+<p>// Type in chat: &quot;Can you teach me?&quot;</p>
+<p>// Should get Lesson 1</p>
+
+<p>// Check completed lessons</p>
+<p>console.log(gemBotAI.learningProgress.completedLessons); // [&#039;nextion&lt;em&gt;menu&lt;/em&gt;structure&#039;]</p>
+
+<p>// Get next lesson</p>
+<p>console.log(gemBotAI.getNextLesson()); // &#039;menu&lt;em&gt;navigation&lt;/em&gt;web_control&#039;</p>
+
+<p>// Ask for help again</p>
+<p>// Type in chat: &quot;What else should I learn?&quot;</p>
+<p>// Should get Lesson 2</code></pre></p>
+
+<hr>
+
+<h2>Extending the Learning System</h2>
+
+<p>To add new lessons:</p>
+
+<ol><li class="ol-item"><strong>Add lesson ID to lesson list</strong> (in <code class="inline-code">getNextLesson()</code>):</li></ol>
+<pre class="code-block javascript" data-lang="javascript"><code>const lessons = [
+<p>    &#039;nextion&lt;em&gt;menu&lt;/em&gt;structure&#039;,</p>
+<p>    &#039;menu&lt;em&gt;navigation&lt;/em&gt;web_control&#039;,</p>
+<p>    &#039;manual&lt;em&gt;control&lt;/em&gt;web_dpad&#039;,</p>
+<p>    &#039;mode&lt;em&gt;and&lt;/em&gt;speed_control&#039;,</p>
+<p>    &#039;cutting_phases&#039;,</p>
+<p>    &#039;stone_properties&#039;,</p>
+<p>    &#039;emergency_procedures&#039;,</p>
+<p>    &#039;your&lt;em&gt;new&lt;/em&gt;lesson_id&#039;  // Add here</p>
+<p>];</code></pre></p>
+
+<ol><li class="ol-item"><strong>Create teaching method</strong>:</li></ol>
+<pre class="code-block javascript" data-lang="javascript"><code>teachYourNewLesson() {
+<p>    let response = <code class="inline-code">Your lesson title...\n\n</code>;</p>
+<p>    response += <code class="inline-code">Lesson content with formatting...\n</code>;</p>
+<p>    response += <code class="inline-code">Step-by-step instructions...\n</code>;</p>
+    
+<p>    this.completeLesson(&#039;your&lt;em&gt;new&lt;/em&gt;lesson_id&#039;);</p>
+<p>    return response;</p>
+<p>}</code></pre></p>
+
+<ol><li class="ol-item"><strong>Add trigger in getSmartContextResponse()</strong>:</li></ol>
+<pre class="code-block javascript" data-lang="javascript"><code>} else if (nextLesson === &#039;your&lt;em&gt;new&lt;/em&gt;lesson_id&#039;) {
+<p>    return this.teachYourNewLesson();</p>
+<p>}</code></pre></p>
+
+<hr>
+
+<h2>Summary</h2>
+
+<p>The <strong>AI Learning Progression System</strong> transforms Merlin from a reactive answerer to a <strong>proactive teacher</strong> that:</p>
+
+<ul><li class="ul-item"><strong>Guides users through systematic learning</strong></li>
+<li class="ul-item"><strong>Never wastes time with repetition</strong></li>
+<li class="ul-item"><strong>Builds confidence through structured progression</strong></li>
+<li class="ul-item"><strong>Highlights web control capabilities</strong></li>
+<li class="ul-item"><strong>Remembers what you've already learned</strong></li></ul>
+
+<p>Start your journey: Simply ask Merlin <strong>"Can you teach me?"</strong> and begin mastering GemBot!</p>
+
+        <div class="generated-notice">
+            🤖 Auto-generated from AI_LEARNING_PROGRESSION_SYSTEM.md by GemBot Neural Dashboard Agent<br>
+            Generated: 2025-12-16T13:51:59.624Z
+        </div>
+    </div>
+</body>
+</html>

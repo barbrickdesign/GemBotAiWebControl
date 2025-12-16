@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEURAL_DASHBOARD_TEST_SUITE - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        <h1>🧪 Neural Dashboard Test Suite - Repository Value & AI Agents</h1>
+
+<h2>Test ID: ND-VALUE-AGENTS-001</h2>
+<p><strong>Date:</strong> December 16, 2025  </p>
+<p><strong>Status:</strong> Ready for Testing  </p>
+<p><strong>File:</strong> ADMIN<em>NEURAL</em>DASHBOARD.html</p>
+
+<hr>
+
+<h2>🎯 Test Objectives</h2>
+
+<ol><li class="ol-item">✅ Verify USD value calculation accuracy</li>
+<li class="ol-item">✅ Test AI agent deployment and analysis</li>
+<li class="ol-item">✅ Validate periphery-to-core layer identification  </li>
+<li class="ol-item">✅ Confirm Firebase logging functionality</li>
+<li class="ol-item">✅ Test value visualization in neural network</li>
+<li class="ol-item">✅ Verify repository value aggregation</li></ol>
+
+<hr>
+
+<h2>📋 Pre-Test Checklist</h2>
+
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Open ADMIN<em>NEURAL</em>DASHBOARD.html in browser</li>
+<li class="checkbox"><input type="checkbox" disabled> Open Developer Console (F12)</li>
+<li class="checkbox"><input type="checkbox" disabled> Sign in with Firebase authentication</li>
+<li class="checkbox"><input type="checkbox" disabled> Have stable internet connection</li>
+<li class="checkbox"><input type="checkbox" disabled> Clear browser cache if needed</li></ul>
+
+<hr>
+
+<h2>🧪 Test 1: Repository Scanning & Value Calculation</h2>
+
+<h3>Steps:</h3>
+<ol><li class="ol-item">Click <strong>"📡 Scan Repository"</strong> button</li>
+<li class="ol-item">Wait for scan to complete</li>
+<li class="ol-item">Check console for success message</li>
+<li class="ol-item">Verify stats panel updates</li></ol>
+
+<h3>Expected Results:</h3>
+<ul><li class="ul-item">✅ Scan completes without errors</li>
+<li class="ul-item">✅ Total projects count displays</li>
+<li class="ul-item">✅ <strong>💰 Repository Value</strong> section shows dollar amount</li>
+<li class="ul-item">✅ Dev hours calculated and displayed</li>
+<li class="ul-item">✅ Average value per node calculated</li>
+<li class="ul-item">✅ Console shows: <code class="inline-code">✅ Scan complete!</code></li></ul>
+
+<h3>Validation Criteria:</h3>
+<ul><li class="ul-item">Total value > $0</li>
+<li class="ul-item">Dev hours > 0</li>
+<li class="ul-item">Value per node = total value / node count</li>
+<li class="ul-item">Formula: <code class="inline-code">$75/hour <em> devHours </em> statusMultiplier * utilityBonus</code></li></ul>
+
+<hr>
+
+<h2>🧪 Test 2: Connection Analysis & Utility Scores</h2>
+
+<h3>Steps:</h3>
+<ol><li class="ol-item">After scan completes, click <strong>"🔗 Analyze Connections"</strong></li>
+<li class="ol-item">Watch console for analysis messages</li>
+<li class="ol-item">Check nodes for utility score badges</li></ol>
+
+<h3>Expected Results:</h3>
+<ul><li class="ul-item">✅ Connections drawn between related nodes</li>
+<li class="ul-item">✅ Console shows: <code class="inline-code">💰 Utility scores calculated</code></li>
+<li class="ul-item">✅ Nodes display utility score badges:</li></ul>
+<p>  - Gray "P" = Peripheral (0 connections)</p>
+<p>  - Purple number = Utility (1-3 connections)</p>
+<p>  - Orange number = Integration (4-8 connections)</p>
+<p>  - Red number = Core (9+ connections)</p>
+
+<h3>Validation Criteria:</h3>
+<ul><li class="ul-item">Utility score = (incoming * 2) + outgoing</li>
+<li class="ul-item">High-utility nodes have increased value</li>
+<li class="ul-item">Peripheral nodes identified correctly</li></ul>
+
+<hr>
+
+<h2>🧪 Test 3: AI Agent Deployment</h2>
+
+<h3>Steps:</h3>
+<ol><li class="ol-item">Click <strong>"🚀 Deploy AI Agents"</strong> button</li>
+<li class="ol-item">Monitor console output</li>
+<li class="ol-item">Wait for completion alert</li>
+<li class="ol-item">Click <strong>"📋 View Agent Logs"</strong> button</li></ol>
+
+<h3>Expected Results:</h3>
+<ul><li class="ul-item">✅ Console shows: <code class="inline-code">🤖 Deploying AI agents...</code></li>
+<li class="ul-item">✅ Layers analyzed in order:</li></ul>
+<p>  - Layer 1: Peripheral (0 utility)</p>
+<p>  - Layer 2: Utility (1-3)</p>
+<p>  - Layer 3: Integration (4-8)</p>
+<p>  - Layer 4: Core (9+)</p>
+<ul><li class="ul-item">✅ Alert shows summary:</li></ul>
+<p>  - X issues found</p>
+<p>  - X suggestions</p>
+<p>  - $X additional value potential</p>
+<ul><li class="ul-item">✅ Console shows: <code class="inline-code">✅ Agent analysis complete!</code></li>
+<li class="ul-item">✅ Test logs added to nodes</li></ul>
+
+<h3>Agent Analysis Checks:</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>// Console output should include:
+<p>🔍 Layer 1/X: Analyzing Y nodes (peripheral)</p>
+<p>🔍 Layer 2/X: Analyzing Y nodes (utility)</p>
+<p>🔍 Layer 3/X: Analyzing Y nodes (integration)</p>
+<p>🔍 Layer 4/X: Analyzing Y nodes (core)</p>
+
+<p>📊 AGENT ANALYSIS REPORT</p>
+<p>═══════════════════════════════════════</p>
+<p>🔍 Layers analyzed: X</p>
+<p>📁 Total nodes: X</p>
+<p>⚠️ Issues found: X</p>
+<p>💡 Suggestions: X</p>
+<p>🔧 Potential fixes: X</p>
+<p>💰 Additional value potential: $X</p>
+<p>═══════════════════════════════════════</code></pre></p>
+
+<h3>Validation Criteria:</h3>
+<ul><li class="ul-item">All nodes analyzed</li>
+<li class="ul-item">Issues detected for incomplete/problematic files</li>
+<li class="ul-item">Suggestions provided based on layer type</li>
+<li class="ul-item">Potential fixes have time estimates</li>
+<li class="ul-item">Report saved to state.agentReport</li></ul>
+
+<hr>
+
+<h2>🧪 Test 4: Value Visualization</h2>
+
+<h3>Steps:</h3>
+<ol><li class="ol-item">Zoom in on canvas (mouse wheel up or click zoom button)</li>
+<li class="ol-item">Observe node sizes and colors</li>
+<li class="ol-item">Look for value badges above nodes</li>
+<li class="ol-item">Check for gold glow on high-value nodes</li></ol>
+
+<h3>Expected Results:</h3>
+<ul><li class="ul-item">✅ Node size correlates with value:</li></ul>
+<p>  - Larger nodes = higher value</p>
+<p>  - Formula: <code class="inline-code">baseSize + (log(value + 100) / 10) * 2</code></p>
+<ul><li class="ul-item">✅ Value badges show dollar amounts:</li></ul>
+<p>  - Format: <code class="inline-code">$500</code> or <code class="inline-code">$2.5k</code> for 1000+</p>
+<p>  - Gold text on dark background</p>
+<ul><li class="ul-item">✅ High-value nodes (>$1000) have gold glow</li>
+<li class="ul-item">✅ Gold border on nodes valued >$1000</li></ul>
+
+<h3>Validation Criteria:</h3>
+<ul><li class="ul-item">Visual hierarchy matches actual values</li>
+<li class="ul-item">Most expensive node is visually largest</li>
+<li class="ul-item">Peripheral files with high value are easily identifiable</li></ul>
+
+<hr>
+
+<h2>🧪 Test 5: Node Inspector Value Display</h2>
+
+<h3>Steps:</h3>
+<ol><li class="ol-item">Click on any node in the neural network</li>
+<li class="ol-item">Inspect the right panel details</li>
+<li class="ol-item">Verify all value metrics displayed</li></ol>
+
+<h3>Expected Results:</h3>
+<ul><li class="ul-item">✅ <strong>💰 Value Metrics</strong> section shows:</li></ul>
+<p>  - Large gold dollar amount (e.g., $2,450)</p>
+<p>  - Dev Hours (e.g., 32.5 hrs)</p>
+<p>  - Hourly Rate ($75/hr)</p>
+<p>  - Complexity score</p>
+<p>  - Quality Score (% based on comments)</p>
+<p>  - Utility Score</p>
+<p>  - Connection count</p>
+<ul><li class="ul-item">✅ <strong>📊 Code Metrics</strong> section shows:</li></ul>
+<p>  - Total Lines</p>
+<p>  - Code Lines (green)</p>
+<p>  - Comment Lines (blue)</p>
+<p>  - Classes (purple)</p>
+<ul><li class="ul-item">✅ Layer badge displays (Peripheral/Utility/Integration/Core)</li></ul>
+
+<h3>Validation Criteria:</h3>
+<ul><li class="ul-item">All metrics > 0 for analyzed files</li>
+<li class="ul-item">Quality score = (commentLines / codeLines) * 100</li>
+<li class="ul-item">Values match console calculations</li></ul>
+
+<hr>
+
+<h2>🧪 Test 6: Agent Logs & Reports</h2>
+
+<h3>Steps:</h3>
+<ol><li class="ol-item">Click <strong>"📋 View Agent Logs"</strong> button</li>
+<li class="ol-item">Review detailed analysis in inspector panel</li>
+<li class="ol-item">Click <strong>"📊 Export Report"</strong> button</li>
+<li class="ol-item">Open downloaded JSON file</li></ol>
+
+<h3>Expected Results:</h3>
+<ul><li class="ul-item">✅ Inspector shows:</li></ul>
+<p>  - Summary stats (issues, suggestions, value)</p>
+<p>  - Layers organized by priority</p>
+<p>  - Per-node analysis details</p>
+<p>  - Issues list (⚠️ warnings)</p>
+<p>  - Suggestions list (💡 ideas)</p>
+<p>  - Potential fixes with time/value estimates</p>
+<ul><li class="ul-item">✅ Exported report contains:</li></ul>
+<p>  <pre class="code-block json" data-lang="json"><code>{</p>
+<p>    &quot;summary&quot;: {</p>
+<p>      &quot;repository&quot;: &quot;barbrickdesign/GemBotAiWebControl&quot;,</p>
+<p>      &quot;totalValue&quot;: 45000,</p>
+<p>      &quot;totalHours&quot;: 600,</p>
+<p>      &quot;nodeCount&quot;: 50,</p>
+<p>      &quot;timestamp&quot;: &quot;2025-12-16T...&quot;</p>
+<p>    },</p>
+<p>    &quot;agentAnalysis&quot;: {</p>
+<p>      &quot;totalIssues&quot;: 12,</p>
+<p>      &quot;totalSuggestions&quot;: 18,</p>
+<p>      &quot;totalFixes&quot;: 8,</p>
+<p>      &quot;potentialValue&quot;: 5000,</p>
+<p>      &quot;layers&quot;: [...]</p>
+<p>    },</p>
+<p>    &quot;repositoryMetrics&quot;: {...}</p>
+<p>  }</code></pre></p>
+
+<h3>Validation Criteria:</h3>
+<ul><li class="ul-item">Report file downloads successfully</li>
+<li class="ul-item">JSON is valid and parseable</li>
+<li class="ul-item">All expected fields present</li>
+<li class="ul-item">Timestamps accurate</li></ul>
+
+<hr>
+
+<h2>🧪 Test 7: Firebase Integration</h2>
+
+<h3>Steps:</h3>
+<ol><li class="ol-item">Ensure authenticated</li>
+<li class="ol-item">Deploy agents</li>
+<li class="ol-item">Click <strong>"☁️ Sync to Firebase"</strong> button</li>
+<li class="ol-item">Open Firebase Console</li>
+<li class="ol-item">Navigate to Firestore Database</li></ol>
+
+<h3>Expected Results:</h3>
+<ul><li class="ul-item">✅ Console shows: <code class="inline-code">✅ Agent report saved to Firebase: agent<em>report</em>XXXXX</code></li>
+<li class="ul-item">✅ Firestore collections created:</li></ul>
+<p>  - <code class="inline-code">agent_reports</code> - Contains latest analysis</p>
+<p>  - <code class="inline-code">neural<em>networks/main</em>network</code> - Contains node data</p>
+<p>  - <code class="inline-code">project_nodes</code> - Individual node documents</p>
+<p>  - <code class="inline-code">repository_scans</code> - Scan history</p>
+<p>  - <code class="inline-code">test_results</code> - Test run logs</p>
+
+<h3>Firestore Validation:</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>// agent_reports document structure:
+<p>{</p>
+<p>  totalIssues: number,</p>
+<p>  totalSuggestions: number,</p>
+<p>  totalFixes: number,</p>
+<p>  potentialValue: number,</p>
+<p>  layers: array,</p>
+<p>  repositoryValue: object,</p>
+<p>  timestamp: serverTimestamp,</p>
+<p>  userId: string,</p>
+<p>  repo: &quot;owner/repo&quot;</p>
+<p>}</code></pre></p>
+
+<h3>Validation Criteria:</h3>
+<ul><li class="ul-item">All collections exist</li>
+<li class="ul-item">Documents have valid timestamps</li>
+<li class="ul-item">User ID matches authenticated user</li>
+<li class="ul-item">Repository name correct</li></ul>
+
+<hr>
+
+<h2>🧪 Test 8: Value Calculation Accuracy</h2>
+
+<h3>Manual Validation:</h3>
+<ol><li class="ol-item">Select a simple node (e.g., 100 lines, 5 functions)</li>
+<li class="ol-item">Calculate expected value:</li></ol>
+<p>   <pre class="code-block " data-lang="text"><code>codeLines = 100</p>
+<p>   functions = 5</p>
+<p>   complexity = 20 (estimated)</p>
+   
+<p>   devHours = (100 / 12) + (5 * 0.5) = 8.33 + 2.5 = 10.83 hrs</p>
+<p>   complexityMultiplier = 1 + (log(21) / 10) = 1.305</p>
+<p>   devHours *= complexityMultiplier = 14.13 hrs</p>
+   
+<p>   docRatio = 10 / 100 = 0.1</p>
+<p>   docBonus = 1 + 0.1 = 1.1</p>
+<p>   devHours *= docBonus = 15.54 hrs</p>
+   
+<p>   statusMultiplier = 1.2 (if complete)</p>
+<p>   baseValue = 15.54 &lt;em&gt; $75 &lt;/em&gt; 1.2 = $1,398.60</p>
+   
+<p>   dependencyBonus = 1 + (log(3) / 20) = 1.055</p>
+<p>   totalValue = $1,398.60 * 1.055 = ~$1,475</code></pre></p>
+<ol><li class="ol-item">Compare with displayed value</li>
+<li class="ol-item">Verify within ±10% margin</li></ol>
+
+<h3>Validation Criteria:</h3>
+<ul><li class="ul-item">Calculation formula matches implementation</li>
+<li class="ul-item">Values reasonable for industry standards</li>
+<li class="ul-item">$50-150/hour effective rate</li>
+<li class="ul-item">Status multipliers applied correctly</li></ul>
+
+<hr>
+
+<h2>🧪 Test 9: Layer Identification Accuracy</h2>
+
+<h3>Steps:</h3>
+<ol><li class="ol-item">After agent deployment, console log layer breakdown</li>
+<li class="ol-item">Verify node distribution makes sense</li></ol>
+
+<h3>Expected Distribution:</h3>
+<ul><li class="ul-item"><strong>Peripheral (Utility=0):</strong> Standalone pages, demos, isolated features</li>
+<li class="ul-item"><strong>Utility (1-3):</strong> Helper modules, shared components, utilities</li>
+<li class="ul-item"><strong>Integration (4-8):</strong> Core features, main pages, API integrations</li>
+<li class="ul-item"><strong>Core (9+):</strong> Framework files, authentication, database handlers</li></ul>
+
+<h3>Test Each Layer:</h3>
+<ol><li class="ol-item">Click nodes in each layer</li>
+<li class="ol-item">Verify layer badge matches utility score</li>
+<li class="ol-item">Check that suggestions are layer-appropriate:</li></ol>
+<p>   - Peripheral: "Consider promoting to utilities"</p>
+<p>   - Core: "High complexity - refactor recommended"</p>
+
+<h3>Validation Criteria:</h3>
+<ul><li class="ul-item">Layer assignment matches connection count</li>
+<li class="ul-item">Peripheral nodes are truly isolated</li>
+<li class="ul-item">Core nodes have highest connectivity</li>
+<li class="ul-item">Layer colors match (gray/purple/orange/red)</li></ul>
+
+<hr>
+
+<h2>🧪 Test 10: Issue Detection Accuracy</h2>
+
+<h3>Agent Should Detect:</h3>
+<ul><li class="ul-item">✅ No functions detected (static content)</li>
+<li class="ul-item">✅ Marked as incomplete</li>
+<li class="ul-item">✅ Missing dependencies (many functions, no imports)</li>
+<li class="ul-item">✅ High complexity in core files (>100 complexity)</li>
+<li class="ul-item">✅ Low documentation (<10% quality score)</li>
+<li class="ul-item">✅ Duplicate functions across files</li></ul>
+
+<h3>Steps:</h3>
+<ol><li class="ol-item">Deploy agents</li>
+<li class="ol-item">View logs</li>
+<li class="ol-item">Verify each issue type detected appropriately</li></ol>
+
+<h3>Validation Criteria:</h3>
+<ul><li class="ul-item">False positive rate < 20%</li>
+<li class="ul-item">All critical issues identified</li>
+<li class="ul-item">Suggestions actionable</li>
+<li class="ul-item">Potential fixes have realistic time estimates</li></ul>
+
+<hr>
+
+<h2>📊 Success Metrics</h2>
+
+<h3>Must Pass (Critical):</h3>
+<ol><li class="ol-item">✅ All nodes have calculated values > 0</li>
+<li class="ol-item">✅ Total repository value displayed</li>
+<li class="ol-item">✅ Agent deployment completes without errors</li>
+<li class="ol-item">✅ Layers identified correctly</li>
+<li class="ol-item">✅ Firebase logging successful</li>
+<li class="ol-item">✅ Value visualization renders properly</li></ol>
+
+<h3>Should Pass (Important):</h3>
+<ol><li class="ol-item">✅ Value calculations within industry standards</li>
+<li class="ol-item">✅ Issue detection accurate</li>
+<li class="ol-item">✅ Suggestions relevant and helpful</li>
+<li class="ol-item">✅ Reports export successfully</li>
+<li class="ol-item">✅ Utility scores correct</li>
+<li class="ol-item">✅ Node size/color reflects value</li></ol>
+
+<h3>Nice to Have (Optional):</h3>
+<ol><li class="ol-item">✅ Gold glow on high-value nodes</li>
+<li class="ol-item">✅ Agent logs readable and organized</li>
+<li class="ol-item">✅ Potential fixes have accurate time estimates</li>
+<li class="ol-item">✅ Quality scores match documentation coverage</li></ol>
+
+<hr>
+
+<h2>🐛 Known Issues / Expected Warnings</h2>
+
+<h3>Expected Warnings:</h3>
+<ul><li class="ul-item">Some nodes may not fetch content (404 errors) - OK if file moved/deleted</li>
+<li class="ul-item">Peripheral nodes with $0 value - OK for static HTML with no logic</li>
+<li class="ul-item">Missing screenshots - Feature not yet implemented</li></ul>
+
+<h3>Not Bugs:</h3>
+<ul><li class="ul-item">High complexity warnings - This is correct for large files</li>
+<li class="ul-item">Low documentation warnings - Accurate if comments are sparse</li>
+<li class="ul-item">Duplicate function warnings - Valid if functions repeated across files</li></ul>
+
+<hr>
+
+<h2>📝 Test Results Template</h2>
+
+<pre class="code-block " data-lang="text"><code>Test Date: &lt;strong&gt;&lt;em&gt;&lt;em&gt;&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;&lt;/em&gt;&lt;/strong&gt;_
+<p>Tester: &lt;strong&gt;&lt;em&gt;&lt;em&gt;&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;&lt;/em&gt;&lt;/strong&gt;_</p>
+
+<p>Test 1 - Scanning: [ PASS / FAIL ]</p>
+<p>Test 2 - Connections: [ PASS / FAIL ]</p>
+<p>Test 3 - AI Agents: [ PASS / FAIL ]</p>
+<p>Test 4 - Visualization: [ PASS / FAIL ]</p>
+<p>Test 5 - Inspector: [ PASS / FAIL ]</p>
+<p>Test 6 - Reports: [ PASS / FAIL ]</p>
+<p>Test 7 - Firebase: [ PASS / FAIL ]</p>
+<p>Test 8 - Value Accuracy: [ PASS / FAIL ]</p>
+<p>Test 9 - Layer ID: [ PASS / FAIL ]</p>
+<p>Test 10 - Issues: [ PASS / FAIL ]</p>
+
+<p>Overall Status: [ PASS / FAIL ]</p>
+
+<p>Notes:</p>
+<p>&lt;strong&gt;&lt;em&gt;&lt;em&gt;&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;&lt;em&gt;&lt;/em&gt;&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;&lt;em&gt;&lt;em&gt;&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;&lt;em&gt;&lt;/em&gt;&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;_&lt;/strong&gt;</p>
+<p>&lt;strong&gt;&lt;em&gt;&lt;em&gt;&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;&lt;em&gt;&lt;/em&gt;&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;&lt;em&gt;&lt;em&gt;&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;&lt;em&gt;&lt;/em&gt;&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;_&lt;/strong&gt;</p>
+<p>&lt;strong&gt;&lt;em&gt;&lt;em&gt;&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;&lt;em&gt;&lt;/em&gt;&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;&lt;em&gt;&lt;em&gt;&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;&lt;em&gt;&lt;/em&gt;&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;_&lt;/strong&gt;</code></pre></p>
+
+<hr>
+
+<h2>🚀 Next Steps After Testing</h2>
+
+<ol><li class="ol-item">✅ If all tests pass → Mark feature complete</li>
+<li class="ol-item">✅ Deploy to production</li>
+<li class="ol-item">✅ Document for Merlin AI integration</li>
+<li class="ol-item">✅ Train AI on repository value data</li>
+<li class="ol-item">✅ Create developer compensation reports</li>
+<li class="ol-item">✅ Scan additional repositories</li>
+<li class="ol-item">✅ Build automated enhancement system</li></ol>
+
+<hr>
+
+<h2>💡 Future Enhancements</h2>
+
+<ul><li class="ul-item"><strong>Real-time Monitoring:</strong> Track value changes over time</li>
+<li class="ul-item"><strong>Comparative Analysis:</strong> Compare repos against each other</li>
+<li class="ul-item"><strong>AI Predictions:</strong> Predict future value based on velocity</li>
+<li class="ul-item"><strong>Automated PR Creation:</strong> Agents create PRs for suggested fixes</li>
+<li class="ul-item"><strong>Team Analytics:</strong> Value contribution per developer</li>
+<li class="ul-item"><strong>Market Rate Integration:</strong> Adjust hourly rate by skill level</li></ul>
+
+<hr>
+
+<p><strong>Test Suite Version:</strong> 1.0  </p>
+<p><strong>Last Updated:</strong> December 16, 2025  </p>
+<p><strong>Maintainer:</strong> Ryan Barbrick / Barbrick Design  </p>
+<p><strong>Contact:</strong> BarbrickDesign@gmail.com</p>
+
+        <div class="generated-notice">
+            🤖 Auto-generated from NEURAL_DASHBOARD_TEST_SUITE.md by GemBot Neural Dashboard Agent<br>
+            Generated: 2025-12-16T13:52:18.968Z
+        </div>
+    </div>
+</body>
+</html>

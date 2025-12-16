@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GEMBOT_WEB_SETUP - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        <h1>GemBot Web Control Interface</h1>
+
+<p>A professional, mobile-responsive web application for controlling the GemBot automated gem cutting machine via USB serial connection. Features real-time serial communication, virtual touch controls, and a comprehensive dashboard.</p>
+
+<h2>Features</h2>
+
+<p>✅ <strong>USB Serial Connection</strong></p>
+<ul><li class="ul-item">Automatic Arduino port detection</li>
+<li class="ul-item">9600 baud rate communication</li>
+<li class="ul-item">Real-time data streaming</li></ul>
+
+<p>✅ <strong>Control Interface</strong></p>
+<ul><li class="ul-item">Directional pad (Up, Down, Left, Right, Enter)</li>
+<li class="ul-item">Quick command buttons for common operations</li>
+<li class="ul-item">Menu navigation controls</li>
+<li class="ul-item">Settings, Design, Preform, Cut, and Polish functions</li></ul>
+
+<p>✅ <strong>Serial Monitor</strong></p>
+<ul><li class="ul-item">Real-time data display</li>
+<li class="ul-item">Command logging</li>
+<li class="ul-item">Timestamp tracking</li>
+<li class="ul-item">Scrollable message history</li>
+<li class="ul-item">Send custom commands directly</li></ul>
+
+<p>✅ <strong>Device Status Dashboard</strong></p>
+<ul><li class="ul-item">Connection status indicator</li>
+<li class="ul-item">Port information</li>
+<li class="ul-item">Baud rate display</li>
+<li class="ul-item">Data received counter</li></ul>
+
+<p>✅ <strong>Mobile Responsive</strong></p>
+<ul><li class="ul-item">Works on tablets and smartphones</li>
+<li class="ul-item">Touch-friendly button sizing</li>
+<li class="ul-item">Responsive grid layouts</li>
+<li class="ul-item">Optimized for various screen sizes</li></ul>
+
+<p>✅ <strong>Multiple Connection Options</strong></p>
+<ol><li class="ol-item"><strong>Browser Serial API</strong> (Chrome/Edge/Opera) - Direct USB connection</li>
+<li class="ol-item"><strong>WebSocket Server</strong> (Node.js) - Network-based bridge</li></ol>
+
+<h2>Installation & Setup</h2>
+
+<h3>Option 1: Browser Serial API (Direct Connection)</h3>
+
+<p><strong>Requirements:</strong></p>
+<ul><li class="ul-item">Chrome, Edge, or Opera browser (version 89+)</li>
+<li class="ul-item">USB cable connecting GemBot to computer</li></ul>
+
+<p><strong>Steps:</strong></p>
+<ol><li class="ol-item">Open <code class="inline-code">GemBot<em>Web</em>Control.html</code> directly in your browser</li>
+<li class="ol-item">Click "Scan Ports" to detect connected Arduino boards</li>
+<li class="ol-item">Select your port from the dropdown</li>
+<li class="ol-item">Click "Connect"</li>
+<li class="ol-item">Start controlling your GemBot!</li></ol>
+
+<p><strong>Advantages:</strong></p>
+<ul><li class="ul-item">No server required</li>
+<li class="ul-item">Works offline</li>
+<li class="ul-item">Direct, low-latency connection</li>
+<li class="ul-item">Cross-device control (share link with other devices on same network)</li></ul>
+
+<p><strong>Limitations:</strong></p>
+<ul><li class="ul-item">Desktop browsers only</li>
+<li class="ul-item">Not available on mobile Safari or Firefox</li>
+<li class="ul-item">USB device must be plugged into the computer running the browser</li></ul>
+
+<h3>Option 2: WebSocket Server Bridge (Recommended for Networks)</h3>
+
+<p>This option allows you to control your GemBot from any device on your network, or remotely via the internet.</p>
+
+<p><strong>Requirements:</strong></p>
+<ul><li class="ul-item">Node.js (v14 or higher)</li>
+<li class="ul-item">npm (v6 or higher)</li>
+<li class="ul-item">USB connection to Arduino on server machine</li></ul>
+
+<p><strong>Installation Steps:</strong></p>
+
+<ol><li class="ol-item"><strong>Install Node.js</strong></li></ol>
+<p>   - Download from https://nodejs.org/</p>
+<p>   - Install the LTS version</p>
+
+<ol><li class="ol-item"><strong>Install Dependencies</strong></li></ol>
+<p>   <pre class="code-block powershell" data-lang="powershell"><code>cd c:\Users\barbr\Desktop\GemBotMemory2025</p>
+<p>   npm install</code></pre></p>
+
+<ol><li class="ol-item"><strong>Start the Server</strong></li></ol>
+<p>   <pre class="code-block powershell" data-lang="powershell"><code>npm start</code></pre></p>
+   
+<p>   Or with auto-reload during development:</p>
+<p>   <pre class="code-block powershell" data-lang="powershell"><code>npm install --save-dev nodemon</p>
+<p>   npm run dev</code></pre></p>
+
+<ol><li class="ol-item"><strong>Open in Browser</strong></li></ol>
+<p>   - Open http://localhost:3000 in your browser</p>
+<p>   - Click "Scan Ports" to find your GemBot</p>
+<p>   - Select port and click "Connect"</p>
+<p>   - Use the control interface</p>
+
+<ol><li class="ol-item"><strong>Access from Other Devices</strong></li></ol>
+<p>   - Find your computer's IP address:</p>
+<p>     <pre class="code-block powershell" data-lang="powershell"><code>ipconfig</code></pre></p>
+<p>     Look for "IPv4 Address" (e.g., 192.168.1.100)</p>
+   
+<p>   - From other devices on the same network:</p>
+<p>     <pre class="code-block " data-lang="text"><code>http://192.168.1.100:3000</code></pre></p>
+
+<ol><li class="ol-item"><strong>Internet Access (Optional)</strong></li></ol>
+<p>   - Use a service like ngrok or Cloudflare Tunnel</p>
+<p>   - Or deploy to a VPS with your own domain</p>
+
+<h2>File Structure</h2>
+
+<pre class="code-block " data-lang="text"><code>GemBotMemory2025/
+<p>├── GemBot&lt;em&gt;Web&lt;/em&gt;Control.html      # Main web interface (Browser API)</p>
+<p>├── server.js                     # Node.js WebSocket server</p>
+<p>├── package.json                  # Node.js dependencies</p>
+<p>├── GEMBOT&lt;em&gt;WEB&lt;/em&gt;SETUP.md          # This file</p>
+<p>└── /public/                      # (Optional) Place HTML here for server</p>
+<p>    └── index.html               # Copy of GemBot&lt;em&gt;Web&lt;/em&gt;Control.html</code></pre></p>
+
+<h2>Usage Guide</h2>
+
+<h3>Control Pad</h3>
+
+<p>The virtual control pad mirrors the physical Nextion touch screen:</p>
+
+<pre class="code-block " data-lang="text"><code>▲ UP
+<p>   ◄ LEFT ✓ ENTER ► RIGHT</p>
+<p>        ▼ DOWN</code></pre></p>
+
+<ul><li class="ul-item"><strong>UP/DOWN/LEFT/RIGHT</strong>: Navigate menus and options</li>
+<li class="ul-item"><strong>ENTER</strong>: Confirm selections</li>
+<li class="ul-item"><strong>EXIT</strong>: Go back/exit current menu</li></ul>
+
+<h3>Quick Commands</h3>
+
+<p>One-click access to common operations:</p>
+<ul><li class="ul-item"><strong>Settings</strong>: Open device settings</li>
+<li class="ul-item"><strong>Design</strong>: Enter design mode</li>
+<li class="ul-item"><strong>Preform</strong>: Start preforming operation</li>
+<li class="ul-item"><strong>Cut Gem</strong>: Begin cutting process</li>
+<li class="ul-item"><strong>Polish</strong>: Polish the gem</li>
+<li class="ul-item"><strong>Calibrate</strong>: Run calibration routine</li></ul>
+
+<h3>Serial Monitor</h3>
+
+<p><strong>Receiving Data:</strong></p>
+<ul><li class="ul-item">All data from the Arduino is displayed in real-time</li>
+<li class="ul-item">Timestamps show exactly when each message arrived</li>
+<li class="ul-item">Messages are color-coded by type:</li></ul>
+<p>  - <code class="inline-code">[DATA]</code>: Incoming device data (green)</p>
+<p>  - <code class="inline-code">[SENT]</code>: Commands you sent (blue)</p>
+<p>  - <code class="inline-code">[✓]</code>: Success messages (green)</p>
+<p>  - <code class="inline-code">[!]</code>: Warnings (yellow)</p>
+<p>  - <code class="inline-code">[✗]</code>: Errors (red)</p>
+
+<p><strong>Sending Commands:</strong></p>
+<ul><li class="ul-item">Type raw commands directly in the input field</li>
+<li class="ul-item">Press Enter or click "Send" to transmit</li>
+<li class="ul-item">Useful for debugging and advanced control</li></ul>
+
+<p><strong>Example Commands:</strong></p>
+<ul><li class="ul-item"><code class="inline-code">page 0</code> - Load page 0 on Nextion display</li>
+<li class="ul-item"><code class="inline-code">page 14\xFF\xFF\xFF</code> - Load page 14 with proper terminator</li>
+<li class="ul-item">Custom JSON or serial protocols specific to your device</li></ul>
+
+<h3>Status Dashboard</h3>
+
+<p>Monitor device status in real-time:</p>
+<ul><li class="ul-item"><strong>Connection Status</strong>: Connected/Disconnected</li>
+<li class="ul-item"><strong>Selected Port</strong>: Which COM port is in use</li>
+<li class="ul-item"><strong>Baud Rate</strong>: Communication speed (9600)</li>
+<li class="ul-item"><strong>Data Received</strong>: Total bytes received from device</li></ul>
+
+<h2>Device Communication Protocol</h2>
+
+<p>The GemBot uses a simple text-based serial protocol at 9600 baud.</p>
+
+<h3>Message Format</h3>
+
+<p><strong>Device → Computer (Input)</strong></p>
+<pre class="code-block " data-lang="text"><code>Single characters or strings terminated by newline
+<p>Examples:</p>
+<ul><li class="ul-item">Individual key presses: &quot;0&quot;, &quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;8&quot;</li>
+<li class="ul-item">Page navigation: &quot;page 0&quot;, &quot;page 14&quot;</code></pre></li></ul>
+
+<p><strong>Computer → Device (Output)</strong></p>
+<pre class="code-block " data-lang="text"><code>Commands as strings (match device expectations)
+<p>Examples:</p>
+<ul><li class="ul-item">&quot;0&quot;           # Enter/Confirm</li>
+<li class="ul-item">&quot;1&quot;           # Left arrow</li>
+<li class="ul-item">&quot;3&quot;           # Right arrow</li>
+<li class="ul-item">&quot;page 14&quot;     # Load UI page</code></pre></li></ul>
+
+<h3>Command Reference</h3>
+
+<p>| Command | Function |</p>
+<p>|---------|----------|</p>
+<p>| <code class="inline-code">0</code> | Enter/Confirm |</p>
+<p>| <code class="inline-code">1</code> | Navigate Left |</p>
+<p>| <code class="inline-code">2</code> | Exit/Back |</p>
+<p>| <code class="inline-code">3</code> | Navigate Right |</p>
+<p>| <code class="inline-code">8</code> | Print Menu |</p>
+<p>| <code class="inline-code">page N</code> | Load display page N |</p>
+<p>| <code class="inline-code">page N\xFF\xFF\xFF</code> | Load page with Nextion terminator |</p>
+
+<p>For a complete command list, review the Arduino code in <code class="inline-code">GemBotArduinoMemoryUpgrade2025<em>copy</em>20251201233437.ino</code>.</p>
+
+<h2>Troubleshooting</h2>
+
+<h3>"No USB devices found"</h3>
+<ul><li class="ul-item">Ensure GemBot is connected via USB</li>
+<li class="ul-item">Try a different USB port or cable</li>
+<li class="ul-item">Check Device Manager to see if Arduino appears</li>
+<li class="ul-item">On Windows, you may need to install CH340 drivers</li></ul>
+
+<h3>Port appears but won't connect</h3>
+<ul><li class="ul-item">Make sure no other applications are using the serial port</li>
+<li class="ul-item">Close Arduino IDE if it's open</li>
+<li class="ul-item">Try disconnecting and reconnecting USB</li>
+<li class="ul-item">Verify the Arduino sketch is uploaded and running</li></ul>
+
+<h3>Serial API not available</h3>
+<ul><li class="ul-item">Use Chrome, Edge, or Opera (not Firefox or Safari)</li>
+<li class="ul-item">Update your browser to the latest version</li>
+<li class="ul-item">Use the WebSocket server option instead</li></ul>
+
+<h3>Data not appearing in monitor</h3>
+<ul><li class="ul-item">Verify 9600 baud rate matches your Arduino configuration</li>
+<li class="ul-item">Check that the Arduino sketch includes Serial.begin(9600)</li>
+<li class="ul-item">Use Arduino IDE Serial Monitor to verify device output</li>
+<li class="ul-item">Try pressing keys on the physical Nextion display</li></ul>
+
+<h3>WebSocket Server won't start</h3>
+<ul><li class="ul-item">Verify Node.js is installed: <code class="inline-code">node --version</code></li>
+<li class="ul-item">Check that port 3000 is not in use</li>
+<li class="ul-item">Run: <code class="inline-code">netstat -ano | findstr :3000</code></li>
+<li class="ul-item">If in use, stop that process or change PORT in server.js</li></ul>
+
+<h3>Can't connect from other devices</h3>
+<ul><li class="ul-item">Verify both devices are on same network</li>
+<li class="ul-item">Check Windows Firewall (port 3000 may need to be open)</li>
+<li class="ul-item">Use your computer's IP address, not localhost</li>
+<li class="ul-item">Find IP with: <code class="inline-code">ipconfig</code> (look for IPv4 Address)</li></ul>
+
+<h2>Security Notes</h2>
+
+<p>⚠️ <strong>Important for Remote Access:</strong></p>
+
+<p>If exposing this interface to the internet:</p>
+<ol><li class="ol-item">Add authentication (username/password)</li>
+<li class="ol-item">Use HTTPS/WSS (encrypted connections)</li>
+<li class="ol-item">Implement rate limiting</li>
+<li class="ol-item">Use a VPN for remote access</li>
+<li class="ol-item">Never expose directly to the internet without authentication</li></ol>
+
+<p>For local network only, the current setup is fine.</p>
+
+<h2>Browser Compatibility</h2>
+
+<p>| Browser | Serial API | WebSocket | Recommended |</p>
+<p>|---------|-----------|-----------|-------------|</p>
+<p>| Chrome 89+ | ✅ | ✅ | Best |</p>
+<p>| Edge 89+ | ✅ | ✅ | Best |</p>
+<p>| Opera 75+ | ✅ | ✅ | Good |</p>
+<p>| Firefox | ❌ | ✅ | Server mode |</p>
+<p>| Safari | ❌ | ✅ | Server mode |</p>
+<p>| Mobile Chrome | ❌ | ✅ | Server mode |</p>
+<p>| Mobile Safari | ❌ | ❌ | Limited |</p>
+
+<p><strong>Note:</strong> Mobile browsers can use the WebSocket server on a desktop. They cannot use direct Serial API.</p>
+
+<h2>Performance Optimization</h2>
+
+<h3>For Large Data Streams</h3>
+<ul><li class="ul-item">Increase buffer size if experiencing data loss</li>
+<li class="ul-item">In server.js, adjust parser settings</li>
+<li class="ul-item">Monitor CPU usage on the server machine</li></ul>
+
+<h3>For Network Lag</h3>
+<ul><li class="ul-item">Keep server on same local network as clients</li>
+<li class="ul-item">Close other applications using bandwidth</li>
+<li class="ul-item">Consider wired Ethernet connection for server</li></ul>
+
+<h3>For Multiple Clients</h3>
+<ul><li class="ul-item">Current server supports unlimited WebSocket connections</li>
+<li class="ul-item">Each client gets independent control</li>
+<li class="ul-item">Implement message queuing if conflicts occur</li></ul>
+
+<h2>Advanced Configuration</h2>
+
+<h3>Changing Baud Rate</h3>
+
+<p><strong>In HTML file (Serial API):</strong></p>
+<pre class="code-block javascript" data-lang="javascript"><code>// Line in openPort() function
+<p>await this.port.open({ baudRate: 115200 }); // Change 9600 to desired rate</code></pre></p>
+
+<p><strong>In server.js (WebSocket):</strong></p>
+<pre class="code-block javascript" data-lang="javascript"><code>// Line 11
+<p>const BAUD_RATE = 115200; // Change 9600 to desired rate</code></pre></p>
+
+<h3>Custom Port Configuration</h3>
+
+<p><strong>Serial API:</strong></p>
+<pre class="code-block javascript" data-lang="javascript"><code>await this.port.open({
+<p>    baudRate: 9600,</p>
+<p>    dataBits: 8,</p>
+<p>    stopBits: 1,</p>
+<p>    parity: &#039;none&#039;,</p>
+<p>    flowControl: &#039;none&#039;</p>
+<p>});</code></pre></p>
+
+<h3>Environment Variables (Server)</h3>
+
+<p>Create <code class="inline-code">.env</code> file:</p>
+<pre class="code-block " data-lang="text"><code>PORT=3000
+<p>BAUD_RATE=9600</p>
+<p>SERIAL_TIMEOUT=5000</code></pre></p>
+
+<h2>API Reference (WebSocket Server)</h2>
+
+<h3>Connection Messages</h3>
+
+<p><strong>Connect Command:</strong></p>
+<pre class="code-block json" data-lang="json"><code>{
+<p>  &quot;command&quot;: &quot;connect&quot;,</p>
+<p>  &quot;data&quot;: { &quot;port&quot;: &quot;/dev/ttyUSB0&quot; }</p>
+<p>}</code></pre></p>
+
+<p><strong>List Ports:</strong></p>
+<pre class="code-block json" data-lang="json"><code>{
+<p>  &quot;command&quot;: &quot;list-ports&quot;</p>
+<p>}</code></pre></p>
+
+<p><strong>Send Data:</strong></p>
+<pre class="code-block json" data-lang="json"><code>{
+<p>  &quot;command&quot;: &quot;send&quot;,</p>
+<p>  &quot;data&quot;: { &quot;content&quot;: &quot;page 0\xFF\xFF\xFF&quot; }</p>
+<p>}</code></pre></p>
+
+<p><strong>Disconnect:</strong></p>
+<pre class="code-block json" data-lang="json"><code>{
+<p>  &quot;command&quot;: &quot;disconnect&quot;</p>
+<p>}</code></pre></p>
+
+<h3>Response Messages</h3>
+
+<p><strong>Connection Status:</strong></p>
+<pre class="code-block json" data-lang="json"><code>{
+<p>  &quot;type&quot;: &quot;connection&quot;,</p>
+<p>  &quot;data&quot;: { &quot;status&quot;: &quot;connected&quot;, &quot;port&quot;: &quot;/dev/ttyUSB0&quot; },</p>
+<p>  &quot;timestamp&quot;: &quot;2025-12-02T12:00:00.000Z&quot;</p>
+<p>}</code></pre></p>
+
+<p><strong>Data Received:</strong></p>
+<pre class="code-block json" data-lang="json"><code>{
+<p>  &quot;type&quot;: &quot;data&quot;,</p>
+<p>  &quot;data&quot;: { &quot;content&quot;: &quot;Device response here&quot; },</p>
+<p>  &quot;timestamp&quot;: &quot;2025-12-02T12:00:00.000Z&quot;</p>
+<p>}</code></pre></p>
+
+<p><strong>Error:</strong></p>
+<pre class="code-block json" data-lang="json"><code>{
+<p>  &quot;type&quot;: &quot;error&quot;,</p>
+<p>  &quot;data&quot;: { &quot;message&quot;: &quot;Error description&quot; },</p>
+<p>  &quot;timestamp&quot;: &quot;2025-12-02T12:00:00.000Z&quot;</p>
+<p>}</code></pre></p>
+
+<h2>Future Enhancements</h2>
+
+<p>Planned features for v2.0:</p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> WiFi connection support (via Nextion's network integration)</li>
+<li class="checkbox"><input type="checkbox" disabled> Data logging and export (CSV, JSON)</li>
+<li class="checkbox"><input type="checkbox" disabled> Recording and playback of control sequences</li>
+<li class="checkbox"><input type="checkbox" disabled> Real-time video feed integration</li>
+<li class="checkbox"><input type="checkbox" disabled> Temperature and sensor monitoring graphs</li>
+<li class="checkbox"><input type="checkbox" disabled> Parameter presets and saving</li>
+<li class="checkbox"><input type="checkbox" disabled> Multi-device management</li>
+<li class="checkbox"><input type="checkbox" disabled> Mobile app (PWA - Progressive Web App)</li>
+<li class="checkbox"><input type="checkbox" disabled> Dark mode theme</li>
+<li class="checkbox"><input type="checkbox" disabled> Gesture controls for mobile</li></ul>
+
+<h2>License</h2>
+
+<p>MIT License - See LICENSE file for details</p>
+
+<h2>Support</h2>
+
+<p>For issues or questions:</p>
+<ol><li class="ol-item">Check the Troubleshooting section</li>
+<li class="ol-item">Review the Arduino code comments</li>
+<li class="ol-item">Check browser console for JavaScript errors (F12)</li>
+<li class="ol-item">Verify device is working with Arduino IDE Serial Monitor</li></ol>
+
+<h2>Version History</h2>
+
+<p><strong>v1.0.0</strong> (2025-12-02)</p>
+<ul><li class="ul-item">Initial release</li>
+<li class="ul-item">Serial API support (Chrome/Edge/Opera)</li>
+<li class="ul-item">WebSocket server option</li>
+<li class="ul-item">Real-time serial monitoring</li>
+<li class="ul-item">Virtual control pad</li>
+<li class="ul-item">Mobile responsive design</li>
+<li class="ul-item">Status dashboard</li></ul>
+
+<hr>
+
+<p><strong>Created by:</strong> GemBot Development Team  </p>
+<p><strong>Last Updated:</strong> December 2, 2025  </p>
+<p><strong>Arduino Target:</strong> Arduino Mega 2560 + Nextion Display</p>
+
+        <div class="generated-notice">
+            🤖 Auto-generated from GEMBOT_WEB_SETUP.md by GemBot Neural Dashboard Agent<br>
+            Generated: 2025-12-16T13:52:10.063Z
+        </div>
+    </div>
+</body>
+</html>

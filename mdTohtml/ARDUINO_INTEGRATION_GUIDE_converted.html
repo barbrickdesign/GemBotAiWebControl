@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARDUINO_INTEGRATION_GUIDE - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        <h1>GemBot Arduino Integration Guide</h1>
+
+<p><strong>Status:</strong> Integration & Troubleshooting Guide  </p>
+<p><strong>Target Hardware:</strong> Arduino Mega 2560  </p>
+<p><strong>Display:</strong> Nextion Serial Display (Serial1: pins 18/19)  </p>
+<p><strong>Web Interface:</strong> GemBot<em>Web</em>Control_DualMode.html  </p>
+<p><strong>Date:</strong> December 2, 2025</p>
+
+<hr>
+
+<h2>🔴 Current Issues & Solutions</h2>
+
+<h3>Issue 1: WebSocket Server Connection Failed</h3>
+<p><strong>Error:</strong> <code class="inline-code">Connection timeout</code> at localhost:3000</p>
+
+<p><strong>Causes:</strong></p>
+<ul><li class="ul-item">Node.js server not running</li>
+<li class="ul-item">Server running on different port</li>
+<li class="ul-item">Server crashed or not started</li>
+<li class="ul-item">Firewall blocking port 3000</li></ul>
+
+<p><strong>Solutions:</strong></p>
+<ol><li class="ol-item"><strong>Start the server manually:</strong></li></ol>
+<p>   <pre class="code-block bash" data-lang="bash"><code>npm install</p>
+<p>   npm start</code></pre></p>
+
+<ol><li class="ol-item"><strong>Verify server is running:</strong></li></ol>
+<p>   - Check console: Should say <code class="inline-code">Server running on port 3000</code></p>
+<p>   - Open browser: http://localhost:3000 (should show page)</p>
+
+<ol><li class="ol-item"><strong>Check if port 3000 is in use:</strong></li></ol>
+<p>   <pre class="code-block powershell" data-lang="powershell"><code>netstat -ano | findstr :3000</code></pre></p>
+
+<ol><li class="ol-item"><strong>Kill process using port 3000:</strong></li></ol>
+<p>   <pre class="code-block powershell" data-lang="powershell"><code>taskkill /PID &lt;PID&gt; /F</code></pre></p>
+
+<hr>
+
+<h3>Issue 2: Serial Port Connection Failed</h3>
+<p><strong>Error:</strong> <code class="inline-code">Failed to execute 'open' on 'SerialPort': Failed to open serial port</code></p>
+
+<p><strong>Causes:</strong></p>
+<ul><li class="ul-item">Arduino not properly connected via USB</li>
+<li class="ul-item">Wrong COM port selected</li>
+<li class="ul-item">Arduino drivers not installed</li>
+<li class="ul-item">Serial port already open by another application</li>
+<li class="ul-item">Baud rate mismatch</li></ul>
+
+<p><strong>Solutions:</strong></p>
+
+<h4>A. Verify Hardware Connection</h4>
+<ol><li class="ol-item"><strong>Check USB cable:</strong> Use known-working USB cable</li>
+<li class="ol-item"><strong>Check COM port appears in Device Manager:</strong></li></ol>
+<p>   - Windows: Devices & Printers → COM Ports</p>
+<p>   - Should see: "Arduino Mega 2560" or "CH340" device</p>
+
+<h4>B. Install Arduino Drivers</h4>
+<p>If COM port doesn't appear:</p>
+<ol><li class="ol-item">Download CH340 drivers (if using compatible board):</li></ol>
+<p>   - http://www.wch.cn/downloads/CH341SER_EXE.html</p>
+<ol><li class="ol-item">Or install official Arduino IDE (includes drivers)</li></ol>
+
+<h4>C. Verify Browser Support</h4>
+<ul><li class="ul-item"><strong>Chrome/Edge/Opera:</strong> Support Serial API ✅</li>
+<li class="ul-item"><strong>Firefox/Safari:</strong> Use WebSocket mode only ❌ (no Serial API)</li></ul>
+
+<h4>D. Disable Other Applications</h4>
+<ul><li class="ul-item">Close Arduino IDE serial monitor</li>
+<li class="ul-item">Close PuTTY, Tera Term, or other serial tools</li>
+<li class="ul-item">Close any application using COM port</li></ul>
+
+<h4>E. Refresh Port List</h4>
+<ol><li class="ol-item">Disconnect Arduino</li>
+<li class="ol-item">Click "Scan Ports" (should show empty)</li>
+<li class="ol-item">Reconnect Arduino</li>
+<li class="ol-item">Click "Scan Ports" again (should appear)</li></ol>
+
+<hr>
+
+<h2>🟢 Arduino Sketch Analysis</h2>
+
+<h3>Current Configuration</h3>
+
+<p><strong>Serial Ports:</strong></p>
+<pre class="code-block cpp" data-lang="cpp"><code>Serial.begin(9600);           // USB debugging (COM port visible to browser)
+<p>Serial1.begin(9600);          // Nextion display (pins 18/19)</p>
+<p>// Serial2 available for future expansion</code></pre></p>
+
+<p><strong>Pin Mapping:</strong></p>
+<ul><li class="ul-item"><strong>D0-D3 (pins 11,7,9,8):</strong> Index motor control</li>
+<li class="ul-item"><strong>D11,D12:</strong> Enable pins for index motor</li>
+<li class="ul-item"><strong>D22-D24:</strong> Limit switches (P, X, Y)</li>
+<li class="ul-item"><strong>D2-D7:</strong> Other limit switches</li>
+<li class="ul-item"><strong>D30-D36:</strong> Keypad pins</li>
+<li class="ul-item"><strong>D34-D36:</strong> Keypad columns</li>
+<li class="ul-item"><strong>D30-D33:</strong> Keypad rows</li>
+<li class="ul-item"><strong>A4/A5:</strong> I2C (LCD display)</li></ul>
+
+<p><strong>Motor Control:</strong></p>
+<pre class="code-block cpp" data-lang="cpp"><code>// Motor Shield 1 (AFMS) - 5V
+<p>Adafruit_StepperMotor *YaxisMotor = AFMS.getStepper(200, 2);</p>
+
+<p>// Motor Shield 2 (AFMS2) - 12V</p>
+<p>Adafruit_StepperMotor *PaxisMotor = AFMS2.getStepper(200, 1);</p>
+<p>Adafruit_StepperMotor *XaxisMotor = AFMS2.getStepper(200, 2);</code></pre></p>
+
+<hr>
+
+<h2>📡 Serial Communication Protocol</h2>
+
+<h3>From Web Interface → Arduino</h3>
+
+<p>The sketch listens on <code class="inline-code">Serial</code> (USB) for commands in the <code class="inline-code">getKey()</code> function:</p>
+
+<p><strong>Control Commands (Single Character):</strong></p>
+<pre class="code-block " data-lang="text"><code>&#039;0&#039; = Enter/Start
+<p>&#039;1&#039; = Left</p>
+<p>&#039;2&#039; = Exit</p>
+<p>&#039;3&#039; = Right</p>
+<p>&#039;8&#039; = Print menu (currently unused in web interface)</code></pre></p>
+
+<p><strong>Movement Commands (Sent via Serial):</strong></p>
+<pre class="code-block " data-lang="text"><code>&#039;d&#039; = Move X axis left
+<p>&#039;f&#039; = Move X axis right</p>
+<p>&#039;e&#039; = Move Y axis up</p>
+<p>&#039;i&#039; = Move Y axis down</p>
+<p>&#039;c&#039; = Step index motor forward</p>
+<p>&#039;b&#039; = Step index motor backward</p>
+<p>&#039;a&#039; = Home calibration</p>
+<p>&#039;p&#039; = Decrease stone width</p>
+<p>&#039;o&#039; = Increase stone width</p>
+<p>&#039;q&#039; = Increase desired width</p>
+<p>&#039;r&#039; = Decrease desired width</code></pre></p>
+
+<p><strong>Nextion Display Commands (Serial1):</strong></p>
+<pre class="code-block cpp" data-lang="cpp"><code>Serial1.print(&quot;page N&quot;);        // Go to page N (0-18)
+<p>Serial1.print(&quot;\xFF\xFF\xFF&quot;);  // Nextion terminator (required)</code></pre></p>
+
+<h3>From Arduino → Web Interface</h3>
+
+<p>The sketch outputs JSON status via <code class="inline-code">Serial.println()</code>:</p>
+
+<p><strong>Current Format (JSON):</strong></p>
+<pre class="code-block json" data-lang="json"><code>{
+<p>  &quot;shape&quot;: &quot;Round&quot;,</p>
+<p>  &quot;design&quot;: &quot;32 Fold&quot;,</p>
+<p>  &quot;facet&quot;: 1,</p>
+<p>  &quot;angle&quot;: 51.0,</p>
+<p>  &quot;index&quot;: 4,</p>
+<p>  &quot;stage&quot;: &quot;Preform&quot;,</p>
+<p>  &quot;calib&quot;: {</p>
+<p>    &quot;x&quot;: 1000,</p>
+<p>    &quot;y&quot;: 2500</p>
+<p>  },</p>
+<p>  &quot;tip&quot;: &quot;Ready to cut girdle facets&quot;</p>
+<p>}</code></pre></p>
+
+<hr>
+
+<h2>✅ Recommended Arduino Code Modifications</h2>
+
+<h3>1. Add Baud Rate Check Function</h3>
+
+<p><strong>Add after <code class="inline-code">setup()</code> function:</strong></p>
+
+<pre class="code-block cpp" data-lang="cpp"><code>// Verify Serial communication is working
+<p>void verifySerialConnection() {</p>
+<p>  Serial.println(&quot;=== GemBot Serial Connection Test ===&quot;);</p>
+<p>  Serial.println(&quot;Device: Arduino Mega 2560&quot;);</p>
+<p>  Serial.println(&quot;Baud Rate: 9600&quot;);</p>
+<p>  Serial.println(&quot;Status: CONNECTED&quot;);</p>
+<p>  Serial.println(&quot;Ready for web interface commands&quot;);</p>
+<p>  Serial.println(&quot;=====================================&quot;);</p>
+<p>  delay(1000);</p>
+<p>}</code></pre></p>
+
+<p><strong>Call in <code class="inline-code">setup()</code> after <code class="inline-code">Serial.begin(9600);</code>:</strong></p>
+<pre class="code-block cpp" data-lang="cpp"><code>Serial.begin(9600);
+<p>delay(500);</p>
+<p>verifySerialConnection();</code></pre></p>
+
+<h3>2. Improve Command Handling</h3>
+
+<p><strong>Replace the current <code class="inline-code">getKey()</code> function</strong> to handle both Nextion and web commands:</p>
+
+<pre class="code-block cpp" data-lang="cpp"><code>// Enhanced key input handling for web interface
+<p>KeyType getKey(){</p>
+<p>    KeyType key = KeyNone;</p>
+    
+<p>    // Check USB serial (from web interface)</p>
+<p>    if (Serial.available() &gt; 0) {</p>
+<p>        char webCommand = Serial.read();</p>
+<p>        // Log for debugging</p>
+<p>        Serial.print(&quot;WEB CMD: &quot;);</p>
+<p>        Serial.println(webCommand);</p>
+        
+<p>        // Map web commands to key types</p>
+<p>        switch (webCommand) {</p>
+<p>            case &#039;0&#039;: return KeyEnter;</p>
+<p>            case &#039;1&#039;: return KeyLeft;</p>
+<p>            case &#039;2&#039;: return KeyExit;</p>
+<p>            case &#039;3&#039;: return KeyRight;</p>
+<p>            default: break;</p>
+<p>        }</p>
+<p>    }</p>
+    
+<p>    // Check Nextion display (Serial1)</p>
+<p>    if (Serial1.available() &gt; 0) {</p>
+<p>        char nextionCmd = Serial1.read();</p>
+<p>        // Handle Nextion commands here</p>
+<p>        return key;</p>
+<p>    }</p>
+    
+<p>    return key;</p>
+<p>}</code></pre></p>
+
+<h3>3. Add JSON Status Output</h3>
+
+<p><strong>Add this function for real-time status:</strong></p>
+
+<pre class="code-block cpp" data-lang="cpp"><code>// Output current machine state as JSON for web monitoring
+<p>void outputCurrentState() {</p>
+<p>    StaticJsonDocument&lt;512&gt; doc;</p>
+    
+<p>    // Machine state</p>
+<p>    doc[&quot;connected&quot;] = true;</p>
+<p>    doc[&quot;device&quot;] = &quot;GemBot_001&quot;;</p>
+<p>    doc[&quot;timestamp&quot;] = millis();</p>
+    
+<p>    // Position data</p>
+<p>    JsonObject pos = doc.createNestedObject(&quot;position&quot;);</p>
+<p>    pos[&quot;x&quot;] = countX;</p>
+<p>    pos[&quot;y&quot;] = countY;</p>
+<p>    pos[&quot;index&quot;] = indexNumber;</p>
+<p>    pos[&quot;angle&quot;] = homePPosition;</p>
+    
+<p>    // Calibration data</p>
+<p>    JsonObject calib = doc.createNestedObject(&quot;calibration&quot;);</p>
+<p>    calib[&quot;chuckX&quot;] = calibratedXPositionChuck;</p>
+<p>    calib[&quot;chuckY&quot;] = calibratedYPositionChuck;</p>
+<p>    calib[&quot;dopX&quot;] = calibratedXPositionDop;</p>
+<p>    calib[&quot;dopY&quot;] = calibratedYPositionDop;</p>
+    
+<p>    // Stone dimensions</p>
+<p>    JsonObject stone = doc.createNestedObject(&quot;stone&quot;);</p>
+<p>    stone[&quot;roughWidth&quot;] = roughStoneWidth;</p>
+<p>    stone[&quot;roughHeight&quot;] = roughStoneHeight;</p>
+<p>    stone[&quot;currentWidth&quot;] = roundWidth;</p>
+<p>    stone[&quot;desiredWidth&quot;] = roundDesiredWidth;</p>
+    
+<p>    // Output as JSON</p>
+<p>    String json;</p>
+<p>    serializeJson(doc, json);</p>
+<p>    Serial.println(json);</p>
+<p>}</code></pre></p>
+
+<p><strong>Call periodically in <code class="inline-code">loop()</code> (every 500ms):</strong></p>
+<pre class="code-block cpp" data-lang="cpp"><code>static unsigned long lastStatusOutput = 0;
+<p>if (millis() - lastStatusOutput &gt; 500) {</p>
+<p>    outputCurrentState();</p>
+<p>    lastStatusOutput = millis();</p>
+<p>}</code></pre></p>
+
+<hr>
+
+<h2>🌐 Web Interface → Arduino Command Mapping</h2>
+
+<p>Update the <code class="inline-code">GemBot<em>Web</em>Control_DualMode.html</code> to match Arduino commands:</p>
+
+<h3>Current Web Commands</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>// Direction pad
+<p>UP    → sends &#039;8&#039;  (currently unused)</p>
+<p>DOWN  → sends &#039;8&#039;  (currently unused)</p>
+<p>LEFT  → sends &#039;1&#039;  (KeyLeft)</p>
+<p>RIGHT → sends &#039;3&#039;  (KeyRight)</p>
+<p>ENTER → sends &#039;0&#039;  (KeyEnter)</p>
+
+<p>// Quick buttons (to be mapped)</p>
+<p>Button 1: Design       → should send &#039;8&#039; (print menu)</p>
+<p>Button 2: Preform      → should navigate to Preform</p>
+<p>Button 3: Cut          → should navigate to Cut</p>
+<p>Button 4: Polish       → should navigate to Polish</p>
+<p>Button 5: Settings     → should send &#039;S&#039; (custom)</p>
+<p>Button 6: Home         → should send &#039;H&#039; (custom)</code></pre></p>
+
+<h3>Recommended Web Commands</h3>
+
+<p><strong>Update web interface to send:</strong></p>
+<pre class="code-block " data-lang="text"><code>Navigation: 0,1,2,3 (Enter, Left, Exit, Right)
+<p>Movement:   d,e,f,i (X-left, Y-up, X-right, Y-down)</p>
+<p>Index:      b,c     (Index back, Index forward)</p>
+<p>Home:       a,H     (Calibration, Home all axes)</p>
+<p>Calibrate:  C       (Chuck calibration)</p>
+<p>Dopple:     D       (Dop calibration)</code></pre></p>
+
+<hr>
+
+<h2>🔧 Step-by-Step Troubleshooting Checklist</h2>
+
+<h3>Step 1: Hardware Verification</h3>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Arduino connected via USB to computer</li>
+<li class="checkbox"><input type="checkbox" disabled> COM port appears in Device Manager</li>
+<li class="checkbox"><input type="checkbox" disabled> Using Chrome/Edge/Opera browser (not Firefox/Safari)</li>
+<li class="checkbox"><input type="checkbox" disabled> USB cable is known-working (not damaged)</li></ul>
+
+<h3>Step 2: Driver Installation</h3>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Arduino drivers installed (check Device Manager)</li>
+<li class="checkbox"><input type="checkbox" disabled> No yellow warning icons on COM port</li>
+<li class="checkbox"><input type="checkbox" disabled> Device shows as "Arduino Mega" not "Unknown Device"</li></ul>
+
+<h3>Step 3: Port Scanning Test</h3>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Open <code class="inline-code">GemBot<em>Web</em>Control_DualMode.html</code> in Chrome</li>
+<li class="checkbox"><input type="checkbox" disabled> Click "Scan Ports" button</li>
+<li class="checkbox"><input type="checkbox" disabled> Verify COM port appears in dropdown</li>
+<li class="checkbox"><input type="checkbox" disabled> Note the exact COM port number (e.g., COM3)</li></ul>
+
+<h3>Step 4: Connection Test</h3>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Select correct COM port from dropdown</li>
+<li class="checkbox"><input type="checkbox" disabled> Click "Connect" button</li>
+<li class="checkbox"><input type="checkbox" disabled> Wait 5 seconds for connection</li>
+<li class="checkbox"><input type="checkbox" disabled> Check browser console (F12) for errors</li></ul>
+
+<h3>Step 5: Serial Communication Test</h3>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Open Arduino IDE Serial Monitor</li>
+<li class="checkbox"><input type="checkbox" disabled> Set baud rate to 9600</li>
+<li class="checkbox"><input type="checkbox" disabled> Should see: "=== GemBot Serial Connection Test ===" (after modification)</li>
+<li class="checkbox"><input type="checkbox" disabled> Close Arduino IDE serial monitor</li>
+<li class="checkbox"><input type="checkbox" disabled> Try web interface again</li></ul>
+
+<h3>Step 6: Network Server Test (if using Server mode)</h3>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Open terminal/PowerShell</li>
+<li class="checkbox"><input type="checkbox" disabled> Navigate to project folder</li>
+<li class="checkbox"><input type="checkbox" disabled> Run: <code class="inline-code">npm install</code> (if not done)</li>
+<li class="checkbox"><input type="checkbox" disabled> Run: <code class="inline-code">npm start</code></li>
+<li class="checkbox"><input type="checkbox" disabled> Should see: "Server running on port 3000"</li>
+<li class="checkbox"><input type="checkbox" disabled> Wait 10 seconds</li>
+<li class="checkbox"><input type="checkbox" disabled> Try web interface WebSocket mode</li></ul>
+
+<hr>
+
+<h2>🐛 Common Error Messages & Fixes</h2>
+
+<p>| Error | Cause | Fix |</p>
+<p>|-------|-------|-----|</p>
+<p>| <code class="inline-code">Failed to open serial port</code> | Port in use | Close Arduino IDE, close terminal, restart |</p>
+<p>| <code class="inline-code">Port not found</code> | Arduino disconnected | Reconnect USB, refresh scan |</p>
+<p>| <code class="inline-code">Connection timeout</code> | Server not running | Run <code class="inline-code">npm start</code> in terminal |</p>
+<p>| <code class="inline-code">Connection refused</code> | Wrong port number | Scan ports again, verify COM port |</p>
+<p>| <code class="inline-code">No devices found</code> | Drivers missing | Install Arduino drivers |</p>
+<p>| <code class="inline-code">CORS error</code> | Server not running | Start server, use localhost:3000 |</p>
+
+<hr>
+
+<h2>📋 Arduino Code Quality Improvements</h2>
+
+<h3>Current Issues in Sketch</h3>
+
+<ol><li class="ol-item"><strong>Duplicate includes</strong> (lines 1, 67, 70)</li></ol>
+<p>   - <code class="inline-code">#include <SPI.h></code> appears twice</p>
+<p>   - Should consolidate</p>
+
+<ol><li class="ol-item"><strong>Duplicate Serial.begin()</strong> (lines 285, 328)</li></ol>
+<p>   - First at line 285</p>
+<p>   - Second at line 328</p>
+<p>   - Should use only one</p>
+
+<ol><li class="ol-item"><strong>Duplicate menu printing</strong> (lines 348-388)</li></ol>
+<p>   - <code class="inline-code">printMenuEntry()</code> has identical code blocks</p>
+<p>   - Should use loop or if/else if</p>
+
+<ol><li class="ol-item"><strong>Stub functions</strong> (lines 1840+)</li></ol>
+<p>   - Many functions declared but not implemented</p>
+<p>   - Should either implement or remove</p>
+
+<h3>Recommended Refactoring</h3>
+
+<ol><li class="ol-item"><strong>Consolidate includes</strong> to top of file</li>
+<li class="ol-item"><strong>Remove duplicate Serial.begin()</strong></li>
+<li class="ol-item"><strong>Create helper function for page switching:</strong></li></ol>
+<p>   <pre class="code-block cpp" data-lang="cpp"><code>void loadNextionPage(int pageNumber) {</p>
+<p>       Serial1.print(&quot;page &quot;);</p>
+<p>       Serial1.print(pageNumber);</p>
+<p>       Serial1.print(&quot;\xFF\xFF\xFF&quot;);</p>
+<p>   }</code></pre></p>
+
+<ol><li class="ol-item"><strong>Implement stub functions</strong> with actual code</li>
+<li class="ol-item"><strong>Add error handling</strong> for motor operations</li></ol>
+
+<hr>
+
+<h2>🚀 Next Steps</h2>
+
+<h3>For Browser Serial API (Direct USB)</h3>
+
+<ol><li class="ol-item"><strong>Verify Arduino is detected:</strong></li></ol>
+<p>   - Open web interface</p>
+<p>   - Click "Scan Ports"</p>
+<p>   - Arduino should appear in dropdown</p>
+
+<ol><li class="ol-item"><strong>Add diagnostic output:</strong></li></ol>
+<p>   - Modify Arduino to print status on startup</p>
+<p>   - Web interface should display in serial monitor</p>
+
+<ol><li class="ol-item"><strong>Test commands:</strong></li></ol>
+<p>   - Click direction buttons</p>
+<p>   - Check Arduino responds</p>
+<p>   - Monitor serial output</p>
+
+<h3>For WebSocket Server (Network)</h3>
+
+<ol><li class="ol-item"><strong>Start Node.js server:</strong></li></ol>
+<p>   <pre class="code-block bash" data-lang="bash"><code>npm start</code></pre></p>
+
+<ol><li class="ol-item"><strong>Verify server running:</strong></li></ol>
+<p>   - Should say "Server running on port 3000"</p>
+<p>   - Open http://localhost:3000 in browser</p>
+
+<ol><li class="ol-item"><strong>Switch web interface to Server mode:</strong></li></ol>
+<p>   - Select "Server (WebSocket)" radio button</p>
+<p>   - Set server to "localhost:3000"</p>
+<p>   - Click "Connect"</p>
+
+<h3>For Production Deployment</h3>
+
+<ol><li class="ol-item"><strong>Arduino modifications needed:</strong></li></ol>
+<p>   - Add <code class="inline-code">verifySerialConnection()</code> function</p>
+<p>   - Improve <code class="inline-code">getKey()</code> for robust command parsing</p>
+<p>   - Add <code class="inline-code">outputCurrentState()</code> for JSON status</p>
+
+<ol><li class="ol-item"><strong>Web interface customization:</strong></li></ol>
+<p>   - Map buttons to actual Arduino commands</p>
+<p>   - Add command logging for debugging</p>
+<p>   - Implement state synchronization</p>
+
+<ol><li class="ol-item"><strong>Testing checklist:</strong></li></ol>
+<p>   - [ ] All directional buttons work</p>
+<p>   - [ ] Motors respond to commands</p>
+<p>   - [ ] Status updates in real-time</p>
+<p>   - [ ] Limit switches trigger correctly</p>
+<p>   - [ ] Nextion display updates appropriately</p>
+
+<hr>
+
+<h2>📞 Support Resources</h2>
+
+<p><strong>Arduino Serial Communication:</strong></p>
+<ul><li class="ul-item">Official: https://www.arduino.cc/reference/en/language/functions/communication/serial/</li>
+<li class="ul-item">Serial Events: https://www.arduino.cc/en/Tutorial/BuiltInExamples/SerialEvent</li></ul>
+
+<p><strong>Web Serial API:</strong></p>
+<ul><li class="ul-item">MDN Docs: https://developer.mozilla.org/en-US/docs/Web/API/Web<em>Serial</em>API</li>
+<li class="ul-item">Chrome Support: https://caniuse.com/web-serial</li></ul>
+
+<p><strong>Nextion Display:</strong></p>
+<ul><li class="ul-item">Documentation: https://nextion.itead.cc/resources/</li>
+<li class="ul-item">Instruction Set: Search "Nextion Instruction Set"</li></ul>
+
+<p><strong>ArduinoJSON:</strong></p>
+<ul><li class="ul-item">Official: https://arduinojson.org/</li>
+<li class="ul-item">Assistant: https://arduinojson.org/v6/assistant/</li></ul>
+
+<hr>
+
+<p><strong>Document Version:</strong> 1.0  </p>
+<p><strong>Last Updated:</strong> December 2, 2025  </p>
+<p><strong>Status:</strong> Ready for Implementation</p>
+
+        <div class="generated-notice">
+            🤖 Auto-generated from ARDUINO_INTEGRATION_GUIDE.md by GemBot Neural Dashboard Agent<br>
+            Generated: 2025-12-16T13:52:00.241Z
+        </div>
+    </div>
+</body>
+</html>

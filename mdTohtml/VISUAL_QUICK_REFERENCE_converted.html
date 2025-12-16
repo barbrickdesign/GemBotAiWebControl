@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VISUAL_QUICK_REFERENCE - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        <h1>🎯 GemBot Web Control - Visual Quick Reference</h1>
+
+<h2>🚀 Start Here: Choose Your Path</h2>
+
+<pre class="code-block " data-lang="text"><code>Do you have a computer with:
+<p>├─ USB port? ────────────────────┐</p>
+<p>│                                │</p>
+<p>├─ Chrome/Edge/Opera? ───────────┼─ YES</p>
+<p>│                                │</p>
+<p>└─ Just want to get started? ────┘</p>
+<p>                                  │</p>
+<p>                                  ▼</p>
+<p>                        ┌─────────────────┐</p>
+<p>                        │ USE OPTION 1    │</p>
+<p>                        │ (30 seconds)    │</p>
+<p>                        └────────┬────────┘</p>
+<p>                                 │</p>
+<p>                 ┌───────────────┴────────────────┐</p>
+<p>                 │                                │</p>
+<p>          Want network access?                   │</p>
+<p>          │                                      │</p>
+<p>          ├─ No (just desktop) ─────────────────┼─ Stop, you&#039;re done!</p>
+<p>          │                                      │</p>
+<p>          └─ Yes (phone/tablet too) ────────────┘</p>
+<p>                                  │</p>
+<p>                                  ▼</p>
+<p>                        ┌─────────────────┐</p>
+<p>                        │ USE OPTION 2    │</p>
+<p>                        │ (5 minutes)     │</p>
+<p>                        └────────┬────────┘</p>
+<p>                                 │</p>
+<p>                                 ▼</p>
+<p>                        ┌─────────────────┐</p>
+<p>                        │ You&#039;re awesome! │</p>
+<p>                        └─────────────────┘</code></pre></p>
+
+<hr>
+
+<h2>📋 Option 1: Direct Browser (Recommended for 99% of users)</h2>
+
+<h3>Step-by-Step</h3>
+
+<p><strong>Step 1: Connect Hardware</strong> (30 seconds)</p>
+<pre class="code-block " data-lang="text"><code>1. Find USB cable
+<ol><li class="ol-item">Plug GemBot into your computer&#039;s USB port</li>
+<li class="ol-item">Wait for device to power on</li>
+<li class="ol-item">Verify it appears in Device Manager (optional)</code></pre></li></ol>
+
+<p><strong>Step 2: Open Web Interface</strong> (10 seconds)</p>
+<pre class="code-block " data-lang="text"><code>1. Go to: c:\Users\barbr\Desktop\GemBotMemory2025
+<ol><li class="ol-item">Find: GemBot&lt;em&gt;Web&lt;/em&gt;Control_DualMode.html</li>
+<li class="ol-item">Double-click it</li>
+<li class="ol-item">Chrome/Edge opens automatically</code></pre></li></ol>
+
+<p><strong>Step 3: Connect in Browser</strong> (20 seconds)</p>
+<pre class="code-block " data-lang="text"><code>1. Click blue &quot;🔄 Scan&quot; button
+<ol><li class="ol-item">See COM ports appear in dropdown</li>
+<li class="ol-item">Click dropdown, select &quot;COM1&quot; (or your port)</li>
+<li class="ol-item">Click green &quot;Connect&quot; button</li>
+<li class="ol-item">Status turns green ✓</code></pre></li></ol>
+
+<p><strong>Done!</strong> Your device is now controlled from the web interface.</p>
+
+<h3>Testing</h3>
+<ul><li class="ul-item">Click UP button → device should respond</li>
+<li class="ul-item">See responses in serial monitor</li>
+<li class="ul-item">Try "Settings" button → should load that page</li>
+<li class="ul-item">Done!</li></ul>
+
+<hr>
+
+<h2>📋 Option 2: Network Server (For Multiple Devices)</h2>
+
+<h3>What You Need</h3>
+<ul><li class="ul-item">Computer with GemBot (Option 1 done first)</li>
+<li class="ul-item">Node.js installed</li>
+<li class="ul-item">Other devices on same WiFi network</li></ul>
+
+<h3>Installation</h3>
+
+<p><strong>Step 1: Install Node.js</strong> (2 minutes)</p>
+<pre class="code-block " data-lang="text"><code>1. Go to https://nodejs.org
+<ol><li class="ol-item">Click &quot;Download LTS Version&quot;</li>
+<li class="ol-item">Run installer → Next → Next → Install</li>
+<li class="ol-item">Close installer</li>
+<li class="ol-item">Close and reopen PowerShell</code></pre></li></ol>
+
+<p><strong>Step 2: Install Server</strong> (1 minute)</p>
+<pre class="code-block powershell" data-lang="powershell"><code>&lt;h1&gt;Open PowerShell and type:&lt;/h1&gt;
+<p>cd c:\Users\barbr\Desktop\GemBotMemory2025</p>
+<p>npm install</p>
+
+<p>&lt;h1&gt;Wait for completion (about 30 seconds)&lt;/h1&gt;</code></pre></p>
+
+<p><strong>Step 3: Start Server</strong> (30 seconds)</p>
+<pre class="code-block powershell" data-lang="powershell"><code>&lt;h1&gt;In same PowerShell window, type:&lt;/h1&gt;
+<p>npm start</p>
+
+<p>&lt;h1&gt;Should see:&lt;/h1&gt;</p>
+<p>&lt;h1&gt;Server running at: http://localhost:3000&lt;/h1&gt;</p>
+<p>&lt;h1&gt;Ready to accept connections...&lt;/h1&gt;</code></pre></p>
+
+<p><strong>Step 4: Open in Browser</strong> (20 seconds)</p>
+<pre class="code-block " data-lang="text"><code>1. Click link in PowerShell OR
+<ol><li class="ol-item">Go to: http://localhost:3000</li>
+<li class="ol-item">Same interface appears!</code></pre></li></ol>
+
+<p><strong>Step 5: Access from Phone/Tablet</strong> (1 minute)</p>
+<pre class="code-block " data-lang="text"><code>1. Open PowerShell (on server computer)
+<ol><li class="ol-item">Type: ipconfig</li>
+<li class="ol-item">Find line: &quot;IPv4 Address ... 192.168.x.x&quot;</li>
+<li class="ol-item">On your phone, go to: http://192.168.x.x:3000</li>
+<li class="ol-item">Same interface on phone!</code></pre></li></ol>
+
+<p><strong>Keep PowerShell running</strong> while using the interface.</p>
+
+<hr>
+
+<h2>🎮 Using the Interface</h2>
+
+<h3>The Control Pad</h3>
+<pre class="code-block " data-lang="text"><code>┌──────────────────────┐
+<p>│                      │</p>
+<p>│        ▲ UP          │</p>
+<p>│   ◄ L   ✓   R ►      │  ← Click these</p>
+<p>│        ▼ DOWN        │</p>
+<p>│   [EXIT] [MENU]      │</p>
+<p>│                      │</p>
+<p>└──────────────────────┘</code></pre></p>
+
+<h3>Quick Buttons</h3>
+<pre class="code-block " data-lang="text"><code>[SETTINGS] [DESIGN] [PREFORM]
+<p>  [CUT]     [POLISH] [CALIBRATE]</code></pre></p>
+<p>Click any button → Command sent instantly</p>
+
+<h3>Serial Monitor (Right Side)</h3>
+<pre class="code-block " data-lang="text"><code>Shows everything happening:
+<p>12:34:56 [RX]  Device response here</p>
+<p>12:34:57 [TX]  Your command sent</p>
+<p>12:34:58 [✓]   Success message</p>
+<p>12:34:59 [!]   Warning message</p>
+<p>12:35:00 [✗]   Error message</code></pre></p>
+
+<h3>Send Custom Commands</h3>
+<pre class="code-block " data-lang="text"><code>1. Type in input field at bottom
+<ol><li class="ol-item">Press Enter or click &quot;Send&quot;</li>
+<li class="ol-item">See response in monitor</li>
+<li class="ol-item">Example: type &quot;page 0&quot; and send</code></pre></li></ol>
+
+<hr>
+
+<h2>🐛 Quick Fixes</h2>
+
+<h3>"No USB devices found"</h3>
+<p><strong>Try this:</strong></p>
+<pre class="code-block " data-lang="text"><code>✓ Unplug USB cable
+<p>✓ Wait 5 seconds</p>
+<p>✓ Plug back in</p>
+<p>✓ Click Scan again</p>
+<p>✓ Select port</p>
+<p>✓ Click Connect</code></pre></p>
+
+<h3>"Port selected but won't connect"</h3>
+<p><strong>Try this:</strong></p>
+<pre class="code-block " data-lang="text"><code>✓ Make sure USB cable is good
+<p>✓ Close Arduino IDE if open (it locks port)</p>
+<p>✓ Disconnect and reconnect</p>
+<p>✓ Try different USB port</p>
+<p>✓ Restart browser</code></pre></p>
+
+<h3>"Browser says 'Serial API not available'"</h3>
+<p><strong>Try this:</strong></p>
+<pre class="code-block " data-lang="text"><code>✓ Use Chrome (not Firefox/Safari)
+<p>✓ Update your browser</p>
+<p>✓ Use Option 2 (WebSocket Server) instead</code></pre></p>
+
+<h3>"Server won't start"</h3>
+<p><strong>Try this:</strong></p>
+<pre class="code-block " data-lang="text"><code>✓ Open new PowerShell
+<p>✓ Type: node --version</p>
+<p>   (should show v14.0.0 or higher)</p>
+<p>✓ If not, install Node.js</p>
+<p>✓ Try: npm start</p>
+<p>   again</code></pre></p>
+
+<hr>
+
+<h2>📱 Mobile Usage</h2>
+
+<h3>On Tablet/Phone</h3>
+<pre class="code-block " data-lang="text"><code>Same interface but:
+<p>✓ All buttons touch-friendly</p>
+<p>✓ Works in portrait or landscape</p>
+<p>✓ Auto-scales to screen size</p>
+<p>✓ No desktop needed</code></pre></p>
+
+<h3>How to Get It on Phone</h3>
+<pre class="code-block " data-lang="text"><code>1. Start server on desktop (Option 2)
+<ol><li class="ol-item">Find your computer&#039;s IP address:</li></ol>
+<p>   - Open PowerShell</p>
+<p>   - Type: ipconfig</p>
+<p>   - Find: &quot;IPv4 Address: 192.168.x.x&quot;</p>
+<ol><li class="ol-item">On your phone&#039;s browser:</li></ol>
+<p>   - Go to: http://192.168.x.x:3000</p>
+<p>   - Bookmark it!</code></pre></p>
+
+<hr>
+
+<h2>✅ Checklist: Are You Ready?</h2>
+
+<h3>Before Starting</h3>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> USB cable available</li>
+<li class="checkbox"><input type="checkbox" disabled> GemBot device ready</li>
+<li class="checkbox"><input type="checkbox" disabled> Computer has Chrome/Edge/Opera</li>
+<li class="checkbox"><input type="checkbox" disabled> USB port available</li></ul>
+
+<h3>After Installation</h3>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Device shows in device manager</li>
+<li class="checkbox"><input type="checkbox" disabled> HTML file opened in browser</li>
+<li class="checkbox"><input type="checkbox" disabled> "Scan Ports" button visible</li>
+<li class="checkbox"><input type="checkbox" disabled> Arduino appears in dropdown</li></ul>
+
+<h3>After Connection</h3>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Green status indicator</li>
+<li class="checkbox"><input type="checkbox" disabled> "Connected" shown in Status panel</li>
+<li class="checkbox"><input type="checkbox" disabled> Serial monitor shows data</li>
+<li class="checkbox"><input type="checkbox" disabled> Buttons respond to clicks</li></ul>
+
+<hr>
+
+<h2>🎯 What to Try First</h2>
+
+<h3>Test 1: Check Connection</h3>
+<pre class="code-block " data-lang="text"><code>1. Look at status indicator (top left)
+<ol><li class="ol-item">Should be 🟢 GREEN</li>
+<li class="ol-item">If 🔴 RED: follow troubleshooting above</code></pre></li></ol>
+
+<h3>Test 2: Simple Button</h3>
+<pre class="code-block " data-lang="text"><code>1. Click UP arrow ▲
+<ol><li class="ol-item">Check serial monitor on right</li>
+<li class="ol-item">Should see &quot;[TX] ▲ UP&quot;</li>
+<li class="ol-item">Device should respond</code></pre></li></ol>
+
+<h3>Test 3: Quick Command</h3>
+<pre class="code-block " data-lang="text"><code>1. Click &quot;SETTINGS&quot; button
+<ol><li class="ol-item">Check serial monitor</li>
+<li class="ol-item">Should see page command sent</li>
+<li class="ol-item">Device might show settings screen</code></pre></li></ol>
+
+<h3>Test 4: Custom Command</h3>
+<pre class="code-block " data-lang="text"><code>1. Type in input field: page 0
+<ol><li class="ol-item">Click &quot;Send&quot;</li>
+<li class="ol-item">See response in monitor</code></pre></li></ol>
+
+<hr>
+
+<h2>📊 Understanding the Dashboard</h2>
+
+<h3>Status Panel</h3>
+<pre class="code-block " data-lang="text"><code>┌─────────────────────────────────┐
+<p>│ Status      │ Connected         │</p>
+<p>│ Port        │ COM1              │</p>
+<p>│ Mode        │ Browser API       │</p>
+<p>│ Data RX     │ 256 bytes         │</p>
+<p>└─────────────────────────────────┘</code></pre></p>
+
+<ul><li class="ul-item"><strong>Status</strong>: Connected = Green ✓</li>
+<li class="ul-item"><strong>Port</strong>: Which COM port is active</li>
+<li class="ul-item"><strong>Mode</strong>: How you're connecting</li>
+<li class="ul-item"><strong>Data RX</strong>: Total bytes received</li></ul>
+
+<hr>
+
+<h2>🔒 Security Reminders</h2>
+
+<h3>Local Use (Your Home)</h3>
+<pre class="code-block " data-lang="text"><code>✓ Completely safe
+<p>✓ No internet required</p>
+<p>✓ No data sent anywhere</p>
+<p>✓ Totally private</code></pre></p>
+
+<h3>Network Use (Other Rooms/Houses)</h3>
+<pre class="code-block " data-lang="text"><code>⚠ Use same WiFi network
+<p>⚠ Firewall protects you</p>
+<p>⚠ Don&#039;t expose to internet</p>
+<p>⚠ Use VPN if accessing remotely</code></pre></p>
+
+<hr>
+
+<h2>🎓 Learning More</h2>
+
+<h3>Want to Customize Buttons?</h3>
+<p>→ See <strong>GEMBOT<em>WEB</em>SETUP.md</strong> "Advanced Configuration"</p>
+
+<h3>Want to Add New Features?</h3>
+<p>→ Open HTML file in text editor, JavaScript is well commented</p>
+
+<h3>Want Complete Technical Info?</h3>
+<p>→ Read <strong>README<em>WEB</em>CONTROL.md</strong> or <strong>GEMBOT<em>WEB</em>SETUP.md</strong></p>
+
+<h3>Want to Deploy Remotely?</h3>
+<p>→ See <strong>GEMBOT<em>WEB</em>SETUP.md</strong> "Internet Access" section</p>
+
+<hr>
+
+<h2>🎉 You're Done!</h2>
+
+<p>You now have:</p>
+<ul><li class="ul-item">✅ Web control interface</li>
+<li class="ul-item">✅ Real-time serial monitoring</li>
+<li class="ul-item">✅ Mobile access (with server)</li>
+<li class="ul-item">✅ Professional dashboard</li>
+<li class="ul-item">✅ Full documentation</li></ul>
+
+<p><strong>Next: Start controlling your GemBot!</strong> 🔷💎</p>
+
+<hr>
+
+<h2>📞 Still Stuck?</h2>
+
+<h3>Try This Order</h3>
+<ol><li class="ol-item"><strong>QUICK_START.md</strong> - 2-minute guide</li>
+<li class="ol-item"><strong>Browser console</strong> (F12) - Look for errors</li>
+<li class="ol-item"><strong>Arduino IDE</strong> - Test device first</li>
+<li class="ol-item"><strong>GEMBOT<em>WEB</em>SETUP.md</strong> - Detailed help</li></ol>
+
+<h3>What to Check</h3>
+<pre class="code-block " data-lang="text"><code>Device Management (Windows):
+<p>→ Start → Device Manager</p>
+<p>→ Look for &quot;Arduino&quot; under Ports</p>
+<p>→ Should show COM port number</p>
+
+<p>Arduino IDE Serial Monitor:</p>
+<p>→ Shows if device is working</p>
+<p>→ Should display data at 9600 baud</code></pre></p>
+
+<h3>Get Help With</h3>
+<ul><li class="ul-item">Device not detected</li>
+<li class="ul-item">Browser compatibility</li>
+<li class="ul-item">Network issues</li>
+<li class="ul-item">Button customization</li>
+<li class="ul-item">Advanced features</li></ul>
+
+<hr>
+
+<h2>🎯 Pro Tips</h2>
+
+<ol><li class="ol-item"><strong>Bookmark the page</strong> for quick access</li>
+<li class="ol-item"><strong>Test buttons</strong> when you first connect</li>
+<li class="ol-item"><strong>Keep PowerShell open</strong> if using server mode</li>
+<li class="ol-item"><strong>Keep monitor visible</strong> to debug issues</li>
+<li class="ol-item"><strong>Use Chrome</strong> for best compatibility</li>
+<li class="ol-item"><strong>Try on tablet</strong> for wider control pad view</li></ol>
+
+<hr>
+
+<h2>🚀 Advanced Users</h2>
+
+<p>Want to:</p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Add custom buttons? Edit HTML</li>
+<li class="checkbox"><input type="checkbox" disabled> Change colors? Edit CSS</li>
+<li class="checkbox"><input type="checkbox" disabled> Add logging? Modify JavaScript</li>
+<li class="checkbox"><input type="checkbox" disabled> Deploy to cloud? Use ngrok</li>
+<li class="checkbox"><input type="checkbox" disabled> Add authentication? Modify server.js</li></ul>
+
+<p>See <strong>GEMBOT<em>WEB</em>SETUP.md</strong> for code examples.</p>
+
+<hr>
+
+<p><strong>Start with Option 1 → Open HTML → Click Scan → Done! 🎉</strong></p>
+
+<p>For any confusion, follow breadcrumbs:</p>
+<pre class="code-block " data-lang="text"><code>Confused? 
+<p>  ↓</p>
+<p>Read QUICK_START.md</p>
+<p>  ↓</p>
+<p>Still confused?</p>
+<p>  ↓</p>
+<p>Read GEMBOT&lt;em&gt;WEB&lt;/em&gt;SETUP.md</p>
+<p>  ↓</p>
+<p>Check browser console (F12)</p>
+<p>  ↓</p>
+<p>Test device with Arduino IDE first</code></pre></p>
+
+<p><strong>Happy cutting! 💎✨</strong></p>
+
+<hr>
+
+<p><strong>Files to Know:</strong></p>
+<ul><li class="ul-item"><strong>Start Here</strong>: GemBot<em>Web</em>Control_DualMode.html</li>
+<li class="ul-item"><strong>Quick Help</strong>: QUICK_START.md (this file)</li>
+<li class="ul-item"><strong>Full Docs</strong>: GEMBOT<em>WEB</em>SETUP.md</li>
+<li class="ul-item"><strong>Overview</strong>: README<em>WEB</em>CONTROL.md</li>
+<li class="ul-item"><strong>Server</strong>: server.js (optional)</li></ul>
+
+<p>Version 2.0 | December 2025 | GemBot Development Team</p>
+
+        <div class="generated-notice">
+            🤖 Auto-generated from VISUAL_QUICK_REFERENCE.md by GemBot Neural Dashboard Agent<br>
+            Generated: 2025-12-16T13:52:32.018Z
+        </div>
+    </div>
+</body>
+</html>

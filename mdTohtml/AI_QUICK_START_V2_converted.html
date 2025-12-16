@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI_QUICK_START_V2 - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        <h1>GemBot AI Assistant v2 - Quick Reference Guide</h1>
+
+<h2>🎯 What's New</h2>
+
+<p>Your GemBot now has an intelligent AI assistant that:</p>
+<ul><li class="ul-item">✅ Talks like JARVIS (sophisticated British butler)</li>
+<li class="ul-item">✅ Understands 9 different types of questions</li>
+<li class="ul-item">✅ Shows helpful buttons when you're stuck</li>
+<li class="ul-item">✅ Learns from failures and warns you</li>
+<li class="ul-item">✅ Greets you on power-up</li>
+<li class="ul-item">✅ Helps elderly/inexperienced users</li>
+<li class="ul-item">✅ Monitors your cutting process</li></ul>
+
+<h2>💬 How to Chat</h2>
+
+<h3>Simple Questions (AI Understands These)</h3>
+
+<p><strong>About Position</strong>: "Where am I?" / "What's my position?" / "Show coordinates"</p>
+<ul><li class="ul-item">AI tells you current X, Y, Rotation, Index</li></ul>
+
+<p><strong>About Mode</strong>: "What's continuous mode?" / "How does step mode work?"</p>
+<ul><li class="ul-item">AI explains current mode and alternatives</li></ul>
+
+<p><strong>About Speed</strong>: "How fast?" / "What's the current speed?"</p>
+<ul><li class="ul-item">AI shows level 1-5 with implications</li></ul>
+
+<p><strong>About Cutting</strong>: "How do I cut?" / "Tell me about the process"</p>
+<ul><li class="ul-item">AI gives step-by-step technique guidance</li></ul>
+
+<p><strong>About Stones</strong>: "How do I switch stones?" / "Tell me about lap selection"</p>
+<ul><li class="ul-item">AI shows complete switching procedure with helper buttons</li></ul>
+
+<p><strong>If Stuck</strong>: "Motor won't move" / "Command not working" / "Connection lost"</p>
+<ul><li class="ul-item">AI diagnoses problem and shows troubleshooting steps</li></ul>
+
+<p><strong>Emergency</strong>: "Help!" / "Emergency!" / "Stuck!"</p>
+<ul><li class="ul-item">AI provides immediate crisis guidance</li></ul>
+
+<h3>Assistant Responses</h3>
+
+<p>AI speaks in these personalities:</p>
+<ul><li class="ul-item"><strong>Greeting</strong>: "Good morning. I am your GemBot assistant. All systems are nominal."</li>
+<li class="ul-item"><strong>Working</strong>: "Understood. I am monitoring the situation."</li>
+<li class="ul-item"><strong>Alert</strong>: "I must bring something to your attention."</li>
+<li class="ul-item"><strong>Offering Help</strong>: "How may I be of service in your cutting endeavor?"</li></ul>
+
+<h2>🎯 Helper Buttons</h2>
+
+<p>When you ask for help, buttons appear:</p>
+
+<p>| Button | What It Does |</p>
+<p>|--------|-------------|</p>
+<p>| 📚 How to Cut | Complete cutting procedure step-by-step |</p>
+<p>| 🔄 Switch Stone | Full stone/lap switching with HOME button |</p>
+<p>| 🛑 Emergency Help | Immediate action if in crisis |</p>
+<p>| 🔧 Troubleshoot | Systematic problem diagnosis |</p>
+<p>| 🏠 Go Home | Instantly execute HOME command |</p>
+<p>| 📖 Quick Guide | One-minute orientation to basics |</p>
+
+<p><strong>Click any button to see detailed guidance!</strong></p>
+
+<h2>🔊 Voice Features</h2>
+
+<h3>Jarvis Voice Automatically Set</h3>
+<p>When you connect:</p>
+<ol><li class="ol-item">AI selects best available English voice</li>
+<li class="ol-item">Sets slower speed (0.85x) for clarity</li>
+<li class="ol-item">Uses lower pitch (0.9) for sophistication</li>
+<li class="ol-item">Volume set to 0.9</li></ol>
+
+<h3>You Can Adjust</h3>
+<ul><li class="ul-item"><strong>Toggle</strong>: Click 🔊 Voice ON/OFF button</li>
+<li class="ul-item"><strong>Speed</strong>: Slower (0.5x) to Faster (2.0x)</li>
+<li class="ul-item"><strong>Pitch</strong>: Lower (0.5) to Higher (2.0)</li>
+<li class="ul-item"><strong>Volume</strong>: 0-100%</li></ul>
+
+<h3>Auto-Speak</h3>
+<ul><li class="ul-item">AI automatically speaks all responses</li>
+<li class="ul-item">Can turn off with toggle button</li>
+<li class="ul-item">Settings saved for next session</li></ul>
+
+<h2>♿ Accessibility Mode</h2>
+
+<h3>For Elderly or Inexperienced Users</h3>
+
+<p><strong>Click</strong> the ♿ <strong>Accessibility</strong> button in top right of AI panel</p>
+
+<p><strong>Enables</strong>:</p>
+<ul><li class="ul-item">✅ Larger text (16px instead of 14px)</li>
+<li class="ul-item">✅ Simpler language (no jargon)</li>
+<li class="ul-item">✅ Extra spacing (easier to read)</li>
+<li class="ul-item">✅ Button tooltips (hover to see what each does)</li>
+<li class="ul-item">✅ More confirmation messages</li>
+<li class="ul-item">✅ Helpful encouragement</li></ul>
+
+<p><strong>Example</strong>:</p>
+<ul><li class="ul-item"><strong>Normal</strong>: "Position: X=23, Y=45"</li>
+<li class="ul-item"><strong>Accessibility</strong>: "Your position: X-axis is at 23, Y-axis is at 45"</li></ul>
+
+<h2>🔍 AI Learning</h2>
+
+<h3>Failure Detection</h3>
+<p>AI watches for problems:</p>
+<ul><li class="ul-item"><strong>Stuck Motor</strong>: Motor not responding</li>
+<li class="ul-item"><strong>Connection Lost</strong>: Serial link broken</li>
+<li class="ul-item"><strong>Ignored Commands</strong>: Sent but not working</li>
+<li class="ul-item"><strong>Camera Issues</strong>: Video not available</li></ul>
+
+<h3>Pattern Recognition</h3>
+<p>After same failure happens 3+ times:</p>
+<ul><li class="ul-item">AI alerts you: "I have noticed this issue 3 times"</li>
+<li class="ul-item">Shows troubleshooting steps</li>
+<li class="ul-item">Offers helper buttons</li>
+<li class="ul-item">Remembers pattern for future warnings</li></ul>
+
+<h3>Example</h3>
+<pre class="code-block " data-lang="text"><code>[3rd time motor stuck]
+<p>AI: &quot;The motor has become unresponsive 3 times. </p>
+<p>     Try: 1) HOME button 2) EMERGENCY STOP 3) Reconnect&quot;</p>
+<p>[Shows troubleshooting buttons]</code></pre></p>
+
+<h2>🏠 Power-Up Sequence (Automatic)</h2>
+
+<h3>On Page Load (1-2 seconds)</h3>
+<p><strong>Jarvis Voice</strong>: "Good morning. I am your GemBot assistant. All systems are nominal and prepared for operation."</p>
+
+<h3>On Connection Success (auto-detected)</h3>
+<p><strong>Jarvis Voice</strong>: "Connection established. All systems green. Ready to proceed with your cutting session."</p>
+
+<p><strong>2 seconds later</strong>, Jarvis gives random helpful tip:</p>
+<ul><li class="ul-item">"For optimal results, use STEP mode during positioning"</li>
+<li class="ul-item">"The camera is available for visual verification"</li>
+<li class="ul-item">"Do not hesitate to ask for guidance anytime"</li></ul>
+
+<h3>On Connection Loss</h3>
+<p><strong>Jarvis Voice</strong>: "Connection lost. Machine state saved. Upon reconnection, I will restore your session."</p>
+
+<h2>📝 Example Conversations</h2>
+
+<h3>Example 1: Beginner Asking About Mode</h3>
+<pre class="code-block " data-lang="text"><code>You: &quot;I don&#039;t understand continuous mode&quot;
+
+<p>Jarvis: &quot;In CONTINUOUS mode, hold a button to move continuously. </p>
+<p>        Release to stop. This is ideal for longer movements. </p>
+<p>        Your machine is currently in CONTINUOUS mode.&quot;</p>
+
+<p>[Buttons appear: 📖 Quick Guide | 📚 How to Cut]</code></pre></p>
+
+<h3>Example 2: Stuck Motor (3rd Time)</h3>
+<pre class="code-block " data-lang="text"><code>You: &quot;Motor won&#039;t work again!&quot;
+
+<p>Jarvis: &quot;I have observed a recurring issue: The motor has become </p>
+<p>        unresponsive 3 times. This suggests a connection or position </p>
+<p>        issue. First try HOME button, then EMERGENCY STOP if unresponsive, </p>
+<p>        then reconnect.&quot;</p>
+
+<p>[Buttons appear: 🔧 Troubleshoot | 🏠 Go Home | 🛑 Emergency Help]</code></pre></p>
+
+<h3>Example 3: Asking About Cutting Process</h3>
+<pre class="code-block " data-lang="text"><code>You: &quot;How do I cut a stone?&quot;
+
+<p>Jarvis: &quot;The cutting process requires precision and patience. </p>
+<p>        Position your stone carefully using STEP mode for accuracy. </p>
+<p>        Use the appropriate lap for your stage: rough cut first, </p>
+<p>        then fine cut, then polish. Monitor your angle and check </p>
+<p>        progress frequently. Remember to use HOME button between </p>
+<p>        major adjustments.&quot;</p>
+
+<p>[Buttons appear: 📚 How to Cut | 🔄 Switch Stone | 🏠 Go Home]</code></pre></p>
+
+<h3>Example 4: Cut Complete (Auto-Detection)</h3>
+<pre class="code-block " data-lang="text"><code>[AI monitors your position - you haven&#039;t moved for a while]
+
+<p>Jarvis: &quot;💡 You appear to be near your final position. </p>
+<p>        Is the cut complete?&quot;</p>
+
+<p>You: &quot;Yes, now I need to switch stones&quot;</p>
+
+<p>Jarvis: &quot;[Full stone switching guide with step-by-step]&quot;</p>
+
+<p>[Buttons appear: 🔄 Switch Stone | 🏠 Go Home]</code></pre></p>
+
+<h2>🎬 Knowledge Base Topics</h2>
+
+<p>AI can help with:</p>
+
+<h3>Cutting</h3>
+<ul><li class="ul-item">How to position stone</li>
+<li class="ul-item">What speed to use</li>
+<li class="ul-item">What mode for precision</li>
+<li class="ul-item">Detecting when cut is complete</li>
+<li class="ul-item">How to switch stones</li></ul>
+
+<h3>Control</h3>
+<ul><li class="ul-item">What STEP mode does</li>
+<li class="ul-item">What CONTINUOUS mode does</li>
+<li class="ul-item">How speed 1-5 work</li>
+<li class="ul-item">How X/Y axes work</li>
+<li class="ul-item">Using rotation and index</li></ul>
+
+<h3>Emergency</h3>
+<ul><li class="ul-item">When to press EMERGENCY STOP</li>
+<li class="ul-item">What happens after emergency stop</li>
+<li class="ul-item">How to recover</li>
+<li class="ul-item">Power loss recovery</li></ul>
+
+<h3>Troubleshooting</h3>
+<ul><li class="ul-item">Motor won't move</li>
+<li class="ul-item">Connection lost</li>
+<li class="ul-item">Camera not working</li>
+<li class="ul-item">Command ignored</li>
+<li class="ul-item">Position wrong</li></ul>
+
+<h2>💡 Pro Tips</h2>
+
+<ol><li class="ol-item"><strong>Before you start</strong>: Ask "how do I cut?" for full procedure</li>
+<li class="ol-item"><strong>If stuck</strong>: Click helper buttons - they have step-by-step guides</li>
+<li class="ol-item"><strong>For precision</strong>: Always use STEP mode</li>
+<li class="ol-item"><strong>For quick moves</strong>: Increase speed but lower it again for final cuts</li>
+<li class="ol-item"><strong>Always</strong>: Use HOME button to reset position between major changes</li>
+<li class="ol-item"><strong>Emergency</strong>: EMERGENCY STOP works instantly, don't hesitate</li>
+<li class="ol-item"><strong>Accessibility</strong>: Enable ♿ if text too small or confusing</li>
+<li class="ol-item"><strong>Voice</strong>: AI speaks responses - turn up volume if can't hear</li></ol>
+
+<h2>❓ Frequently Asked Questions</h2>
+
+<p><strong>Q: Will AI teach me everything?</strong></p>
+<p>A: Yes! Ask questions and it will guide you step-by-step</p>
+
+<p><strong>Q: Can I turn off voice?</strong></p>
+<p>A: Yes, click 🔊 Voice ON/OFF button</p>
+
+<p><strong>Q: Does it remember past failures?</strong></p>
+<p>A: Yes, it learns patterns and warns you if same issue happens again</p>
+
+<p><strong>Q: What if I don't understand?</strong></p>
+<p>A: Click helper buttons for more detailed step-by-step guides</p>
+
+<p><strong>Q: Can elderly people use it?</strong></p>
+<p>A: Yes! Click ♿ Accessibility for larger text and simpler language</p>
+
+<p><strong>Q: What if power fails?</strong></p>
+<p>A: AI saves your position and recovers it automatically on reconnect</p>
+
+<p><strong>Q: Can I ask any question?</strong></p>
+<p>A: Yes! AI understands questions about cutting, control, positioning, </p>
+<p>   emergencies, stone switching, speeds, modes, and troubleshooting</p>
+
+<h2>🎯 Summary</h2>
+
+<p>Your GemBot AI is like having an expert guide with you:</p>
+<ul><li class="ul-item"><strong>Smart</strong>: Understands your questions</li>
+<li class="ul-item"><strong>Helpful</strong>: Shows buttons to guide you</li>
+<li class="ul-item"><strong>Learning</strong>: Detects and warns about problems</li>
+<li class="ul-item"><strong>Friendly</strong>: Talks like a British butler</li>
+<li class="ul-item"><strong>Accessible</strong>: Works for everyone including elderly users</li>
+<li class="ul-item"><strong>Reliable</strong>: Saves your work and recovers from failures</li></ul>
+
+<p>Just ask it anything about gem cutting and it will help!</p>
+
+<hr>
+
+<p><strong>Questions?</strong> Type in the chat box and AI will respond!  </p>
+<p><strong>Stuck?</strong> Click a helper button for step-by-step guidance!  </p>
+<p><strong>Need help?</strong> Say "Help!" and AI gives emergency assistance!</p>
+
+
+        <div class="generated-notice">
+            🤖 Auto-generated from AI_QUICK_START_V2.md by GemBot Neural Dashboard Agent<br>
+            Generated: 2025-12-16T13:51:59.821Z
+        </div>
+    </div>
+</body>
+</html>

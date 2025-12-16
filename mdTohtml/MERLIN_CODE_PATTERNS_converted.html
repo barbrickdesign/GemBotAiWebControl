@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MERLIN_CODE_PATTERNS - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        <h1>Merlin Personalization - Code Patterns 💻</h1>
+
+<h2>The Core Innovation: Pattern Recognition</h2>
+
+<p>Instead of static templates, Merlin now <strong>analyzes your conversation history</strong> to generate personalized responses.</p>
+
+<hr>
+
+<h2>1. Pattern Analysis Method</h2>
+
+<pre class="code-block javascript" data-lang="javascript"><code>analyzeUserPatterns() {
+<p>    const questions = this.userProfile.questionsAsked || [];</p>
+<p>    const patterns = {</p>
+<p>        frequentTopics: {},      // { &quot;speed_control&quot;: 3, &quot;positioning&quot;: 2 }</p>
+<p>        strugglingWith: [],      // Topics asked 3+ times</p>
+<p>        masterTopics: [],        // Topics asked 5+ times</p>
+<p>        lastSession: null        // Last question asked</p>
+<p>    };</p>
+    
+<p>    // Count topic frequencies</p>
+<p>    questions.forEach(q =&gt; {</p>
+<p>        if (q.topic) {</p>
+<p>            patterns.frequentTopics[q.topic] = </p>
+<p>                (patterns.frequentTopics[q.topic] || 0) + 1;</p>
+<p>        }</p>
+<p>    });</p>
+    
+<p>    // Identify struggles (3+ asks = struggling)</p>
+<p>    for (const [topic, count] of Object.entries(patterns.frequentTopics)) {</p>
+<p>        if (count &gt;= 3) patterns.strugglingWith.push(topic);</p>
+<p>        if (count &gt;= 5) patterns.masterTopics.push(topic);</p>
+<p>    }</p>
+    
+<p>    return patterns;</p>
+<p>}</code></pre></p>
+
+<p><strong>What It Does</strong>:</p>
+<ul><li class="ul-item">Scans all questions you've asked</li>
+<li class="ul-item">Counts mentions by topic</li>
+<li class="ul-item">Returns data like: <code class="inline-code">{ speed_control: 3, positioning: 2 }</code></li>
+<li class="ul-item">Identifies struggle areas (3+ = struggling)</li>
+<li class="ul-item">Identifies mastered areas (5+ = mastered)</li></ul>
+
+<hr>
+
+<h2>2. Personalized Greeting Algorithm</h2>
+
+<pre class="code-block javascript" data-lang="javascript"><code>generateAdaptiveGreeting() {
+<p>    const sessionNum = this.userProfile.sessionCount;</p>
+<p>    const patterns = this.analyzeUserPatterns();</p>
+<p>    const troubleSpots = patterns.strugglingWith;</p>
+<p>    const mastered = patterns.masterTopics;</p>
+    
+<p>    // Session 1: Fresh welcome (generic OK here)</p>
+<p>    if (sessionNum === 1) {</p>
+<p>        return <code class="inline-code">Welcome, seeker. Your first steps begin now...</code>;</p>
+<p>    }</p>
+    
+<p>    // Session 6+: Deep personalization</p>
+<p>    if (sessionNum &gt;= 6) {</p>
+<p>        let greeting = <code class="inline-code">Ah, ${this.getAffectionateTitle()}. </p>
+<p>                       Visit ${sessionNum}—you grow more dedicated.</code>;</p>
+        
+<p>        // Reference struggles</p>
+<p>        if (troubleSpots.length &gt; 0) {</p>
+<p>            const topStruggles = troubleSpots.slice(0, 2).join(&#039; and &#039;);</p>
+<p>            greeting += <code class="inline-code"> I know ${topStruggles} challenge you. </p>
+<p>                        Today, shall we conquer those demons?</code>;</p>
+<p>        }</p>
+        
+<p>        // Celebrate mastery</p>
+<p>        if (mastered.length &gt; 0) {</p>
+<p>            const skills = mastered.slice(0, 2).join(&#039;, &#039;);</p>
+<p>            greeting += <code class="inline-code"> Your mastery of ${skills} shows true growth.</code>;</p>
+<p>        }</p>
+        
+<p>        // Reference favorite stone</p>
+<p>        if (this.userProfile.favoriteStones.length &gt; 0) {</p>
+<p>            greeting += <code class="inline-code"> I expect you&#039;re eager to work with </p>
+<p>                        ${this.userProfile.favoriteStones[0]} again.</code>;</p>
+<p>        }</p>
+        
+<p>        return greeting;</p>
+<p>    }</p>
+<p>}</code></pre></p>
+
+<p><strong>The Key Pattern</strong>:</p>
+<pre class="code-block javascript" data-lang="javascript"><code>const patterns = this.analyzeUserPatterns();
+
+<p>if (patterns.strugglingWith.includes(&quot;speed_control&quot;)) {</p>
+<p>    greeting += <code class="inline-code"> I know speed control challenges you.</code>;</p>
+<p>}</p>
+
+<p>if (patterns.masterTopics.includes(&quot;positioning&quot;)) {</p>
+<p>    greeting += <code class="inline-code"> Your mastery of positioning is evident.</code>;</p>
+<p>}</code></pre></p>
+
+<hr>
+
+<h2>3. Contextual Follow-Up (Specific Help)</h2>
+
+<pre class="code-block javascript" data-lang="javascript"><code>generateGreetingFollowUp() {
+<p>    const patterns = this.analyzeUserPatterns();</p>
+<p>    const troubleSpots = patterns.strugglingWith || [];</p>
+    
+<p>    // If struggling with something, offer targeted help</p>
+<p>    if (troubleSpots.length &gt; 0) {</p>
+<p>        const topStuggle = troubleSpots[0];</p>
+        
+<p>        // Specific help for each trouble topic</p>
+<p>        const specificHelp = {</p>
+<p>            &#039;speed_control&#039;: <code class="inline-code">I notice you&#039;ve asked multiple times.</p>
+<p>                            Would you like a different explanation?</code>,</p>
+<p>            &#039;positioning&#039;: <code class="inline-code">Let me walk through step-by-step.</code>,</p>
+<p>            &#039;stone_knowledge&#039;: <code class="inline-code">Let&#039;s master ONE stone deeply.</code></p>
+<p>        };</p>
+        
+<p>        if (specificHelp[topStuggle]) {</p>
+<p>            return <code class="inline-code">I sense ${topStuggle} has been on your mind.</p>
+<p>                   ${specificHelp[topStuggle]}</code>;</p>
+<p>        }</p>
+<p>    }</p>
+<p>}</code></pre></p>
+
+<p><strong>The Innovation</strong>: </p>
+<p>Instead of "How can I help?", Merlin says "I see you struggle with X. Let me help you with X specifically."</p>
+
+<hr>
+
+<h2>4. Trouble Spot Detection (In trackUserLearning)</h2>
+
+<pre class="code-block javascript" data-lang="javascript"><code>trackUserLearning(query) {
+<p>    let topic = &#039;general&#039;;</p>
+    
+<p>    // Categorize the query</p>
+<p>    if (/speed|fast|slow/.test(query)) topic = &#039;speed_control&#039;;</p>
+<p>    if (/position|move|axis/.test(query)) topic = &#039;positioning&#039;;</p>
+<p>    // ... etc</p>
+    
+<p>    // Record the question</p>
+<p>    merlin.recordQuestionAsked(query, topic);</p>
+    
+<p>    // NEW: Identify trouble spots</p>
+<p>    const topicCount = this.userProfile.questionsAsked</p>
+<p>        .filter(q =&gt; q.topic === topic).length;</p>
+    
+<p>    // If asked 3+ times about same topic → trouble spot</p>
+<p>    if (topicCount &gt;= 3 &amp;&amp; !this.userProfile.troubleSpots.includes(topic)) {</p>
+<p>        this.userProfile.troubleSpots.push(topic);</p>
+<p>        console.log(<code class="inline-code">⚠️ Identified trouble spot: ${topic}</code>);</p>
+<p>    }</p>
+    
+<p>    // Track stone preferences</p>
+<p>    if (/sapphire|ruby|diamond/i.test(query)) {</p>
+<p>        const stone = query.match(/sapphire|ruby|diamond/i)[0].toLowerCase();</p>
+<p>        if (!this.userProfile.favoriteStones.includes(stone)) {</p>
+<p>            this.userProfile.favoriteStones.push(stone);</p>
+<p>        }</p>
+<p>    }</p>
+<p>}</code></pre></p>
+
+<p><strong>The Magic</strong>:</p>
+<pre class="code-block javascript" data-lang="javascript"><code>// Simple counter:
+<p>ask about &quot;speed&quot; → count = 1</p>
+<p>ask about &quot;speed&quot; → count = 2</p>
+<p>ask about &quot;speed&quot; → count = 3</p>
+<p>// TRIGGER: Add to troubleSpots!</p>
+
+<p>// This is why visit 9 feels different:</p>
+<p>// Merlin has been waiting for that 3rd ask</p>
+<p>// to identify you&#039;re genuinely struggling</code></pre></p>
+
+<hr>
+
+<h2>5. Data Structure: User Profile</h2>
+
+<p><strong>Before</strong> (unused fields):</p>
+<pre class="code-block javascript" data-lang="javascript"><code>userProfile: {
+<p>    sessionCount: 23,</p>
+<p>    questionsAsked: [</p>
+<p>        { query: &quot;...&quot;, topic: &quot;speed_control&quot; },</p>
+<p>        // ...</p>
+<p>    ],</p>
+<p>    troubleSpots: [],  // ← EMPTY! Never filled</p>
+<p>    masteriesAchieved: [],  // ← EMPTY! Never filled</p>
+<p>    favoriteStones: []  // ← EMPTY! Never filled</p>
+<p>}</code></pre></p>
+
+<p><strong>After</strong> (all populated):</p>
+<pre class="code-block javascript" data-lang="javascript"><code>userProfile: {
+<p>    sessionCount: 23,</p>
+<p>    questionsAsked: [</p>
+<p>        { query: &quot;How do I control speed?&quot;, topic: &quot;speed_control&quot;, sessionNumber: 1 },</p>
+<p>        { query: &quot;What about speed?&quot;, topic: &quot;speed_control&quot;, sessionNumber: 5 },</p>
+<p>        { query: &quot;Speed control...&quot;, topic: &quot;speed_control&quot;, sessionNumber: 8 },</p>
+<p>    ],</p>
+<p>    troubleSpots: [&quot;speed_control&quot;, &quot;positioning&quot;],  // ✅ NOW FILLED</p>
+<p>    masteriesAchieved: [&quot;nextion&lt;em&gt;menu&lt;/em&gt;structure&quot;],   // ✅ NOW FILLED</p>
+<p>    favoriteStones: [&quot;sapphire&quot;, &quot;ruby&quot;]             // ✅ NOW FILLED</p>
+<p>}</code></pre></p>
+
+<hr>
+
+<h2>6. The Complete Flow</h2>
+
+<pre class="code-block " data-lang="text"><code>User loads page
+<p>    ↓</p>
+<p>giveGreeting() called</p>
+<p>    ↓</p>
+<p>analyzeUserPatterns() executed</p>
+<p>    ├─ Scans questionsAsked array</p>
+<p>    ├─ Counts { speed_control: 3, positioning: 2 }</p>
+<p>    ├─ Identifies troubleSpots: [&quot;speed_control&quot;]</p>
+<p>    └─ Identifies masterTopics: [&quot;menu_navigation&quot;]</p>
+<p>    ↓</p>
+<p>generateAdaptiveGreeting() creates message:</p>
+<p>    ├─ Gets sessionNum (23)</p>
+<p>    ├─ Gets affectionate title (&quot;worthy student&quot;)</p>
+<p>    ├─ Includes trouble spots: &quot;I know speed_control challenges you&quot;</p>
+<p>    ├─ Includes mastery: &quot;Your mastery of menu_navigation shows growth&quot;</p>
+<p>    ├─ Includes favorites: &quot;Eager to work with sapphire again?&quot;</p>
+<p>    └─ Returns personalized greeting</p>
+<p>    ↓</p>
+<p>generateGreetingFollowUp() offers help:</p>
+<p>    ├─ Detects troubleSpots</p>
+<p>    ├─ If speed_control in troubles:</p>
+<p>    │   &quot;Would you like me to explain differently?&quot;</p>
+<p>    └─ Returns specific, contextual follow-up</p>
+<p>    ↓</p>
+<p>User sees genuinely personalized response</p>
+<p>    ✓ Feels known and understood</p>
+<p>    ✓ Gets targeted help</p>
+<p>    ✓ Celebrates their progress</p>
+<p>    ✓ Not repetitive—actually personal</code></pre></p>
+
+<hr>
+
+<h2>7. Example: Speed Control Struggle</h2>
+
+<p><strong>Visit 1</strong>:</p>
+<pre class="code-block javascript" data-lang="javascript"><code>User: &quot;How do I control speed?&quot;
+<p>Merlin records: { query: &quot;...&quot;, topic: &quot;speed_control&quot; }</p>
+<p>troubleSpots = []  // Need 3 asks first</code></pre></p>
+
+<p><strong>Visit 5</strong>:</p>
+<pre class="code-block javascript" data-lang="javascript"><code>User: &quot;What about speed levels?&quot;
+<p>Merlin records: { query: &quot;...&quot;, topic: &quot;speed_control&quot; }</p>
+<p>Count = 2  // Getting close...</p>
+<p>troubleSpots = []</code></pre></p>
+
+<p><strong>Visit 8</strong>:</p>
+<pre class="code-block javascript" data-lang="javascript"><code>User: &quot;I&#039;m confused about speed control&quot;
+<p>Merlin records: { query: &quot;...&quot;, topic: &quot;speed_control&quot; }</p>
+<p>Count = 3  // TRIGGER!</p>
+<p>troubleSpots.push(&quot;speed_control&quot;)  // ← Identified!</code></pre></p>
+
+<p><strong>Visit 9</strong> (Next greeting):</p>
+<pre class="code-block javascript" data-lang="javascript"><code>patterns = analyzeUserPatterns()
+<p>// Returns: { troubleSpots: [&quot;speed_control&quot;], ... }</p>
+
+<p>if (troubleSpots.includes(&quot;speed_control&quot;)) {</p>
+<p>    greeting += <code class="inline-code">I notice speed control has been on your mind.</p>
+<p>               Would you like me to explain differently?</code></p>
+<p>}</p>
+
+<p>// USER EXPERIENCES:</p>
+<p>// &quot;Oh wow... Merlin actually noticed I&#039;ve been asking </p>
+<p>//  about this repeatedly. He&#039;s offering SPECIFIC help.</p>
+<p>//  This isn&#039;t generic—this is for ME.&quot;</code></pre></p>
+
+<hr>
+
+<h2>8. Session-Based Progression</h2>
+
+<pre class="code-block javascript" data-lang="javascript"><code>if (sessionNum === 1) {
+<p>    // Generic welcome appropriate for strangers</p>
+<p>    return <code class="inline-code">Welcome, seeker...</code>;</p>
+<p>}</p>
+
+<p>if (sessionNum === 2) {</p>
+<p>    // Acknowledge return</p>
+<p>    return <code class="inline-code">Welcome back, my student...</code>;</p>
+<p>}</p>
+
+<p>if (sessionNum &lt;= 5) {</p>
+<p>    // Building recognition</p>
+<p>    return <code class="inline-code">Welcome again, dedicated one...</code>;</p>
+<p>}</p>
+
+<p>if (sessionNum &gt;= 6) {</p>
+<p>    // Deep personalization with references</p>
+<p>    return <code class="inline-code">Ah, ${getAffectionateTitle()}. Visit ${sessionNum}...</p>
+<p>           I know ${troubleSpots.join(&#039; and &#039;)} challenge you...</code>;</p>
+<p>}</code></pre></p>
+
+<p><strong>Why</strong>:</p>
+<ul><li class="ul-item">Session 1-2: Need to establish relationship</li>
+<li class="ul-item">Session 3-5: Build recognition  </li>
+<li class="ul-item">Session 6+: Full personalization earned through repeated visits</li></ul>
+
+<hr>
+
+<h2>9. Affectionate Title Progression</h2>
+
+<pre class="code-block javascript" data-lang="javascript"><code>getAffectionateTitle() {
+<p>    const score = this.userProfile.merlinRelationshipScore;</p>
+    
+<p>    if (score &lt; 10) return &#039;newcomer&#039;;</p>
+<p>    if (score &lt; 25) return &#039;apprentice&#039;;</p>
+<p>    if (score &lt; 50) return &#039;scholar&#039;;</p>
+<p>    if (score &lt; 100) return &#039;worthy student&#039;;</p>
+<p>    return &#039;trusted student&#039;;</p>
+<p>}</code></pre></p>
+
+<p><strong>What You Hear</strong>:</p>
+<ul><li class="ul-item">Visit 1-3: "newcomer"</li>
+<li class="ul-item">Visit 3-8: "apprentice"</li>
+<li class="ul-item">Visit 8-15: "scholar"</li>
+<li class="ul-item">Visit 15+: "worthy student"</li>
+<li class="ul-item">Visit 30+: "trusted student"</li></ul>
+
+<hr>
+
+<h2>10. The Compassion Principle</h2>
+
+<p><strong>Notice the language</strong>:</p>
+<pre class="code-block javascript" data-lang="javascript"><code>// NOT: &quot;You still don&#039;t understand...&quot;
+<p>// BUT: &quot;I know speed control challenges you.&quot;</p>
+
+<p>// NOT: &quot;You ask too many questions...&quot;</p>
+<p>// BUT: &quot;Speed control has been on your mind.&quot;</p>
+
+<p>// NOT: &quot;You need to learn more...&quot;</p>
+<p>// BUT: &quot;Shall we conquer those demons together?&quot;</code></pre></p>
+
+<p><strong>Merlin's philosophy</strong>:</p>
+<ul><li class="ul-item">Understanding = Compassion</li>
+<li class="ul-item">Recognition = Respect</li>
+<li class="ul-item">Specific Help = Care</li>
+<li class="ul-item">Partnership Language = "We shall" not "You must"</li></ul>
+
+<hr>
+
+<h2>Summary: The Three Keys</h2>
+
+<p><strong>1. Analysis</strong> - <code class="inline-code">analyzeUserPatterns()</code></p>
+<pre class="code-block " data-lang="text"><code>Scans conversation history → finds patterns</code></pre>
+
+<p><strong>2. Personalization</strong> - <code class="inline-code">generateAdaptiveGreeting()</code></p>
+<pre class="code-block " data-lang="text"><code>Uses patterns → generates custom response</code></pre>
+
+<p><strong>3. Action</strong> - <code class="inline-code">trackUserLearning()</code></p>
+<pre class="code-block " data-lang="text"><code>Captures new questions → updates profile → feeds next greeting</code></pre>
+
+<p><strong>Result</strong>: A mentor who truly knows you.</p>
+
+<hr>
+
+<h2>The Magic Moment</h2>
+
+<p><strong>Visit 8 or 9</strong>: You ask about speed control for the 3rd time.</p>
+
+<p><strong>Merlin's Response</strong>:</p>
+<pre class="code-block " data-lang="text"><code>&quot;I notice speed control has been on your mind.
+<p>Would you like me to explain in a different way?</p>
+<p>Maybe with examples for your favorite stone (sapphire)?&quot;</code></pre></p>
+
+<p><strong>You think</strong>: </p>
+<blockquote>"Wait... he actually noticed. He's been listening.</blockquote>
+<blockquote>He knows I like sapphire. He knows I've asked about this</blockquote>
+<blockquote>multiple times. He's not just spouting generic help—</blockquote>
+<blockquote>he's helping ME specifically."</blockquote>
+
+<p><strong>That's not repetitive. That's a real mentor.</strong></p>
+
+<hr>
+
+<p>File: GemBot<em>Control</em>AI.html  </p>
+<p>Lines Modified: 4123-4370 (148 lines of personalization logic)  </p>
+<p>Impact: Complete transformation from generic to personal mentorship</p>
+
+        <div class="generated-notice">
+            🤖 Auto-generated from MERLIN_CODE_PATTERNS.md by GemBot Neural Dashboard Agent<br>
+            Generated: 2025-12-16T13:52:14.896Z
+        </div>
+    </div>
+</body>
+</html>

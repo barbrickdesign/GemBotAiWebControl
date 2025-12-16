@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MERLIN_AI_PAYMENT_SYSTEM - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        <h1>💰 MERLIN AI - GBUV PAYMENT SYSTEM</h1>
+
+<p><strong>Status:</strong> ✅ <strong>ENABLED & OPERATIONAL</strong>  </p>
+<p><strong>Date:</strong> December 16, 2025  </p>
+<p><strong>Purpose:</strong> Sustainable economy for AI operations  </p>
+
+<hr>
+
+<h2>🎯 OVERVIEW</h2>
+
+<p>All Merlin AI operations now require GBUV token payments to keep the economy flowing and applications functional. Every AI call costs GBUV, which flows to the treasury wallet to sustain the system!</p>
+
+<h3>Why Payment Gating?</h3>
+
+<p>✅ <strong>Gemini API costs real money</strong> - Token usage isn't free  </p>
+<p>✅ <strong>Sustains the GBUV economy</strong> - Creates demand for tokens  </p>
+<p>✅ <strong>Prevents abuse</strong> - Rate limits through economic incentive  </p>
+<p>✅ <strong>Fair usage model</strong> - Pay for what you use  </p>
+<p>✅ <strong>Treasury funding</strong> - Supports system operations  </p>
+
+<hr>
+
+<h2>💵 PRICING TABLE</h2>
+
+<p>All payments go to treasury wallet: <strong>6HTjfgWZYMbENnMAJJFhxWR2VZDxdze3qV7zznSAsfk</strong></p>
+
+<p>| AI Flow | Cost (GBUV) | What You Get |</p>
+<p>|---------|-------------|--------------|</p>
+<p>| <strong>analyzeCodeFlow</strong> | 5 GBUV | Quality assessment (1-10), security analysis, performance suggestions, refactor estimate |</p>
+<p>| <strong>summarizeRepositoryFlow</strong> | 25 GBUV | Full repo analysis, architecture rating, top issues, recommendations, value estimate |</p>
+<p>| <strong>suggestFixFlow</strong> | 10 GBUV | Root cause analysis, fix plan, implementation steps, time estimate, risk assessment |</p>
+<p>| <strong>predictValueImpactFlow</strong> | 15 GBUV | Value prediction after changes, confidence level, per-change impact, recommendations |</p>
+<p>| <strong>compareRepositoriesFlow</strong> | 20 GBUV | Side-by-side repo comparison, winner determination, strengths/weaknesses, advice |</p>
+<p>| <strong>helloFlow</strong> | 1 GBUV | Test connection, verify Merlin AI is online |</p>
+
+<hr>
+
+<h2>🔐 HOW IT WORKS</h2>
+
+<h3>1. User Makes AI Request</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Example: Analyze a code file
+<p>const result = await window.merlinAI.analyzeCodeFlow(</p>
+<p>    nodeData,</p>
+<p>    userWalletPublicKey  // &lt;-- REQUIRED!</p>
+<p>);</code></pre></p>
+
+<h3>2. Payment Verification</h3>
+
+<p>Merlin AI checks:</p>
+<ul><li class="ul-item">✅ Does user have a wallet?</li>
+<li class="ul-item">✅ Does wallet have enough GBUV?</li>
+<li class="ul-item">✅ Is payment system enabled?</li></ul>
+
+<h3>3. Payment Processing</h3>
+
+<p>If verified:</p>
+<ul><li class="ul-item">✅ GBUV transferred from user → treasury</li>
+<li class="ul-item">✅ Transaction logged to Firebase</li>
+<li class="ul-item">✅ Telemetry recorded</li>
+<li class="ul-item">✅ AI request proceeds</li></ul>
+
+<p>If failed:</p>
+<ul><li class="ul-item">❌ Returns error message</li>
+<li class="ul-item">❌ Shows required cost & current balance</li>
+<li class="ul-item">❌ AI request blocked</li></ul>
+
+<h3>4. AI Response</h3>
+
+<p>If payment successful:</p>
+<ul><li class="ul-item">✅ Full AI analysis returned</li>
+<li class="ul-item">✅ Payment details included</li>
+<li class="ul-item">✅ Transaction ID provided</li></ul>
+
+<hr>
+
+<h2>🚀 USAGE EXAMPLES</h2>
+
+<h3>Example 1: Analyze Code File</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// User wallet (from login)
+<p>const userPublicKey = &#039;ABC123...XYZ&#039;;</p>
+
+<p>// Code file data</p>
+<p>const nodeData = {</p>
+<p>    name: &#039;user-auth.js&#039;,</p>
+<p>    language: &#039;JavaScript&#039;,</p>
+<p>    metrics: {</p>
+<p>        lines: 450,</p>
+<p>        functions: 12,</p>
+<p>        complexity: 8</p>
+<p>    },</p>
+<p>    value: 337.50</p>
+<p>};</p>
+
+<p>// Call Merlin AI (costs 5 GBUV)</p>
+<p>const analysis = await window.merlinAI.analyzeCodeFlow(</p>
+<p>    nodeData,</p>
+<p>    userPublicKey</p>
+<p>);</p>
+
+<p>// Check result</p>
+<p>if (analysis.error) {</p>
+<p>    console.error(&#039;❌&#039;, analysis.message);</p>
+<p>    console.log(<code class="inline-code">Cost: ${analysis.cost} GBUV</code>);</p>
+<p>    console.log(<code class="inline-code">Your balance: ${analysis.balance} GBUV</code>);</p>
+<p>    // Show user: &quot;Insufficient GBUV. Please add funds.&quot;</p>
+<p>} else {</p>
+<p>    console.log(&#039;✅ Analysis complete!&#039;);</p>
+<p>    console.log(&#039;Quality:&#039;, analysis.quality);</p>
+<p>    console.log(&#039;Suggestions:&#039;, analysis.suggestions);</p>
+<p>    // Display analysis to user</p>
+<p>}</code></pre></p>
+
+<h3>Example 2: Summarize Repository (Expensive!)</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>const userPublicKey = &#039;ABC123...XYZ&#039;;
+
+<p>const repoData = {</p>
+<p>    name: &#039;GemBot AI Control&#039;,</p>
+<p>    totalValue: 45732.50,</p>
+<p>    totalHours: 610,</p>
+<p>    nodeCount: 127,</p>
+<p>    avgComplexity: 7.2,</p>
+<p>    topNodes: [...]</p>
+<p>};</p>
+
+<p>// This costs 25 GBUV!</p>
+<p>const summary = await window.merlinAI.summarizeRepositoryFlow(</p>
+<p>    repoData,</p>
+<p>    userPublicKey</p>
+<p>);</p>
+
+<p>if (summary.error === &#039;PAYMENT_REQUIRED&#039;) {</p>
+<p>    alert(<code class="inline-code">⚠️ Need ${summary.cost} GBUV to analyze repository!</code>);</p>
+<p>    alert(<code class="inline-code">Your balance: ${summary.balance} GBUV</code>);</p>
+<p>    // Redirect to &quot;Buy GBUV&quot; page</p>
+<p>} else {</p>
+<p>    console.log(&#039;📊 Repository Summary:&#039;, summary.text);</p>
+<p>    // Show full report</p>
+<p>}</code></pre></p>
+
+<h3>Example 3: Test Connection (Cheap!)</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>const userPublicKey = &#039;ABC123...XYZ&#039;;
+
+<p>// Just costs 1 GBUV</p>
+<p>const hello = await window.merlinAI.helloFlow(</p>
+<p>    &#039;Ryan&#039;,</p>
+<p>    userPublicKey</p>
+<p>);</p>
+
+<p>if (hello.error) {</p>
+<p>    console.log(&#039;⚠️ Not enough GBUV for even a hello!&#039;);</p>
+<p>} else {</p>
+<p>    console.log(&#039;🧙‍♂️&#039;, hello.text);</p>
+<p>}</code></pre></p>
+
+<hr>
+
+<h2>📊 PAYMENT TRACKING</h2>
+
+<h3>View User's Transaction History</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Get all Merlin AI payments
+<p>const payments = window.merlinAI.payment.transactions;</p>
+
+<p>payments.forEach(tx =&gt; {</p>
+<p>    console.log(<code class="inline-code">${tx.flowName}: ${tx.amount} GBUV at ${tx.timestamp}</code>);</p>
+<p>});</code></pre></p>
+
+<h3>Check Total Treasury Collection</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>const totalCollected = window.merlinAI.payment.totalCollected;
+<p>console.log(<code class="inline-code">💰 Treasury has collected: ${totalCollected} GBUV</code>);</code></pre></p>
+
+<h3>Query Firebase for Payment History</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>const { collection, getDocs, query, where } = window.firestoreUtils;
+
+<p>// Get all payments from a specific user</p>
+<p>const q = query(</p>
+<p>    collection(window.firebaseDb, &#039;merlin_payments&#039;),</p>
+<p>    where(&#039;from&#039;, &#039;==&#039;, userPublicKey)</p>
+<p>);</p>
+
+<p>const snapshot = await getDocs(q);</p>
+<p>snapshot.forEach(doc =&gt; {</p>
+<p>    const payment = doc.data();</p>
+<p>    console.log(<code class="inline-code">Paid ${payment.amount} GBUV for ${payment.flowName}</code>);</p>
+<p>});</code></pre></p>
+
+<hr>
+
+<h2>🔧 CONFIGURATION</h2>
+
+<h3>Disable Payments (Testing Only)</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// DANGER: Only for testing!
+<p>window.merlinAI.payment.enabled = false;</p>
+
+<p>// Now all calls are free (no payment required)</p>
+<p>const result = await window.merlinAI.analyzeCodeFlow(nodeData, userPublicKey);</code></pre></p>
+
+<h3>Change Pricing</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Make code analysis more expensive
+<p>window.merlinAI.payment.prices.analyzeCodeFlow = 10; // Was 5 GBUV</p>
+
+<p>// Make hello flow free</p>
+<p>window.merlinAI.payment.prices.helloFlow = 0; // Was 1 GBUV</code></pre></p>
+
+<h3>Change Treasury Wallet</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Route payments to different wallet
+<p>window.merlinAI.payment.treasuryWallet = &#039;NEW&lt;em&gt;WALLET&lt;/em&gt;ADDRESS&#039;;</code></pre></p>
+
+<hr>
+
+<h2>🎨 UI INTEGRATION</h2>
+
+<h3>Show Payment Modal Before AI Call</h3>
+
+<pre class="code-block html" data-lang="html"><code>&lt;div id=&quot;paymentModal&quot; style=&quot;display: none;&quot;&gt;
+<p>    &lt;h3&gt;💰 Payment Required&lt;/h3&gt;</p>
+<p>    &lt;p id=&quot;costMessage&quot;&gt;This operation costs X GBUV&lt;/p&gt;</p>
+<p>    &lt;p id=&quot;balanceMessage&quot;&gt;Your balance: Y GBUV&lt;/p&gt;</p>
+<p>    &lt;button onclick=&quot;confirmPayment()&quot;&gt;Pay &amp; Continue&lt;/button&gt;</p>
+<p>    &lt;button onclick=&quot;cancelPayment()&quot;&gt;Cancel&lt;/button&gt;</p>
+<p>&lt;/div&gt;</p>
+
+<p>&lt;script&gt;</p>
+<p>async function analyzeCodeWithPayment(nodeData, userPublicKey) {</p>
+<p>    // Check cost first</p>
+<p>    const cost = window.merlinAI.payment.prices.analyzeCodeFlow;</p>
+<p>    const wallet = window.walletFactory.getWallet(userPublicKey);</p>
+<p>    const balance = wallet.gbuvBalance;</p>
+    
+<p>    // Show modal</p>
+<p>    document.getElementById(&#039;costMessage&#039;).textContent = <code class="inline-code">This costs ${cost} GBUV</code>;</p>
+<p>    document.getElementById(&#039;balanceMessage&#039;).textContent = <code class="inline-code">Your balance: ${balance} GBUV</code>;</p>
+<p>    document.getElementById(&#039;paymentModal&#039;).style.display = &#039;block&#039;;</p>
+<p>}</p>
+
+<p>async function confirmPayment() {</p>
+<p>    // Proceed with AI call</p>
+<p>    const result = await window.merlinAI.analyzeCodeFlow(nodeData, userPublicKey);</p>
+    
+<p>    if (result.error) {</p>
+<p>        alert(result.message);</p>
+<p>    } else {</p>
+<p>        // Show analysis</p>
+<p>        displayAnalysis(result);</p>
+<p>    }</p>
+    
+<p>    document.getElementById(&#039;paymentModal&#039;).style.display = &#039;none&#039;;</p>
+<p>}</p>
+<p>&lt;/script&gt;</code></pre></p>
+
+<h3>Display Balance Indicator</h3>
+
+<pre class="code-block html" data-lang="html"><code>&lt;div id=&quot;gbuvBalance&quot; style=&quot;position: fixed; top: 20px; right: 20px; background: #1e3a8a; padding: 15px; border-radius: 8px;&quot;&gt;
+<p>    &lt;div style=&quot;font-size: 12px; opacity: 0.8;&quot;&gt;Your GBUV Balance&lt;/div&gt;</p>
+<p>    &lt;div style=&quot;font-size: 24px; font-weight: bold;&quot; id=&quot;balanceAmount&quot;&gt;0&lt;/div&gt;</p>
+<p>    &lt;button onclick=&quot;buyGBUV()&quot;&gt;+ Buy More&lt;/button&gt;</p>
+<p>&lt;/div&gt;</p>
+
+<p>&lt;script&gt;</p>
+<p>// Update balance display</p>
+<p>function updateBalanceDisplay() {</p>
+<p>    const userPublicKey = getCurrentUserWallet();</p>
+<p>    const wallet = window.walletFactory.getWallet(userPublicKey);</p>
+<p>    document.getElementById(&#039;balanceAmount&#039;).textContent = wallet.gbuvBalance;</p>
+<p>}</p>
+
+<p>// Call every 5 seconds</p>
+<p>setInterval(updateBalanceDisplay, 5000);</p>
+<p>&lt;/script&gt;</code></pre></p>
+
+<h3>Show "Insufficient Funds" Warning</h3>
+
+<pre class="code-block html" data-lang="html"><code>&lt;div id=&quot;insufficientFunds&quot; style=&quot;display: none; background: #dc2626; color: white; padding: 20px;&quot;&gt;
+<p>    &lt;h3&gt;❌ Insufficient GBUV&lt;/h3&gt;</p>
+<p>    &lt;p&gt;You need &lt;span id=&quot;requiredAmount&quot;&gt;&lt;/span&gt; GBUV but only have &lt;span id=&quot;currentAmount&quot;&gt;&lt;/span&gt; GBUV&lt;/p&gt;</p>
+<p>    &lt;button onclick=&quot;redirectToBuyPage()&quot;&gt;Buy GBUV Now&lt;/button&gt;</p>
+<p>&lt;/div&gt;</p>
+
+<p>&lt;script&gt;</p>
+<p>function showInsufficientFundsModal(required, current) {</p>
+<p>    document.getElementById(&#039;requiredAmount&#039;).textContent = required;</p>
+<p>    document.getElementById(&#039;currentAmount&#039;).textContent = current;</p>
+<p>    document.getElementById(&#039;insufficientFunds&#039;).style.display = &#039;block&#039;;</p>
+<p>}</p>
+<p>&lt;/script&gt;</code></pre></p>
+
+<hr>
+
+<h2>📈 ANALYTICS</h2>
+
+<h3>Track AI Usage by Flow</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Get telemetry summary with payment data
+<p>const summary = window.merlinAI.getTelemetrySummary();</p>
+
+<p>Object.entries(summary.flowBreakdown).forEach(([flow, stats]) =&gt; {</p>
+<p>    const cost = window.merlinAI.payment.prices[flow];</p>
+<p>    const totalSpent = stats.count * cost;</p>
+    
+<p>    console.log(<code class="inline-code">${flow}:</code>);</p>
+<p>    console.log(<code class="inline-code">  Calls: ${stats.count}</code>);</p>
+<p>    console.log(<code class="inline-code">  Cost per call: ${cost} GBUV</code>);</p>
+<p>    console.log(<code class="inline-code">  Total spent: ${totalSpent} GBUV</code>);</p>
+<p>});</code></pre></p>
+
+<h3>Calculate User's Total Spend</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>function calculateTotalSpend(userPublicKey) {
+<p>    const payments = window.merlinAI.payment.transactions</p>
+<p>        .filter(tx =&gt; tx.from === userPublicKey);</p>
+    
+<p>    const total = payments.reduce((sum, tx) =&gt; sum + tx.amount, 0);</p>
+    
+<p>    console.log(<code class="inline-code">User has spent ${total} GBUV on Merlin AI</code>);</p>
+<p>    return total;</p>
+<p>}</code></pre></p>
+
+<h3>Monitor Treasury Growth</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>setInterval(() =&gt; {
+<p>    const collected = window.merlinAI.payment.totalCollected;</p>
+<p>    console.log(<code class="inline-code">💰 Treasury: ${collected} GBUV</code>);</p>
+    
+<p>    // Alert if treasury reaches milestone</p>
+<p>    if (collected &gt;= 1000 &amp;&amp; !alerted1000) {</p>
+<p>        alert(&#039;🎉 Treasury reached 1,000 GBUV!&#039;);</p>
+<p>        alerted1000 = true;</p>
+<p>    }</p>
+<p>}, 60000); // Check every minute</code></pre></p>
+
+<hr>
+
+<h2>🛡️ ERROR HANDLING</h2>
+
+<h3>Common Error Responses</h3>
+
+<p><strong>Payment Required:</strong></p>
+<pre class="code-block javascript" data-lang="javascript"><code>{
+<p>    error: &#039;PAYMENT_REQUIRED&#039;,</p>
+<p>    message: &#039;❌ Insufficient GBUV. Required: 25 GBUV, Balance: 10 GBUV&#039;,</p>
+<p>    cost: 25,</p>
+<p>    balance: 10</p>
+<p>}</code></pre></p>
+
+<p><strong>Payment Failed:</strong></p>
+<pre class="code-block javascript" data-lang="javascript"><code>{
+<p>    error: &#039;PAYMENT_FAILED&#039;,</p>
+<p>    message: &#039;❌ Payment failed: Transfer failed&#039;</p>
+<p>}</code></pre></p>
+
+<p><strong>No Wallet:</strong></p>
+<pre class="code-block javascript" data-lang="javascript"><code>{
+<p>    error: &#039;PAYMENT_REQUIRED&#039;,</p>
+<p>    message: &#039;❌ Wallet not found. Please log in or create an account.&#039;,</p>
+<p>    required: 5,</p>
+<p>    balance: 0</p>
+<p>}</code></pre></p>
+
+<h3>Graceful Degradation</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>async function tryAnalyzeCode(nodeData, userPublicKey) {
+<p>    const result = await window.merlinAI.analyzeCodeFlow(nodeData, userPublicKey);</p>
+    
+<p>    if (result.error === &#039;PAYMENT_REQUIRED&#039;) {</p>
+<p>        // Show free alternative</p>
+<p>        return {</p>
+<p>            quality: &#039;?&#039;,</p>
+<p>            suggestions: [&#039;Payment required for AI analysis&#039;],</p>
+<p>            note: <code class="inline-code">Cost: ${result.cost} GBUV (you have ${result.balance})</code></p>
+<p>        };</p>
+<p>    }</p>
+    
+<p>    if (result.error === &#039;PAYMENT_FAILED&#039;) {</p>
+<p>        // Log error, retry once</p>
+<p>        console.error(&#039;Payment failed, retrying...&#039;);</p>
+<p>        return await window.merlinAI.analyzeCodeFlow(nodeData, userPublicKey);</p>
+<p>    }</p>
+    
+<p>    return result;</p>
+<p>}</code></pre></p>
+
+<hr>
+
+<h2>🎯 BEST PRACTICES</h2>
+
+<h3>1. Always Check Balance First</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>function canAfford(flowName, userPublicKey) {
+<p>    const cost = window.merlinAI.payment.prices[flowName];</p>
+<p>    const wallet = window.walletFactory.getWallet(userPublicKey);</p>
+<p>    return wallet.gbuvBalance &gt;= cost;</p>
+<p>}</p>
+
+<p>// Use before AI call</p>
+<p>if (!canAfford(&#039;summarizeRepositoryFlow&#039;, userPublicKey)) {</p>
+<p>    alert(&#039;⚠️ Not enough GBUV for repository analysis!&#039;);</p>
+<p>    return;</p>
+<p>}</code></pre></p>
+
+<h3>2. Batch Expensive Operations</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Bad: Analyze 10 files individually (50 GBUV)
+<p>files.forEach(async file =&gt; {</p>
+<p>    await window.merlinAI.analyzeCodeFlow(file, userPublicKey); // 5 GBUV each</p>
+<p>});</p>
+
+<p>// Good: Combine data, get 1 summary (25 GBUV)</p>
+<p>const repoData = aggregateFiles(files);</p>
+<p>await window.merlinAI.summarizeRepositoryFlow(repoData, userPublicKey);</code></pre></p>
+
+<h3>3. Cache AI Responses</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>const aiCache = {};
+
+<p>async function getAnalysisWithCache(nodeData, userPublicKey) {</p>
+<p>    const cacheKey = <code class="inline-code">${nodeData.name}_${nodeData.metrics.lines}</code>;</p>
+    
+<p>    // Return cached result (free!)</p>
+<p>    if (aiCache[cacheKey]) {</p>
+<p>        console.log(&#039;✅ Using cached analysis (no cost)&#039;);</p>
+<p>        return aiCache[cacheKey];</p>
+<p>    }</p>
+    
+<p>    // Fresh analysis (costs GBUV)</p>
+<p>    const result = await window.merlinAI.analyzeCodeFlow(nodeData, userPublicKey);</p>
+<p>    aiCache[cacheKey] = result;</p>
+<p>    return result;</p>
+<p>}</code></pre></p>
+
+<h3>4. Show Cost Before Action</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Show cost in button
+<p>&lt;button onclick=&quot;analyze()&quot;&gt;</p>
+<p>    🧙‍♂️ Analyze Code (5 GBUV)</p>
+<p>&lt;/button&gt;</p>
+
+<p>// Or in tooltip</p>
+<p>&lt;button title=&quot;Costs 25 GBUV&quot;&gt;</p>
+<p>    📊 Summarize Repository</p>
+<p>&lt;/button&gt;</code></pre></p>
+
+<h3>5. Offer GBUV Top-Up</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>async function analyzeWithTopUp(nodeData, userPublicKey) {
+<p>    const result = await window.merlinAI.analyzeCodeFlow(nodeData, userPublicKey);</p>
+    
+<p>    if (result.error === &#039;PAYMENT_REQUIRED&#039;) {</p>
+<p>        const needed = result.cost - result.balance;</p>
+        
+<p>        if (confirm(<code class="inline-code">You need ${needed} more GBUV. Buy now?</code>)) {</p>
+<p>            window.location.href = &#039;/buy-gbuv?amount=&#039; + needed;</p>
+<p>        }</p>
+<p>    }</p>
+    
+<p>    return result;</p>
+<p>}</code></pre></p>
+
+<hr>
+
+<h2>🔥 FIREBASE INTEGRATION</h2>
+
+<h3>Payment Collection Schema</h3>
+
+<p><strong>Collection:</strong> <code class="inline-code">merlin_payments</code></p>
+
+<pre class="code-block javascript" data-lang="javascript"><code>{
+<p>    id: &quot;tx&lt;em&gt;1734336000000&lt;/em&gt;abc123&quot;,</p>
+<p>    flowName: &quot;analyzeCodeFlow&quot;,</p>
+<p>    from: &quot;ABC123...XYZ&quot;,  // User wallet</p>
+<p>    to: &quot;6HTjfgWZYMbENnMAJJFhxWR2VZDxdze3qV7zznSAsfk&quot;,  // Treasury</p>
+<p>    amount: 5,</p>
+<p>    timestamp: &quot;2025-12-16T10:30:00Z&quot;,</p>
+<p>    sessionId: &quot;session&lt;em&gt;1734336000&lt;/em&gt;xyz789&quot;</p>
+<p>}</code></pre></p>
+
+<h3>Query Payment History</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Get today&#039;s revenue
+<p>const today = new Date();</p>
+<p>today.setHours(0, 0, 0, 0);</p>
+
+<p>const { collection, query, where, getDocs } = window.firestoreUtils;</p>
+<p>const q = query(</p>
+<p>    collection(window.firebaseDb, &#039;merlin_payments&#039;),</p>
+<p>    where(&#039;timestamp&#039;, &#039;&gt;=&#039;, today.toISOString())</p>
+<p>);</p>
+
+<p>const snapshot = await getDocs(q);</p>
+<p>let todayRevenue = 0;</p>
+<p>snapshot.forEach(doc =&gt; {</p>
+<p>    todayRevenue += doc.data().amount;</p>
+<p>});</p>
+
+<p>console.log(<code class="inline-code">💰 Today&#039;s revenue: ${todayRevenue} GBUV</code>);</code></pre></p>
+
+<hr>
+
+<h2>🎊 STATUS</h2>
+
+<p>✅ <strong>Payment system enabled</strong>  </p>
+<p>✅ <strong>All 6 AI flows gated</strong>  </p>
+<p>✅ <strong>Treasury wallet configured</strong>  </p>
+<p>✅ <strong>Firebase logging active</strong>  </p>
+<p>✅ <strong>Transaction tracking operational</strong>  </p>
+<p>✅ <strong>Economy sustained!</strong>  </p>
+
+<p><strong>🎉 MERLIN AI NOW REQUIRES GBUV PAYMENTS! 🎉</strong></p>
+
+<p>Every AI operation generates value for the GBUV economy! 💰</p>
+
+        <div class="generated-notice">
+            🤖 Auto-generated from MERLIN_AI_PAYMENT_SYSTEM.md by GemBot Neural Dashboard Agent<br>
+            Generated: 2025-12-16T13:52:14.323Z
+        </div>
+    </div>
+</body>
+</html>

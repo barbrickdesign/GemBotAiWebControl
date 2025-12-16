@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MOTOR_CONTROL_UPDATE - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        <h1>Motor Control System Update (December 6, 2025)</h1>
+
+<h2>✅ Fixed Issues</h2>
+
+<h3>Problem</h3>
+<p>Motor controls were sending <strong>STOP (u) command on every mouseup</strong>, immediately halting motors even when trying to do continuous movements. This caused:</p>
+<ul><li class="ul-item">Single button press → immediate stop</li>
+<li class="ul-item">No hold-to-move capability</li>
+<li class="ul-item">5-second timeout triggering unexpectedly</li></ul>
+
+<h3>Root Cause</h3>
+<p>The button handlers were:</p>
+<pre class="code-block javascript" data-lang="javascript"><code>// ❌ WRONG: Sends STOP immediately
+<p>btn.addEventListener(&#039;mouseup&#039;, () =&gt; {</p>
+<p>    sendCommand(&#039;u&#039;);  // Stops motors immediately!</p>
+<p>});</code></pre></p>
+
+<h3>Solution</h3>
+<p>Implemented proper <strong>state-based motor control</strong> with:</p>
+<ul><li class="ul-item">✅ Hold-to-move for continuous mode (send command every 50ms while held)</li>
+<li class="ul-item">✅ Step mode for precise single/multi-step movements</li>
+<li class="ul-item">✅ Stop only when ALL buttons released (not on every mouseup)</li>
+<li class="ul-item">✅ Debounced STOP command (50ms cooldown between stops)</li></ul>
+
+<hr>
+
+<h2>🎮 New Motor Control Modes</h2>
+
+<h3>CONTINUOUS MODE (Default) ✅ Hold-to-Move</h3>
+<ul><li class="ul-item"><strong>How it works:</strong> Hold mouse button → motors move continuously</li>
+<li class="ul-item"><strong>Release button</strong> → motors stop automatically</li>
+<li class="ul-item"><strong>Button behavior:</strong></li></ul>
+<p>  1. <code class="inline-code">mousedown</code>: Send movement command repeatedly (every 50ms)</p>
+<p>  2. Hold: Motor continues moving</p>
+<p>  3. <code class="inline-code">mouseup</code>: Flag sets to false, interval detects no buttons pressed</p>
+<p>  4. Stop: Sends STOP command once (50ms debounce)</p>
+
+<p><strong>Visual Feedback:</strong></p>
+<pre class="code-block " data-lang="text"><code>🎛️ Motor Mode: [▶️ CONTINUOUS] [⏸️ STEP]  ← Blue = Active
+<p>📏 Step Size: 1/70  (disabled in continuous mode)</code></pre></p>
+
+<h3>STEP MODE ⏸️ Precise Stepping</h3>
+<ul><li class="ul-item"><strong>How it works:</strong> Click button → moves N steps (configured by slider)</li>
+<li class="ul-item"><strong>Step size:</strong> 1-70 steps (adjustable with slider)</li>
+<li class="ul-item"><strong>Button behavior:</strong></li></ul>
+<p>  1. <code class="inline-code">mousedown</code>: Send movement command N times (50ms apart)</p>
+<p>  2. After N commands sent: Send STOP automatically</p>
+<p>  3. Button press completes action</p>
+
+<p><strong>Visual Feedback:</strong></p>
+<pre class="code-block " data-lang="text"><code>🎛️ Motor Mode: [▶️ CONTINUOUS] [⏸️ STEP]  ← Orange = Active
+<p>📏 Step Size: 5/70  (active: determines how many steps)</p>
+<p>   (Hold button to move 5 steps)</code></pre></p>
+
+<hr>
+
+<h2>🎚️ Step Interval Slider</h2>
+
+<p><strong>Location:</strong> Motor Control Panel → "📏 Step Size"</p>
+
+<p><strong>Features:</strong></p>
+<ul><li class="ul-item"><strong>Range:</strong> 1-70 steps</li>
+<li class="ul-item"><strong>Default:</strong> 1 step</li>
+<li class="ul-item"><strong>Real-time display:</strong> Shows "Step Size: X/70"</li>
+<li class="ul-item"><strong>Active in:</strong> Both CONTINUOUS and STEP modes</li></ul>
+<p>  - CONTINUOUS: Controls repeat rate (steps per hold)</p>
+<p>  - STEP: Controls total steps per click</p>
+
+<p><strong>Examples:</strong></p>
+<ul><li class="ul-item">Slider at <code class="inline-code">1</code> → Move 1 step (smallest increment)</li>
+<li class="ul-item">Slider at <code class="inline-code">10</code> → Move 10 steps per click</li>
+<li class="ul-item">Slider at <code class="inline-code">70</code> → Move 70 steps (maximum per Nextion limit)</li></ul>
+
+<hr>
+
+<h2>🔄 Motor Control Flow</h2>
+
+<h3>Continuous Mode Flow</h3>
+<pre class="code-block " data-lang="text"><code>USER PRESSES BUTTON
+<p>    ↓</p>
+<p>[START] Send &#039;d&#039; (X RIGHT)</p>
+<p>[INTERVAL 50ms] Send &#039;d&#039; again</p>
+<p>[INTERVAL 50ms] Send &#039;d&#039; again</p>
+<p>...repeats while held...</p>
+<p>USER RELEASES BUTTON</p>
+<p>    ↓</p>
+<p>[STOP] Interval detects no buttons pressed</p>
+<p>[STOP] Send &#039;u&#039; (STOP COMMAND)</p>
+<p>[DONE] Motors halt</code></pre></p>
+
+<h3>Step Mode Flow</h3>
+<pre class="code-block " data-lang="text"><code>USER PRESSES BUTTON
+<p>    ↓</p>
+<p>[START LOOP, steps=0]</p>
+<p>[LOOP 1: 0ms] Send &#039;d&#039; (X RIGHT), steps++</p>
+<p>[LOOP 2: 50ms] Send &#039;d&#039; (X RIGHT), steps++</p>
+<p>[LOOP 3: 100ms] Send &#039;d&#039; (X RIGHT), steps++</p>
+<p>[LOOP COMPLETE] steps == motorStepSize</p>
+<p>    ↓</p>
+<p>[STOP] Send &#039;u&#039; (STOP COMMAND)</p>
+<p>[DONE] Motors halt</code></pre></p>
+
+<hr>
+
+<h2>📊 Command Mapping</h2>
+
+<p>| Motor | Direction | Continuous | Step |</p>
+<p>|-------|-----------|-----------|------|</p>
+<p>| <strong>X-Axis</strong> | Left | <code class="inline-code">d</code> | <code class="inline-code">d</code> × N |</p>
+<p>| <strong>X-Axis</strong> | Right | <code class="inline-code">a</code> | <code class="inline-code">a</code> × N |</p>
+<p>| <strong>Y-Axis</strong> | Up | <code class="inline-code">w</code> | <code class="inline-code">w</code> × N |</p>
+<p>| <strong>Y-Axis</strong> | Down | <code class="inline-code">z</code> | <code class="inline-code">z</code> × N |</p>
+<p>| <strong>P-Axis</strong> | CW | <code class="inline-code">e</code> | <code class="inline-code">e</code> × N |</p>
+<p>| <strong>P-Axis</strong> | CCW | <code class="inline-code">j</code> | <code class="inline-code">j</code> × N |</p>
+<p>| <strong>STOP</strong> | All Motors | <code class="inline-code">u</code> | <code class="inline-code">u</code> (auto) |</p>
+<p>| <strong>Index</strong> | Increment | <code class="inline-code">c</code> (manual) | N/A |</p>
+<p>| <strong>Index</strong> | Decrement | <code class="inline-code">i</code> (manual) | N/A |</p>
+
+<hr>
+
+<h2>⚙️ Arduino Side (Unchanged)</h2>
+
+<p>The Arduino code remains the same:</p>
+<ul><li class="ul-item"><code class="inline-code">motorXRight</code>, <code class="inline-code">motorYUp</code>, etc. flags control motion</li>
+<li class="ul-item">50ms update cycle processes continuous movements</li>
+<li class="ul-item">5-second timeout auto-stops runaway motors</li>
+<li class="ul-item">Limit switches still monitored</li></ul>
+
+<p>Web interface now:</p>
+<ul><li class="ul-item">✅ Sends commands consistently (no premature STOP)</li>
+<li class="ul-item">✅ Respects hold duration (only stops on release)</li>
+<li class="ul-item">✅ Handles debouncing (prevents rapid stop/start)</li></ul>
+
+<hr>
+
+<h2>🧪 Testing Checklist</h2>
+
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> <strong>CONTINUOUS MODE:</strong></li></ul>
+<p>  - [ ] Press button → motor moves</p>
+<p>  - [ ] Hold button → motor continues</p>
+<p>  - [ ] Release button → motor stops (within 100ms)</p>
+<p>  - [ ] No timeout errors during normal operation</p>
+
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> <strong>STEP MODE (set slider to 5):</strong></li></ul>
+<p>  - [ ] Click button → motor moves exactly 5 times</p>
+<p>  - [ ] Motor stops automatically after steps</p>
+<p>  - [ ] Change slider to 10, click → motor moves 10 times</p>
+<p>  - [ ] Slider range 1-70 works correctly</p>
+
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> <strong>Mode Switching:</strong></li></ul>
+<p>  - [ ] Switch CONTINUOUS → STEP → works</p>
+<p>  - [ ] Switch STEP → CONTINUOUS → works</p>
+<p>  - [ ] Visual buttons highlight correctly (blue/orange)</p>
+
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> <strong>E-STOP Button:</strong></li></ul>
+<p>  - [ ] Press E-STOP anytime → motors halt immediately</p>
+<p>  - [ ] 5 redundant commands sent</p>
+<p>  - [ ] Button flashes red for 2 seconds</p>
+
+<hr>
+
+<h2>📝 Code References</h2>
+
+<p><strong>HTML UI Elements:</strong></p>
+<ul><li class="ul-item"><code class="inline-code">btnModeContinuous</code> / <code class="inline-code">btnModeStep</code> → Mode selection buttons</li>
+<li class="ul-item"><code class="inline-code">stepIntervalSlider</code> → Step size slider (1-70)</li>
+<li class="ul-item"><code class="inline-code">stepSizeDisplay</code> / <code class="inline-code">stepSizeLabel</code> → Display updates</li></ul>
+
+<p><strong>JavaScript Variables:</strong></p>
+<ul><li class="ul-item"><code class="inline-code">motorControlMode</code> → Current mode ('continuous' or 'step')</li>
+<li class="ul-item"><code class="inline-code">motorStepSize</code> → Steps per action (1-70)</li>
+<li class="ul-item"><code class="inline-code">buttonStates</code> → Tracks which buttons held</li>
+<li class="ul-item"><code class="inline-code">activeSendInterval</code> → Continuous mode interval handle</li></ul>
+
+<p><strong>Key Functions:</strong></p>
+<ul><li class="ul-item"><code class="inline-code">setInterval()</code> → 50ms continuous command loop</li>
+<li class="ul-item"><code class="inline-code">sendCommand(cmd)</code> → Send single command to Arduino</li>
+<li class="ul-item"><code class="inline-code">addMessage()</code> / <code class="inline-code">log()</code> → Console feedback</li></ul>
+
+<hr>
+
+<h2>🚀 Next Steps</h2>
+
+<ol><li class="ol-item"><strong>Test on hardware</strong> with actual motor movement</li>
+<li class="ol-item"><strong>Verify 50ms interval</strong> doesn't overload Arduino</li>
+<li class="ol-item"><strong>Adjust motorStepSize</strong> max if needed (currently 70 per Nextion limit)</li>
+<li class="ol-item"><strong>Document Nextion behavior</strong> for reference</li>
+<li class="ol-item"><strong>Consider adding speed control</strong> per axis in future</li></ol>
+
+<hr>
+
+<h2>📌 Notes</h2>
+
+<ul><li class="ul-item"><strong>E-STOP still works</strong> the same way (immediate halt)</li>
+<li class="ul-item"><strong>Index buttons</strong> unaffected (manual stepper mode)</li>
+<li class="ul-item"><strong>Emergency timeout</strong> (5 sec) still active for safety</li>
+<li class="ul-item"><strong>Limit switches</strong> still monitored during movement</li>
+<li class="ul-item"><strong>Auto-save</strong> removed to prevent conflicts with new logic</li></ul>
+
+        <div class="generated-notice">
+            🤖 Auto-generated from MOTOR_CONTROL_UPDATE.md by GemBot Neural Dashboard Agent<br>
+            Generated: 2025-12-16T13:52:18.385Z
+        </div>
+    </div>
+</body>
+</html>

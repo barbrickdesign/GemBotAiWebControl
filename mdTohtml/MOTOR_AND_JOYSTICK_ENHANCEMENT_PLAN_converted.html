@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MOTOR_AND_JOYSTICK_ENHANCEMENT_PLAN - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        <h1>GemBot Control System Enhancement Plan</h1>
+<p><strong>December 6, 2025</strong> | Addressing Motor Speed, P-Axis Home Logic, and Joystick Control</p>
+
+<hr>
+
+<h2>🎯 Three Major Issues to Address</h2>
+
+<h3>Issue #1: P-Axis (90°) Home Logic</h3>
+<p><strong>Problem:</strong> P limit switch is continuously pressed at 90°, so home can trigger incorrectly if stone is still at wheel</p>
+
+<p><strong>Current Code (line 2866):</strong></p>
+<pre class="code-block cpp" data-lang="cpp"><code>while(homePSet != 90){
+<p>    limitSwitchp.loop();</p>
+<p>    PaxisMotor-&gt;step(1,BACKWARD,MICROSTEP);</p>
+<p>    if(limitSwitchp.isPressed()){</p>
+<p>        homePSet = 90;  // Sets immediately without checking Y position!</p>
+<p>    }</p>
+<p>}</code></pre></p>
+
+<p><strong>Issue:</strong> No check that Y axis has moved stone away from wheel before allowing P home.</p>
+
+<hr>
+
+<h3>Issue #2: Motor Speed - Current Configuration</h3>
+<pre class="code-block " data-lang="text"><code>Y Axis:  100 rpm  - For lifting/lowering quill and stone positioning
+<p>X Axis:  1000 rpm - For rotating and indexing</p>
+<p>P Axis:  300 rpm  - For angle changes (gear-driven)</p>
+<p>Index:   300 rpm  - For gear indexing</code></pre></p>
+
+<p><strong>Analysis:</strong></p>
+<ul><li class="ul-item">Y axis at 100 rpm = ~0.83 steps/sec (MICROSTEP mode) = <strong>VERY SLOW</strong> for rapid positioning</li>
+<li class="ul-item">X axis at 1000 rpm = ~8.3 steps/sec (SINGLE mode) = Reasonable for precision</li>
+<li class="ul-item">P axis at 300 rpm = ~2.5 steps/sec (MICROSTEP mode) = Good for angle precision</li>
+<li class="ul-item">Single button press = only 1 step = minimal movement</li></ul>
+
+<p><strong>Recommendation:</strong></p>
+<ul><li class="ul-item">Keep precision speeds for homing/cutting sequences</li>
+<li class="ul-item">Add "fast drive" speeds for manual positioning (5-10x faster)</li>
+<li class="ul-item">Y axis should be 200-400 rpm for rapid repositioning during cuts</li></ul>
+
+<hr>
+
+<h3>Issue #3: Joystick Control System Needed</h3>
+
+<p><strong>Current System (manual control):</strong></p>
+<ul><li class="ul-item">Single character input per button press</li>
+<li class="ul-item">Each press = 1 step or 1-8 steps max</li>
+<li class="ul-item">No continuous movement ("hold button = constant motion")</li>
+<li class="ul-item">No speed selection (precision vs fast)</li></ul>
+
+<p><strong>Needed System:</strong></p>
+<ul><li class="ul-item"><strong>Press Mode</strong> (discrete): Single button press = 1 or more steps (precision)</li>
+<li class="ul-item"><strong>Hold Mode</strong> (continuous): Holding button = continuous rapid movement</li>
+<li class="ul-item"><strong>Speed Control</strong>: Switch between precision and fast modes</li>
+<li class="ul-item"><strong>Axis Priority</strong>: Can't move multiple axes simultaneously (motor shield limitation)</li></ul>
+
+<hr>
+
+<h2>✅ Implementation Strategy</h2>
+
+<h3>Fix #1: Safe P-Axis Home with Y Position Check</h3>
+
+<p>Add safety check that Y has moved away from limit:</p>
+
+<pre class="code-block cpp" data-lang="cpp"><code>void settingsHome(){
+<p>  // ... Y and X homing code ...</p>
+  
+<p>  // SAFETY: Only home P axis if Y has moved enough away from wheel</p>
+<p>  // Home routine should have already moved Y up 100+ steps</p>
+<p>  if(homeYPosition == 0 &amp;&amp; ystepCount &gt; 100) {</p>
+<p>    // Y homing completed successfully, safe to home P</p>
+<p>    Serial.println(&quot;DEBUG: Y homing complete, proceeding to P homing&quot;);</p>
+    
+<p>    // P Axis homing with safety check</p>
+<p>    lcd.clear();</p>
+<p>    lcd.setCursor(0,0);</p>
+<p>    lcd.print(&quot;Setting Home&quot;);</p>
+    
+<p>    PaxisMotor-&gt;step(10,FORWARD,MICROSTEP);  // Pre-move away from limit</p>
+    
+<p>    while(homePSet != 90){</p>
+<p>      limitSwitchp.loop();</p>
+<p>      lcd.setCursor(0,1);</p>
+<p>      lcd.print(&quot;Homing P Angle&quot;);</p>
+      
+<p>      PaxisMotor-&gt;step(1,BACKWARD,MICROSTEP);</p>
+      
+<p>      // CRITICAL: Only accept press if we&#039;re actually moving toward the switch</p>
+<p>      // (prevent false trigger from already-pressed switch at 90°)</p>
+<p>      if(limitSwitchp.isPressed() &amp;&amp; limitSwitchp.getCount() &lt; 2) {</p>
+<p>        Serial.println(&quot;p limit switch: Angle set to 90&quot;);</p>
+<p>        lcd.clear();</p>
+<p>        lcd.setCursor(0,1);</p>
+<p>        lcd.print(&quot;Home P Angle Set to 90&quot;);</p>
+<p>        homePSet = 90;</p>
+<p>      }</p>
+      
+<p>      // Timeout: If we haven&#039;t found switch in 500 steps, abort</p>
+<p>      if(homePSet == 0 &amp;&amp; /&lt;em&gt; step_counter &lt;/em&gt;/ &gt; 500) {</p>
+<p>        Serial.println(&quot;ERROR: P home timeout - switch may already be at 90&quot;);</p>
+<p>        homePSet = 90;  // Force exit</p>
+<p>      }</p>
+<p>    }</p>
+<p>  } else {</p>
+<p>    Serial.println(&quot;ERROR: Cannot home P axis - Y homing incomplete!&quot;);</p>
+<p>    homePSet = 90;  // Safety fallback</p>
+<p>  }</p>
+  
+<p>  manualControl();</p>
+<p>}</code></pre></p>
+
+<hr>
+
+<h3>Fix #2: Optimized Motor Speeds</h3>
+
+<pre class="code-block cpp" data-lang="cpp"><code>// Add at top with other speed definitions (around line 660)
+
+<p>// PRECISION SPEEDS (for homing, cutting, fine positioning)</p>
+<p>const int Y&lt;em&gt;AXIS&lt;/em&gt;PRECISION_SPEED = 100;   // Current: slow and steady</p>
+<p>const int X&lt;em&gt;AXIS&lt;/em&gt;PRECISION_SPEED = 1000;  // Current: good for precision</p>
+<p>const int P&lt;em&gt;AXIS&lt;/em&gt;PRECISION_SPEED = 300;   // Current: good for angles</p>
+<p>const int INDEX&lt;em&gt;PRECISION&lt;/em&gt;SPEED = 300;    // Current: good</p>
+
+<p>// FAST SPEEDS (for rapid repositioning during workflows)</p>
+<p>const int Y&lt;em&gt;AXIS&lt;/em&gt;FAST_SPEED = 400;        // 4x faster = ~3.3 steps/sec</p>
+<p>const int X&lt;em&gt;AXIS&lt;/em&gt;FAST_SPEED = 2000;       // 2x faster = ~16.7 steps/sec</p>
+<p>const int P&lt;em&gt;AXIS&lt;/em&gt;FAST_SPEED = 800;        // 2.7x faster = ~6.7 steps/sec</p>
+<p>const int INDEX&lt;em&gt;FAST&lt;/em&gt;SPEED = 800;         // 2.7x faster</p>
+
+<p>// Global variable for current speed mode</p>
+<p>bool fastMode = false;  // false=precision, true=fast</p>
+
+<p>// Function to set all motors to current speed</p>
+<p>void updateMotorSpeeds() {</p>
+<p>  if(fastMode) {</p>
+<p>    YaxisMotor-&gt;setSpeed(Y&lt;em&gt;AXIS&lt;/em&gt;FAST_SPEED);</p>
+<p>    XaxisMotor-&gt;setSpeed(X&lt;em&gt;AXIS&lt;/em&gt;FAST_SPEED);</p>
+<p>    PaxisMotor-&gt;setSpeed(P&lt;em&gt;AXIS&lt;/em&gt;FAST_SPEED);</p>
+<p>    indexMotor.setSpeed(INDEX&lt;em&gt;FAST&lt;/em&gt;SPEED);</p>
+<p>    Serial.println(&quot;INFO: Motors set to FAST mode&quot;);</p>
+<p>  } else {</p>
+<p>    YaxisMotor-&gt;setSpeed(Y&lt;em&gt;AXIS&lt;/em&gt;PRECISION_SPEED);</p>
+<p>    XaxisMotor-&gt;setSpeed(X&lt;em&gt;AXIS&lt;/em&gt;PRECISION_SPEED);</p>
+<p>    PaxisMotor-&gt;setSpeed(P&lt;em&gt;AXIS&lt;/em&gt;PRECISION_SPEED);</p>
+<p>    indexMotor.setSpeed(INDEX&lt;em&gt;PRECISION&lt;/em&gt;SPEED);</p>
+<p>    Serial.println(&quot;INFO: Motors set to PRECISION mode&quot;);</p>
+<p>  }</p>
+<p>}</code></pre></p>
+
+<hr>
+
+<h3>Fix #3: Joystick Control System</h3>
+
+<p>Add to the character input handler in <code class="inline-code">getKey()</code> or serial receive:</p>
+
+<pre class="code-block cpp" data-lang="cpp"><code>// Add near top of file (global variables section)
+<p>struct JoystickControl {</p>
+<p>  char lastKey = 0;</p>
+<p>  unsigned long keyPressTime = 0;</p>
+<p>  bool isHeld = false;</p>
+<p>  const unsigned long HOLD_THRESHOLD = 100;  // ms before &quot;hold&quot; activates</p>
+<p>  const unsigned long REPEAT_INTERVAL = 50;   // ms between repeated steps</p>
+<p>  unsigned long lastRepeatTime = 0;</p>
+<p>};</p>
+
+<p>JoystickControl joystick;</p>
+
+<p>// Modify in your key handler (around line 960-1080 in manualControl)</p>
+
+<p>case &#039;d&#039;:  // LEFT - X Axis</p>
+<p>{</p>
+<p>  if(!joystick.isHeld) {</p>
+<p>    // First press - single step</p>
+<p>    XaxisMotor-&gt;step(1, FORWARD, SINGLE);</p>
+<p>    countX -= 1;</p>
+<p>    Serial.println(&quot;X LEFT single step: &quot; + String(countX));</p>
+<p>    joystick.lastKey = &#039;d&#039;;</p>
+<p>    joystick.keyPressTime = millis();</p>
+<p>    joystick.isHeld = true;</p>
+<p>  } </p>
+<p>  else if(joystick.lastKey == &#039;d&#039; &amp;&amp; millis() - joystick.lastRepeatTime &gt; joystick.REPEAT_INTERVAL) {</p>
+<p>    // Held - continuous steps (fast movement)</p>
+<p>    XaxisMotor-&gt;step(5, FORWARD, SINGLE);  // 5 steps per repeat</p>
+<p>    countX -= 5;</p>
+<p>    Serial.println(&quot;X LEFT rapid: &quot; + String(countX));</p>
+<p>    joystick.lastRepeatTime = millis();</p>
+<p>  }</p>
+<p>  break;</p>
+<p>}</p>
+
+<p>case &#039;e&#039;:  // UP - Y Axis</p>
+<p>{</p>
+<p>  if(!joystick.isHeld) {</p>
+<p>    YaxisMotor-&gt;step(1, BACKWARD, MICROSTEP);</p>
+<p>    countY -= 1;</p>
+<p>    Serial.println(&quot;Y UP single step: &quot; + String(countY));</p>
+<p>    joystick.lastKey = &#039;e&#039;;</p>
+<p>    joystick.keyPressTime = millis();</p>
+<p>    joystick.isHeld = true;</p>
+<p>  }</p>
+<p>  else if(joystick.lastKey == &#039;e&#039; &amp;&amp; millis() - joystick.lastRepeatTime &gt; joystick.REPEAT_INTERVAL) {</p>
+<p>    YaxisMotor-&gt;step(10, BACKWARD, MICROSTEP);  // 10 steps per repeat</p>
+<p>    countY -= 10;</p>
+<p>    Serial.println(&quot;Y UP rapid: &quot; + String(countY));</p>
+<p>    joystick.lastRepeatTime = millis();</p>
+<p>  }</p>
+<p>  break;</p>
+<p>}</p>
+
+<p>case &#039;f&#039;:  // RIGHT - X Axis</p>
+<p>{</p>
+<p>  if(!joystick.isHeld) {</p>
+<p>    XaxisMotor-&gt;step(1, BACKWARD, SINGLE);</p>
+<p>    countX += 1;</p>
+<p>    Serial.println(&quot;X RIGHT single step: &quot; + String(countX));</p>
+<p>    joystick.lastKey = &#039;f&#039;;</p>
+<p>    joystick.keyPressTime = millis();</p>
+<p>    joystick.isHeld = true;</p>
+<p>  }</p>
+<p>  else if(joystick.lastKey == &#039;f&#039; &amp;&amp; millis() - joystick.lastRepeatTime &gt; joystick.REPEAT_INTERVAL) {</p>
+<p>    XaxisMotor-&gt;step(5, BACKWARD, SINGLE);</p>
+<p>    countX += 5;</p>
+<p>    Serial.println(&quot;X RIGHT rapid: &quot; + String(countX));</p>
+<p>    joystick.lastRepeatTime = millis();</p>
+<p>  }</p>
+<p>  break;</p>
+<p>}</p>
+
+<p>case &#039;i&#039;:  // DOWN - Y Axis</p>
+<p>{</p>
+<p>  if(!joystick.isHeld) {</p>
+<p>    YaxisMotor-&gt;step(1, FORWARD, MICROSTEP);</p>
+<p>    countY += 1;</p>
+<p>    Serial.println(&quot;Y DOWN single step: &quot; + String(countY));</p>
+<p>    joystick.lastKey = &#039;i&#039;;</p>
+<p>    joystick.keyPressTime = millis();</p>
+<p>    joystick.isHeld = true;</p>
+<p>  }</p>
+<p>  else if(joystick.lastKey == &#039;i&#039; &amp;&amp; millis() - joystick.lastRepeatTime &gt; joystick.REPEAT_INTERVAL) {</p>
+<p>    YaxisMotor-&gt;step(10, FORWARD, MICROSTEP);</p>
+<p>    countY += 10;</p>
+<p>    Serial.println(&quot;Y DOWN rapid: &quot; + String(countY));</p>
+<p>    joystick.lastRepeatTime = millis();</p>
+<p>  }</p>
+<p>  break;</p>
+<p>}</p>
+
+<p>case &#039;g&#039;:  // ANGLE DOWN (P axis)</p>
+<p>{</p>
+<p>  if(!joystick.isHeld) {</p>
+<p>    PaxisMotor-&gt;step(1, FORWARD, MICROSTEP);</p>
+<p>    joystick.lastKey = &#039;g&#039;;</p>
+<p>    joystick.keyPressTime = millis();</p>
+<p>    joystick.isHeld = true;</p>
+<p>  }</p>
+<p>  else if(joystick.lastKey == &#039;g&#039; &amp;&amp; millis() - joystick.lastRepeatTime &gt; joystick.REPEAT_INTERVAL) {</p>
+<p>    PaxisMotor-&gt;step(3, FORWARD, MICROSTEP);  // 3 steps per repeat</p>
+<p>    joystick.lastRepeatTime = millis();</p>
+<p>  }</p>
+<p>  break;</p>
+<p>}</p>
+
+<p>case &#039;j&#039;:  // ANGLE UP (P axis)</p>
+<p>{</p>
+<p>  if(!joystick.isHeld) {</p>
+<p>    PaxisMotor-&gt;step(1, BACKWARD, MICROSTEP);</p>
+<p>    joystick.lastKey = &#039;j&#039;;</p>
+<p>    joystick.keyPressTime = millis();</p>
+<p>    joystick.isHeld = true;</p>
+<p>  }</p>
+<p>  else if(joystick.lastKey == &#039;j&#039; &amp;&amp; millis() - joystick.lastRepeatTime &gt; joystick.REPEAT_INTERVAL) {</p>
+<p>    PaxisMotor-&gt;step(3, BACKWARD, MICROSTEP);</p>
+<p>    joystick.lastRepeatTime = millis();</p>
+<p>  }</p>
+<p>  break;</p>
+<p>}</p>
+
+<p>// KEY RELEASE HANDLER (add new case or use touch screen release event)</p>
+<p>case RELEASE:  // Or use a function called when button released</p>
+<p>{</p>
+<p>  if(joystick.isHeld) {</p>
+<p>    unsigned long holdDuration = millis() - joystick.keyPressTime;</p>
+<p>    Serial.println(&quot;Key released after &quot; + String(holdDuration) + &quot;ms&quot;);</p>
+<p>    joystick.isHeld = false;</p>
+<p>    joystick.lastKey = 0;</p>
+<p>    joystick.lastRepeatTime = 0;</p>
+<p>  }</p>
+<p>  break;</p>
+<p>}</p>
+
+<p>// SPEED MODE TOGGLE (add new character for mode switching)</p>
+<p>case &#039;s&#039;:  // Toggle between precision and fast modes</p>
+<p>{</p>
+<p>  fastMode = !fastMode;</p>
+<p>  updateMotorSpeeds();</p>
+<p>  if(fastMode) {</p>
+<p>    Serial.println(&quot;Switched to FAST mode&quot;);</p>
+<p>    lcd.clear();</p>
+<p>    lcd.setCursor(0,0);</p>
+<p>    lcd.print(&quot;FAST MODE&quot;);</p>
+<p>  } else {</p>
+<p>    Serial.println(&quot;Switched to PRECISION mode&quot;);</p>
+<p>    lcd.clear();</p>
+<p>    lcd.setCursor(0,0);</p>
+<p>    lcd.print(&quot;PRECISION MODE&quot;);</p>
+<p>  }</p>
+<p>  break;</p>
+<p>}</code></pre></p>
+
+<hr>
+
+<h2>📊 Movement Speed Comparison</h2>
+
+<p>| Axis | Mode | Speed | Steps/Sec | Time to Move 50 Steps |</p>
+<p>|------|------|-------|-----------|----------------------|</p>
+<p>| Y | Precision | 100 rpm | 0.83 | 60 sec ⚠️ SLOW |</p>
+<p>| Y | Fast | 400 rpm | 3.33 | 15 sec ✅ Better |</p>
+<p>| X | Precision | 1000 rpm | 8.3 | 6 sec |</p>
+<p>| X | Fast | 2000 rpm | 16.7 | 3 sec ✅ Better |</p>
+<p>| P | Precision | 300 rpm | 2.5 | 20 sec |</p>
+<p>| P | Fast | 800 rpm | 6.7 | 7.5 sec ✅ Better |</p>
+
+<hr>
+
+<h2>🎮 Joystick Behavior</h2>
+
+<h3>Press Once = Single Step</h3>
+<pre class="code-block " data-lang="text"><code>User presses RIGHT button once
+<p>  ↓</p>
+<p>Motor steps 1x (SINGLE mode)</p>
+<p>  ↓</p>
+<p>User releases</p>
+<p>  ↓</p>
+<p>Motor stops</code></pre></p>
+
+<h3>Hold Button = Continuous Motion</h3>
+<pre class="code-block " data-lang="text"><code>User holds RIGHT button for 2+ seconds
+<p>  ↓</p>
+<p>Motor steps 1x (first)</p>
+<p>  ↓</p>
+<p>[50ms pause]</p>
+<p>  ↓</p>
+<p>Motor steps 5x (continuous)</p>
+<p>  ↓</p>
+<p>[50ms pause]</p>
+<p>  ↓</p>
+<p>Motor steps 5x (continuous)</p>
+<p>  ↓</p>
+<p>... repeats until release</p>
+<p>  ↓</p>
+<p>Motor stops immediately when released</code></pre></p>
+
+<h3>Speed Mode Toggle</h3>
+<pre class="code-block " data-lang="text"><code>User sends &#039;s&#039; command (or UI button)
+<p>  ↓</p>
+<p>All motors switch to FAST speeds</p>
+<p>  ↓</p>
+<p>LCD displays &quot;FAST MODE&quot;</p>
+<p>  ↓</p>
+<p>Same joystick controls, but 2-4x faster movement</code></pre></p>
+
+<hr>
+
+<h2>🔧 Implementation Priority</h2>
+
+<ol><li class="ol-item"><strong>CRITICAL - Fix P Axis Home</strong>: Prevents angle home from triggering during cutting</li>
+<li class="ol-item"><strong>HIGH - Add Speed Control</strong>: Enables faster repositioning (major workflow improvement)</li>
+<li class="ol-item"><strong>HIGH - Joystick Control</strong>: Enables rapid/precise movement selection</li></ol>
+
+<hr>
+
+<h2>✅ Testing Checklist</h2>
+
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> P axis home only triggers after Y moves away</li>
+<li class="checkbox"><input type="checkbox" disabled> Y axis rapid mode (400 rpm) moves stone to wheel faster</li>
+<li class="checkbox"><input type="checkbox" disabled> Single button press = single step precision</li>
+<li class="checkbox"><input type="checkbox" disabled> Holding button for 2+ sec = rapid continuous motion</li>
+<li class="checkbox"><input type="checkbox" disabled> Speed toggle works (test both precision and fast modes)</li>
+<li class="checkbox"><input type="checkbox" disabled> All axes respond correctly in both modes</li>
+<li class="checkbox"><input type="checkbox" disabled> Motor speeds are responsive but not jerky</li></ul>
+
+<hr>
+
+<p><strong>Ready to implement? I can apply these changes to the code now.</strong></p>
+
+        <div class="generated-notice">
+            🤖 Auto-generated from MOTOR_AND_JOYSTICK_ENHANCEMENT_PLAN.md by GemBot Neural Dashboard Agent<br>
+            Generated: 2025-12-16T13:52:18.180Z
+        </div>
+    </div>
+</body>
+</html>

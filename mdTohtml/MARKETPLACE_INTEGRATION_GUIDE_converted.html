@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MARKETPLACE_INTEGRATION_GUIDE - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        <h1>🏪 GemBot Marketplace Integration Guide</h1>
+
+<h2>Overview</h2>
+
+<p>The GemBot Marketplace integrates Earth Art Gems real-world jewelry with the in-game economy, allowing players to forge virtual jewelry and eventually convert it to real items using the $GEMBOT crypto token.</p>
+
+<h2>Token Information</h2>
+
+<ul><li class="ul-item"><strong>Token Name</strong>: $GEMBOT</li>
+<li class="ul-item"><strong>Token Address</strong>: <code class="inline-code">DPHcbu7wJEbcrnCYjXC8vHBkM39kT9xZg4mYayvrpump</code></li>
+<li class="ul-item"><strong>Network</strong>: Solana</li>
+<li class="ul-item"><strong>Decimals</strong>: 9</li></ul>
+
+<h2>Core Features</h2>
+
+<h3>1. Earth Art Gems Catalog Integration</h3>
+<p>The marketplace pulls jewelry designs from <a href="https://earthartgems.com" target="_blank" rel="noopener">earthartgems.com</a>, including:</p>
+<ul><li class="ul-item">Rings (opal, diamond, topaz, fire agate)</li>
+<li class="ul-item">Pendants and medallions</li>
+<li class="ul-item">Wedding sets</li>
+<li class="ul-item">Custom jewelry pieces</li></ul>
+
+<h3>2. Forging System</h3>
+<p>Players can forge virtual copies of jewelry using:</p>
+<ul><li class="ul-item"><strong>Precious Metals</strong>: Gold (🥇), Rose Gold (🌹), Silver (🥈), Platinum (⚪)</li>
+<li class="ul-item"><strong>Cut Gemstones</strong>: From gameplay</li>
+<li class="ul-item"><strong>$GEMBOT Tokens</strong>: Forging fee (default 50 tokens)</li></ul>
+
+<h3>3. Virtual-to-Real Conversion</h3>
+<ul><li class="ul-item">Collect <strong>10 virtual copies</strong> of an item</li>
+<li class="ul-item">Convert to the <strong>real item</strong> from Earth Art Gems</li>
+<li class="ul-item">Payment processed via Solana blockchain</li>
+<li class="ul-item">Item shipped to provided address</li></ul>
+
+<h3>4. Player Trading</h3>
+<ul><li class="ul-item">List forged items for sale</li>
+<li class="ul-item">Browse other players' listings</li>
+<li class="ul-item">Trade with $GEMBOT tokens</li></ul>
+
+<h2>Files Modified/Created</h2>
+
+<h3>New Files</h3>
+<ul><li class="ul-item"><code class="inline-code">gembot-marketplace.js</code> - Complete marketplace system (~1000 lines)</li></ul>
+
+<h3>Modified Files</h3>
+<ul><li class="ul-item"><code class="inline-code">GemBot<em>Control</em>AI.html</code></li></ul>
+<p>  - Added script reference</p>
+<p>  - Added marketplace CSS styles (~500 lines)</p>
+<p>  - Added marketplaceUI controller object</p>
+<p>  - Added item detail modal HTML</p>
+  
+<ul><li class="ul-item"><code class="inline-code">merlin-enhanced-responses.js</code></li></ul>
+<p>  - Added marketplace knowledge base</p>
+<p>  - Added marketplace response templates</p>
+<p>  - Added Q&A functionality for marketplace topics</p>
+
+<h2>CSS Classes Added</h2>
+
+<h3>Marketplace Layout</h3>
+<ul><li class="ul-item"><code class="inline-code">.marketplace-wallet-bar</code> - Wallet and token display</li>
+<li class="ul-item"><code class="inline-code">.marketplace-banner</code> - Earth Art Gems partnership banner</li>
+<li class="ul-item"><code class="inline-code">.market-section</code> - Section containers</li>
+<li class="ul-item"><code class="inline-code">.featured-items-scroll</code> - Horizontal scrolling featured items</li></ul>
+
+<h3>Item Display</h3>
+<ul><li class="ul-item"><code class="inline-code">.item-card</code> - Jewelry item cards</li>
+<li class="ul-item"><code class="inline-code">.item-detail-modal</code> - Item detail popup</li>
+<li class="ul-item"><code class="inline-code">.catalog-item</code> - Catalog grid items</li>
+<li class="ul-item"><code class="inline-code">.virtual-progress-bar</code> - Progress to real item</li></ul>
+
+<h3>Forge System</h3>
+<ul><li class="ul-item"><code class="inline-code">.forge-workshop</code> - Forge interface</li>
+<li class="ul-item"><code class="inline-code">.forge-item-selector</code> - Item selection grid</li>
+<li class="ul-item"><code class="inline-code">.forge-requirements</code> - Requirements display</li>
+<li class="ul-item"><code class="inline-code">.forge-button</code> - Forge action button</li></ul>
+
+<h3>Metal Shop</h3>
+<ul><li class="ul-item"><code class="inline-code">.metals-grid</code> - Metal cards grid</li>
+<li class="ul-item"><code class="inline-code">.metal-card</code> - Individual metal card</li>
+<li class="ul-item"><code class="inline-code">.metal-buy-btn</code> - Purchase buttons</li></ul>
+
+<h3>Trading</h3>
+<ul><li class="ul-item"><code class="inline-code">.trade-section</code> - Trading interface</li>
+<li class="ul-item"><code class="inline-code">.trade-listing</code> - Individual listings</li>
+<li class="ul-item"><code class="inline-code">.trade-buy-btn</code> - Buy buttons</li></ul>
+
+<h3>Forms</h3>
+<ul><li class="ul-item"><code class="inline-code">.shipping-form</code> - Shipping info form</li>
+<li class="ul-item"><code class="inline-code">.conversion-summary</code> - Order summary</li>
+<li class="ul-item"><code class="inline-code">.btn-complete-order</code> - Order button</li></ul>
+
+<h2>JavaScript API</h2>
+
+<h3>GemBotMarketplace Object (gembot-marketplace.js)</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Initialize marketplace
+<p>await window.GemBotMarketplace.init();</p>
+
+<p>// Get catalog items</p>
+<p>const items = GemBotMarketplace.getCatalogForUI(filters);</p>
+
+<p>// Forge an item</p>
+<p>const result = await GemBotMarketplace.forgeItem(itemId, playerInventory);</p>
+
+<p>// Check conversion eligibility</p>
+<p>const conversion = GemBotMarketplace.checkRealWorldConversion(itemId);</p>
+
+<p>// Buy metals</p>
+<p>const result = GemBotMarketplace.buyMetal(&#039;gold&#039;, grams);</p>
+
+<p>// Get market stats</p>
+<p>const stats = GemBotMarketplace.getMarketStats();</p>
+
+<p>// Get inventory summary</p>
+<p>const inventory = GemBotMarketplace.getInventorySummary();</code></pre></p>
+
+<h3>marketplaceUI Object (GemBot<em>Control</em>AI.html)</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Open marketplace
+<p>marketplaceUI.open(&#039;jewelry&#039;);</p>
+
+<p>// View item details</p>
+<p>marketplaceUI.showDetail(itemId);</p>
+
+<p>// Close detail modal</p>
+<p>marketplaceUI.closeDetail();</p>
+
+<p>// Forge from detail view</p>
+<p>marketplaceUI.forgeFromDetail(itemId);</p>
+
+<p>// Connect wallet</p>
+<p>marketplaceUI.connectWallet();</p>
+
+<p>// Convert to real item</p>
+<p>marketplaceUI.convertToReal(itemId);</code></pre></p>
+
+<h3>MerlinEnhancedResponses (merlin-enhanced-responses.js)</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Get marketplace tip
+<p>const tip = MerlinEnhancedResponses.generateMarketplaceTip();</p>
+
+<p>// Generate forging message</p>
+<p>const msg = MerlinEnhancedResponses.generateForgingMessage(itemName, progress, context);</p>
+
+<p>// Answer marketplace questions</p>
+<p>const answer = MerlinEnhancedResponses.answerMarketplaceQuestion(question);</code></pre></p>
+
+<h2>Price Synchronization</h2>
+
+<p>Prices are synchronized using:</p>
+<ul><li class="ul-item">Base conversion rate: 1 USD = 100 $GEMBOT tokens</li>
+<li class="ul-item">Token prices fetched from Jupiter DEX API</li>
+<li class="ul-item">Refresh interval: 5 minutes</li></ul>
+
+<h2>User Flow</h2>
+
+<ol><li class="ol-item"><strong>Browse Catalog</strong>: View Earth Art Gems jewelry in marketplace</li>
+<li class="ol-item"><strong>Select Item</strong>: Click to see details and forging requirements</li>
+<li class="ol-item"><strong>Acquire Resources</strong>: </li></ol>
+<p>   - Cut gems through gameplay</p>
+<p>   - Buy metals with $GEMBOT tokens</p>
+<ol><li class="ol-item"><strong>Forge Virtual Copy</strong>: Combine materials to create virtual jewelry</li>
+<li class="ol-item"><strong>Repeat</strong>: Forge 10 virtual copies</li>
+<li class="ol-item"><strong>Convert to Real</strong>: Enter shipping info, pay with $GEMBOT</li>
+<li class="ol-item"><strong>Receive Real Item</strong>: Earth Art Gems ships the actual jewelry</li></ol>
+
+<h2>Merlin AI Integration</h2>
+
+<p>Merlin understands and can answer questions about:</p>
+<ul><li class="ul-item">$GEMBOT token and crypto payments</li>
+<li class="ul-item">Earth Art Gems products and catalog</li>
+<li class="ul-item">Forging requirements and process</li>
+<li class="ul-item">Virtual-to-real conversion</li>
+<li class="ul-item">Metal purchasing</li>
+<li class="ul-item">Player trading</li></ul>
+
+<p>Example queries Merlin can handle:</p>
+<ul><li class="ul-item">"What is $GEMBOT?"</li>
+<li class="ul-item">"How do I forge a ring?"</li>
+<li class="ul-item">"How many virtual copies do I need?"</li>
+<li class="ul-item">"What metals can I buy?"</li>
+<li class="ul-item">"How does trading work?"</li></ul>
+
+<h2>Demo Mode</h2>
+
+<p>When no Phantom wallet is connected, the system provides a demo wallet with:</p>
+<ul><li class="ul-item">10,000 $GEMBOT tokens</li>
+<li class="ul-item">Full marketplace functionality</li>
+<li class="ul-item">Simulated transactions</li></ul>
+
+<h2>Future Enhancements</h2>
+
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Shopify API integration for real-time inventory</li>
+<li class="checkbox"><input type="checkbox" disabled> Jupiter DEX integration for live token prices</li>
+<li class="checkbox"><input type="checkbox" disabled> Phantom wallet deep integration</li>
+<li class="checkbox"><input type="checkbox" disabled> Real-world order tracking</li>
+<li class="checkbox"><input type="checkbox" disabled> NFT certificates for forged items</li>
+<li class="checkbox"><input type="checkbox" disabled> Auction system for rare items</li>
+<li class="checkbox"><input type="checkbox" disabled> Achievement rewards in $GEMBOT</li></ul>
+
+<h2>Technical Notes</h2>
+
+<ul><li class="ul-item">State is persisted to localStorage</li>
+<li class="ul-item">Images loaded with lazy loading</li>
+<li class="ul-item">Responsive design for mobile</li>
+<li class="ul-item">Error handling for wallet disconnection</li>
+<li class="ul-item">Rate limiting for API calls</li></ul>
+
+<h2>Support</h2>
+
+<p>For issues with the marketplace:</p>
+<ol><li class="ol-item">Check browser console for errors</li>
+<li class="ol-item">Verify wallet connection</li>
+<li class="ol-item">Refresh catalog if items not loading</li>
+<li class="ol-item">Contact support at earthartgems.com for order issues</li></ol>
+
+<hr>
+
+<p><em>Last Updated: December 2024</em></p>
+<p><em>Version: 1.0.0</em></p>
+
+        <div class="generated-notice">
+            🤖 Auto-generated from MARKETPLACE_INTEGRATION_GUIDE.md by GemBot Neural Dashboard Agent<br>
+            Generated: 2025-12-16T13:52:12.782Z
+        </div>
+    </div>
+</body>
+</html>

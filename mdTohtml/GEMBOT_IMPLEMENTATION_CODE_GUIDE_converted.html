@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GEMBOT_IMPLEMENTATION_CODE_GUIDE - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        <h1>GEMBOT ECOSYSTEM: Implementation Guide for GemBot<em>Control</em>AI.html</h1>
+
+<h2>Overview</h2>
+
+<p>This document shows <strong>exactly how to integrate</strong> the decentralized gem-cutting economy into your existing Merlin AI web controller. All code examples are designed to work with your current architecture.</p>
+
+<hr>
+
+<h2>Module 1: Blockchain Integration</h2>
+
+<h3>1.1 Add to MerlinPersonality Class</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// ==================== BLOCKCHAIN ECONOMY INTEGRATION ====================
+
+<p>class BlockchainEconomy {</p>
+<p>    constructor(contractAddress, rpcUrl) {</p>
+<p>        this.contractAddress = contractAddress;</p>
+<p>        this.rpcUrl = rpcUrl;</p>
+<p>        this.transactionListener = null;</p>
+<p>        this.commandQueue = [];</p>
+<p>        this.lastBlockChecked = 0;</p>
+<p>    }</p>
+
+<p>    async initializeListener() {</p>
+<p>        // Start watching blockchain for transactions</p>
+<p>        console.log(&#039;🔗 Blockchain listener initialized&#039;);</p>
+<p>        this.startTransactionWatcher();</p>
+<p>    }</p>
+
+<p>    async startTransactionWatcher() {</p>
+<p>        // Check for incoming transactions every 3 seconds</p>
+<p>        setInterval(async () =&gt; {</p>
+<p>            try {</p>
+<p>                const newTransactions = await this.fetchNewTransactions();</p>
+<p>                newTransactions.forEach(tx =&gt; {</p>
+<p>                    this.processTransaction(tx);</p>
+<p>                });</p>
+<p>            } catch (error) {</p>
+<p>                console.error(&#039;Transaction watcher error:&#039;, error);</p>
+<p>            }</p>
+<p>        }, 3000);</p>
+<p>    }</p>
+
+<p>    async fetchNewTransactions() {</p>
+<p>        // Mock implementation (replace with actual blockchain call)</p>
+<p>        // In production: use ethers.js or web3.js to fetch real transactions</p>
+<p>        return [];</p>
+<p>    }</p>
+
+<p>    processTransaction(tx) {</p>
+<p>        // Map transaction amount to serial command</p>
+<p>        const command = this.mapAmountToCommand(tx.amount, tx.sender);</p>
+        
+<p>        if (command) {</p>
+<p>            this.commandQueue.push({</p>
+<p>                transaction: tx,</p>
+<p>                command: command,</p>
+<p>                timestamp: Date.now(),</p>
+<p>                sender: tx.sender,</p>
+<p>                amount: tx.amount</p>
+<p>            });</p>
+            
+<p>            console.log(<code class="inline-code">💎 Pending command: ${command} (cost: ${tx.amount} gems)</code>);</p>
+<p>        }</p>
+<p>    }</p>
+
+<p>    mapAmountToCommand(amount, userAddress) {</p>
+<p>        // Transaction amount maps directly to serial command</p>
+<p>        const commandMap = {</p>
+<p>            1: { cmd: &#039;3&#039;, name: &#039;Y Axis Down&#039;, cost: 1 },</p>
+<p>            2: { cmd: &#039;4&#039;, name: &#039;Y Axis Up&#039;, cost: 2 },</p>
+<p>            3: { cmd: &#039;1&#039;, name: &#039;X Axis Left&#039;, cost: 3 },</p>
+<p>            4: { cmd: &#039;2&#039;, name: &#039;X Axis Right&#039;, cost: 4 },</p>
+<p>            5: { cmd: &#039;w&#039;, name: &#039;Spindle +1000 RPM&#039;, cost: 5 },</p>
+<p>            6: { cmd: &#039;q&#039;, name: &#039;Spindle -1000 RPM&#039;, cost: 6 },</p>
+<p>            10: { cmd: &#039;5&#039;, name: &#039;Polish Mode&#039;, cost: 10 },</p>
+<p>            20: { cmd: &#039;H&#039;, name: &#039;Home Position&#039;, cost: 20 }</p>
+<p>        };</p>
+        
+<p>        return commandMap[amount] || null;</p>
+<p>    }</p>
+
+<p>    async validateCommand(command, userTier, gemstoneType, userWallet) {</p>
+<p>        // AI oversight: ensure command is safe for this user + tier</p>
+<p>        const validation = {</p>
+<p>            isValid: true,</p>
+<p>            warnings: [],</p>
+<p>            tieredCost: this.calculateTieredCost(command, userTier)</p>
+<p>        };</p>
+
+<p>        // Check user tier eligibility</p>
+<p>        if (gemstoneType === &#039;Diamond&#039; &amp;&amp; userTier !== &#039;Master&#039;) {</p>
+<p>            validation.isValid = false;</p>
+<p>            validation.warnings.push(&#039;Diamond tier requires Master certification&#039;);</p>
+<p>        }</p>
+
+<p>        // Check wallet balance</p>
+<p>        const balance = await this.getUserBalance(userWallet);</p>
+<p>        if (balance &lt; validation.tieredCost) {</p>
+<p>            validation.isValid = false;</p>
+<p>            validation.warnings.push(&#039;Insufficient gem coins&#039;);</p>
+<p>        }</p>
+
+<p>        // Check machine readiness</p>
+<p>        if (!this.isMachineReady()) {</p>
+<p>            validation.isValid = false;</p>
+<p>            validation.warnings.push(&#039;Machine not ready or in emergency state&#039;);</p>
+<p>        }</p>
+
+<p>        return validation;</p>
+<p>    }</p>
+
+<p>    calculateTieredCost(command, tier) {</p>
+<p>        const baseCost = command.cost || 1;</p>
+<p>        const tierMultipliers = {</p>
+<p>            &#039;Apprentice&#039;: 1.0,</p>
+<p>            &#039;Journeyman&#039;: 1.2,</p>
+<p>            &#039;Artisan&#039;: 1.5,</p>
+<p>            &#039;Master&#039;: 2.0,</p>
+<p>            &#039;Grandmaster&#039;: 2.5</p>
+<p>        };</p>
+        
+<p>        return Math.ceil(baseCost * (tierMultipliers[tier] || 1.0));</p>
+<p>    }</p>
+
+<p>    async executeCommand(command, userWallet) {</p>
+<p>        // Execute validated command</p>
+<p>        console.log(<code class="inline-code">⚡ Executing: ${command.cmd}</code>);</p>
+        
+<p>        // Send to Arduino via serial</p>
+<p>        if (typeof sendCommand === &#039;function&#039;) {</p>
+<p>            sendCommand(command.cmd);</p>
+            
+<p>            // Log to blockchain for transparency</p>
+<p>            this.logCommandExecution(command, userWallet);</p>
+            
+<p>            return { success: true, command: command.cmd };</p>
+<p>        }</p>
+<p>    }</p>
+
+<p>    logCommandExecution(command, userWallet) {</p>
+<p>        // Keep immutable record of all machine interactions</p>
+<p>        const log = {</p>
+<p>            timestamp: Date.now(),</p>
+<p>            user: userWallet,</p>
+<p>            command: command.cmd,</p>
+<p>            amount: command.amount,</p>
+<p>            status: &#039;executed&#039;</p>
+<p>        };</p>
+        
+<p>        console.log(&#039;📋 Command logged to blockchain&#039;, log);</p>
+<p>    }</p>
+
+<p>    async refundTransaction(txHash, reason) {</p>
+<p>        // If command failed, refund user&#039;s gem coins</p>
+<p>        console.log(<code class="inline-code">💰 Refund initiated: ${txHash} - Reason: ${reason}</code>);</p>
+<p>    }</p>
+
+<p>    isMachineReady() {</p>
+<p>        // Check if machine is healthy + safe to receive commands</p>
+<p>        return true; // Replace with actual machine health check</p>
+<p>    }</p>
+
+<p>    async getUserBalance(walletAddress) {</p>
+<p>        // Fetch current gem coin balance from smart contract</p>
+<p>        return 100; // Mock: replace with real contract call</p>
+<p>    }</p>
+<p>}</code></pre></p>
+
+<h3>1.2 Instantiate in Merlin Initialization</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// In window.onload or after merlin = new MerlinPersonality():
+
+<p>merlin.blockchain = new BlockchainEconomy(</p>
+<p>    &#039;0x123...&#039;, // Contract address</p>
+<p>    &#039;https://api.solana.com&#039; // or Polygon RPC</p>
+<p>);</p>
+
+<p>merlin.blockchain.initializeListener();</code></pre></p>
+
+<hr>
+
+<h2>Module 2: Live Feed Integration</h2>
+
+<h3>2.1 Add to Merlin Class</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>class LiveFeedManager {
+<p>    constructor(containerId, machineId) {</p>
+<p>        this.containerId = containerId;</p>
+<p>        this.machineId = machineId;</p>
+<p>        this.videoElement = null;</p>
+<p>        this.canvas = null;</p>
+<p>        this.statusOverlay = null;</p>
+<p>        this.isStreaming = false;</p>
+<p>    }</p>
+
+<p>    async startFeed() {</p>
+<p>        console.log(<code class="inline-code">🎥 Starting live feed for ${this.machineId}</code>);</p>
+        
+<p>        try {</p>
+<p>            const stream = await navigator.mediaDevices.getUserMedia({</p>
+<p>                video: { width: 1280, height: 720 }</p>
+<p>            });</p>
+            
+<p>            this.videoElement = document.getElementById(this.containerId);</p>
+<p>            this.videoElement.srcObject = stream;</p>
+<p>            this.isStreaming = true;</p>
+            
+<p>            // Start AI monitoring</p>
+<p>            this.startAIMonitoring();</p>
+            
+<p>            // Start overlay updates</p>
+<p>            this.startStatusOverlay();</p>
+            
+<p>            return { success: true, message: &#039;Feed started&#039; };</p>
+<p>        } catch (error) {</p>
+<p>            console.error(&#039;Feed error:&#039;, error);</p>
+<p>            return { success: false, error: error.message };</p>
+<p>        }</p>
+<p>    }</p>
+
+<p>    startAIMonitoring() {</p>
+<p>        // Monitor for anomalies, safety issues, beautiful moments</p>
+<p>        setInterval(() =&gt; {</p>
+<p>            const frame = this.captureFrame();</p>
+            
+<p>            // Send to AI for analysis</p>
+<p>            this.analyzeFrame(frame);</p>
+<p>        }, 1000); // Check every 1 second</p>
+<p>    }</p>
+
+<p>    captureFrame() {</p>
+<p>        // Capture current video frame for AI analysis</p>
+<p>        if (this.videoElement) {</p>
+<p>            const canvas = document.createElement(&#039;canvas&#039;);</p>
+<p>            canvas.width = this.videoElement.videoWidth;</p>
+<p>            canvas.height = this.videoElement.videoHeight;</p>
+<p>            const ctx = canvas.getContext(&#039;2d&#039;);</p>
+<p>            ctx.drawImage(this.videoElement, 0, 0);</p>
+<p>            return canvas.toDataURL(&#039;image/jpeg&#039;);</p>
+<p>        }</p>
+<p>    }</p>
+
+<p>    analyzeFrame(frameData) {</p>
+<p>        // AI analysis (mock - replace with TensorFlow.js model)</p>
+<p>        const analysis = {</p>
+<p>            anomalies: this.detectAnomalies(frameData),</p>
+<p>            beautifulMoment: this.detectBeautifulCut(frameData),</p>
+<p>            machineHealth: &#039;good&#039;,</p>
+<p>            powerStatus: &#039;stable&#039;</p>
+<p>        };</p>
+
+<p>        if (analysis.anomalies.length &gt; 0) {</p>
+<p>            this.handleAnomaly(analysis.anomalies[0]);</p>
+<p>        }</p>
+
+<p>        if (analysis.beautifulMoment) {</p>
+<p>            this.highlightBeautifulMoment();</p>
+<p>        }</p>
+<p>    }</p>
+
+<p>    detectAnomalies(frameData) {</p>
+<p>        // Simple anomaly detection (replace with ML model)</p>
+<p>        // Look for: jams, misalignment, overheating, sparks</p>
+<p>        const anomalies = [];</p>
+        
+<p>        // Mock detection</p>
+<p>        if (Math.random() &lt; 0.01) {</p>
+<p>            anomalies.push({</p>
+<p>                type: &#039;potential_jam&#039;,</p>
+<p>                confidence: 0.85,</p>
+<p>                location: &#039;spindle_area&#039;</p>
+<p>            });</p>
+<p>        }</p>
+        
+<p>        return anomalies;</p>
+<p>    }</p>
+
+<p>    detectBeautifulCut(frameData) {</p>
+<p>        // Detect beautiful cutting moments (facet completion, polish, sparkle)</p>
+<p>        // Mock: replace with actual CV model</p>
+<p>        return Math.random() &lt; 0.05; // 5% chance per frame</p>
+<p>    }</p>
+
+<p>    handleAnomaly(anomaly) {</p>
+<p>        console.warn(<code class="inline-code">⚠️ Anomaly detected: ${anomaly.type}</code>);</p>
+        
+<p>        // Alert machine owner</p>
+<p>        addMessage(<code class="inline-code">🚨 ALERT: ${anomaly.type} detected! Pausing machine...</code>, &#039;system&#039;);</p>
+        
+<p>        // Send emergency stop to Arduino</p>
+<p>        if (typeof sendCommand === &#039;function&#039;) {</p>
+<p>            sendCommand(&#039;E&#039;); // Emergency stop</p>
+<p>        }</p>
+        
+<p>        // Refund user&#039;s gem coins for interrupted session</p>
+<p>        merlin.blockchain?.refundTransaction(</p>
+<p>            &#039;current_tx&#039;,</p>
+<p>            <code class="inline-code">Anomaly detected: ${anomaly.type}</code></p>
+<p>        );</p>
+<p>    }</p>
+
+<p>    highlightBeautifulMoment() {</p>
+<p>        console.log(&#039;✨ Beautiful cut detected!&#039;);</p>
+        
+<p>        // Visual feedback on stream</p>
+<p>        this.addOverlayAnimation(&#039;✨ BEAUTIFUL CUT!&#039;);</p>
+        
+<p>        // Play celebratory sound</p>
+<p>        this.playCelebration();</p>
+        
+<p>        // Award bonus gems to cutter</p>
+<p>        merlin.earnGemCoins(5, &#039;Beautiful cut bonus&#039;);</p>
+        
+<p>        // Announce on chat</p>
+<p>        addMessage(&#039;✨ What a beautiful facet! +5 bonus gems!&#039;, &#039;merlin&#039;);</p>
+<p>    }</p>
+
+<p>    startStatusOverlay() {</p>
+<p>        // Update overlay with current machine status every 500ms</p>
+<p>        setInterval(() =&gt; {</p>
+<p>            this.updateOverlay({</p>
+<p>                machineStatus: &#039;cutting&#039;,</p>
+<p>                spindle: &#039;running&#039;,</p>
+<p>                axis: { x: 150, y: 200, z: 75 },</p>
+<p>                powerStatus: &#039;stable&#039;,</p>
+<p>                temperature: 45,</p>
+<p>                gemstoneType: &#039;Quartz&#039;,</p>
+<p>                cutterTier: &#039;Journeyman&#039;,</p>
+<p>                gemCoinsThisSession: 25</p>
+<p>            });</p>
+<p>        }, 500);</p>
+<p>    }</p>
+
+<p>    updateOverlay(status) {</p>
+<p>        // Update overlay text on video</p>
+<p>        const overlay = document.getElementById(&#039;statusOverlay&#039;);</p>
+<p>        if (overlay) {</p>
+<p>            overlay.innerHTML = <code class="inline-code"></p>
+<p>                &lt;div style=&quot;position: absolute; top: 10px; right: 10px; </p>
+<p>                           background: rgba(0,0,0,0.7); color: #0f0; </p>
+<p>                           padding: 10px; font-size: 12px; font-family: monospace;&quot;&gt;</p>
+<p>                    Machine: ${status.machineStatus}&lt;br&gt;</p>
+<p>                    Spindle: ${status.spindle} @ ${status.temperature}°C&lt;br&gt;</p>
+<p>                    Axis: X=${status.axis.x} Y=${status.axis.y} Z=${status.axis.z}&lt;br&gt;</p>
+<p>                    Power: ${status.powerStatus}&lt;br&gt;</p>
+<p>                    Gem: ${status.gemstoneType}&lt;br&gt;</p>
+<p>                    Cutter: ${status.cutterTier}&lt;br&gt;</p>
+<p>                    💎 This Session: ${status.gemCoinsThisSession}</p>
+<p>                &lt;/div&gt;</p>
+<p>            </code>;</p>
+<p>        }</p>
+<p>    }</p>
+
+<p>    addOverlayAnimation(text) {</p>
+<p>        // Flash celebratory text on screen</p>
+<p>        const animation = document.createElement(&#039;div&#039;);</p>
+<p>        animation.textContent = text;</p>
+<p>        animation.style.cssText = <code class="inline-code"></p>
+<p>            position: fixed;</p>
+<p>            top: 50%;</p>
+<p>            left: 50%;</p>
+<p>            transform: translate(-50%, -50%);</p>
+<p>            font-size: 48px;</p>
+<p>            font-weight: bold;</p>
+<p>            color: gold;</p>
+<p>            text-shadow: 0 0 10px gold;</p>
+<p>            animation: pulse 1s;</p>
+<p>            z-index: 10000;</p>
+<p>        </code>;</p>
+<p>        document.body.appendChild(animation);</p>
+<p>        setTimeout(() =&gt; animation.remove(), 1000);</p>
+<p>    }</p>
+
+<p>    playCelebration() {</p>
+<p>        // Play success sound (mock)</p>
+<p>        const audio = new Audio(&#039;data:audio/wav;base64,...&#039;);</p>
+<p>        audio.play().catch(e =&gt; console.log(&#039;Audio play failed&#039;, e));</p>
+<p>    }</p>
+
+<p>    stopFeed() {</p>
+<p>        if (this.videoElement &amp;&amp; this.videoElement.srcObject) {</p>
+<p>            this.videoElement.srcObject.getTracks().forEach(track =&gt; track.stop());</p>
+<p>            this.isStreaming = false;</p>
+<p>            console.log(&#039;📹 Feed stopped&#039;);</p>
+<p>        }</p>
+<p>    }</p>
+<p>}</code></pre></p>
+
+<h3>2.2 Add HTML Container</h3>
+
+<pre class="code-block html" data-lang="html"><code>&lt;div id=&quot;liveStreamContainer&quot; style=&quot;position: relative; width: 100%; max-width: 800px; margin: 10px auto;&quot;&gt;
+<p>    &lt;video id=&quot;cameraFeedLive&quot; width=&quot;800&quot; height=&quot;600&quot; autoplay playsinline </p>
+<p>           style=&quot;width: 100%; background: #000; border: 2px solid #667eea; border-radius: 8px;&quot;&gt;&lt;/video&gt;</p>
+<p>    &lt;div id=&quot;statusOverlay&quot;&gt;&lt;/div&gt;</p>
+<p>&lt;/div&gt;</code></pre></p>
+
+<hr>
+
+<h2>Module 3: Sora 2 Training Integration</h2>
+
+<h3>3.1 Add to Merlin Class</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>class SoraTrainingModule {
+<p>    constructor() {</p>
+<p>        this.trainingCourses = this.initializeCourses();</p>
+<p>        this.userProgress = {};</p>
+<p>    }</p>
+
+<p>    initializeCourses() {</p>
+<p>        return {</p>
+<p>            &#039;tier&lt;em&gt;1&lt;/em&gt;quartz&#039;: {</p>
+<p>                title: &#039;Quartz Cutting Basics&#039;,</p>
+<p>                videos: [</p>
+<p>                    { </p>
+<p>                        id: &#039;sora2&lt;em&gt;quartz&lt;/em&gt;101&#039;,</p>
+<p>                        title: &#039;Introduction to Quartz&#039;,</p>
+<p>                        duration: 5,</p>
+<p>                        content: &#039;Watch this Sora 2 generated video about quartz properties...&#039;</p>
+<p>                    },</p>
+<p>                    {</p>
+<p>                        id: &#039;sora2&lt;em&gt;quartz&lt;/em&gt;facet&#039;,</p>
+<p>                        title: &#039;Cutting Your First Facet&#039;,</p>
+<p>                        duration: 8,</p>
+<p>                        content: &#039;Learn the basics of facet cutting on quartz...&#039;</p>
+<p>                    }</p>
+<p>                ],</p>
+<p>                simulation: {</p>
+<p>                    type: &#039;virtual_gembot&#039;,</p>
+<p>                    difficulty: &#039;beginner&#039;,</p>
+<p>                    duration: 15</p>
+<p>                },</p>
+<p>                certification: {</p>
+<p>                    questions: 5,</p>
+<p>                    passingScore: 80</p>
+<p>                }</p>
+<p>            },</p>
+<p>            &#039;tier&lt;em&gt;2&lt;/em&gt;topaz&#039;: {</p>
+<p>                title: &#039;Topaz: Harder Materials&#039;,</p>
+<p>                videos: [</p>
+<p>                    {</p>
+<p>                        id: &#039;sora2&lt;em&gt;topaz&lt;/em&gt;101&#039;,</p>
+<p>                        title: &#039;Topaz Properties &amp; Challenges&#039;,</p>
+<p>                        duration: 7,</p>
+<p>                        content: &#039;Sora 2 video on topaz hardness and cutting techniques...&#039;</p>
+<p>                    }</p>
+<p>                ],</p>
+<p>                simulation: {</p>
+<p>                    type: &#039;virtual_gembot&#039;,</p>
+<p>                    difficulty: &#039;intermediate&#039;,</p>
+<p>                    duration: 20</p>
+<p>                },</p>
+<p>                certification: {</p>
+<p>                    questions: 10,</p>
+<p>                    passingScore: 85</p>
+<p>                }</p>
+<p>            }</p>
+<p>        };</p>
+<p>    }</p>
+
+<p>    async startTraining(userId, tier) {</p>
+<p>        console.log(<code class="inline-code">🎓 Starting ${tier} training for ${userId}</code>);</p>
+        
+<p>        const course = this.trainingCourses[tier];</p>
+<p>        if (!course) {</p>
+<p>            return { success: false, error: &#039;Course not found&#039; };</p>
+<p>        }</p>
+
+<p>        // Watch videos</p>
+<p>        for (const video of course.videos) {</p>
+<p>            await this.playTrainingVideo(video);</p>
+<p>        }</p>
+
+<p>        // Run simulation</p>
+<p>        const simResult = await this.runSimulation(course.simulation);</p>
+        
+<p>        if (!simResult.success) {</p>
+<p>            return { success: false, error: &#039;Simulation failed&#039; };</p>
+<p>        }</p>
+
+<p>        // Take certification quiz</p>
+<p>        const quizResult = await this.takeCertification(course.certification, tier);</p>
+        
+<p>        if (quizResult.passed) {</p>
+<p>            await this.unlockTier(userId, tier);</p>
+<p>            merlin.earnGemCoins(50, <code class="inline-code">${tier} certification completed</code>);</p>
+<p>            return { success: true, message: &#039;Certification passed!&#039; };</p>
+<p>        } else {</p>
+<p>            return { success: false, error: &#039;Certification failed. Try again.&#039; };</p>
+<p>        }</p>
+<p>    }</p>
+
+<p>    async playTrainingVideo(video) {</p>
+<p>        console.log(<code class="inline-code">📺 Playing: ${video.title}</code>);</p>
+        
+<p>        // Simulate watching video</p>
+<p>        return new Promise(resolve =&gt; {</p>
+<p>            // In production: embed Sora 2 video player here</p>
+<p>            const videoContainer = document.getElementById(&#039;trainingVideoContainer&#039;);</p>
+<p>            if (videoContainer) {</p>
+<p>                videoContainer.innerHTML = <code class="inline-code"></p>
+<p>                    &lt;div style=&quot;background: #1a1a2e; padding: 20px; border-radius: 8px;&quot;&gt;</p>
+<p>                        &lt;h3&gt;${video.title}&lt;/h3&gt;</p>
+<p>                        &lt;p&gt;Duration: ${video.duration} minutes&lt;/p&gt;</p>
+<p>                        &lt;button onclick=&quot;completeVideo()&quot; style=&quot;padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 4px; cursor: pointer;&quot;&gt;</p>
+<p>                            Mark as Watched</p>
+<p>                        &lt;/button&gt;</p>
+<p>                    &lt;/div&gt;</p>
+<p>                </code>;</p>
+<p>            }</p>
+            
+<p>            // User clicks &quot;Mark as Watched&quot;</p>
+<p>            window.completeVideo = () =&gt; resolve();</p>
+<p>        });</p>
+<p>    }</p>
+
+<p>    async runSimulation(config) {</p>
+<p>        console.log(<code class="inline-code">🎮 Running ${config.difficulty} simulation</code>);</p>
+        
+<p>        // Simulate gem-cutting in VR/3D environment</p>
+<p>        const simResult = {</p>
+<p>            success: Math.random() &gt; 0.3, // 70% success rate</p>
+<p>            precision: Math.random() * 100,</p>
+<p>            speed: Math.random() * 100,</p>
+<p>            qualityScore: Math.random() * 100</p>
+<p>        };</p>
+
+<p>        if (simResult.qualityScore &gt; 70) {</p>
+<p>            return { success: true, score: simResult.qualityScore };</p>
+<p>        } else {</p>
+<p>            return { success: false, message: &#039;Try again - focus on precision&#039; };</p>
+<p>        }</p>
+<p>    }</p>
+
+<p>    async takeCertification(config, tier) {</p>
+<p>        console.log(<code class="inline-code">📝 Certification quiz for ${tier}</code>);</p>
+        
+<p>        const questions = this.generateQuestions(config.questions, tier);</p>
+<p>        let score = 0;</p>
+
+<p>        for (const question of questions) {</p>
+<p>            const answer = await this.askQuestion(question);</p>
+<p>            if (answer === question.correct) {</p>
+<p>                score += 10;</p>
+<p>            }</p>
+<p>        }</p>
+
+<p>        const passed = score &gt;= config.passingScore;</p>
+        
+<p>        return {</p>
+<p>            passed: passed,</p>
+<p>            score: score,</p>
+<p>            message: passed ? &#039;Congratulations!&#039; : &#039;Try again&#039;</p>
+<p>        };</p>
+<p>    }</p>
+
+<p>    async askQuestion(question) {</p>
+<p>        // Display question and get user&#039;s answer</p>
+<p>        return new Promise(resolve =&gt; {</p>
+<p>            const options = question.options.map((opt, i) =&gt; </p>
+<p>                <code class="inline-code">&lt;button onclick=&quot;answerQuestion(${i})&quot; style=&quot;display: block; margin: 5px; padding: 10px; width: 100%; cursor: pointer;&quot;&gt;</p>
+<p>                    ${opt}</p>
+<p>                &lt;/button&gt;</code></p>
+<p>            ).join(&#039;&#039;);</p>
+            
+<p>            window.answerQuestion = (index) =&gt; resolve(index);</p>
+            
+<p>            // Render quiz UI</p>
+<p>            console.log(<code class="inline-code">Q: ${question.text}</code>);</p>
+<p>        });</p>
+<p>    }</p>
+
+<p>    generateQuestions(count, tier) {</p>
+<p>        return [</p>
+<p>            {</p>
+<p>                text: &#039;What is the hardness of quartz on the Mohs scale?&#039;,</p>
+<p>                options: [&#039;5&#039;, &#039;7&#039;, &#039;9&#039;, &#039;10&#039;],</p>
+<p>                correct: 1</p>
+<p>            },</p>
+<p>            {</p>
+<p>                text: &#039;What spindle RPM is recommended for quartz?&#039;,</p>
+<p>                options: [&#039;1000&#039;, &#039;3000&#039;, &#039;5000&#039;, &#039;8000&#039;],</p>
+<p>                correct: 2</p>
+<p>            }</p>
+<p>            // ... more questions</p>
+<p>        ];</p>
+<p>    }</p>
+
+<p>    async unlockTier(userId, tier) {</p>
+<p>        console.log(<code class="inline-code">✅ Tier unlocked: ${tier}</code>);</p>
+        
+<p>        if (!this.userProgress[userId]) {</p>
+<p>            this.userProgress[userId] = { certifications: [] };</p>
+<p>        }</p>
+        
+<p>        this.userProgress[userId].certifications.push(tier);</p>
+        
+<p>        // Update user profile</p>
+<p>        merlin.userProfile.teachingStats.lessonsCompleted.push({</p>
+<p>            type: &#039;certification&#039;,</p>
+<p>            tier: tier,</p>
+<p>            completedAt: Date.now()</p>
+<p>        });</p>
+        
+<p>        merlin.saveUserProfile();</p>
+<p>    }</p>
+
+<p>    async checkCertification(userId, tier) {</p>
+<p>        const progress = this.userProgress[userId] || {};</p>
+<p>        return progress.certifications?.includes(tier) || false;</p>
+<p>    }</p>
+<p>}</code></pre></p>
+
+<h3>3.2 Add Chat Commands for Training</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// In Merlin&#039;s handleUserQuery() method, add:
+
+<p>if (query.toLowerCase().includes(&#039;train&#039;) || </p>
+<p>    query.toLowerCase().includes(&#039;teach&#039;) ||</p>
+<p>    query.toLowerCase().includes(&#039;learn&#039;)) {</p>
+    
+<p>    const tier = this.detectTierRequest(query);</p>
+<p>    if (tier) {</p>
+<p>        addMessage(<code class="inline-code">Starting ${tier} training course...</code>, &#039;merlin&#039;);</p>
+<p>        const result = await merlin.trainingModule.startTraining(</p>
+<p>            merlin.userProfile.userId,</p>
+<p>            tier</p>
+<p>        );</p>
+<p>        addMessage(result.message, &#039;merlin&#039;);</p>
+<p>    }</p>
+<p>}</code></pre></p>
+
+<hr>
+
+<h2>Module 4: Machine Investment Pools</h2>
+
+<h3>4.1 Add to MerlinPersonality</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>class MachineInvestmentPool {
+<p>    constructor(machineId, machineOwner, fundingTarget) {</p>
+<p>        this.machineId = machineId;</p>
+<p>        this.machineOwner = machineOwner;</p>
+<p>        this.fundingTarget = fundingTarget;</p>
+<p>        this.investors = {};</p>
+<p>        this.totalRaised = 0;</p>
+<p>        this.cumulativeRevenue = 0;</p>
+<p>    }</p>
+
+<p>    async buyShares(investorWallet, numShares) {</p>
+<p>        const shareCost = this.fundingTarget / 100; // 100 shares total</p>
+<p>        const investmentAmount = numShares * shareCost;</p>
+        
+<p>        if (this.totalRaised + investmentAmount &gt; this.fundingTarget) {</p>
+<p>            return { success: false, error: &#039;Exceeds funding target&#039; };</p>
+<p>        }</p>
+
+<p>        this.investors[investorWallet] = {</p>
+<p>            shares: numShares,</p>
+<p>            investmentAmount: investmentAmount,</p>
+<p>            dateInvested: Date.now(),</p>
+<p>            dividendsEarned: 0</p>
+<p>        };</p>
+
+<p>        this.totalRaised += investmentAmount;</p>
+
+<p>        console.log(<code class="inline-code">💰 ${investorWallet} bought ${numShares} shares for ${investmentAmount} gems</code>);</p>
+        
+<p>        return {</p>
+<p>            success: true,</p>
+<p>            sharesOwned: numShares,</p>
+<p>            sharePrice: shareCost,</p>
+<p>            fundingPercentage: (this.totalRaised / this.fundingTarget * 100).toFixed(1)</p>
+<p>        };</p>
+<p>    }</p>
+
+<p>    async distributeRevenue(revenue) {</p>
+<p>        // Split revenue: 60% to machine owner, 40% to investors</p>
+<p>        const ownerShare = revenue * 0.60;</p>
+<p>        const investorShare = revenue * 0.40;</p>
+
+<p>        // Distribute to investors proportionally</p>
+<p>        const totalShares = Object.values(this.investors).reduce((sum, inv) =&gt; sum + inv.shares, 0);</p>
+        
+<p>        for (const [wallet, investor] of Object.entries(this.investors)) {</p>
+<p>            const proportion = investor.shares / totalShares;</p>
+<p>            const dividendPayment = investorShare * proportion;</p>
+            
+<p>            investor.dividendsEarned += dividendPayment;</p>
+            
+<p>            console.log(<code class="inline-code">💎 ${wallet} earned ${dividendPayment} gems from machine revenue</code>);</p>
+<p>        }</p>
+
+<p>        this.cumulativeRevenue += revenue;</p>
+
+<p>        return {</p>
+<p>            machineOwnerPayment: ownerShare,</p>
+<p>            investorPayments: this.getInvestorPayments(),</p>
+<p>            totalDistributed: revenue</p>
+<p>        };</p>
+<p>    }</p>
+
+<p>    getInvestorPayments() {</p>
+<p>        const payments = {};</p>
+<p>        for (const [wallet, investor] of Object.entries(this.investors)) {</p>
+<p>            const totalShares = Object.values(this.investors).reduce((sum, inv) =&gt; sum + inv.shares, 0);</p>
+<p>            const proportion = investor.shares / totalShares;</p>
+<p>            const payment = this.cumulativeRevenue &lt;em&gt; 0.40 &lt;/em&gt; proportion;</p>
+<p>            payments[wallet] = payment;</p>
+<p>        }</p>
+<p>        return payments;</p>
+<p>    }</p>
+
+<p>    calculateROI(investorWallet) {</p>
+<p>        const investor = this.investors[investorWallet];</p>
+<p>        if (!investor) return 0;</p>
+
+<p>        const roi = ((investor.dividendsEarned / investor.investmentAmount) * 100).toFixed(2);</p>
+<p>        return parseFloat(roi);</p>
+<p>    }</p>
+
+<p>    getPoolStatus() {</p>
+<p>        return {</p>
+<p>            machineId: this.machineId,</p>
+<p>            fundingTarget: this.fundingTarget,</p>
+<p>            totalRaised: this.totalRaised,</p>
+<p>            fundingPercentage: (this.totalRaised / this.fundingTarget * 100).toFixed(1),</p>
+<p>            numInvestors: Object.keys(this.investors).length,</p>
+<p>            cumulativeRevenue: this.cumulativeRevenue,</p>
+<p>            investors: this.investors</p>
+<p>        };</p>
+<p>    }</p>
+<p>}</p>
+
+<p>// In MerlinPersonality constructor, add:</p>
+<p>this.machineInvestmentPools = {</p>
+<p>    &#039;machine&lt;em&gt;1&#039;: new MachineInvestmentPool(&#039;machine&lt;/em&gt;1&#039;, &#039;owner_1&#039;, 1000),</p>
+<p>    &#039;machine&lt;em&gt;2&#039;: new MachineInvestmentPool(&#039;machine&lt;/em&gt;2&#039;, &#039;owner_2&#039;, 1500),</p>
+<p>    &#039;machine&lt;em&gt;3&#039;: new MachineInvestmentPool(&#039;machine&lt;/em&gt;3&#039;, &#039;owner_3&#039;, 1200)</p>
+<p>};</code></pre></p>
+
+<hr>
+
+<h2>Module 5: Gemstone Marketplace</h2>
+
+<h3>5.1 Add to MerlinPersonality</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>class GemstoneMarketplace {
+<p>    constructor() {</p>
+<p>        this.listings = [];</p>
+<p>        this.sales = [];</p>
+<p>    }</p>
+
+<p>    async listStone(sellerWallet, stone, quality, price) {</p>
+<p>        const listing = {</p>
+<p>            id: <code class="inline-code">stone_${Date.now()}</code>,</p>
+<p>            seller: sellerWallet,</p>
+<p>            stone: stone,</p>
+<p>            quality: quality,</p>
+<p>            price: price,</p>
+<p>            listedAt: Date.now(),</p>
+<p>            sold: false</p>
+<p>        };</p>
+
+<p>        this.listings.push(listing);</p>
+<p>        console.log(<code class="inline-code">💎 ${seller} listed ${stone} (${quality}) for ${price} gems</code>);</p>
+        
+<p>        return listing.id;</p>
+<p>    }</p>
+
+<p>    async buyStone(buyerWallet, stoneId) {</p>
+<p>        const listing = this.listings.find(l =&gt; l.id === stoneId);</p>
+        
+<p>        if (!listing || listing.sold) {</p>
+<p>            return { success: false, error: &#039;Stone not available&#039; };</p>
+<p>        }</p>
+
+<p>        // Transfer gems from buyer to seller</p>
+<p>        const transaction = {</p>
+<p>            from: buyerWallet,</p>
+<p>            to: listing.seller,</p>
+<p>            amount: listing.price,</p>
+<p>            stoneId: stoneId,</p>
+<p>            timestamp: Date.now(),</p>
+<p>            status: &#039;completed&#039;</p>
+<p>        };</p>
+
+<p>        this.sales.push(transaction);</p>
+<p>        listing.sold = true;</p>
+
+<p>        console.log(<code class="inline-code">✨ ${buyerWallet} bought ${listing.stone} from ${listing.seller}</code>);</p>
+        
+<p>        return {</p>
+<p>            success: true,</p>
+<p>            stone: listing.stone,</p>
+<p>            price: listing.price</p>
+<p>        };</p>
+<p>    }</p>
+
+<p>    async commissionCustomJewelry(buyerWallet, design, gemstone, designerWallet) {</p>
+<p>        // User commissions custom jewelry</p>
+<p>        const commission = {</p>
+<p>            id: <code class="inline-code">commission_${Date.now()}</code>,</p>
+<p>            buyer: buyerWallet,</p>
+<p>            designer: designerWallet,</p>
+<p>            design: design,</p>
+<p>            gemstone: gemstone,</p>
+<p>            status: &#039;pending_creation&#039;,</p>
+<p>            depositAmount: 100, // Design deposit</p>
+<p>            createdAt: Date.now()</p>
+<p>        };</p>
+
+<p>        console.log(<code class="inline-code">👑 Commission created: ${design} with ${gemstone}</code>);</p>
+        
+<p>        return commission.id;</p>
+<p>    }</p>
+
+<p>    getAvailableStones(tier) {</p>
+<p>        // Return stones available for this tier</p>
+<p>        const tierStones = {</p>
+<p>            &#039;Apprentice&#039;: [&#039;Quartz&#039;, &#039;Amethyst&#039;],</p>
+<p>            &#039;Journeyman&#039;: [&#039;Citrine&#039;, &#039;Topaz&#039;],</p>
+<p>            &#039;Artisan&#039;: [&#039;Garnet&#039;, &#039;Tourmaline&#039;],</p>
+<p>            &#039;Master&#039;: [&#039;Aquamarine&#039;, &#039;Sapphire&#039;, &#039;Ruby&#039;],</p>
+<p>            &#039;Grandmaster&#039;: [&#039;Emerald&#039;, &#039;Diamond&#039;]</p>
+<p>        };</p>
+
+<p>        return this.listings.filter(l =&gt; </p>
+<p>            !l.sold &amp;&amp; </p>
+<p>            tierStones[tier]?.includes(l.stone)</p>
+<p>        );</p>
+<p>    }</p>
+
+<p>    getMarketplaceSummary() {</p>
+<p>        return {</p>
+<p>            totalListings: this.listings.length,</p>
+<p>            activeListing: this.listings.filter(l =&gt; !l.sold).length,</p>
+<p>            totalSales: this.sales.length,</p>
+<p>            totalVolume: this.sales.reduce((sum, s) =&gt; sum + s.amount, 0),</p>
+<p>            topStones: this.getTopStones()</p>
+<p>        };</p>
+<p>    }</p>
+
+<p>    getTopStones() {</p>
+<p>        const stoneCounts = {};</p>
+<p>        this.sales.forEach(sale =&gt; {</p>
+<p>            const stone = this.listings.find(l =&gt; l.id === sale.stoneId)?.stone;</p>
+<p>            if (stone) stoneCounts[stone] = (stoneCounts[stone] || 0) + 1;</p>
+<p>        });</p>
+<p>        return stoneCounts;</p>
+<p>    }</p>
+<p>}</p>
+
+<p>// In MerlinPersonality constructor:</p>
+<p>this.marketplace = new GemstoneMarketplace();</code></pre></p>
+
+<hr>
+
+<h2>Module 6: Comprehensive Integration Example</h2>
+
+<h3>6.1 Full Cutting Session Flow</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// This shows a complete session from user perspective
+
+<p>async function startCuttingSession(userWallet, machineId, gemstoneType) {</p>
+<p>    console.log(<code class="inline-code">🚀 Starting cutting session: ${gemstoneType} on ${machineId}</code>);</p>
+
+<p>    // 1. Check user certification</p>
+<p>    const isCertified = await merlin.trainingModule.checkCertification(</p>
+<p>        userWallet,</p>
+<p>        <code class="inline-code">tier_${gemstoneType.toLowerCase()}</code></p>
+<p>    );</p>
+    
+<p>    if (!isCertified) {</p>
+<p>        addMessage(&#039;❌ You must complete training first&#039;, &#039;merlin&#039;);</p>
+<p>        return;</p>
+<p>    }</p>
+
+<p>    // 2. Start live feed</p>
+<p>    const feedManager = new LiveFeedManager(machineId, &#039;cameraFeedLive&#039;);</p>
+<p>    await feedManager.startFeed();</p>
+
+<p>    // 3. Start blockchain listener</p>
+<p>    const sessionStart = Date.now();</p>
+<p>    let sessionGemCoins = 0;</p>
+
+<p>    addMessage(<code class="inline-code">✅ Live feed started. Commands: Send gem coins to control. Example: Send 3 gems to move Y down</code>, &#039;merlin&#039;);</p>
+
+<p>    // 4. Listen for transactions</p>
+<p>    const transactionInterval = setInterval(async () =&gt; {</p>
+<p>        // Check for pending commands</p>
+<p>        if (merlin.blockchain.commandQueue.length &gt; 0) {</p>
+<p>            const queuedItem = merlin.blockchain.commandQueue.shift();</p>
+            
+<p>            // Validate command</p>
+<p>            const validation = await merlin.blockchain.validateCommand(</p>
+<p>                queuedItem.command,</p>
+<p>                merlin.userProfile.gemForge.certification.tier,</p>
+<p>                gemstoneType,</p>
+<p>                userWallet</p>
+<p>            );</p>
+
+<p>            if (validation.isValid) {</p>
+<p>                // Execute command</p>
+<p>                await merlin.blockchain.executeCommand(queuedItem.command, userWallet);</p>
+                
+<p>                sessionGemCoins += validation.tieredCost;</p>
+                
+<p>                // Update UI</p>
+<p>                updateSessionDisplay({</p>
+<p>                    command: queuedItem.command.name,</p>
+<p>                    cost: validation.tieredCost,</p>
+<p>                    totalThisSession: sessionGemCoins</p>
+<p>                });</p>
+<p>            } else {</p>
+<p>                // Reject &amp; refund</p>
+<p>                addMessage(<code class="inline-code">⚠️ Command blocked: ${validation.warnings.join(&#039;, &#039;)}</code>, &#039;merlin&#039;);</p>
+<p>                await merlin.blockchain.refundTransaction(queuedItem.transaction.hash, validation.warnings[0]);</p>
+<p>            }</p>
+<p>        }</p>
+
+<p>        // Monitor for completion (timeout after 1 hour)</p>
+<p>        const elapsed = Date.now() - sessionStart;</p>
+<p>        if (elapsed &gt; 3600000) {</p>
+<p>            endCuttingSession(sessionGemCoins, &#039;quality_high&#039;);</p>
+<p>            clearInterval(transactionInterval);</p>
+<p>        }</p>
+<p>    }, 1000);</p>
+
+<p>    return {</p>
+<p>        sessionStart: sessionStart,</p>
+<p>        machineId: machineId,</p>
+<p>        gemstoneType: gemstoneType,</p>
+<p>        startGemCoins: merlin.userProfile.gemForge.wallet.balance,</p>
+<p>        stoppingInterval: transactionInterval</p>
+<p>    };</p>
+<p>}</p>
+
+<p>async function endCuttingSession(gemCoinsSpent, cutQuality) {</p>
+<p>    console.log(<code class="inline-code">🏁 Session ended. Gems spent: ${gemCoinsSpent}, Quality: ${cutQuality}</code>);</p>
+
+<p>    // Record cut completion</p>
+<p>    merlin.recordCutCompletion(cutQuality);</p>
+
+<p>    // Calculate machine owner revenue</p>
+<p>    const revenue = gemCoinsSpent * 1.5; // 1.5x multiplier for overhead</p>
+    
+<p>    // Distribute to machine owner + investors</p>
+<p>    for (const [machineId, pool] of Object.entries(merlin.machineInvestmentPools)) {</p>
+<p>        pool.distributeRevenue(revenue);</p>
+<p>    }</p>
+
+<p>    // Award machine owner</p>
+<p>    const machineOwner = &#039;owner_1&#039;; // Should be dynamic</p>
+<p>    merlin.earnGemCoins(revenue * 0.60, <code class="inline-code">Machine operation revenue</code>);</p>
+
+<p>    // Show summary</p>
+<p>    addMessage(<code class="inline-code">Session Summary:</p>
+<p>    ⏱️ Duration: ${(sessionEnd - sessionStart) / 60000} minutes</p>
+<p>    💎 Gems spent: ${gemCoinsSpent}</p>
+<p>    ⭐ Quality: ${cutQuality}</p>
+<p>    🏆 Tier progress: +1 cut toward advancement</p>
+<p>    📈 Marketplace value: $150-300 depending on quality</code>, &#039;merlin&#039;);</p>
+<p>}</code></pre></p>
+
+<hr>
+
+<h2>Integration Checklist</h2>
+
+<h3>Phase 1: Blockchain (Week 1)</h3>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Deploy gem coin smart contract (testnet)</li>
+<li class="checkbox"><input type="checkbox" disabled> Create transaction listener (Node.js)</li>
+<li class="checkbox"><input type="checkbox" disabled> Map transaction amounts to commands</li>
+<li class="checkbox"><input type="checkbox" disabled> Test command execution</li></ul>
+
+<h3>Phase 2: Live Feed (Week 2)</h3>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Set up webcam integration</li>
+<li class="checkbox"><input type="checkbox" disabled> Create status overlay</li>
+<li class="checkbox"><input type="checkbox" disabled> Implement anomaly detection</li>
+<li class="checkbox"><input type="checkbox" disabled> Test beautiful cut detection</li></ul>
+
+<h3>Phase 3: Training (Week 3)</h3>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Create Sora 2 videos (5+ per tier)</li>
+<li class="checkbox"><input type="checkbox" disabled> Build simulation environment</li>
+<li class="checkbox"><input type="checkbox" disabled> Create certification quizzes</li>
+<li class="checkbox"><input type="checkbox" disabled> Test progression system</li></ul>
+
+<h3>Phase 4: Marketplace (Week 4)</h3>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Create listing interface</li>
+<li class="checkbox"><input type="checkbox" disabled> Build stone browser</li>
+<li class="checkbox"><input type="checkbox" disabled> Implement commission system</li>
+<li class="checkbox"><input type="checkbox" disabled> Test transactions</li></ul>
+
+<h3>Phase 5: Investment Pools (Week 5)</h3>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Create pool UI</li>
+<li class="checkbox"><input type="checkbox" disabled> Implement share buying</li>
+<li class="checkbox"><input type="checkbox" disabled> Build dividend distribution</li>
+<li class="checkbox"><input type="checkbox" disabled> Test ROI calculations</li></ul>
+
+<hr>
+
+<h2>Next Steps</h2>
+
+<ol><li class="ol-item"><strong>Copy these modules</strong> into your GemBot<em>Control</em>AI.html</li>
+<li class="ol-item"><strong>Deploy gem coin contract</strong> on testnet</li>
+<li class="ol-item"><strong>Test transaction→command flow</strong> with 3 machines</li>
+<li class="ol-item"><strong>Launch first training course</strong></li>
+<li class="ol-item"><strong>Invite beta cutters</strong> (10-15 users)</li>
+<li class="ol-item"><strong>Monitor KPIs</strong> and iterate</li></ol>
+
+<p><strong>Timeline</strong>: 4-6 weeks to full integration</p>
+
+<hr>
+
+<p><strong>Status</strong>: Implementation Guide Complete</p>
+<p><strong>Ready to Code</strong>: YES</p>
+<p><strong>Testing Environment</strong>: Recommended</p>
+
+        <div class="generated-notice">
+            🤖 Auto-generated from GEMBOT_IMPLEMENTATION_CODE_GUIDE.md by GemBot Neural Dashboard Agent<br>
+            Generated: 2025-12-16T13:52:09.490Z
+        </div>
+    </div>
+</body>
+</html>

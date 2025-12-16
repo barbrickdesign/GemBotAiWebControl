@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARYA_INTEL_SYSTEM_GUIDE - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        <h1>🔬 Arya Intel System - Comprehensive Guide</h1>
+
+<h2>Overview</h2>
+
+<p>The <strong>Arya Intel System</strong> is a sophisticated gemstone research and market intelligence layer integrated into the GemBot ecosystem. Named in honor of <strong>Dr. Arya Akhavan</strong>, this system provides research-grade gemstone data, real-time market pricing, recut calculations, and mineral database access.</p>
+
+<hr>
+
+<h2>🎓 About Dr. Arya Akhavan</h2>
+
+<p><strong>Dr. Arya Akhavan</strong> is one of the most respected figures in the gemstone industry:</p>
+
+<ul><li class="ul-item"><strong>US Faceter's Guild Board Member</strong> - Helping advance the art of gemstone cutting</li>
+<li class="ul-item"><strong>Acclaimed Lapidary & Gemstone Designer</strong> - Creator of award-winning designs at <a href="https://www.earthartgems.com" target="_blank" rel="noopener">earthartgems.com</a></li>
+<li class="ul-item"><strong>Postdoctoral Researcher</strong> - PhD from Oxford, currently at École Polytechnique</li>
+<li class="ul-item"><strong>The Gemstone Lab Founder</strong> - Pioneering lab sapphire research using supercomputer color predictions</li>
+<li class="ul-item"><strong>Educator & Author</strong> - Comprehensive gemstone property documentation</li></ul>
+
+<h3>Notable Contributions</h3>
+<ul><li class="ul-item">Extensive gemstone cutting designs and diagrams</li>
+<li class="ul-item">Scientific research on gemstone optical properties</li>
+<li class="ul-item">Lab-grown sapphire color optimization algorithms</li>
+<li class="ul-item">Educational content for aspiring lapidaries</li></ul>
+
+<hr>
+
+<h2>🪨 SlinginRockz (Andy Acker) Integration</h2>
+
+<p><strong>Andy Acker</strong> (@slinginrockz on Instagram) is celebrated for his exceptional mineral photography and documentation:</p>
+
+<ul><li class="ul-item"><strong>High-Quality Mineral Photography</strong> - Stunning specimen documentation</li>
+<li class="ul-item"><strong>Educational Content</strong> - Locality data, mineral identification</li>
+<li class="ul-item"><strong>Instagram Presence</strong> - Thousands of documented specimens</li>
+<li class="ul-item"><strong>Community Engagement</strong> - Sharing rare and unique minerals</li></ul>
+
+<p>The mineral database draws inspiration from Andy's comprehensive approach to mineral documentation.</p>
+
+<hr>
+
+<h2>📊 System Components</h2>
+
+<h3>1. Stone Marketplace</h3>
+<p>Access cut gemstones ready for purchase or recut:</p>
+
+<pre class="code-block javascript" data-lang="javascript"><code>marketplaceUI.showStoneMarketplace()</code></pre>
+
+<p><strong>Features:</strong></p>
+<ul><li class="ul-item">Filter by species, cut type, size range, quality</li>
+<li class="ul-item">Quality rating system (1-5 stars)</li>
+<li class="ul-item">Real-time pricing from multiple sources</li>
+<li class="ul-item">Direct purchase functionality</li></ul>
+
+<h3>2. Recut Laboratory</h3>
+<p>Calculate and execute gemstone recutting operations:</p>
+
+<pre class="code-block javascript" data-lang="javascript"><code>marketplaceUI.showRecutLab()</code></pre>
+
+<p><strong>Features:</strong></p>
+<ul><li class="ul-item">Material loss calculations based on Mohs hardness</li>
+<li class="ul-item">Target size and cut selection</li>
+<li class="ul-item">Cost/benefit analysis</li>
+<li class="ul-item">One-click recut execution</li></ul>
+
+<h3>3. Market Research</h3>
+<p>Access real-time gemstone market data:</p>
+
+<pre class="code-block javascript" data-lang="javascript"><code>marketplaceUI.showMarketResearch()</code></pre>
+
+<p><strong>Features:</strong></p>
+<ul><li class="ul-item">Search any gemstone for current pricing</li>
+<li class="ul-item">Price trends with source attribution</li>
+<li class="ul-item">Market movement indicators (↑↓)</li>
+<li class="ul-item">Data from IGS, GIA, Rapaport, auction houses</li></ul>
+
+<h3>4. Mineral Database</h3>
+<p>Explore the comprehensive mineral species database:</p>
+
+<pre class="code-block javascript" data-lang="javascript"><code>marketplaceUI.showMineralDatabase()</code></pre>
+
+<p><strong>Features:</strong></p>
+<ul><li class="ul-item">Search by name, formula, or properties</li>
+<li class="ul-item">Chemical composition data</li>
+<li class="ul-item">Mohs hardness, crystal system, refractive index</li>
+<li class="ul-item">Key localities worldwide</li></ul>
+
+<hr>
+
+<h2>🔧 Technical Integration</h2>
+
+<h3>Accessing the Arya Intel System</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Get the system instance
+<p>const arya = window.AryaIntelSystem;</p>
+
+<p>// Get gemstone market data</p>
+<p>const sapphireData = arya.getGemstoneData(&#039;sapphire&#039;);</p>
+
+<p>// Calculate recut value</p>
+<p>const recutValue = arya.calculateRecutValue({</p>
+<p>    species: &#039;sapphire&#039;,</p>
+<p>    currentWeight: 2.5,</p>
+<p>    targetWeight: 2.0,</p>
+<p>    currentCut: &#039;round&#039;,</p>
+<p>    targetCut: &#039;cushion&#039;,</p>
+<p>    quality: 4</p>
+<p>});</p>
+
+<p>// Search minerals</p>
+<p>const berylResults = arya.searchMinerals(&#039;beryl&#039;);</p>
+
+<p>// Get market price</p>
+<p>const price = arya.getMarketPrice(&#039;emerald&#039;, 1.5, &#039;excellent&#039;, &#039;oval&#039;);</code></pre></p>
+
+<h3>Merlin AI Integration</h3>
+
+<p>Merlin can access Arya Intel for research queries:</p>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Ask Merlin about gemstone data
+<p>await window.merlinAI.generateAryaIntelResponse(&quot;What is the refractive index of alexandrite?&quot;);</p>
+
+<p>// Ask about recutting</p>
+<p>await window.merlinAI.answerRecutQuestion(&quot;Can I recut a 3ct round sapphire to a cushion cut?&quot;);</code></pre></p>
+
+<hr>
+
+<h2>💎 Gemstone Database</h2>
+
+<p>The system includes comprehensive data for 15+ gemstones:</p>
+
+<p>| Gemstone | Hardness | RI Range | Crystal System |</p>
+<p>|----------|----------|----------|----------------|</p>
+<p>| Diamond | 10 | 2.417-2.419 | Cubic |</p>
+<p>| Sapphire | 9 | 1.762-1.778 | Trigonal |</p>
+<p>| Ruby | 9 | 1.762-1.778 | Trigonal |</p>
+<p>| Emerald | 7.5-8 | 1.565-1.602 | Hexagonal |</p>
+<p>| Alexandrite | 8.5 | 1.746-1.755 | Orthorhombic |</p>
+<p>| Aquamarine | 7.5-8 | 1.564-1.596 | Hexagonal |</p>
+<p>| Tanzanite | 6-7 | 1.691-1.700 | Orthorhombic |</p>
+<p>| Spinel | 8 | 1.712-1.736 | Cubic |</p>
+<p>| Topaz | 8 | 1.609-1.643 | Orthorhombic |</p>
+<p>| Tourmaline | 7-7.5 | 1.624-1.644 | Trigonal |</p>
+<p>| Garnet | 6.5-7.5 | 1.714-1.888 | Cubic |</p>
+<p>| Peridot | 6.5-7 | 1.654-1.690 | Orthorhombic |</p>
+<p>| Opal | 5.5-6.5 | 1.37-1.47 | Amorphous |</p>
+<p>| Zircon | 7.5 | 1.810-2.024 | Tetragonal |</p>
+<p>| Amethyst | 7 | 1.544-1.553 | Trigonal |</p>
+
+<hr>
+
+<h2>✂️ Recut Mechanics</h2>
+
+<h3>Material Loss Formula</h3>
+
+<p>The recut calculator uses a sophisticated formula:</p>
+
+<pre class="code-block " data-lang="text"><code>Base Loss = (Current Weight - Target Weight) / Current Weight × 100
+
+<p>Hardness Modifier:</p>
+<ul><li class="ul-item">Mohs 9-10: ×0.8 (less loss)</li>
+<li class="ul-item">Mohs 7-8.9: ×1.0 (normal)</li>
+<li class="ul-item">Mohs &lt; 7: ×1.2 (more loss)</li></ul>
+
+<p>Cut Complexity Modifier:</p>
+<ul><li class="ul-item">Simple cuts (round, oval): ×1.0</li>
+<li class="ul-item">Standard cuts (cushion, emerald): ×1.05</li>
+<li class="ul-item">Complex cuts (marquise, pear): ×1.1</li>
+<li class="ul-item">Specialty cuts (hearts, stars): ×1.15</code></pre></li></ul>
+
+<h3>Stone Binding</h3>
+
+<p>When a gemstone is added to a ring blank:</p>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Bind stone to ring
+<p>arya.bindStoneToRing(stoneId, ringId);</p>
+
+<p>// The stone is now permanently part of the ring</p>
+<p>// Ring value = Base Ring Value + Stone Value</p>
+<p>// This cannot be undone!</code></pre></p>
+
+<hr>
+
+<h2>📈 Market Data Sources</h2>
+
+<p>The system aggregates data from multiple sources:</p>
+
+<ol><li class="ol-item"><strong>IGS (International Gem Society)</strong> - Educational pricing guidelines</li>
+<li class="ol-item"><strong>GIA (Gemological Institute of America)</strong> - Grading standards</li>
+<li class="ol-item"><strong>Rapaport Diamond Report</strong> - Diamond pricing benchmark</li>
+<li class="ol-item"><strong>Auction Houses</strong> - Recent sale prices (Christie's, Sotheby's)</li>
+<li class="ol-item"><strong>Trade Publications</strong> - Industry pricing trends</li></ol>
+
+<p><em>Note: In the current implementation, market data is simulated. Future versions will integrate real APIs.</em></p>
+
+<hr>
+
+<h2>🎮 Marketplace Categories</h2>
+
+<p>Access via the marketplace UI:</p>
+
+<p>| Category | Icon | Description |</p>
+<p>|----------|------|-------------|</p>
+<p>| Stones | 💎 | Cut gemstones marketplace |</p>
+<p>| Recut | ✂️ | Recut laboratory |</p>
+<p>| Research | 🔬 | Arya Intel market research |</p>
+<p>| Minerals | 🪨 | Mineral database |</p>
+<p>| Jewelry | 💍 | Ring blanks & settings |</p>
+<p>| Forge | 🔥 | Forging station |</p>
+<p>| Metals | 🪙 | Precious metals |</p>
+<p>| Trade | 🤝 | Player trading |</p>
+
+<hr>
+
+<h2>🔮 Future Enhancements</h2>
+
+<p>Planned additions to the Arya Intel System:</p>
+
+<ol><li class="ol-item"><strong>Real API Integration</strong> - Live market data from multiple sources</li>
+<li class="ol-item"><strong>Instagram Image Scraping</strong> - SlinginRockz specimen photos</li>
+<li class="ol-item"><strong>AI Cut Recommendations</strong> - Optimal cut suggestions based on rough</li>
+<li class="ol-item"><strong>Price Prediction</strong> - ML-based price forecasting</li>
+<li class="ol-item"><strong>Certification Verification</strong> - GIA/AGS certificate lookup</li>
+<li class="ol-item"><strong>Virtual Loupe</strong> - 3D gemstone visualization</li></ol>
+
+<hr>
+
+<h2>📚 References</h2>
+
+<ul><li class="ul-item"><a href="https://www.earthartgems.com" target="_blank" rel="noopener">Dr. Arya Akhavan - Earth Art Gems</a></li>
+<li class="ul-item"><a href="https://www.thegemstonelab.com" target="_blank" rel="noopener">The Gemstone Lab</a></li>
+<li class="ul-item"><a href="https://usfacetersguild.org" target="_blank" rel="noopener">US Faceter's Guild</a></li>
+<li class="ul-item"><a href="https://www.instagram.com/slinginrockz" target="_blank" rel="noopener">SlinginRockz Instagram</a></li>
+<li class="ul-item"><a href="https://www.gemsociety.org" target="_blank" rel="noopener">International Gem Society</a></li>
+<li class="ul-item"><a href="https://www.gia.edu" target="_blank" rel="noopener">GIA - Gemological Institute of America</a></li></ul>
+
+<hr>
+
+<p><em>Arya Intel System v1.0 - Powered by GemBot 💎</em></p>
+<p><em>$GEMBOT Token: DPHcbu7wJEbcrnCYjXC8vHBkM39kT9xZg4mYayvrpump</em></p>
+
+        <div class="generated-notice">
+            🤖 Auto-generated from ARYA_INTEL_SYSTEM_GUIDE.md by GemBot Neural Dashboard Agent<br>
+            Generated: 2025-12-16T13:52:00.424Z
+        </div>
+    </div>
+</body>
+</html>

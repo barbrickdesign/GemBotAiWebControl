@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QUICK_START_TESTING - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        <h1>🚀 QUICK START: Economy Loop Testing</h1>
+
+<h2>Current Status</h2>
+<p>✅ <strong>READY TO TEST</strong> - Zero warnings, all systems operational</p>
+
+<hr>
+
+<h2>5-Minute Health Check</h2>
+
+<h3>Open Browser Console (F12)</h3>
+<p>Should see <strong>NO warnings</strong> ✅</p>
+
+<h3>Check Header Display</h3>
+<p>Should see: <code class="inline-code">💎 100 | 🏆 Apprentice | 🔥 0</code> ✅</p>
+
+<h3>Test Economy Queries</h3>
+<p>Type in chat:</p>
+<pre class="code-block " data-lang="text"><code>&quot;What&#039;s my balance?&quot;      → Should say &quot;100 gems&quot;
+<p>&quot;What tier am I?&quot;         → Should say &quot;Apprentice&quot;</p>
+<p>&quot;Claim daily bonus&quot;       → Should add 10 gems to balance</code></pre></p>
+
+<p>All working? → <strong>PROCEED TO FULL TESTING</strong> ✅</p>
+
+<hr>
+
+<h2>20-Minute Economy Loop Test</h2>
+
+<h3>Step 1: Execute 5 Commands</h3>
+<ul><li class="ul-item">Click SCAN → Connect to Arduino</li>
+<li class="ul-item">Click UP button 5 times</li>
+<li class="ul-item">Balance should drop from 100 → 95 ✅</li></ul>
+
+<h3>Step 2: Complete 1 Cut</h3>
+<ul><li class="ul-item">Execute full cut sequence on machine</li>
+<li class="ul-item">Should award 10-50 gems (quality-dependent)</li>
+<li class="ul-item">Balance should increase ✅</li></ul>
+
+<h3>Step 3: Continue for 10 Total Cuts</h3>
+<ul><li class="ul-item">Execute 9 more quality cuts</li>
+<li class="ul-item">Each cut: +10 gems minimum</li>
+<li class="ul-item">Total should be 100+ gems ✅</li></ul>
+
+<h3>Step 4: Check Tier Advancement</h3>
+<p>After 10 cuts:</p>
+<ul><li class="ul-item">Type: "What tier am I?"</li>
+<li class="ul-item">Should show: <code class="inline-code">🏆 Journeyman</code> ✅</li>
+<li class="ul-item">Type: "What stones can I cut?"</li>
+<li class="ul-item">Should show: Citrine, Topaz unlocked ✅</li></ul>
+
+<hr>
+
+<h2>Full Test Checklist</h2>
+
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> <strong>Header Display</strong>: Shows gem balance, tier, streak</li>
+<li class="checkbox"><input type="checkbox" disabled> <strong>Commands</strong>: Deduct gems when executed</li>
+<li class="checkbox"><input type="checkbox" disabled> <strong>Bonus</strong>: Claim daily bonus awards gems</li>
+<li class="checkbox"><input type="checkbox" disabled> <strong>Cuts</strong>: Completing cuts awards gems</li>
+<li class="checkbox"><input type="checkbox" disabled> <strong>Tier</strong>: Advancement happens after 10 cuts</li>
+<li class="checkbox"><input type="checkbox" disabled> <strong>Stones</strong>: New stones unlock after tier advance</li>
+<li class="checkbox"><input type="checkbox" disabled> <strong>Achievements</strong>: Badges appear after milestones</li>
+<li class="checkbox"><input type="checkbox" disabled> <strong>Persistence</strong>: Data saves across refresh</li>
+<li class="checkbox"><input type="checkbox" disabled> <strong>No Warnings</strong>: Console is clean</li>
+<li class="checkbox"><input type="checkbox" disabled> <strong>No Errors</strong>: All systems responsive</li></ul>
+
+<hr>
+
+<h2>Gem Economy Summary</h2>
+
+<h3>Earning Gems</h3>
+<p>| Action | Reward |</p>
+<p>|--------|--------|</p>
+<p>| Daily Bonus | 10 + streak multiplier |</p>
+<p>| Standard Cut | +10 gems |</p>
+<p>| Good Cut | +20 gems |</p>
+<p>| Perfect Cut | +50 gems |</p>
+<p>| Lesson Complete | +5 gems |</p>
+
+<h3>Spending Gems</h3>
+<p>| Action | Cost |</p>
+<p>|--------|------|</p>
+<p>| Command (Apprentice) | 1 gem |</p>
+<p>| Command (Journeyman) | 1.2 gems |</p>
+<p>| Command (Artisan) | 1.5 gems |</p>
+<p>| Command (Master) | 2.0 gems |</p>
+<p>| Command (Grandmaster) | 2.5 gems |</p>
+
+<h3>Tier Progression</h3>
+<p>| Tier | Cuts | Cost/Cmd | New Stones |</p>
+<p>|------|------|----------|-----------|</p>
+<p>| Apprentice | 0 | 1.0x | Quartz, Amethyst |</p>
+<p>| Journeyman | 10 | 1.2x | + Citrine, Topaz |</p>
+<p>| Artisan | 50 | 1.5x | + Garnet, Tourmaline |</p>
+<p>| Master | 200 | 2.0x | + Aquamarine, Sapphire, Ruby |</p>
+<p>| Grandmaster | 500 | 2.5x | + Emerald, Diamond |</p>
+
+<hr>
+
+<h2>If Something Doesn't Work</h2>
+
+<h3>Gems Not Deducting?</h3>
+<ol><li class="ol-item">Check console for errors (F12)</li>
+<li class="ol-item">Verify Arduino connected (should see menu)</li>
+<li class="ol-item">Try refreshing page</li>
+<li class="ol-item">Check if balance is 0 (can't spend if empty)</li></ol>
+
+<h3>Tier Not Advancing?</h3>
+<ol><li class="ol-item">Verify you've done 10+ cuts</li>
+<li class="ol-item">Ask "What tier am I?" to check current</li>
+<li class="ol-item">Check console for errors</li>
+<li class="ol-item">Try refreshing page</li></ol>
+
+<h3>Balance Not Displaying?</h3>
+<ol><li class="ol-item">Check if header shows: <code class="inline-code">💎 100 | 🏆 ...</code></li>
+<li class="ol-item">If missing, try Ctrl+Shift+Delete (clear cache)</li>
+<li class="ol-item">Check console for errors</li>
+<li class="ol-item">Try different browser</li></ol>
+
+<h3>Data Lost After Refresh?</h3>
+<ol><li class="ol-item">Check if localStorage is enabled</li>
+<li class="ol-item">Try Ctrl+Shift+Delete to clear cache</li>
+<li class="ol-item">Check for "Clear on exit" setting in browser</li>
+<li class="ol-item">Look for "Storage" in browser settings</li></ol>
+
+<hr>
+
+<h2>Chat Commands Reference</h2>
+
+<pre class="code-block " data-lang="text"><code>Economy Info:
+<p>&quot;What&#039;s my balance?&quot;          → Current gems</p>
+<p>&quot;What&#039;s my tier?&quot;             → Current tier</p>
+<p>&quot;What&#039;s my rank?&quot;             → Achievement rank</p>
+<p>&quot;What achievements have I?&quot;   → List earned badges</p>
+<p>&quot;What stones can I cut?&quot;      → Tier-specific stones</p>
+<p>&quot;Claim daily bonus&quot;           → Get daily reward</p>
+
+<p>Teaching:</p>
+<p>&quot;Can you teach me&quot;            → Get lesson menu</p>
+<p>&quot;How do I...&quot;                 → Get specific lesson</p>
+<p>&quot;Explain...&quot;                  → Detailed explanation</p>
+
+<p>Machine:</p>
+<p>&quot;Scan&quot;                        → Search for Arduino</p>
+<p>&quot;Connect&quot;                     → Connect to serial port</p>
+<p>[button clicks]               → Execute commands</code></pre></p>
+
+<hr>
+
+<h2>Success = You See This</h2>
+
+<h3>After Claiming Bonus</h3>
+<pre class="code-block " data-lang="text"><code>Chat shows: &quot;✅ Daily bonus claimed! You earned 10 gems (1.0x streak)&quot;
+<p>Header shows: 💎 110 | 🏆 Apprentice | 🔥 1</code></pre></p>
+
+<h3>After Executing Cuts (10+)</h3>
+<pre class="code-block " data-lang="text"><code>Chat shows: &quot;🎉 You&#039;ve advanced to Journeyman tier!&quot;
+<p>Header shows: 💎 200+ | 🏆 Journeyman | 🔥 1</p>
+<p>&quot;What stones can I cut?&quot; → Shows new stones unlocked</code></pre></p>
+
+<h3>After Refresh</h3>
+<pre class="code-block " data-lang="text"><code>All data persists exactly as before
+<p>No data loss</p>
+<p>Console shows no errors</code></pre></p>
+
+<hr>
+
+<h2>Emergency Reset</h2>
+
+<p>If things get stuck:</p>
+<ol><li class="ol-item">Open console (F12)</li>
+<li class="ol-item">Type: <code class="inline-code">localStorage.clear()</code></li>
+<li class="ol-item">Press Enter</li>
+<li class="ol-item">Refresh page</li>
+<li class="ol-item">System resets to default state</li></ol>
+
+<p>⚠️ <strong>Warning</strong>: This deletes all save data</p>
+
+<hr>
+
+<h2>Next Steps</h2>
+
+<ol><li class="ol-item"><strong>Run Health Check</strong> (5 min) → Confirm no warnings</li>
+<li class="ol-item"><strong>Test Economy Loop</strong> (20 min) → Execute cuts, verify gems</li>
+<li class="ol-item"><strong>Full Testing</strong> (1-2 hours) → All 10 test scenarios</li>
+<li class="ol-item"><strong>Report Results</strong> → Document findings</li>
+<li class="ol-item"><strong>Implement Features</strong> → Marketplace, Investor, Streaming</li></ol>
+
+<hr>
+
+<h2>Files to Reference</h2>
+
+<p>📄 <strong>ECONOMY<em>LOOP</em>TESTING_GUIDE.md</strong> - Detailed test steps</p>
+<p>📄 <strong>PHASE<em>4</em>PROJECT_STATUS.md</strong> - Complete system overview</p>
+<p>📄 <strong>PHASE<em>4</em>COMPLETE_SUMMARY.md</strong> - This phase's work</p>
+
+<hr>
+
+<p><strong>Status</strong>: ✅ READY</p>
+<p><strong>Time to Test</strong>: ~30 minutes (full loop)</p>
+<p><strong>Expected Result</strong>: All systems working</p>
+<p><strong>Console Output</strong>: Zero warnings</p>
+
+<p>🚀 <strong>Start testing whenever ready!</strong></p>
+
+        <div class="generated-notice">
+            🤖 Auto-generated from QUICK_START_TESTING.md by GemBot Neural Dashboard Agent<br>
+            Generated: 2025-12-16T13:52:22.345Z
+        </div>
+    </div>
+</body>
+</html>

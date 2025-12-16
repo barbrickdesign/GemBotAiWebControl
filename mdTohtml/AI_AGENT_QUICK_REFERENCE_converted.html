@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI_AGENT_QUICK_REFERENCE - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        <h1>🤖 AI Agent Systems - Quick Reference Guide</h1>
+
+<p><strong>Created by Ryan Barbrick / Barbrick Design</strong>  </p>
+<p><strong>Contact: BarbrickDesign@gmail.com</strong></p>
+
+<hr>
+
+<h2>📋 Table of Contents</h2>
+
+<ol><li class="ol-item"><a href="#overview" target="_blank" rel="noopener">Overview</a></li>
+<li class="ol-item"><a href="#quick-start" target="_blank" rel="noopener">Quick Start</a></li>
+<li class="ol-item"><a href="#ai-player-personalities" target="_blank" rel="noopener">AI Player Personalities</a></li>
+<li class="ol-item"><a href="#console-commands" target="_blank" rel="noopener">Console Commands</a></li>
+<li class="ol-item"><a href="#24-hour-analysis-cycle" target="_blank" rel="noopener">24-Hour Analysis Cycle</a></li>
+<li class="ol-item"><a href="#leaderboard-system" target="_blank" rel="noopener">Leaderboard System</a></li>
+<li class="ol-item"><a href="#changelog--news" target="_blank" rel="noopener">Changelog & News</a></li>
+<li class="ol-item"><a href="#referral-system" target="_blank" rel="noopener">Referral System</a></li>
+<li class="ol-item"><a href="#social-media-automation" target="_blank" rel="noopener">Social Media Automation</a></li>
+<li class="ol-item"><a href="#merlin-ai-learning" target="_blank" rel="noopener">Merlin AI Learning</a></li>
+<li class="ol-item"><a href="#configuration" target="_blank" rel="noopener">Configuration</a></li>
+<li class="ol-item"><a href="#troubleshooting" target="_blank" rel="noopener">Troubleshooting</a></li></ol>
+
+<hr>
+
+<h2>🎯 Overview</h2>
+
+<p>The GemBot AI Agent Systems create a <strong>complete autonomous ecosystem</strong> where:</p>
+<ul><li class="ul-item">AI agents play the game 24/7 simulating real users</li>
+<li class="ul-item">Every action is logged and analyzed automatically</li>
+<li class="ul-item">Fixes and improvements are generated every 24 hours</li>
+<li class="ul-item">Players see real progress in public changelog</li>
+<li class="ul-item">Merlin AI learns from all player data</li>
+<li class="ul-item">Social media automatically promotes achievements</li>
+<li class="ul-item">Referral system drives viral growth</li></ul>
+
+<p><strong>Total Code</strong>: 1,900+ lines across 4 files</p>
+<ul><li class="ul-item"><code class="inline-code">ai-agent-players.js</code> - AI player simulation (650+ lines)</li>
+<li class="ul-item"><code class="inline-code">ai-agent-logger.js</code> - Logging & 24-hour analysis (500+ lines)</li>
+<li class="ul-item"><code class="inline-code">ai-agent-systems.js</code> - Leaderboard, social media, Merlin learning (400+ lines)</li>
+<li class="ul-item"><code class="inline-code">ai-agent-news-referral.js</code> - Changelog & referrals (350+ lines)</li></ul>
+
+<hr>
+
+<h2>🚀 Quick Start</h2>
+
+<h3>1. Spawn AI Agents</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Spawn 10 AI agents to start playing
+<p>spawnAIAgents(10);</p>
+
+<p>// They will automatically:</p>
+<p>// - Start playing within 1-3 seconds</p>
+<p>// - Deploy machines, collect gems, upgrade</p>
+<p>// - Unlock 3D models, chat with Merlin</p>
+<p>// - Share achievements to social media</code></pre></p>
+
+<h3>2. View Leaderboard</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Open real-time leaderboard
+<p>openLeaderboard();</p>
+
+<p>// Updates every 30 seconds automatically</p>
+<p>// Shows AI agents + real players</p>
+<p>// Ranked by: Gems → Level → Achievements</code></pre></p>
+
+<h3>3. Check AI Stats</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Get current AI agent statistics
+<p>const stats = getAIStats();</p>
+<p>console.log(stats);</p>
+
+<p>// Returns:</p>
+<p>// - totalAgents: Number of active AI agents</p>
+<p>// - totalGems: Combined gems collected</p>
+<p>// - totalMachines: Total machines deployed</p>
+<p>// - totalActions: All actions performed</p>
+<p>// - topAgent: Best performing agent</code></pre></p>
+
+<h3>4. View Changelog</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Open public changelog
+<p>openChangelog();</p>
+
+<p>// Shows last 30 days of:</p>
+<p>// - Daily statistics</p>
+<p>// - Fixes implemented</p>
+<p>// - Improvements made</p>
+<p>// - Achievements unlocked</code></pre></p>
+
+<h3>5. Generate Referral Link</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Create referral link for a player
+<p>const link = generateReferralLink(&#039;my-player-id&#039;);</p>
+<p>console.log(link);</p>
+
+<p>// Returns: ?ref=REF-my-player-id-1733612345678</p>
+<p>// Rewards: 1000 gems (referrer), 500 gems (new player)</code></pre></p>
+
+<hr>
+
+<h2>👥 AI Player Personalities</h2>
+
+<p>Each AI agent has one of 4 distinct personalities:</p>
+
+<h3>1. 💼 Casual (30% of agents)</h3>
+<ul><li class="ul-item"><strong>Behavior</strong>: Slow, relaxed gameplay</li>
+<li class="ul-item"><strong>Action Frequency</strong>: Low (0.3)</li>
+<li class="ul-item"><strong>Risk Tolerance</strong>: Low (0.3)</li>
+<li class="ul-item"><strong>Grind Willingness</strong>: Low (0.2)</li>
+<li class="ul-item"><strong>Social Engagement</strong>: Medium (0.5)</li>
+<li class="ul-item"><strong>Typical Actions</strong>: Idle, explore, occasional collect</li></ul>
+
+<h3>2. ⚡ Hardcore (25% of agents)</h3>
+<ul><li class="ul-item"><strong>Behavior</strong>: Fast, aggressive gameplay</li>
+<li class="ul-item"><strong>Action Frequency</strong>: Very High (0.9)</li>
+<li class="ul-item"><strong>Risk Tolerance</strong>: High (0.8)</li>
+<li class="ul-item"><strong>Grind Willingness</strong>: Very High (1.0)</li>
+<li class="ul-item"><strong>Social Engagement</strong>: Low (0.3)</li>
+<li class="ul-item"><strong>Typical Actions</strong>: Deploy machines rapidly, max upgrades, unlock all models</li></ul>
+
+<h3>3. 🎯 Strategic (25% of agents)</h3>
+<ul><li class="ul-item"><strong>Behavior</strong>: Calculated, optimized gameplay</li>
+<li class="ul-item"><strong>Action Frequency</strong>: Medium (0.6)</li>
+<li class="ul-item"><strong>Risk Tolerance</strong>: Medium (0.5)</li>
+<li class="ul-item"><strong>Grind Willingness</strong>: High (0.8)</li>
+<li class="ul-item"><strong>Social Engagement</strong>: Medium (0.5)</li>
+<li class="ul-item"><strong>Typical Actions</strong>: Balanced deploy/upgrade, strategic unlocks</li></ul>
+
+<h3>4. 🎉 Social (20% of agents)</h3>
+<ul><li class="ul-item"><strong>Behavior</strong>: Community-focused, achievement-driven</li>
+<li class="ul-item"><strong>Action Frequency</strong>: Medium (0.5)</li>
+<li class="ul-item"><strong>Risk Tolerance</strong>: Low (0.4)</li>
+<li class="ul-item"><strong>Grind Willingness</strong>: Medium (0.5)</li>
+<li class="ul-item"><strong>Social Engagement</strong>: Very High (1.0)</li>
+<li class="ul-item"><strong>Typical Actions</strong>: Chat with Merlin, share achievements, explore</li></ul>
+
+<hr>
+
+<h2>🎮 Console Commands</h2>
+
+<h3>AI Agent Management</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Spawn agents
+<p>spawnAIAgents(10);              // Spawn 10 AI agents</p>
+<p>spawnAIAgents(50);              // Spawn 50 AI agents</p>
+
+<p>// Get statistics</p>
+<p>const stats = getAIStats();     // Overall statistics</p>
+<p>const leaderboard = getAILeaderboard(); // Rankings</p>
+
+<p>// Stop all agents</p>
+<p>stopAIAgents();                 // Gracefully stop all AI agents</code></pre></p>
+
+<h3>Leaderboard</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>openLeaderboard();              // Open leaderboard modal
+<p>window.gemBotLeaderboard.close(); // Close leaderboard</p>
+<p>updateLeaderboard();            // Force update (normally auto-updates every 30s)</code></pre></p>
+
+<h3>Changelog</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>openChangelog();                // Open changelog modal
+<p>window.changelogPublisher.close(); // Close changelog</code></pre></p>
+
+<h3>Referral System</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Generate referral link
+<p>const link = generateReferralLink(&#039;player-123&#039;);</p>
+
+<p>// Check stats</p>
+<p>const stats = window.referralSystem.getPlayerStats(&#039;player-123&#039;);</p>
+<p>console.log(<code class="inline-code">Conversions: ${stats.conversions}</code>);</p>
+<p>console.log(<code class="inline-code">Total Rewards: ${stats.totalRewards} gems</code>);</code></pre></p>
+
+<h3>Social Media</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Configure platforms (run once)
+<p>window.socialMedia.configurePlatform(&#039;twitter&#039;, {</p>
+<p>    apiKey: &#039;your-twitter-api-key&#039;,</p>
+<p>    apiSecret: &#039;your-twitter-api-secret&#039;</p>
+<p>});</p>
+
+<p>window.socialMedia.configurePlatform(&#039;discord&#039;, {</p>
+<p>    webhookUrl: &#039;https://discord.com/api/webhooks/...&#039;</p>
+<p>});</p>
+
+<p>window.socialMedia.configurePlatform(&#039;telegram&#039;, {</p>
+<p>    botToken: &#039;your-telegram-bot-token&#039;,</p>
+<p>    chatId: &#039;your-chat-id&#039;</p>
+<p>});</p>
+
+<p>// Post custom milestone</p>
+<p>window.socialMedia.postMilestone({</p>
+<p>    title: &#039;1000 Players Milestone!&#039;,</p>
+<p>    description: &#039;We just hit 1000 active players!&#039;,</p>
+<p>    stats: { players: 1000 }</p>
+<p>});</code></pre></p>
+
+<h3>Merlin AI Learning</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Get personalized advice
+<p>const advice = window.merlinLearning.getAdvice({</p>
+<p>    gems: 5000,</p>
+<p>    level: 5,</p>
+<p>    machines: 3</p>
+<p>});</p>
+<p>console.log(advice);</p>
+
+<p>// Check what Merlin has learned</p>
+<p>console.log(window.merlinLearning.knowledgeBase);</code></pre></p>
+
+<h3>Logger & Analysis</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// View all logs
+<p>console.log(window.aiLogger.logs);</p>
+
+<p>// View last analysis</p>
+<p>console.log(window.aiLogger.lastAnalysis);</p>
+
+<p>// Force run analysis (normally runs every 24 hours)</p>
+<p>window.aiLogger.runDailyAnalysis();</code></pre></p>
+
+<hr>
+
+<h2>⏱️ 24-Hour Analysis Cycle</h2>
+
+<p>The system automatically analyzes all gameplay data every 24 hours:</p>
+
+<h3>What It Does</h3>
+
+<ol><li class="ol-item"><strong>Metrics Calculation</strong></li></ol>
+<p>   - Total actions performed</p>
+<p>   - Success rate percentage</p>
+<p>   - Most popular actions</p>
+<p>   - Hourly activity patterns</p>
+<p>   - Average session length</p>
+
+<ol><li class="ol-item"><strong>Error Analysis</strong></li></ol>
+<p>   - Groups errors by category (network, null<em>reference, game</em>logic, ui, permissions)</p>
+<p>   - Assigns severity (high, medium, low)</p>
+<p>   - Detects patterns (3+ occurrences)</p>
+<p>   - Identifies critical issues</p>
+
+<ol><li class="ol-item"><strong>Fix Generation</strong></li></ol>
+<p>   - Auto-generates fix recommendations</p>
+<p>   - Assigns priority (critical, high, medium)</p>
+<p>   - Provides specific code suggestions</p>
+<p>   - Estimates impact</p>
+
+<ol><li class="ol-item"><strong>Improvement Suggestions</strong></li></ol>
+<p>   - UX enhancements</p>
+<p>   - Stability improvements</p>
+<p>   - Engagement features</p>
+<p>   - New content ideas</p>
+
+<ol><li class="ol-item"><strong>Public News Generation</strong></li></ol>
+<p>   - Daily statistics summary</p>
+<p>   - Fixes implemented</p>
+<p>   - Improvements made</p>
+<p>   - Notable achievements</p>
+
+<ol><li class="ol-item"><strong>Merlin AI Learning</strong></li></ol>
+<p>   - Updates knowledge base</p>
+<p>   - Learns successful strategies</p>
+<p>   - Personalizes future advice</p>
+
+<ol><li class="ol-item"><strong>Social Media Posts</strong></li></ol>
+<p>   - Daily update post</p>
+<p>   - Milestone announcements</p>
+<p>   - Achievement highlights</p>
+
+<h3>Timing</h3>
+
+<ul><li class="ul-item"><strong>First Analysis</strong>: Runs 5 seconds after page load</li>
+<li class="ul-item"><strong>Subsequent</strong>: Every 24 hours (86,400,000ms)</li>
+<li class="ul-item"><strong>Manual Trigger</strong>: <code class="inline-code">window.aiLogger.runDailyAnalysis()</code></li></ul>
+
+<h3>Output Location</h3>
+
+<ul><li class="ul-item"><strong>Console</strong>: Full analysis logged to browser console</li>
+<li class="ul-item"><strong>localStorage</strong>: Logs saved (last 10,000 entries)</li>
+<li class="ul-item"><strong>Changelog</strong>: Public-facing summary published</li>
+<li class="ul-item"><strong>Social Media</strong>: Key stats posted automatically</li></ul>
+
+<hr>
+
+<h2>🏆 Leaderboard System</h2>
+
+<h3>Features</h3>
+
+<ul><li class="ul-item"><strong>Real-Time Rankings</strong>: Updates every 30 seconds</li>
+<li class="ul-item"><strong>AI + Real Players</strong>: Shows both in one leaderboard</li>
+<li class="ul-item"><strong>Sorting</strong>: Gems → Level → Achievements</li>
+<li class="ul-item"><strong>Badges</strong>: </li></ul>
+<p>  - AI badge: Blue "AI" tag on AI agents</p>
+<p>  - Personality badge: Purple tag shows personality type</p>
+<ul><li class="ul-item"><strong>Top 3 Highlighting</strong>: Gold glow for top 3 positions</li>
+<li class="ul-item"><strong>Hover Effects</strong>: Smooth animations on mouse over</li></ul>
+
+<h3>How It Works</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Leaderboard entry structure
+<p>{</p>
+<p>    id: &#039;agent-casual-123&#039;,      // Unique identifier</p>
+<p>    name: &#039;GemMaster Ruby&#039;,      // Display name</p>
+<p>    avatar: &#039;💎&#039;,                // Emoji avatar</p>
+<p>    gems: 15000,                 // Total gems</p>
+<p>    level: 10,                   // Current level</p>
+<p>    achievements: 5,             // Unlocked achievements</p>
+<p>    isAI: true,                  // AI or real player</p>
+<p>    personality: &#039;casual&#039;        // AI personality (if AI)</p>
+<p>}</code></pre></p>
+
+<h3>Automatic Updates</h3>
+
+<p>The leaderboard pulls from:</p>
+<ol><li class="ol-item"><strong>AI Agent Manager</strong>: All active AI agents</li>
+<li class="ol-item"><strong>GBUV System</strong>: Real player data (if integrated)</li>
+<li class="ol-item"><strong>Sorts automatically</strong> by gems, then level, then achievements</li></ol>
+
+<h3>Manual Control</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Add custom entry
+<p>window.gemBotLeaderboard.addEntry({</p>
+<p>    id: &#039;real-player-1&#039;,</p>
+<p>    name: &#039;Ryan Barbrick&#039;,</p>
+<p>    avatar: &#039;👑&#039;,</p>
+<p>    gems: 100000,</p>
+<p>    level: 50,</p>
+<p>    achievements: 25,</p>
+<p>    isAI: false</p>
+<p>});</p>
+
+<p>// Force sort and update</p>
+<p>window.gemBotLeaderboard.sortLeaderboard();</code></pre></p>
+
+<hr>
+
+<h2>📰 Changelog & News</h2>
+
+<h3>Structure</h3>
+
+<p>Each changelog entry contains:</p>
+
+<pre class="code-block javascript" data-lang="javascript"><code>{
+<p>    title: &#039;Daily Update - Dec 7, 2025&#039;,</p>
+<p>    date: &#039;2025-12-07&#039;,</p>
+<p>    sections: {</p>
+<p>        stats: [</p>
+<p>            &#039;250 AI agents played today&#039;,</p>
+<p>            &#039;1,500 actions performed&#039;,</p>
+<p>            &#039;98% success rate&#039;</p>
+<p>        ],</p>
+<p>        fixes: [</p>
+<p>            &#039;Fixed network timeout in gem collection&#039;,</p>
+<p>            &#039;Resolved null reference in machine upgrade&#039;</p>
+<p>        ],</p>
+<p>        improvements: [</p>
+<p>            &#039;Added hover effects to UI buttons&#039;,</p>
+<p>            &#039;Optimized 3D model loading&#039;</p>
+<p>        ],</p>
+<p>        achievements: [</p>
+<p>            &#039;10 players reached level 50&#039;,</p>
+<p>            &#039;First 1 million gems collected&#039;</p>
+<p>        ]</p>
+<p>    }</p>
+<p>}</code></pre></p>
+
+<h3>Display</h3>
+
+<ul><li class="ul-item"><strong>Timeline View</strong>: Chronological list with date markers</li>
+<li class="ul-item"><strong>30-Day History</strong>: Automatically keeps last 30 days</li>
+<li class="ul-item"><strong>Auto-Publishing</strong>: New entry added after each 24-hour analysis</li>
+<li class="ul-item"><strong>Modal UI</strong>: Beautiful animated modal with gradient styling</li></ul>
+
+<h3>Manual Publishing</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Publish custom news
+<p>window.changelogPublisher.publish({</p>
+<p>    title: &#039;Major Update - New Feature!&#039;,</p>
+<p>    sections: {</p>
+<p>        stats: [&#039;Custom stat 1&#039;, &#039;Custom stat 2&#039;],</p>
+<p>        fixes: [&#039;Custom fix 1&#039;],</p>
+<p>        improvements: [&#039;Custom improvement 1&#039;],</p>
+<p>        achievements: [&#039;Custom achievement 1&#039;]</p>
+<p>    }</p>
+<p>});</code></pre></p>
+
+<hr>
+
+<h2>💰 Referral System</h2>
+
+<h3>How It Works</h3>
+
+<ol><li class="ol-item"><strong>Player Generates Link</strong>: <code class="inline-code">generateReferralLink('player-id')</code></li>
+<li class="ol-item"><strong>New Player Clicks Link</strong>: URL contains <code class="inline-code">?ref=REF-player-id-timestamp</code></li>
+<li class="ol-item"><strong>System Detects</strong>: Auto-checks on page load</li>
+<li class="ol-item"><strong>Rewards Distributed</strong>:</li></ol>
+<p>   - Referrer gets <strong>1000 gems</strong></p>
+<p>   - New player gets <strong>500 gems</strong></p>
+
+<h3>Referral Link Format</h3>
+
+<pre class="code-block " data-lang="text"><code>?ref=REF-{playerId}-{timestamp}
+<p>Example: ?ref=REF-player123-1733612345678</code></pre></p>
+
+<h3>Tracking</h3>
+
+<p>All referrals saved to <code class="inline-code">localStorage</code> with:</p>
+<ul><li class="ul-item">Referrer ID</li>
+<li class="ul-item">New player ID (or 'anonymous' if not logged in)</li>
+<li class="ul-item">Timestamp</li>
+<li class="ul-item">Rewards distributed</li>
+<li class="ul-item">Conversion status</li></ul>
+
+<h3>Get Stats</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>const stats = window.referralSystem.getPlayerStats(&#039;player-123&#039;);
+<p>console.log(<code class="inline-code">Conversions: ${stats.conversions}</code>);</p>
+<p>console.log(<code class="inline-code">Total Rewards: ${stats.totalRewards} gems</code>);</code></pre></p>
+
+<h3>Use Cases</h3>
+
+<ul><li class="ul-item"><strong>Share on Social Media</strong>: AI agents automatically share achievements with referral links</li>
+<li class="ul-item"><strong>Email Campaigns</strong>: Generate links for newsletter</li>
+<li class="ul-item"><strong>Influencer Marketing</strong>: Give unique codes to content creators</li>
+<li class="ul-item"><strong>In-Game Rewards</strong>: Award gems for successful referrals</li></ul>
+
+<hr>
+
+<h2>📱 Social Media Automation</h2>
+
+<h3>Supported Platforms</h3>
+
+<ol><li class="ol-item"><strong>Twitter</strong> (X)</li>
+<li class="ol-item"><strong>Discord</strong></li>
+<li class="ol-item"><strong>Telegram</strong></li></ol>
+
+<h3>Post Types</h3>
+
+<h4>1. Achievement Posts</h4>
+<p>Triggered when AI agents unlock achievements:</p>
+<pre class="code-block javascript" data-lang="javascript"><code>{
+<p>    type: &#039;achievement&#039;,</p>
+<p>    playerName: &#039;GemMaster Ruby&#039;,</p>
+<p>    achievement: &#039;First Million Gems&#039;,</p>
+<p>    referralLink: &#039;?ref=REF-agent-123-1733612345678&#039;</p>
+<p>}</code></pre></p>
+
+<h4>2. Daily Updates</h4>
+<p>Posted after 24-hour analysis:</p>
+<pre class="code-block javascript" data-lang="javascript"><code>{
+<p>    type: &#039;daily_update&#039;,</p>
+<p>    stats: {</p>
+<p>        totalActions: 1500,</p>
+<p>        activePlayers: 250,</p>
+<p>        successRate: 98,</p>
+<p>        fixesImplemented: 5,</p>
+<p>        improvements: 3</p>
+<p>    }</p>
+<p>}</code></pre></p>
+
+<h4>3. Milestones</h4>
+<p>Special events:</p>
+<pre class="code-block javascript" data-lang="javascript"><code>{
+<p>    type: &#039;milestone&#039;,</p>
+<p>    title: &#039;1000 Players!&#039;,</p>
+<p>    description: &#039;We just hit 1000 active players!&#039;,</p>
+<p>    stats: { players: 1000 }</p>
+<p>}</code></pre></p>
+
+<h3>Configuration</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Set up Twitter
+<p>window.socialMedia.configurePlatform(&#039;twitter&#039;, {</p>
+<p>    apiKey: &#039;your-api-key&#039;,</p>
+<p>    apiSecret: &#039;your-api-secret&#039;,</p>
+<p>    accessToken: &#039;your-access-token&#039;,</p>
+<p>    accessSecret: &#039;your-access-secret&#039;</p>
+<p>});</p>
+
+<p>// Set up Discord webhook</p>
+<p>window.socialMedia.configurePlatform(&#039;discord&#039;, {</p>
+<p>    webhookUrl: &#039;https://discord.com/api/webhooks/123456/abcdef&#039;</p>
+<p>});</p>
+
+<p>// Set up Telegram bot</p>
+<p>window.socialMedia.configurePlatform(&#039;telegram&#039;, {</p>
+<p>    botToken: &#039;123456:ABCdefGHIjklMNOpqrsTUVwxyz&#039;,</p>
+<p>    chatId: &#039;-1001234567890&#039;</p>
+<p>});</code></pre></p>
+
+<h3>Queue System</h3>
+
+<p>Posts are queued and processed in batches to avoid rate limiting:</p>
+<ul><li class="ul-item"><strong>Queue Size</strong>: Up to 100 posts</li>
+<li class="ul-item"><strong>Processing Interval</strong>: Every 30 seconds</li>
+<li class="ul-item"><strong>Retry Logic</strong>: 3 attempts on failure</li>
+<li class="ul-item"><strong>Rate Limiting</strong>: 10 posts per batch</li></ul>
+
+<h3>Manual Posting</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Post custom content
+<p>window.socialMedia.post({</p>
+<p>    type: &#039;custom&#039;,</p>
+<p>    playerName: &#039;Ryan Barbrick&#039;,</p>
+<p>    achievement: &#039;Created AI Agent Systems&#039;,</p>
+<p>    referralLink: &#039;?ref=REF-ryan-1733612345678&#039;</p>
+<p>});</code></pre></p>
+
+<hr>
+
+<h2>🧙‍♂️ Merlin AI Learning</h2>
+
+<h3>Knowledge Base Structure</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>{
+<p>    commonActions: {</p>
+<p>        deploy_machine: 450,</p>
+<p>        collect_gems: 1200,</p>
+<p>        upgrade_machine: 320,</p>
+<p>        unlock_model: 80,</p>
+<p>        chat&lt;em&gt;with&lt;/em&gt;merlin: 150</p>
+<p>    },</p>
+<p>    successfulStrategies: [</p>
+<p>        &#039;Deploy 3 machines before upgrading&#039;,</p>
+<p>        &#039;Collect gems every 5 minutes&#039;,</p>
+<p>        &#039;Unlock models after reaching level 10&#039;</p>
+<p>    ],</p>
+<p>    commonErrors: [</p>
+<p>        &#039;Network timeout during collection&#039;,</p>
+<p>        &#039;Null reference in upgrade function&#039;</p>
+<p>    ],</p>
+<p>    playerPatterns: {</p>
+<p>        casual: { avgGems: 5000, avgLevel: 5 },</p>
+<p>        hardcore: { avgGems: 50000, avgLevel: 25 },</p>
+<p>        strategic: { avgGems: 30000, avgLevel: 15 },</p>
+<p>        social: { avgGems: 15000, avgLevel: 10 }</p>
+<p>    },</p>
+<p>    improvements: [</p>
+<p>        &#039;Add loading indicators&#039;,</p>
+<p>        &#039;Improve error messages&#039;</p>
+<p>    ]</p>
+<p>}</code></pre></p>
+
+<h3>How It Learns</h3>
+
+<ol><li class="ol-item"><strong>Data Collection</strong>: Receives analysis data every 24 hours</li>
+<li class="ol-item"><strong>Pattern Detection</strong>: Identifies successful strategies from metrics</li>
+<li class="ol-item"><strong>Error Aggregation</strong>: Tracks common issues</li>
+<li class="ol-item"><strong>Personalization</strong>: Learns per-personality patterns</li></ol>
+
+<h3>Getting Advice</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Get personalized advice based on player state
+<p>const advice = window.merlinLearning.getAdvice({</p>
+<p>    gems: 5000,</p>
+<p>    level: 5,</p>
+<p>    machines: 2,</p>
+<p>    achievements: 1</p>
+<p>});</p>
+
+<p>console.log(advice);</p>
+<p>// Example output:</p>
+<p>// &quot;Based on successful players, I recommend deploying one more machine before upgrading. Players at your level typically have 3 machines.&quot;</code></pre></p>
+
+<h3>Use Cases</h3>
+
+<ul><li class="ul-item"><strong>Chat Responses</strong>: Merlin uses learned data for better answers</li>
+<li class="ul-item"><strong>Tutorial Hints</strong>: Personalized tips based on player type</li>
+<li class="ul-item"><strong>Optimization</strong>: Suggest best strategies learned from top players</li>
+<li class="ul-item"><strong>Error Prevention</strong>: Warn about common mistakes</li></ul>
+
+<hr>
+
+<h2>⚙️ Configuration</h2>
+
+<h3>localStorage Keys</h3>
+
+<p>All data persisted to localStorage:</p>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// AI Agent Logs
+<p>&#039;gembot&lt;em&gt;ai&lt;/em&gt;logs&#039;              // Last 10,000 action logs</p>
+
+<p>// Leaderboard Data</p>
+<p>&#039;gembot_leaderboard&#039;          // Current rankings</p>
+
+<p>// Social Media Queue</p>
+<p>&#039;gembot&lt;em&gt;social&lt;/em&gt;queue&#039;         // Pending posts</p>
+
+<p>// Social Media Config</p>
+<p>&#039;gembot&lt;em&gt;social&lt;/em&gt;config&#039;        // API credentials</p>
+
+<p>// Merlin Learning</p>
+<p>&#039;gembot&lt;em&gt;merlin&lt;/em&gt;knowledge&#039;     // AI knowledge base</p>
+
+<p>// Changelog</p>
+<p>&#039;gembot_changelog&#039;            // Last 30 days of news</p>
+
+<p>// Referrals</p>
+<p>&#039;gembot_referrals&#039;            // All referral links</p>
+<p>&#039;gembot&lt;em&gt;referral&lt;/em&gt;conversions&#039; // Conversion tracking</code></pre></p>
+
+<h3>Adjustable Parameters</h3>
+
+<h4>AI Agent Timing</h4>
+<pre class="code-block javascript" data-lang="javascript"><code>// In ai-agent-players.js
+<p>const baseWaitTime = 2000;    // Base 2 seconds between actions</p>
+<p>// Actual wait: baseWaitTime / personality.actionFrequency</code></pre></p>
+
+<h4>Analysis Cycle</h4>
+<pre class="code-block javascript" data-lang="javascript"><code>// In ai-agent-logger.js
+<p>const ANALYSIS_INTERVAL = 24 &lt;em&gt; 60 &lt;/em&gt; 60 * 1000; // 24 hours</code></pre></p>
+
+<h4>Leaderboard Update</h4>
+<pre class="code-block javascript" data-lang="javascript"><code>// In ai-agent-systems.js
+<p>const UPDATE_INTERVAL = 30000; // 30 seconds</code></pre></p>
+
+<h4>Social Media Processing</h4>
+<pre class="code-block javascript" data-lang="javascript"><code>// In ai-agent-systems.js
+<p>const PROCESS_INTERVAL = 30000; // 30 seconds</p>
+<p>const BATCH_SIZE = 10;          // 10 posts per batch</code></pre></p>
+
+<hr>
+
+<h2>🔧 Troubleshooting</h2>
+
+<h3>AI Agents Not Spawning</h3>
+
+<p><strong>Problem</strong>: <code class="inline-code">spawnAIAgents(10)</code> doesn't work</p>
+
+<p><strong>Solutions</strong>:</p>
+<ol><li class="ol-item">Check console for errors: <code class="inline-code">F12</code> → Console</li>
+<li class="ol-item">Verify GBUV is loaded: <code class="inline-code">console.log(window.GBUV)</code></li>
+<li class="ol-item">Verify logger is loaded: <code class="inline-code">console.log(window.aiLogger)</code></li>
+<li class="ol-item">Try spawning fewer: <code class="inline-code">spawnAIAgents(1)</code></li></ol>
+
+<h3>Leaderboard Not Updating</h3>
+
+<p><strong>Problem</strong>: Leaderboard shows no entries or doesn't refresh</p>
+
+<p><strong>Solutions</strong>:</p>
+<ol><li class="ol-item">Check if agents are running: <code class="inline-code">getAIStats()</code></li>
+<li class="ol-item">Force update: <code class="inline-code">updateLeaderboard()</code></li>
+<li class="ol-item">Check console for errors</li>
+<li class="ol-item">Verify leaderboard exists: <code class="inline-code">console.log(window.gemBotLeaderboard)</code></li></ol>
+
+<h3>24-Hour Analysis Not Running</h3>
+
+<p><strong>Problem</strong>: No analysis output after 24 hours</p>
+
+<p><strong>Solutions</strong>:</p>
+<ol><li class="ol-item">Check if cycle started: <code class="inline-code">console.log(window.aiLogger.cycleStarted)</code></li>
+<li class="ol-item">Manually trigger: <code class="inline-code">window.aiLogger.runDailyAnalysis()</code></li>
+<li class="ol-item">Check last analysis time: <code class="inline-code">console.log(window.aiLogger.lastAnalysis)</code></li>
+<li class="ol-item">Verify logs exist: <code class="inline-code">console.log(window.aiLogger.logs.length)</code></li></ol>
+
+<h3>Social Media Not Posting</h3>
+
+<p><strong>Problem</strong>: Posts queue but don't actually post</p>
+
+<p><strong>Solutions</strong>:</p>
+<ol><li class="ol-item"><strong>Expected</strong>: API credentials required for real posting</li>
+<li class="ol-item">Check queue: <code class="inline-code">console.log(window.socialMedia.postQueue)</code></li>
+<li class="ol-item">Configure platform: <code class="inline-code">window.socialMedia.configurePlatform('twitter', {...})</code></li>
+<li class="ol-item">Simulated by default - see console logs for "would post"</li></ol>
+
+<h3>Referral Links Not Working</h3>
+
+<p><strong>Problem</strong>: Clicking referral links doesn't award gems</p>
+
+<p><strong>Solutions</strong>:</p>
+<ol><li class="ol-item">Check URL contains <code class="inline-code">?ref=</code>: <code class="inline-code">window.location.search</code></li>
+<li class="ol-item">Verify referral system loaded: <code class="inline-code">console.log(window.referralSystem)</code></li>
+<li class="ol-item">Check GBUV loaded: <code class="inline-code">console.log(window.GBUV)</code></li>
+<li class="ol-item">Manual check: <code class="inline-code">window.referralSystem.checkReferralCode()</code></li></ol>
+
+<h3>Changelog Empty</h3>
+
+<p><strong>Problem</strong>: Changelog shows no entries</p>
+
+<p><strong>Solutions</strong>:</p>
+<ol><li class="ol-item">Wait for first analysis: Runs 5 seconds after page load</li>
+<li class="ol-item">Manually publish: <code class="inline-code">window.aiLogger.runDailyAnalysis()</code></li>
+<li class="ol-item">Check localStorage: <code class="inline-code">localStorage.getItem('gembot_changelog')</code></li>
+<li class="ol-item">Verify publisher loaded: <code class="inline-code">console.log(window.changelogPublisher)</code></li></ol>
+
+<h3>Performance Issues</h3>
+
+<p><strong>Problem</strong>: Page becomes slow with many AI agents</p>
+
+<p><strong>Solutions</strong>:</p>
+<ol><li class="ol-item">Reduce agent count: Spawn 10-20 instead of 50+</li>
+<li class="ol-item">Stop agents: <code class="inline-code">stopAIAgents()</code></li>
+<li class="ol-item">Clear old logs: <code class="inline-code">localStorage.removeItem('gembot<em>ai</em>logs')</code></li>
+<li class="ol-item">Increase wait times in <code class="inline-code">ai-agent-players.js</code></li></ol>
+
+<h3>localStorage Full</h3>
+
+<p><strong>Problem</strong>: "QuotaExceededError" in console</p>
+
+<p><strong>Solutions</strong>:</p>
+<ol><li class="ol-item">Clear old data:</li></ol>
+<p>   <pre class="code-block javascript" data-lang="javascript"><code>localStorage.removeItem(&#039;gembot&lt;em&gt;ai&lt;/em&gt;logs&#039;);</p>
+<p>   localStorage.removeItem(&#039;gembot_leaderboard&#039;);</p>
+<p>   localStorage.removeItem(&#039;gembot_changelog&#039;);</code></pre></p>
+<ol><li class="ol-item">Reduce log limit in <code class="inline-code">ai-agent-logger.js</code> (default 10,000)</li>
+<li class="ol-item">Clear all GemBot data:</li></ol>
+<p>   <pre class="code-block javascript" data-lang="javascript"><code>Object.keys(localStorage)</p>
+<p>       .filter(key =&gt; key.startsWith(&#039;gembot_&#039;))</p>
+<p>       .forEach(key =&gt; localStorage.removeItem(key));</code></pre></p>
+
+<hr>
+
+<h2>📊 Expected Results</h2>
+
+<h3>After Spawning 10 AI Agents</h3>
+
+<p><strong>Immediate (0-5 seconds)</strong>:</p>
+<ul><li class="ul-item">Console shows: "✅ Spawned 10 AI agents"</li>
+<li class="ul-item">Agents start playing within 1-3 seconds</li>
+<li class="ul-item">First logs appear in console</li>
+<li class="ul-item">First analysis runs at 5 seconds</li></ul>
+
+<p><strong>After 1 Minute</strong>:</p>
+<ul><li class="ul-item">30-50 actions performed</li>
+<li class="ul-item">Leaderboard shows 10 agents</li>
+<li class="ul-item">Some achievements unlocked</li>
+<li class="ul-item">Social media queue has 3-5 posts</li></ul>
+
+<p><strong>After 5 Minutes</strong>:</p>
+<ul><li class="ul-item">150-300 actions performed</li>
+<li class="ul-item">Agents have 500-5000 gems each</li>
+<li class="ul-item">1-3 machines deployed per agent</li>
+<li class="ul-item">First changelog entry published</li>
+<li class="ul-item">Merlin knowledge base updating</li></ul>
+
+<p><strong>After 1 Hour</strong>:</p>
+<ul><li class="ul-item">1,000-2,000 actions performed</li>
+<li class="ul-item">Top agents have 10,000+ gems</li>
+<li class="ul-item">5-10 machines per top agent</li>
+<li class="ul-item">Multiple achievements unlocked</li>
+<li class="ul-item">Social media queue processing regularly</li></ul>
+
+<p><strong>After 24 Hours</strong>:</p>
+<ul><li class="ul-item">Second analysis cycle runs</li>
+<li class="ul-item">Comprehensive metrics calculated</li>
+<li class="ul-item">Error patterns detected</li>
+<li class="ul-item">Fix recommendations generated</li>
+<li class="ul-item">Improvement suggestions provided</li>
+<li class="ul-item">New changelog entry published</li>
+<li class="ul-item">Daily social media post</li></ul>
+
+<hr>
+
+<h2>🎯 Best Practices</h2>
+
+<h3>1. Start Small</h3>
+<ul><li class="ul-item">Spawn 5-10 agents initially</li>
+<li class="ul-item">Monitor performance</li>
+<li class="ul-item">Scale up gradually to 20-50</li></ul>
+
+<h3>2. Monitor Logs</h3>
+<ul><li class="ul-item">Check console regularly for errors</li>
+<li class="ul-item">Review analysis output after 24 hours</li>
+<li class="ul-item">Watch for null reference errors</li></ul>
+
+<h3>3. Configure Social Media</h3>
+<ul><li class="ul-item">Set up real API credentials for production</li>
+<li class="ul-item">Test with simulated posts first</li>
+<li class="ul-item">Monitor rate limits</li></ul>
+
+<h3>4. Use Referrals Wisely</h3>
+<ul><li class="ul-item">Share links on social media</li>
+<li class="ul-item">Embed in email signatures</li>
+<li class="ul-item">Give to influencers</li>
+<li class="ul-item">Track conversions</li></ul>
+
+<h3>5. Let Merlin Learn</h3>
+<ul><li class="ul-item">More data = better advice</li>
+<li class="ul-item">Let agents play for several days</li>
+<li class="ul-item">Review knowledge base weekly</li>
+<li class="ul-item">Adjust strategies based on learnings</li></ul>
+
+<h3>6. Maintain Data</h3>
+<ul><li class="ul-item">Clear old logs monthly</li>
+<li class="ul-item">Export analytics data</li>
+<li class="ul-item">Backup referral conversions</li>
+<li class="ul-item">Archive important changelog entries</li></ul>
+
+<h3>7. Optimize Performance</h3>
+<ul><li class="ul-item">Don't spawn 100+ agents at once</li>
+<li class="ul-item">Increase wait times if laggy</li>
+<li class="ul-item">Clear localStorage periodically</li>
+<li class="ul-item">Use browser's Performance tab to monitor</li></ul>
+
+<hr>
+
+<h2>🌐 Main Site Integration (BarbrickDesign.com)</h2>
+
+<p><strong>Status</strong>: Planned for future implementation</p>
+
+<p><strong>Integration Points</strong>:</p>
+<ol><li class="ol-item"><strong>Shared Authentication</strong>: Link GemBot accounts with main site</li>
+<li class="ol-item"><strong>Portfolio Integration</strong>: Showcase GemBot in portfolio</li>
+<li class="ol-item"><strong>API Bridge</strong>: Cross-site data sharing</li>
+<li class="ol-item"><strong>Unified Dashboard</strong>: Manage all projects from one place</li>
+<li class="ol-item"><strong>Cross-Promotion</strong>: Referrals between projects</li></ol>
+
+<p><strong>Next Steps</strong>:</p>
+<ol><li class="ol-item">Review BarbrickDesign.com infrastructure</li>
+<li class="ol-item">Identify API endpoints</li>
+<li class="ol-item">Create authentication bridge</li>
+<li class="ol-item">Test cross-origin requests</li>
+<li class="ol-item">Deploy unified system</li></ol>
+
+<hr>
+
+<h2>📚 Additional Resources</h2>
+
+<ul><li class="ul-item"><strong>Main Documentation</strong>: <code class="inline-code">00<em>START</em>HERE_COMPLETE.md</code></li>
+<li class="ul-item"><strong>AI Enhancement Guide</strong>: <code class="inline-code">AI<em>ENHANCEMENT</em>SUMMARY_FINAL.md</code></li>
+<li class="ul-item"><strong>3D Visualization</strong>: <code class="inline-code">3D<em>VISUALIZATION</em>ENHANCEMENT_SUMMARY.md</code></li>
+<li class="ul-item"><strong>Testing Guide</strong>: <code class="inline-code">COMPREHENSIVE<em>TESTING</em>SUITE.md</code></li>
+<li class="ul-item"><strong>Deployment</strong>: <code class="inline-code">DEPLOYMENT<em>READY</em>FINAL.md</code></li></ul>
+
+<hr>
+
+<h2>📞 Support</h2>
+
+<p><strong>Creator</strong>: Ryan Barbrick  </p>
+<p><strong>Email</strong>: BarbrickDesign@gmail.com  </p>
+<p><strong>Website</strong>: https://barbrickdesign.com</p>
+
+<hr>
+
+<h2>📝 Version History</h2>
+
+<ul><li class="ul-item"><strong>v1.0.0</strong> (Dec 7, 2025): Initial release</li></ul>
+<p>  - AI Agent Player System</p>
+<p>  - Comprehensive Logging</p>
+<p>  - 24-Hour Analysis Cycle</p>
+<p>  - Real-Time Leaderboard</p>
+<p>  - Social Media Automation</p>
+<p>  - Merlin AI Learning</p>
+<p>  - Public Changelog</p>
+<p>  - Referral System</p>
+
+<hr>
+
+<p><strong>© 2024-2025 Ryan Barbrick / Barbrick Design. All Rights Reserved.</strong></p>
+
+        <div class="generated-notice">
+            🤖 Auto-generated from AI_AGENT_QUICK_REFERENCE.md by GemBot Neural Dashboard Agent<br>
+            Generated: 2025-12-16T13:51:58.815Z
+        </div>
+    </div>
+</body>
+</html>

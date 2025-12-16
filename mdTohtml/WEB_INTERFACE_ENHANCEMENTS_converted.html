@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WEB_INTERFACE_ENHANCEMENTS - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        <h1>GemBot Web Interface Control Enhancements</h1>
+<p><strong>December 6, 2025</strong> | Motor Speed Control & Joystick-Style Movement</p>
+
+<hr>
+
+<h2>📋 Overview</h2>
+
+<p>This document describes the enhancements made to the <strong>web interface control system</strong> for the GemBot automated faceting machine. These changes enable:</p>
+
+<ol><li class="ol-item">✅ <strong>Dual-Mode Motor Speeds</strong> - Switch between precision and fast movement modes</li>
+<li class="ol-item">✅ <strong>P-Axis Safety Gate</strong> - Prevents homing accidents when stone is at 90°</li>
+<li class="ol-item">✅ <strong>Web Joystick Control</strong> - Single-step precision or multi-step rapid repositioning</li></ol>
+
+<hr>
+
+<h2>🎮 Web Interface Commands</h2>
+
+<h3>Menu Navigation Commands (Already Implemented)</h3>
+<p>These commands navigate the menu system:</p>
+<ul><li class="ul-item"><strong>'0'</strong> = ENTER / Select menu item</li>
+<li class="ul-item"><strong>'1'</strong> = LEFT / Navigate left in menu</li>
+<li class="ul-item"><strong>'2'</strong> = EXIT / Close menu / Release motors</li>
+<li class="ul-item"><strong>'3'</strong> = RIGHT / Navigate right in menu</li></ul>
+
+<h3>New Motor Control Commands (Web Only)</h3>
+<p>Send these characters from the web interface to control motors directly:</p>
+
+<h4>Speed Mode Toggle</h4>
+<pre class="code-block " data-lang="text"><code>&#039;t&#039; or &#039;T&#039;  = Toggle between PRECISION and FAST modes</code></pre>
+<ul><li class="ul-item"><strong>PRECISION MODE</strong>: Single-step or small increments (accuracy focused)</li>
+<li class="ul-item"><strong>FAST MODE</strong>: Multi-step movements (speed focused for rapid repositioning)</li>
+<li class="ul-item">Toggles all motors simultaneously</li>
+<li class="ul-item">LCD displays current mode: "PRECISION MODE" or "FAST MODE"</li></ul>
+
+<h4>Y-Axis Movement (Up/Down)</h4>
+<pre class="code-block " data-lang="text"><code>&#039;w&#039; or &#039;W&#039;  = Move Y axis UP
+<p>&#039;z&#039; or &#039;Z&#039;  = Move Y axis DOWN</code></pre></p>
+<p><strong>PRECISION Mode:</strong></p>
+<ul><li class="ul-item">'W' or 'Z' = 1 step at a time</li>
+<li class="ul-item">Use for fine-tuning stone position</li></ul>
+
+<p><strong>FAST Mode:</strong></p>
+<ul><li class="ul-item">'W' = 10 steps up (rapid clear from wheel)</li>
+<li class="ul-item">'Z' = 10 steps down (rapid lower to wheel)</li>
+<li class="ul-item">Use for rapid repositioning during cutting</li></ul>
+
+<h4>X-Axis Movement (Left/Right)</h4>
+<pre class="code-block " data-lang="text"><code>&#039;a&#039; or &#039;A&#039;  = Move X axis LEFT
+<p>&#039;d&#039; or &#039;D&#039;  = Move X axis RIGHT</code></pre></p>
+<p><strong>PRECISION Mode:</strong></p>
+<ul><li class="ul-item">'A' or 'D' = 1 step at a time</li>
+<li class="ul-item">Use for fine-tuning facet position</li></ul>
+
+<p><strong>FAST Mode:</strong></p>
+<ul><li class="ul-item">'A' = 5 steps left (rapid indexing)</li>
+<li class="ul-item">'D' = 5 steps right (rapid indexing)</li>
+<li class="ul-item">Use for moving between facets quickly</li></ul>
+
+<h4>P-Axis Movement (Angle Up/Down)</h4>
+<pre class="code-block " data-lang="text"><code>&#039;q&#039; or &#039;Q&#039;  = Move P axis UP (counter-clockwise)
+<p>&#039;e&#039; or &#039;E&#039;  = Move P axis DOWN (clockwise)</code></pre></p>
+<p><strong>PRECISION Mode:</strong></p>
+<ul><li class="ul-item">'Q' or 'E' = 1 step at a time</li>
+<li class="ul-item">Use for fine-tuning cutting angle</li></ul>
+
+<p><strong>FAST Mode:</strong></p>
+<ul><li class="ul-item">'Q' = 3 steps up (faster angle adjustment)</li>
+<li class="ul-item">'E' = 3 steps down (faster angle adjustment)</li>
+<li class="ul-item">Use for rapid angle changes between stages</li></ul>
+
+<hr>
+
+<h2>⚡ Motor Speed Configuration</h2>
+
+<h3>Current Settings</h3>
+
+<p>| Axis | Function | Precision Speed | Fast Speed | Step Mode |</p>
+<p>|------|----------|-----------------|-----------|-----------|</p>
+<p>| Y | Lift/Lower Stone | 100 RPM | 200 RPM | MICROSTEP |</p>
+<p>| X | Index Stone | 1000 RPM | 2000 RPM | SINGLE |</p>
+<p>| P | Rotate Angle | 300 RPM | 800 RPM | MICROSTEP |</p>
+<p>| Index | Rotate Gem | 300 RPM | 800 RPM | Standard |</p>
+
+<h3>Movement Rates</h3>
+
+<p>| Axis | Precision Steps | Fast Steps | Precision Speed | Fast Speed |</p>
+<p>|------|-----------------|-----------|-----------------|-----------|</p>
+<p>| Y | 1 step | 10 steps | 0.83 steps/sec | 1.67 steps/sec |</p>
+<p>| X | 1 step | 5 steps | 8.3 steps/sec | 16.7 steps/sec |</p>
+<p>| P | 1 step | 3 steps | 2.5 steps/sec | 6.7 steps/sec |</p>
+
+<hr>
+
+<h2>🔄 Motor Speed Control Function</h2>
+
+<p>The code includes a new function <code class="inline-code">updateMotorSpeeds()</code> that switches all motors between modes:</p>
+
+<pre class="code-block cpp" data-lang="cpp"><code>void updateMotorSpeeds() {
+<p>  if(fastMode) {</p>
+<p>    // Set all motors to FAST speeds</p>
+<p>    YaxisMotor-&gt;setSpeed(Y&lt;em&gt;AXIS&lt;/em&gt;FAST_SPEED);</p>
+<p>    XaxisMotor-&gt;setSpeed(X&lt;em&gt;AXIS&lt;/em&gt;FAST_SPEED);</p>
+<p>    PaxisMotor-&gt;setSpeed(P&lt;em&gt;AXIS&lt;/em&gt;FAST_SPEED);</p>
+<p>    indexMotor.setSpeed(INDEX&lt;em&gt;FAST&lt;/em&gt;SPEED);</p>
+<p>    Serial.println(&quot;INFO: Motors set to FAST mode&quot;);</p>
+<p>    lcd.clear();</p>
+<p>    lcd.setCursor(0,0);</p>
+<p>    lcd.print(&quot;FAST MODE&quot;);</p>
+<p>    delay(800);</p>
+<p>  } else {</p>
+<p>    // Set all motors to PRECISION speeds</p>
+<p>    YaxisMotor-&gt;setSpeed(Y&lt;em&gt;AXIS&lt;/em&gt;PRECISION_SPEED);</p>
+<p>    XaxisMotor-&gt;setSpeed(X&lt;em&gt;AXIS&lt;/em&gt;PRECISION_SPEED);</p>
+<p>    PaxisMotor-&gt;setSpeed(P&lt;em&gt;AXIS&lt;/em&gt;PRECISION_SPEED);</p>
+<p>    indexMotor.setSpeed(INDEX&lt;em&gt;PRECISION&lt;/em&gt;SPEED);</p>
+<p>    Serial.println(&quot;INFO: Motors set to PRECISION mode&quot;);</p>
+<p>    lcd.clear();</p>
+<p>    lcd.setCursor(0,0);</p>
+<p>    lcd.print(&quot;PRECISION MODE&quot;);</p>
+<p>    delay(800);</p>
+<p>  }</p>
+<p>}</code></pre></p>
+
+<hr>
+
+<h2>🛡️ P-Axis Home Safety Feature</h2>
+
+<p>When running <code class="inline-code">settingsHome()</code>, the code now checks if the P-axis is already at the home position (90°):</p>
+
+<h3>Safety Gate Logic</h3>
+<pre class="code-block " data-lang="text"><code>1. Check if P limit switch is pressed (already at 90°)
+<p>   ↓</p>
+<ol><li class="ol-item">If pressed: Move Y axis UP 50 steps to clear grinding wheel</li></ol>
+<p>   ↓</p>
+<ol><li class="ol-item">Then proceed with normal P axis homing</li></ol>
+<p>   ↓</p>
+<ol><li class="ol-item">If not pressed: Skip Y clearance, proceed normally</code></pre></li></ol>
+
+<h3>What This Prevents</h3>
+<ul><li class="ul-item"><strong>Before:</strong> If stone was still at the wheel at 90°, home could trigger incorrectly</li>
+<li class="ul-item"><strong>After:</strong> Y axis automatically moves stone clear before P homing proceeds</li></ul>
+
+<h3>Example Scenario</h3>
+<pre class="code-block " data-lang="text"><code>User is cutting at 90° angle with stone at grinding wheel
+<p>  ↓</p>
+<p>User sends HOME command (&#039;k&#039; or menu HOME)</p>
+<p>  ↓</p>
+<p>System detects P is at 90° (limit switch pressed)</p>
+<p>  ↓</p>
+<p>System moves Y axis UP 50 steps (stone moves away from wheel)</p>
+<p>  ↓</p>
+<p>System then proceeds with normal home sequence</p>
+<p>  ↓</p>
+<p>Stone is safe, machine homed successfully</code></pre></p>
+
+<hr>
+
+<h2>📝 Usage Examples</h2>
+
+<h3>Example 1: Fine-Tune Facet Angle (Precision Mode)</h3>
+
+<pre class="code-block " data-lang="text"><code>Current Mode: PRECISION (default)
+
+<ol><li class="ol-item">User needs to adjust P angle slightly</li>
+<li class="ol-item">Send &#039;q&#039; → P axis moves 1 step UP</li>
+<li class="ol-item">Send &#039;q&#039; → P axis moves 1 step UP</li>
+<li class="ol-item">Send &#039;q&#039; → P axis moves 1 step UP (total: 3 steps)</li>
+<li class="ol-item">Fine-tuning complete!</code></pre></li></ol>
+
+<h3>Example 2: Rapid Stone Repositioning (Fast Mode)</h3>
+
+<pre class="code-block " data-lang="text"><code>1. User sends &#039;t&#039; → Toggle to FAST mode (LCD: &quot;FAST MODE&quot;)
+<ol><li class="ol-item">User sends &#039;z&#039; → Y axis moves 10 steps DOWN quickly</li>
+<li class="ol-item">User sends &#039;d&#039; → X axis moves 5 steps RIGHT quickly</li>
+<li class="ol-item">User sends &#039;e&#039; → P axis moves 3 steps DOWN quickly</li>
+<li class="ol-item">Stone repositioned to wheel rapidly!</li>
+<li class="ol-item">User sends &#039;t&#039; → Toggle back to PRECISION mode</code></pre></li></ol>
+
+<h3>Example 3: Complete Cut Workflow</h3>
+
+<pre class="code-block " data-lang="text"><code>Phase 1: Setup (PRECISION MODE)
+<ul><li class="ul-item">Send menu commands to navigate to Manual Control</li>
+<li class="ul-item">Send &#039;a&#039; several times to fine-tune X position</li>
+<li class="ul-item">Send &#039;q&#039; several times to fine-tune angle</li>
+<li class="ul-item">Facet perfectly positioned</li></ul>
+
+<p>Phase 2: Cut (FAST MODE)</p>
+<ul><li class="ul-item">Send &#039;t&#039; → Toggle to FAST mode</li>
+<li class="ul-item">Send &#039;z&#039; multiple times → Rapidly move stone to wheel</li>
+<li class="ul-item">Cut facet (through separate cutting system)</li>
+<li class="ul-item">Send &#039;w&#039; → Rapidly move stone away from wheel</li>
+<li class="ul-item">Send &#039;e&#039; → Rapidly adjust to next angle</li>
+<li class="ul-item">Send &#039;t&#039; → Toggle back to PRECISION</li>
+<li class="ul-item">Fine-tune next facet position</li>
+<li class="ul-item">Repeat for each facet</code></pre></li></ul>
+
+<hr>
+
+<h2>🔧 Technical Implementation Details</h2>
+
+<h3>Global Variables Added</h3>
+<pre class="code-block cpp" data-lang="cpp"><code>// Motor speed constants
+<p>const int Y&lt;em&gt;AXIS&lt;/em&gt;PRECISION_SPEED = 100;</p>
+<p>const int X&lt;em&gt;AXIS&lt;/em&gt;PRECISION_SPEED = 1000;</p>
+<p>const int P&lt;em&gt;AXIS&lt;/em&gt;PRECISION_SPEED = 300;</p>
+<p>const int INDEX&lt;em&gt;PRECISION&lt;/em&gt;SPEED = 300;</p>
+
+<p>const int Y&lt;em&gt;AXIS&lt;/em&gt;FAST_SPEED = 200;</p>
+<p>const int X&lt;em&gt;AXIS&lt;/em&gt;FAST_SPEED = 2000;</p>
+<p>const int P&lt;em&gt;AXIS&lt;/em&gt;FAST_SPEED = 800;</p>
+<p>const int INDEX&lt;em&gt;FAST&lt;/em&gt;SPEED = 800;</p>
+
+<p>// Global speed mode flag</p>
+<p>bool fastMode = false;  // false=precision, true=fast</p>
+
+<p>// Joystick control structure (for future use)</p>
+<p>struct JoystickControl {</p>
+<p>  char lastKey = 0;</p>
+<p>  unsigned long keyPressTime = 0;</p>
+<p>  bool isHeld = false;</p>
+<p>  const unsigned long HOLD_THRESHOLD = 100;  // ms</p>
+<p>  const unsigned long REPEAT_INTERVAL = 50;   // ms</p>
+<p>  unsigned long lastRepeatTime = 0;</p>
+<p>};</p>
+<p>JoystickControl joystick;</code></pre></p>
+
+<h3>Web Command Handler (In main loop)</h3>
+<ul><li class="ul-item">Checks <code class="inline-code">Start</code> variable for web commands</li>
+<li class="ul-item">Routes 't/T' to speed toggle</li>
+<li class="ul-item">Routes 'w/W', 'z/Z' to Y axis movement</li>
+<li class="ul-item">Routes 'a/A', 'd/D' to X axis movement</li>
+<li class="ul-item">Routes 'q/Q', 'e/E' to P axis movement</li>
+<li class="ul-item">Each command automatically uses current speed mode</li>
+<li class="ul-item">Serial output logs all movements for debugging</li></ul>
+
+<hr>
+
+<h2>📊 Serial Monitor Output Examples</h2>
+
+<h3>Speed Toggle</h3>
+<pre class="code-block " data-lang="text"><code>INFO: Motors set to FAST mode
+<p>INFO: Motors set to PRECISION mode</code></pre></p>
+
+<h3>Motor Movements</h3>
+<pre class="code-block " data-lang="text"><code>Y UP (PRECISION): 1 step
+<p>Y DOWN (FAST): 10 steps</p>
+<p>X LEFT (PRECISION): 1 step</p>
+<p>X RIGHT (FAST): 5 steps</p>
+<p>P UP (PRECISION): 1 step</p>
+<p>P DOWN (FAST): 3 steps</code></pre></p>
+
+<h3>Home Safety</h3>
+<pre class="code-block " data-lang="text"><code>INFO: P axis already at home position (90°)
+<p>INFO: Moving Y axis clear of wheel first for safety</p>
+<p>INFO: Y axis cleared, safe to reference P home</code></pre></p>
+
+<hr>
+
+<h2>⚠️ Important Notes</h2>
+
+<ol><li class="ol-item"><strong>Menu Navigation Still Works</strong>: The original menu system (0, 1, 2, 3 for menu nav) is unchanged</li>
+<li class="ol-item"><strong>Motor Release</strong>: Command '2' still releases all motors when exiting menu</li>
+<li class="ol-item"><strong>Speed Affects All Motors</strong>: Toggling mode changes all motors simultaneously</li>
+<li class="ol-item"><strong>Serial Logging</strong>: All motor movements are logged to Serial Monitor for debugging</li>
+<li class="ol-item"><strong>Touch Screen Not Affected</strong>: Touch screen manual control ('d', 'e', 'f', 'i', 'g', 'j', 'k', 'l', etc.) remains unchanged</li>
+<li class="ol-item"><strong>Home Safety Automatic</strong>: P-axis safety check runs automatically during home sequence</li></ol>
+
+<hr>
+
+<h2>🧪 Testing Checklist</h2>
+
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Send 't' from web interface → Motor speeds toggle</li>
+<li class="checkbox"><input type="checkbox" disabled> LCD displays "PRECISION MODE" and "FAST MODE"</li>
+<li class="checkbox"><input type="checkbox" disabled> In PRECISION: 'w' = 1 step Y up</li>
+<li class="checkbox"><input type="checkbox" disabled> In FAST: 'w' = 10 steps Y up</li>
+<li class="checkbox"><input type="checkbox" disabled> In PRECISION: 'a' = 1 step X left</li>
+<li class="checkbox"><input type="checkbox" disabled> In FAST: 'a' = 5 steps X left</li>
+<li class="checkbox"><input type="checkbox" disabled> In PRECISION: 'q' = 1 step P up</li>
+<li class="checkbox"><input type="checkbox" disabled> In FAST: 'q' = 3 steps P up</li>
+<li class="checkbox"><input type="checkbox" disabled> All serial output appears correct</li>
+<li class="checkbox"><input type="checkbox" disabled> Menu navigation still works (0, 1, 2, 3)</li>
+<li class="checkbox"><input type="checkbox" disabled> Motor '2' EXIT still releases motors</li>
+<li class="checkbox"><input type="checkbox" disabled> Home sequence activates Y safety gate at 90°</li></ul>
+
+<hr>
+
+<h2>🔄 Future Enhancement Ideas</h2>
+
+<ol><li class="ol-item"><strong>Holding Button Support</strong>: Track repeated commands and move continuously while held</li>
+<li class="ol-item"><strong>Speed Levels</strong>: Add 3+ speed modes instead of just 2</li>
+<li class="ol-item"><strong>Axis Lock</strong>: Prevent multiple axes moving simultaneously</li>
+<li class="ol-item"><strong>Step Count Display</strong>: Show total steps moved on LCD</li>
+<li class="ol-item"><strong>Speed Presets</strong>: Save/load preferred speed combinations per operation</li>
+<li class="ol-item"><strong>Motor Current Display</strong>: Show motor current draw on LCD</li></ol>
+
+<hr>
+
+<p><strong>Code Modifications Summary:</strong></p>
+<ul><li class="ul-item">Added speed mode constants and joystick structure (lines ~185-210)</li>
+<li class="ul-item">Added <code class="inline-code">updateMotorSpeeds()</code> function (lines ~2958-2985)</li>
+<li class="ul-item">Modified motor initialization to use precision speeds (line ~695-700)</li>
+<li class="ul-item">Modified <code class="inline-code">settingsHome()</code> with P-axis safety gate (lines ~2910-2945)</li>
+<li class="ul-item">Added web command handler in main loop (lines ~845-920)</li></ul>
+
+
+        <div class="generated-notice">
+            🤖 Auto-generated from WEB_INTERFACE_ENHANCEMENTS.md by GemBot Neural Dashboard Agent<br>
+            Generated: 2025-12-16T13:52:32.711Z
+        </div>
+    </div>
+</body>
+</html>

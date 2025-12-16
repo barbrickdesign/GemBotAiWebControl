@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SETUP_INSTRUCTIONS - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        <h1>GemBot Web Control - Setup Instructions</h1>
+
+<h2>Quick Start (Simplified Node Hosting)</h2>
+
+<h3>For the Computer Connected to GemBot:</h3>
+
+<ol><li class="ol-item"><strong>Install Node.js</strong> (if not already installed)</li></ol>
+<p>   - Download from: https://nodejs.org/</p>
+<p>   - Install the LTS version</p>
+
+<ol><li class="ol-item"><strong>Install Dependencies</strong></li></ol>
+<p>   <pre class="code-block bash" data-lang="bash"><code>npm install express http ws serialport cors</code></pre></p>
+
+<ol><li class="ol-item"><strong>Start the Server</strong></li></ol>
+<p>   <pre class="code-block bash" data-lang="bash"><code>node server-simple.js</code></pre></p>
+
+<p>   You'll see output like:</p>
+<p>   <pre class="code-block " data-lang="text"><code>✅ Server running at:</p>
+<p>      • Local:  http://localhost:3000</p>
+<p>      • Remote: http://192.168.1.100:3000</p>
+   
+<p>   📋 Instructions:</p>
+<p>      1. Share this IP with other users: 192.168.1.100</p>
+<p>      2. They can access: http://192.168.1.100:3000</code></pre></p>
+
+<ol><li class="ol-item"><strong>Connect Your GemBot</strong></li></ol>
+<p>   - Open <code class="inline-code">GemBot<em>Web</em>Control_DualMode.html</code> in your browser</p>
+<p>   - Select "🌐 WebSocket Server (Network)" mode</p>
+<p>   - Enter: <code class="inline-code">localhost:3000</code></p>
+<p>   - Click Connect</p>
+<p>   - Select your COM port and connect</p>
+
+<h3>For Other Users (Remote Control):</h3>
+
+<ol><li class="ol-item"><strong>Get the IP Address</strong></li></ol>
+<p>   - Ask the person with the GemBot for their computer's IP</p>
+<p>   - Example: <code class="inline-code">192.168.1.100</code></p>
+
+<ol><li class="ol-item"><strong>Open the Web Control</strong></li></ol>
+<p>   - Open <code class="inline-code">GemBot<em>Web</em>Control_DualMode.html</code> in your browser</p>
+<p>   - Select "🌐 WebSocket Server (Network)" mode</p>
+<p>   - Enter: <code class="inline-code">192.168.1.100:3000</code> (use the IP you received)</p>
+<p>   - Click Connect</p>
+<p>   - You're ready to control!</p>
+
+<h2>How It Works</h2>
+
+<pre class="code-block " data-lang="text"><code>Your Computer (with Arduino)
+<p>    ↓</p>
+<p>    └─→ Node.js Server (server-simple.js)</p>
+<p>        ↓</p>
+<p>        ├─→ Serial Connection to GemBot</p>
+<p>        └─→ WebSocket Broadcast to All Users</p>
+<p>            ↓</p>
+<p>            ├─→ User 1 (Local or Remote)</p>
+<p>            ├─→ User 2 (Local or Remote)</p>
+<p>            └─→ User 3 (Local or Remote)</code></pre></p>
+
+<h2>Firewall Settings</h2>
+
+<p>If others can't connect, check your Windows Firewall:</p>
+
+<ol><li class="ol-item">Open Windows Defender Firewall</li>
+<li class="ol-item">Click "Allow an app through firewall"</li>
+<li class="ol-item">Click "Allow another app"</li>
+<li class="ol-item">Browse to Node.js installation (usually <code class="inline-code">C:\Program Files\nodejs\node.exe</code>)</li>
+<li class="ol-item">Click "Add"</li>
+<li class="ol-item">Make sure it's checked for both "Private" and "Public"</li></ol>
+
+<h2>Troubleshooting</h2>
+
+<p><strong>"Connection refused"</strong></p>
+<ul><li class="ul-item">Make sure <code class="inline-code">server-simple.js</code> is running</li>
+<li class="ul-item">Check the IP address is correct</li>
+<li class="ul-item">Check firewall settings</li></ul>
+
+<p><strong>"Serial port not found"</strong></p>
+<ul><li class="ul-item">Make sure Arduino is connected via USB</li>
+<li class="ul-item">Check Device Manager for COM port</li>
+<li class="ul-item">Try clicking "Scan" in the web interface</li></ul>
+
+<p><strong>"Can't find server from another computer"</strong></p>
+<ul><li class="ul-item">Use the IP address shown when server starts (not localhost)</li>
+<li class="ul-item">Make sure both computers are on the same network</li>
+<li class="ul-item">Check firewall allows port 3000</li></ul>
+
+<h2>File Locations</h2>
+
+<ul><li class="ul-item"><code class="inline-code">GemBot<em>Web</em>Control_DualMode.html</code> - Web interface (open in browser)</li>
+<li class="ul-item"><code class="inline-code">server-simple.js</code> - Node.js server (run with <code class="inline-code">node server-simple.js</code>)</li>
+<li class="ul-item"><code class="inline-code">SETUP_INSTRUCTIONS.md</code> - This file</li></ul>
+
+<h2>Questions?</h2>
+
+<p>The server will display your IP address when it starts. Share that IP with anyone who needs to control the GemBot remotely!</p>
+
+        <div class="generated-notice">
+            🤖 Auto-generated from SETUP_INSTRUCTIONS.md by GemBot Neural Dashboard Agent<br>
+            Generated: 2025-12-16T13:52:25.605Z
+        </div>
+    </div>
+</body>
+</html>

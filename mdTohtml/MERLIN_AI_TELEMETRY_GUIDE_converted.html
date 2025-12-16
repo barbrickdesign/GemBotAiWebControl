@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MERLIN_AI_TELEMETRY_GUIDE - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        <h1>📊 MERLIN AI - FIREBASE TELEMETRY SYSTEM</h1>
+
+<p><strong>Status:</strong> ✅ <strong>COMPLETE & OPERATIONAL</strong>  </p>
+<p><strong>Date:</strong> December 16, 2025  </p>
+<p><strong>Purpose:</strong> Comprehensive metrics tracking for Merlin AI  </p>
+
+<hr>
+
+<h2>🎯 OVERVIEW</h2>
+
+<p>Since this is a <strong>browser-based application</strong>, we can't use npm or <code class="inline-code">@genkit-ai/firebase</code>. Instead, I've implemented a <strong>custom browser-compatible telemetry system</strong> that logs all Merlin AI activity to Firebase!</p>
+
+<h3>What Gets Tracked:</h3>
+
+<p>✅ <strong>Every AI request</strong> (duration, success/failure, tokens used)  </p>
+<p>✅ <strong>Flow-specific metrics</strong> (which flows are used most)  </p>
+<p>✅ <strong>Performance data</strong> (response times, error rates)  </p>
+<p>✅ <strong>Usage patterns</strong> (files analyzed, repositories summarized)  </p>
+<p>✅ <strong>Session tracking</strong> (unique session IDs per user)  </p>
+
+<hr>
+
+<h2>🔥 FIREBASE COLLECTION</h2>
+
+<h3>New Collection: <code class="inline-code">merlin_telemetry</code></h3>
+
+<p>Every AI call logs:</p>
+
+<pre class="code-block javascript" data-lang="javascript"><code>{
+<p>  sessionId: &quot;session&lt;em&gt;1734336000&lt;/em&gt;abc123&quot;,</p>
+<p>  flowName: &quot;analyzeCodeFlow&quot;,</p>
+<p>  model: &quot;gemini-1.5-flash&quot;,</p>
+<p>  duration: 3420,                    // milliseconds</p>
+<p>  success: true,</p>
+<p>  timestamp: &quot;2025-12-16T10:30:00Z&quot;,</p>
+<p>  serverTimestamp: Firestore.serverTimestamp(),</p>
+  
+<p>  // Flow-specific metadata</p>
+<p>  fileName: &quot;user-auth.js&quot;,</p>
+<p>  language: &quot;JavaScript&quot;,</p>
+<p>  quality: 8,</p>
+<p>  linesOfCode: 450,</p>
+<p>  tokens: 1234</p>
+<p>}</code></pre></p>
+
+<hr>
+
+<h2>📊 METRICS TRACKED</h2>
+
+<h3>For All Flows:</h3>
+<ul><li class="ul-item"><strong>Session ID</strong> - Unique identifier per user session</li>
+<li class="ul-item"><strong>Flow Name</strong> - Which AI flow was used</li>
+<li class="ul-item"><strong>Model</strong> - Which Gemini model (gemini-1.5-flash)</li>
+<li class="ul-item"><strong>Duration</strong> - Time in milliseconds</li>
+<li class="ul-item"><strong>Success</strong> - True/false based on API response</li>
+<li class="ul-item"><strong>Timestamp</strong> - ISO 8601 format</li>
+<li class="ul-item"><strong>Server Timestamp</strong> - Firestore server time</li></ul>
+
+<h3>For analyzeCodeFlow:</h3>
+<ul><li class="ul-item">File name</li>
+<li class="ul-item">Programming language</li>
+<li class="ul-item">Quality score (1-10)</li>
+<li class="ul-item">Lines of code</li>
+<li class="ul-item">Token count</li></ul>
+
+<h3>For summarizeRepositoryFlow:</h3>
+<ul><li class="ul-item">Repository name</li>
+<li class="ul-item">Total value</li>
+<li class="ul-item">Node count</li>
+<li class="ul-item">Complexity average</li></ul>
+
+<h3>For suggestFixFlow:</h3>
+<ul><li class="ul-item">Issue type</li>
+<li class="ul-item">File name</li></ul>
+
+<h3>For generate (base function):</h3>
+<ul><li class="ul-item">Prompt length</li>
+<li class="ul-item">Response length</li>
+<li class="ul-item">Token count</li></ul>
+
+<hr>
+
+<h2>🚀 HOW TO USE</h2>
+
+<h3>Automatic Tracking (No Code Changes Needed)</h3>
+
+<p>Telemetry is <strong>automatically enabled</strong> for all AI calls:</p>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// This code already logs telemetry automatically
+<p>const analysis = await window.merlinAI.analyzeCodeFlow(nodeData);</code></pre></p>
+
+<h3>View Session Summary</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Get summary of current session
+<p>const summary = window.merlinAI.getTelemetrySummary();</p>
+<p>console.log(summary);</p>
+
+<p>/*</p>
+<p>Output:</p>
+<p>{</p>
+<p>  sessionId: &quot;session&lt;em&gt;1734336000&lt;/em&gt;abc123&quot;,</p>
+<p>  totalCalls: 42,</p>
+<p>  successfulCalls: 40,</p>
+<p>  failedCalls: 2,</p>
+<p>  averageDuration: 3250,</p>
+<p>  totalTokens: 48650,</p>
+<p>  flowBreakdown: {</p>
+<p>    analyzeCodeFlow: { count: 25, successCount: 25, avgDuration: 3400 },</p>
+<p>    summarizeRepositoryFlow: { count: 5, successCount: 5, avgDuration: 5200 },</p>
+<p>    helloFlow: { count: 12, successCount: 10, avgDuration: 2100 }</p>
+<p>  },</p>
+<p>  recentMetrics: [...]</p>
+<p>}</p>
+<p>*/</code></pre></p>
+
+<h3>Export Telemetry Data</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Export all metrics as JSON
+<p>const telemetryJSON = window.merlinAI.exportTelemetry();</p>
+<p>console.log(telemetryJSON);</p>
+
+<p>// Download as file</p>
+<p>const blob = new Blob([telemetryJSON], { type: &#039;application/json&#039; });</p>
+<p>const url = URL.createObjectURL(blob);</p>
+<p>const a = document.createElement(&#039;a&#039;);</p>
+<p>a.href = url;</p>
+<p>a.download = <code class="inline-code">merlin-telemetry-${Date.now()}.json</code>;</p>
+<p>a.click();</code></pre></p>
+
+<h3>Disable Telemetry (If Needed)</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Disable telemetry
+<p>window.merlinAI.telemetry.enabled = false;</p>
+
+<p>// Re-enable</p>
+<p>window.merlinAI.telemetry.enabled = true;</code></pre></p>
+
+<hr>
+
+<h2>📈 VIEWING METRICS IN FIREBASE</h2>
+
+<h3>Method 1: Firestore Console</h3>
+
+<ol><li class="ol-item">Open Firebase Console: https://console.firebase.google.com</li>
+<li class="ol-item">Select project: <strong>gem-bot-57068</strong></li>
+<li class="ol-item">Go to <strong>Firestore Database</strong></li>
+<li class="ol-item">Find collection: <strong>merlin_telemetry</strong></li>
+<li class="ol-item">View all logged metrics</li></ol>
+
+<h3>Method 2: Query from Code</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Get all telemetry for current session
+<p>const { collection, query, where, getDocs } = window.firestoreUtils;</p>
+<p>const telemetryRef = collection(window.firebaseDb, &#039;merlin_telemetry&#039;);</p>
+<p>const q = query(</p>
+<p>  telemetryRef,</p>
+<p>  where(&#039;sessionId&#039;, &#039;==&#039;, window.merlinAI.telemetry.sessionId)</p>
+<p>);</p>
+
+<p>const snapshot = await getDocs(q);</p>
+<p>snapshot.forEach(doc =&gt; {</p>
+<p>  console.log(doc.id, doc.data());</p>
+<p>});</code></pre></p>
+
+<h3>Method 3: Build Dashboard</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Get metrics grouped by flow
+<p>const { collection, getDocs } = window.firestoreUtils;</p>
+<p>const telemetryRef = collection(window.firebaseDb, &#039;merlin_telemetry&#039;);</p>
+<p>const snapshot = await getDocs(telemetryRef);</p>
+
+<p>const metrics = {};</p>
+<p>snapshot.forEach(doc =&gt; {</p>
+<p>  const data = doc.data();</p>
+<p>  if (!metrics[data.flowName]) {</p>
+<p>    metrics[data.flowName] = { count: 0, totalDuration: 0 };</p>
+<p>  }</p>
+<p>  metrics[data.flowName].count++;</p>
+<p>  metrics[data.flowName].totalDuration += data.duration;</p>
+<p>});</p>
+
+<p>Object.keys(metrics).forEach(flow =&gt; {</p>
+<p>  metrics[flow].avgDuration = metrics[flow].totalDuration / metrics[flow].count;</p>
+<p>  console.log(<code class="inline-code">${flow}: ${metrics[flow].count} calls, avg ${metrics[flow].avgDuration}ms</code>);</p>
+<p>});</code></pre></p>
+
+<hr>
+
+<h2>🎨 EXAMPLE TELEMETRY DASHBOARD</h2>
+
+<p>Add this to your admin dashboard:</p>
+
+<pre class="code-block html" data-lang="html"><code>&lt;div id=&quot;telemetryDashboard&quot; style=&quot;padding: 20px; background: #0f1419; margin: 20px;&quot;&gt;
+<p>  &lt;h2&gt;📊 Merlin AI Telemetry&lt;/h2&gt;</p>
+<p>  &lt;div id=&quot;telemetryStats&quot;&gt;&lt;/div&gt;</p>
+<p>  &lt;button onclick=&quot;refreshTelemetry()&quot;&gt;🔄 Refresh&lt;/button&gt;</p>
+<p>  &lt;button onclick=&quot;exportTelemetry()&quot;&gt;💾 Export JSON&lt;/button&gt;</p>
+<p>&lt;/div&gt;</p>
+
+<p>&lt;script&gt;</p>
+<p>async function refreshTelemetry() {</p>
+<p>  const summary = window.merlinAI.getTelemetrySummary();</p>
+  
+<p>  document.getElementById(&#039;telemetryStats&#039;).innerHTML = <code class="inline-code"></p>
+<p>    &lt;div style=&quot;display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 15px;&quot;&gt;</p>
+<p>      &lt;div style=&quot;background: #1e3a8a; padding: 15px; border-radius: 8px;&quot;&gt;</p>
+<p>        &lt;div style=&quot;font-size: 24px; font-weight: bold;&quot;&gt;${summary.totalCalls}&lt;/div&gt;</p>
+<p>        &lt;div style=&quot;opacity: 0.8;&quot;&gt;Total Calls&lt;/div&gt;</p>
+<p>      &lt;/div&gt;</p>
+<p>      &lt;div style=&quot;background: #047857; padding: 15px; border-radius: 8px;&quot;&gt;</p>
+<p>        &lt;div style=&quot;font-size: 24px; font-weight: bold;&quot;&gt;${summary.successfulCalls}&lt;/div&gt;</p>
+<p>        &lt;div style=&quot;opacity: 0.8;&quot;&gt;Successful&lt;/div&gt;</p>
+<p>      &lt;/div&gt;</p>
+<p>      &lt;div style=&quot;background: #dc2626; padding: 15px; border-radius: 8px;&quot;&gt;</p>
+<p>        &lt;div style=&quot;font-size: 24px; font-weight: bold;&quot;&gt;${summary.failedCalls}&lt;/div&gt;</p>
+<p>        &lt;div style=&quot;opacity: 0.8;&quot;&gt;Failed&lt;/div&gt;</p>
+<p>      &lt;/div&gt;</p>
+<p>      &lt;div style=&quot;background: #7c3aed; padding: 15px; border-radius: 8px;&quot;&gt;</p>
+<p>        &lt;div style=&quot;font-size: 24px; font-weight: bold;&quot;&gt;${summary.averageDuration.toFixed(0)}ms&lt;/div&gt;</p>
+<p>        &lt;div style=&quot;opacity: 0.8;&quot;&gt;Avg Duration&lt;/div&gt;</p>
+<p>      &lt;/div&gt;</p>
+<p>      &lt;div style=&quot;background: #db2777; padding: 15px; border-radius: 8px;&quot;&gt;</p>
+<p>        &lt;div style=&quot;font-size: 24px; font-weight: bold;&quot;&gt;${summary.totalTokens.toLocaleString()}&lt;/div&gt;</p>
+<p>        &lt;div style=&quot;opacity: 0.8;&quot;&gt;Total Tokens&lt;/div&gt;</p>
+<p>      &lt;/div&gt;</p>
+<p>      &lt;div style=&quot;background: #ea580c; padding: 15px; border-radius: 8px;&quot;&gt;</p>
+<p>        &lt;div style=&quot;font-size: 24px; font-weight: bold;&quot;&gt;${Object.keys(summary.flowBreakdown).length}&lt;/div&gt;</p>
+<p>        &lt;div style=&quot;opacity: 0.8;&quot;&gt;Unique Flows&lt;/div&gt;</p>
+<p>      &lt;/div&gt;</p>
+<p>    &lt;/div&gt;</p>
+    
+<p>    &lt;h3 style=&quot;margin-top: 20px;&quot;&gt;Flow Breakdown:&lt;/h3&gt;</p>
+<p>    &lt;div style=&quot;margin-top: 10px;&quot;&gt;</p>
+<p>      ${Object.entries(summary.flowBreakdown).map(([flow, stats]) =&gt; </code></p>
+<p>        &lt;div style=&quot;background: #1f2937; padding: 10px; margin: 5px 0; border-radius: 6px;&quot;&gt;</p>
+<p>          &lt;strong&gt;${flow}&lt;/strong&gt;: ${stats.count} calls </p>
+<p>          (${stats.successCount} success, ${stats.failCount} fail, </p>
+<p>          avg ${stats.avgDuration.toFixed(0)}ms)</p>
+<p>        &lt;/div&gt;</p>
+<p>      <code class="inline-code">).join(&#039;&#039;)}</p>
+<p>    &lt;/div&gt;</p>
+<p>  </code>;</p>
+<p>}</p>
+
+<p>function exportTelemetry() {</p>
+<p>  const data = window.merlinAI.exportTelemetry();</p>
+<p>  const blob = new Blob([data], { type: &#039;application/json&#039; });</p>
+<p>  const url = URL.createObjectURL(blob);</p>
+<p>  const a = document.createElement(&#039;a&#039;);</p>
+<p>  a.href = url;</p>
+<p>  a.download = <code class="inline-code">merlin-telemetry-${Date.now()}.json</code>;</p>
+<p>  a.click();</p>
+<p>  alert(&#039;✅ Telemetry exported!&#039;);</p>
+<p>}</p>
+
+<p>// Auto-refresh every 30 seconds</p>
+<p>setInterval(refreshTelemetry, 30000);</p>
+<p>&lt;/script&gt;</code></pre></p>
+
+<hr>
+
+<h2>📊 METRICS YOU'LL SEE</h2>
+
+<h3>After 1 Hour of Use:</h3>
+
+<pre class="code-block " data-lang="text"><code>📊 Merlin AI Telemetry
+
+<p>Total Calls:         127</p>
+<p>Successful:          124 (97.6%)</p>
+<p>Failed:              3 (2.4%)</p>
+<p>Avg Duration:        3,250ms</p>
+<p>Total Tokens:        156,420</p>
+<p>Unique Flows:        5</p>
+
+<p>Flow Breakdown:</p>
+<ul><li class="ul-item">analyzeCodeFlow: 68 calls (68 success, 0 fail, avg 3,400ms)</li>
+<li class="ul-item">summarizeRepositoryFlow: 12 calls (11 success, 1 fail, avg 5,200ms)</li>
+<li class="ul-item">suggestFixFlow: 24 calls (24 success, 0 fail, avg 4,100ms)</li>
+<li class="ul-item">predictValueImpactFlow: 15 calls (13 success, 2 fail, avg 4,800ms)</li>
+<li class="ul-item">helloFlow: 8 calls (8 success, 0 fail, avg 2,100ms)</code></pre></li></ul>
+
+<hr>
+
+<h2>🔍 ADVANCED QUERIES</h2>
+
+<h3>Get Today's Metrics:</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>const today = new Date();
+<p>today.setHours(0, 0, 0, 0);</p>
+
+<p>const { collection, query, where, getDocs } = window.firestoreUtils;</p>
+<p>const q = query(</p>
+<p>  collection(window.firebaseDb, &#039;merlin_telemetry&#039;),</p>
+<p>  where(&#039;timestamp&#039;, &#039;&gt;=&#039;, today.toISOString())</p>
+<p>);</p>
+
+<p>const snapshot = await getDocs(q);</p>
+<p>console.log(<code class="inline-code">Today&#039;s calls: ${snapshot.size}</code>);</code></pre></p>
+
+<h3>Get Failed Requests:</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>const { collection, query, where, getDocs } = window.firestoreUtils;
+<p>const q = query(</p>
+<p>  collection(window.firebaseDb, &#039;merlin_telemetry&#039;),</p>
+<p>  where(&#039;success&#039;, &#039;==&#039;, false)</p>
+<p>);</p>
+
+<p>const snapshot = await getDocs(q);</p>
+<p>snapshot.forEach(doc =&gt; {</p>
+<p>  const data = doc.data();</p>
+<p>  console.log(<code class="inline-code">Failed: ${data.flowName} at ${data.timestamp}</code>);</p>
+<p>  console.log(<code class="inline-code">Error:</code>, data.error);</p>
+<p>});</code></pre></p>
+
+<h3>Calculate Cost:</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Gemini 1.5 Flash pricing: $0.075 per 1M input tokens, $0.30 per 1M output tokens
+<p>const summary = window.merlinAI.getTelemetrySummary();</p>
+<p>const estimatedCost = (summary.totalTokens / 1000000) * 0.1875; // Average of input/output</p>
+<p>console.log(<code class="inline-code">Estimated cost: $${estimatedCost.toFixed(4)}</code>);</code></pre></p>
+
+<hr>
+
+<h2>🎯 WHAT THIS REPLACES</h2>
+
+<p>Instead of npm-based <code class="inline-code">@genkit-ai/firebase</code>:</p>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// ❌ Can&#039;t do this in browser:
+<p>import { enableFirebaseTelemetry } from &#039;@genkit-ai/firebase&#039;;</p>
+<p>enableFirebaseTelemetry();</code></pre></p>
+
+<p>You get this:</p>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// ✅ Browser-compatible telemetry:
+<p>window.merlinAI.telemetry.enabled = true;</p>
+<p>// Automatically logs to Firebase Firestore</p>
+<p>// All metrics tracked per session</p>
+<p>// Export/analyze anytime</code></pre></p>
+
+<hr>
+
+<h2>🎉 BENEFITS</h2>
+
+<p>✅ <strong>No npm/Node.js required</strong> - Works in browser  </p>
+<p>✅ <strong>Automatic logging</strong> - Every AI call tracked  </p>
+<p>✅ <strong>Firebase integration</strong> - Data persists in Firestore  </p>
+<p>✅ <strong>Session tracking</strong> - Group metrics by session  </p>
+<p>✅ <strong>Real-time monitoring</strong> - View metrics as they happen  </p>
+<p>✅ <strong>Export capability</strong> - Download JSON anytime  </p>
+<p>✅ <strong>Cost tracking</strong> - Calculate Gemini API costs  </p>
+<p>✅ <strong>Error tracking</strong> - See what failed and why  </p>
+
+<hr>
+
+<h2>🚀 NEXT STEPS</h2>
+
+<h3>Immediate:</h3>
+<ol><li class="ol-item">✅ <strong>Telemetry is already enabled</strong> - No action needed</li>
+<li class="ol-item">🧪 <strong>Test it</strong>: Run MERLIN<em>AI</em>TEST_DEMO.html</li>
+<li class="ol-item">🔥 <strong>Check Firebase</strong>: View merlin_telemetry collection</li>
+<li class="ol-item">📊 <strong>Get summary</strong>: <code class="inline-code">console.log(window.merlinAI.getTelemetrySummary())</code></li></ol>
+
+<h3>Short-Term:</h3>
+<ol><li class="ol-item">📈 <strong>Build dashboard</strong>: Add telemetry panel to admin dashboard</li>
+<li class="ol-item">📧 <strong>Set alerts</strong>: Notify on high failure rates</li>
+<li class="ol-item">💰 <strong>Track costs</strong>: Monitor token usage and costs</li>
+<li class="ol-item">📊 <strong>Analyze patterns</strong>: See which flows are used most</li></ol>
+
+<h3>Long-Term:</h3>
+<ol><li class="ol-item">🎯 <strong>Optimize</strong>: Reduce duration for slow flows</li>
+<li class="ol-item">🔄 <strong>A/B test</strong>: Compare different prompts</li>
+<li class="ol-item">📈 <strong>Scale</strong>: Monitor as usage grows</li>
+<li class="ol-item">🤖 <strong>Automate</strong>: Auto-retry failed requests</li></ol>
+
+<hr>
+
+<h2>📞 SUPPORT</h2>
+
+<p><strong>Project:</strong> GemBot AI Control System  </p>
+<p><strong>Feature:</strong> Merlin AI Telemetry  </p>
+<p><strong>Owner:</strong> Ryan Barbrick / Barbrick Design  </p>
+<p><strong>Email:</strong> BarbrickDesign@gmail.com  </p>
+<p><strong>Firebase Collection:</strong> <code class="inline-code">merlin_telemetry</code>  </p>
+
+<hr>
+
+<h2>🎊 STATUS</h2>
+
+<p>✅ <strong>Telemetry system implemented</strong>  </p>
+<p>✅ <strong>Firebase logging configured</strong>  </p>
+<p>✅ <strong>Session tracking enabled</strong>  </p>
+<p>✅ <strong>Export functionality ready</strong>  </p>
+<p>✅ <strong>All flows instrumented</strong>  </p>
+<p>✅ <strong>Browser-compatible (no npm needed)</strong>  </p>
+<p>✅ <strong>GBUV payment system integrated</strong>  </p>
+
+<p><strong>🎉 TELEMETRY IS OPERATIONAL! 🎉</strong></p>
+
+<p>Every Merlin AI call is now tracked and logged to Firebase! 📊</p>
+
+<hr>
+
+<h2>💰 NEW: PAYMENT TRACKING</h2>
+
+<p>All AI operations now require GBUV tokens! Telemetry tracks both usage AND payments.</p>
+
+<h3>Payment Metrics:</h3>
+<ul><li class="ul-item">Cost per flow</li>
+<li class="ul-item">Total GBUV collected</li>
+<li class="ul-item">Payment success/failure rates</li>
+<li class="ul-item">User spending patterns</li></ul>
+
+<p>See <a href="MERLIN</em>AI<em>PAYMENT</em>SYSTEM.md" target="_blank" rel="noopener">MERLIN<em>AI</em>PAYMENT<em>SYSTEM.md</a> for complete payment documentation.</p>
+
+<p><strong>Treasury Wallet:</strong> <code class="inline-code">6HTjfgWZYMbENnMAJJFhxWR2VZDxdze3qV7zznSAsfk</code></p>
+
+        <div class="generated-notice">
+            🤖 Auto-generated from MERLIN_AI_TELEMETRY_GUIDE.md by GemBot Neural Dashboard Agent<br>
+            Generated: 2025-12-16T13:52:14.506Z
+        </div>
+    </div>
+</body>
+</html>

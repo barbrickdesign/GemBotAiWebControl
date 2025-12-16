@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MENU_CONTROLS_IMPLEMENTATION - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        <h1>📋 Menu Controls & Nextion Integration</h1>
+
+<h2>Overview</h2>
+
+<p>Menu controls enable you to navigate the Nextion touch screen directly from the web controller, mirroring the commands that the Arduino receives from the physical touch screen. This creates a fully integrated web-to-hardware control system.</p>
+
+<h2>Menu Control Features</h2>
+
+<h3>1. <strong>Menu Navigation Buttons</strong></h3>
+
+<p>Three buttons for navigating the Nextion touch screen menu:</p>
+
+<ul><li class="ul-item"><strong>◀ LEFT</strong> - Navigate left in menu (sends: <code class="inline-code">0</code>)</li>
+<li class="ul-item"><strong>ENTER</strong> - Select/confirm menu item (sends: <code class="inline-code">1</code>)</li>
+<li class="ul-item"><strong>▶ RIGHT</strong> - Navigate right in menu (sends: <code class="inline-code">3</code>)</li></ul>
+
+<p><strong>Location in UI:</strong> Left Panel > MENU CONTROL Section</p>
+
+<h3>2. <strong>Touch Screen Sync</strong></h3>
+
+<p>A dedicated sync button to fetch all current variable values from the Nextion touch screen:</p>
+
+<ul><li class="ul-item"><strong>📥 SYNC</strong> - Fetches all variables and updates the web interface</li>
+<li class="ul-item"><strong>Sync Status Display</strong> - Shows current sync state (Ready/Syncing/Synced)</li></ul>
+
+<h2>Nextion Protocol Integration</h2>
+
+<p>The <code class="inline-code">NextionInterface</code> class handles all communication with the Nextion HMI.</p>
+
+<h3>Nextion Variables Fetched</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>{
+<p>    // Motor Control Variables</p>
+<p>    motorSpeed: 1,              // Speed level 1-5</p>
+<p>    motorMode: &#039;continuous&#039;,    // &#039;step&#039; or &#039;continuous&#039;</p>
+<p>    motorStepSize: 1,           // Step size 1-70</p>
+    
+<p>    // Position Variables</p>
+<p>    positionX: 0,               // X-axis position</p>
+<p>    positionY: 0,               // Y-axis position</p>
+<p>    rotationAngle: 0,           // Rotation angle in degrees</p>
+<p>    indexPosition: 0,           // Index position</p>
+    
+<p>    // System Variables</p>
+<p>    connectionStatus: &#039;disconnected&#039;,  // Connection state</p>
+<p>    machineMode: &#039;idle&#039;,              // Machine operational state</p>
+<p>    systemVoltage: 0,                 // System voltage</p>
+<p>    systemCurrent: 0,                 // System current</p>
+    
+<p>    // Touch Screen State</p>
+<p>    currentMenu: &#039;main&#039;,        // Current menu displayed</p>
+<p>    selectedStone: &#039;&#039;,          // Currently selected stone</p>
+<p>    cuttingPhase: &#039;roughing&#039;    // Current cutting phase</p>
+<p>}</code></pre></p>
+
+<h2>Command Format</h2>
+
+<h3>Menu Navigation Commands</h3>
+
+<p>Commands are sent to the Arduino, which forwards them to the Nextion:</p>
+
+<pre class="code-block " data-lang="text"><code>LEFT:   &#039;0&#039;
+<p>ENTER:  &#039;1&#039;</p>
+<p>RIGHT:  &#039;3&#039;</code></pre></p>
+
+<p>Example:</p>
+<pre class="code-block javascript" data-lang="javascript"><code>serial.sendCommand(&#039;0&#039;);  // Navigate left in menu
+<p>serial.sendCommand(&#039;1&#039;);  // Select menu item</p>
+<p>serial.sendCommand(&#039;3&#039;);  // Navigate right in menu</code></pre></p>
+
+<h3>Variable Request Commands</h3>
+
+<p>Fetch variables from Nextion using the <code class="inline-code">get</code> command:</p>
+
+<pre class="code-block " data-lang="text"><code>get motorSpeed      -&gt; Nextion responds with: motorSpeed=3
+<p>get motorMode       -&gt; Nextion responds with: motorMode=step</p>
+<p>get positionX       -&gt; Nextion responds with: positionX=125</code></pre></p>
+
+<h3>Variable Set Commands</h3>
+
+<p>Update variables on Nextion:</p>
+
+<pre class="code-block " data-lang="text"><code>set motorSpeed 5    -&gt; Sets speed to level 5 on Nextion
+<p>set motorMode step  -&gt; Sets mode to step on Nextion</code></pre></p>
+
+<h2>Usage Examples</h2>
+
+<h3>Basic Menu Navigation</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Navigate the touch screen menu from web controller
+<p>document.getElementById(&#039;btnMenuLeft&#039;).click();  // Go left in menu</p>
+<p>document.getElementById(&#039;btnMenuEnter&#039;).click(); // Select item</p>
+<p>document.getElementById(&#039;btnMenuRight&#039;).click(); // Go right in menu</code></pre></p>
+
+<h3>Fetch All Variables</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Sync all variables from Nextion
+<p>document.getElementById(&#039;btnSyncVariables&#039;).click();</p>
+
+<p>// Or programmatically:</p>
+<p>await nextion.fetchAllVariables();</p>
+<p>console.log(nextion.variables);  // View all synced values</code></pre></p>
+
+<h3>Get Specific Variable</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Request a specific variable
+<p>await nextion.requestVariable(&#039;motorSpeed&#039;);</p>
+<p>console.log(nextion.variables.motorSpeed);  // Get the value</code></pre></p>
+
+<h3>Set Variable on Nextion</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Update a variable on the Nextion
+<p>nextion.setVariable(&#039;motorSpeed&#039;, 4);</p>
+<p>nextion.setVariable(&#039;motorMode&#039;, &#039;step&#039;);</p>
+<p>nextion.setVariable(&#039;selectedStone&#039;, &#039;Ruby&#039;);</code></pre></p>
+
+<h2>Integration with Web Controller</h2>
+
+<h3>Auto-Sync on Connection</h3>
+
+<p>When you connect to the Arduino, the Nextion interface automatically initializes:</p>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// In serial.connect() method:
+<p>setTimeout(() =&gt; {</p>
+<p>    nextion.initialize();  // Auto-fetch all variables</p>
+<p>}, 1000);</code></pre></p>
+
+<h3>UI Updates from Nextion</h3>
+
+<p>When variables are synced, the web UI automatically updates:</p>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Speed display
+<p>document.getElementById(&#039;speedDisplay&#039;).textContent = nextion.variables.motorSpeed;</p>
+
+<p>// Mode buttons</p>
+<p>if (nextion.variables.motorMode === &#039;step&#039;) {</p>
+<p>    document.getElementById(&#039;btnStep&#039;).classList.add(&#039;active&#039;);</p>
+<p>}</p>
+
+<p>// Position display</p>
+<p>document.getElementById(&#039;statusX&#039;).textContent = nextion.variables.positionX;</p>
+<p>document.getElementById(&#039;statusY&#039;).textContent = nextion.variables.positionY;</code></pre></p>
+
+<h2>Serial Communication Flow</h2>
+
+<h3>Menu Navigation Flow</h3>
+
+<pre class="code-block " data-lang="text"><code>Web UI Button Click
+<p>        ↓</p>
+<p>JavaScript Handler</p>
+<p>        ↓</p>
+<p>serial.sendCommand(&#039;0&#039;)  // Menu command</p>
+<p>        ↓</p>
+<p>Arduino Serial Port</p>
+<p>        ↓</p>
+<p>Arduino → Nextion HMI</p>
+<p>        ↓</p>
+<p>Nextion Touch Screen Updates</code></pre></p>
+
+<h3>Variable Sync Flow</h3>
+
+<pre class="code-block " data-lang="text"><code>btnSyncVariables Click
+<p>        ↓</p>
+<p>nextion.fetchAllVariables()</p>
+<p>        ↓</p>
+<p>Sends batch of &quot;get&quot; commands:</p>
+<p>  get motorSpeed</p>
+<p>  get motorMode</p>
+<p>  get positionX</p>
+<p>  ...</p>
+<p>        ↓</p>
+<p>Arduino Serial Port → Nextion</p>
+<p>        ↓</p>
+<p>Nextion Responds:</p>
+<p>  motorSpeed=3</p>
+<p>  motorMode=step</p>
+<p>  positionX=125</p>
+<p>  ...</p>
+<p>        ↓</p>
+<p>nextion.processVariableResponse(data)</p>
+<p>        ↓</p>
+<p>UI Updates Automatically</code></pre></p>
+
+<h2>JavaScript API</h2>
+
+<h3>NextionInterface Class</h3>
+
+<h4>Methods</h4>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Send a command to Nextion
+<p>nextion.sendCommand(cmd)</p>
+<p>// Returns: boolean (success/failure)</p>
+
+<p>// Request a specific variable</p>
+<p>await nextion.requestVariable(varName)</p>
+<p>// Returns: Promise&lt;value&gt;</p>
+
+<p>// Fetch all variables at once</p>
+<p>await nextion.fetchAllVariables()</p>
+<p>// Returns: Promise&lt;object&gt; (all variables)</p>
+
+<p>// Process incoming variable response</p>
+<p>nextion.processVariableResponse(data)</p>
+<p>// Parses &quot;varName=value&quot; format</p>
+
+<p>// Update web UI with current values</p>
+<p>nextion.updateUI()</p>
+<p>// Updates all display elements</p>
+
+<p>// Set a variable on Nextion</p>
+<p>nextion.setVariable(varName, value)</p>
+<p>// Returns: boolean (success/failure)</p>
+
+<p>// Initialize interface and sync</p>
+<p>await nextion.initialize()</p>
+<p>// Returns: Promise&lt;boolean&gt;</code></pre></p>
+
+<h4>Properties</h4>
+
+<pre class="code-block javascript" data-lang="javascript"><code>nextion.variables              // Object containing all fetched variables
+<p>nextion.lastUpdateTime         // Timestamp of last sync</p>
+<p>nextion.responseTimeout        // Timeout for waiting for responses (ms)</code></pre></p>
+
+<h2>Error Handling</h2>
+
+<h3>Connection Not Available</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>if (!serial.isConnected) {
+<p>    console.warn(&#039;⚠️ Not connected&#039;);</p>
+<p>    addMessage(&#039;⚠️ Not connected. Please connect first.&#039;, &#039;warning&#039;);</p>
+<p>}</code></pre></p>
+
+<h3>Sync Timeout</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// If Nextion doesn&#039;t respond within responseTimeout (1000ms):
+<p>syncStatus.textContent = &#039;❌ Sync failed&#039;;</p>
+<p>console.error(&#039;❌ Sync error: Timeout&#039;);</code></pre></p>
+
+<h3>Variable Not Found</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// If variable doesn&#039;t exist on Nextion:
+<p>// The requestVariable promise will timeout</p>
+<p>reject(new Error(<code class="inline-code">Timeout waiting for ${variableName}</code>));</code></pre></p>
+
+<h2>Troubleshooting</h2>
+
+<h3>Menu Buttons Not Working</h3>
+
+<p><strong>Problem:</strong> Clicking menu buttons has no effect</p>
+
+<p><strong>Solution:</strong></p>
+<ol><li class="ol-item">Ensure Arduino is connected (check connection status)</li>
+<li class="ol-item">Verify Nextion is powered and responding</li>
+<li class="ol-item">Check Arduino baud rate (should be 9600 or 115200)</li>
+<li class="ol-item">Inspect browser console for error messages</li></ol>
+
+<h3>Variables Not Syncing</h3>
+
+<p><strong>Problem:</strong> Sync button shows "Sync failed" or "❌ Sync failed"</p>
+
+<p><strong>Solution:</strong></p>
+<ol><li class="ol-item">Check Arduino connection</li>
+<li class="ol-item">Verify Nextion variable names match those in the code</li>
+<li class="ol-item">Wait 1-2 seconds after connecting before syncing</li>
+<li class="ol-item">Check Arduino serial monitor for communication</li></ol>
+
+<h3>Variables Not Updating UI</h3>
+
+<p><strong>Problem:</strong> Sync completes but UI doesn't change</p>
+
+<p><strong>Solution:</strong></p>
+<ol><li class="ol-item">Verify variable names in <code class="inline-code">VARIABLES<em>TO</em>FETCH</code> list</li>
+<li class="ol-item">Check that HTML element IDs match the update code</li>
+<li class="ol-item">Ensure Nextion is actually updating variables</li>
+<li class="ol-item">Check browser console for JavaScript errors</li></ol>
+
+<h2>Hardware Configuration</h2>
+
+<h3>Arduino Serial Communication</h3>
+
+<p>The Arduino acts as a bridge:</p>
+
+<pre class="code-block " data-lang="text"><code>Nextion HMI (Serial1)
+<p>        ↓</p>
+<p>Arduino (receives commands from web + Nextion)</p>
+<p>        ↓</p>
+<p>Web Controller (via USB Serial)</p>
+<p>        ↓</p>
+<p>Browser WebSerial API</code></pre></p>
+
+<h3>Baud Rate Configuration</h3>
+
+<ul><li class="ul-item"><strong>Web → Arduino:</strong> 9600 or 115200 baud (auto-detected)</li>
+<li class="ul-item"><strong>Arduino → Nextion:</strong> Should match Nextion configuration (typically 9600)</li></ul>
+
+<h2>Command Reference Quick Guide</h2>
+
+<p>| Button | Command | Purpose |</p>
+<p>|--------|---------|---------|</p>
+<p>| ◀ LEFT | <code class="inline-code">0</code> | Navigate left in menu |</p>
+<p>| ENTER | <code class="inline-code">1</code> | Select/confirm menu item |</p>
+<p>| ▶ RIGHT | <code class="inline-code">3</code> | Navigate right in menu |</p>
+<p>| 📥 SYNC | <code class="inline-code">get *</code> | Fetch all variables |</p>
+
+<h2>Advanced Usage</h2>
+
+<h3>Custom Variable Polling</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Continuously sync variables every 5 seconds
+<p>setInterval(() =&gt; {</p>
+<p>    if (isConnected) {</p>
+<p>        nextion.fetchAllVariables();</p>
+<p>    }</p>
+<p>}, 5000);</code></pre></p>
+
+<h3>Bi-directional Sync</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// When speed changes in web UI, update Nextion
+<p>speedSlider.addEventListener(&#039;input&#039;, (e) =&gt; {</p>
+<p>    const newSpeed = e.target.value;</p>
+<p>    nextion.setVariable(&#039;motorSpeed&#039;, newSpeed);</p>
+<p>});</p>
+
+<p>// When user adjusts Nextion, fetch and update web</p>
+<p>setInterval(() =&gt; {</p>
+<p>    nextion.fetchAllVariables();</p>
+<p>}, 2000);</code></pre></p>
+
+<h3>Menu Navigation Automation</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Simulate menu navigation sequence
+<p>async function navigateMenu() {</p>
+<p>    serial.sendCommand(&#039;3&#039;);  // Right</p>
+<p>    await sleep(300);</p>
+<p>    serial.sendCommand(&#039;3&#039;);  // Right</p>
+<p>    await sleep(300);</p>
+<p>    serial.sendCommand(&#039;1&#039;);  // Enter</p>
+<p>}</p>
+
+<p>function sleep(ms) {</p>
+<p>    return new Promise(resolve =&gt; setTimeout(resolve, ms));</p>
+<p>}</code></pre></p>
+
+<h2>Status Indicators</h2>
+
+<h3>Sync Status Display Colors</h3>
+
+<ul><li class="ul-item"><strong>Ready</strong> (Gray <code class="inline-code">#aaa</code>) - Waiting for sync command</li>
+<li class="ul-item"><strong>⏳ Syncing...</strong> (Blue <code class="inline-code">#667eea</code>) - Sync in progress</li>
+<li class="ul-item"><strong>✅ Synced</strong> (Green <code class="inline-code">#4a7c2e</code>) - Sync successful</li>
+<li class="ul-item"><strong>❌ Sync failed</strong> (Red <code class="inline-code">#d32f2f</code>) - Sync failed, check connection</li></ul>
+
+<h3>Console Logging</h3>
+
+<p>All menu and sync operations log to browser console:</p>
+
+<pre class="code-block " data-lang="text"><code>📱 Nextion Command: 0
+<p>📋 Menu LEFT button pressed - sending &quot;0&quot;</p>
+<p>📱 Fetching all variables from Nextion...</p>
+<p>📱 Sent 10 variable requests to Nextion</p>
+<p>✅ Nextion interface initialized</code></pre></p>
+
+<h2>Testing Menu Controls</h2>
+
+<h3>Manual Test Procedure</h3>
+
+<ol><li class="ol-item"><strong>Connect Arduino</strong></li></ol>
+<p>   - Click SCAN</p>
+<p>   - Select port</p>
+<p>   - Click CONNECT</p>
+<p>   - Verify "Connected" status</p>
+
+<ol><li class="ol-item"><strong>Test Menu Navigation</strong></li></ol>
+<p>   - Click ◀ LEFT - Nextion should respond</p>
+<p>   - Click ENTER - Nextion should select</p>
+<p>   - Click ▶ RIGHT - Nextion should navigate</p>
+
+<ol><li class="ol-item"><strong>Test Variable Sync</strong></li></ol>
+<p>   - Click 📥 SYNC button</p>
+<p>   - Wait for status to change</p>
+<p>   - Verify status displays "✅ Synced"</p>
+<p>   - Check that position values updated</p>
+
+<ol><li class="ol-item"><strong>Verify Communication</strong></li></ol>
+<p>   - Open browser DevTools (F12)</p>
+<p>   - Go to Console tab</p>
+<p>   - Observe command logs</p>
+<p>   - Check for any error messages</p>
+
+<h2>Integration Checklist</h2>
+
+<ul><li class="ul-item">✅ Menu control buttons added to UI</li>
+<li class="ul-item">✅ NextionInterface class implemented</li>
+<li class="ul-item">✅ Serial communication for menu commands</li>
+<li class="ul-item">✅ Variable fetching via Nextion protocol</li>
+<li class="ul-item">✅ Auto-initialization on connection</li>
+<li class="ul-item">✅ UI updates from synced variables</li>
+<li class="ul-item">✅ Error handling and status display</li>
+<li class="ul-item">✅ Console logging for debugging</li></ul>
+
+<h2>Support</h2>
+
+<p>For issues with menu controls or Nextion sync:</p>
+
+<ol><li class="ol-item">Check browser console for error messages</li>
+<li class="ol-item">Verify Arduino is connected and responsive</li>
+<li class="ol-item">Ensure Nextion display is powered</li>
+<li class="ol-item">Check Arduino serial monitor for communication</li>
+<li class="ol-item">Verify variable names match Nextion configuration</li></ol>
+
+        <div class="generated-notice">
+            🤖 Auto-generated from MENU_CONTROLS_IMPLEMENTATION.md by GemBot Neural Dashboard Agent<br>
+            Generated: 2025-12-16T13:52:13.356Z
+        </div>
+    </div>
+</body>
+</html>
