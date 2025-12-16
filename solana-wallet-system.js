@@ -29,8 +29,8 @@ class GemBotSolanaWallet {
         // GBUV Token Mint Address - $GBUV on pump.fun
         this.GBUV_MINT = 'DPHcbu7wJEbcrnCYjXC8vHBkM39kT9xZg4mYayvrpump'; // pump.fun token
         
-        // Admin wallet address for receiving payments (⚠️ UPDATE WITH YOUR WALLET)
-        this.ADMIN_WALLET = 'YOUR_ADMIN_WALLET_ADDRESS_HERE'; // ⚠️ REQUIRED
+        // Admin wallet address - DiamondBoi main vault
+        this.ADMIN_WALLET = '6HTjfgWZYMbENnMAJJFhxWR2VZDxdze3qV7zznSAsfk'; // DiamondBoi profile
         
         // Initialize storage
         this.initStorage();
