@@ -24,6 +24,22 @@ window.merlinAI = {
         enabled: true
     },
     
+    // Payment Configuration (GBUV)
+    payment: {
+        enabled: true,
+        treasuryWallet: '6HTjfgWZYMbENnMAJJFhxWR2VZDxdze3qV7zznSAsfk',
+        prices: {
+            analyzeCodeFlow: 5,              // 5 GBUV per file analysis
+            summarizeRepositoryFlow: 25,      // 25 GBUV per repo summary
+            suggestFixFlow: 10,               // 10 GBUV per fix suggestion
+            predictValueImpactFlow: 15,       // 15 GBUV per value prediction
+            compareRepositoriesFlow: 20,      // 20 GBUV per comparison
+            helloFlow: 1                      // 1 GBUV per connection test
+        },
+        totalCollected: 0,
+        transactions: []
+    },
+    
     /**
      * Initialize Merlin AI System
      */
@@ -38,6 +54,8 @@ window.merlinAI = {
                 this.isInitialized = true;
                 console.log('✅ Merlin AI initialized successfully');
                 console.log('🧙‍♂️ Merlin says:', response.text);
+                console.log('💰 Payment System: Enabled (GBUV tokens required)');
+                console.log('💎 Treasury Wallet:', this.payment.treasuryWallet);
                 return true;
             }
             
@@ -45,6 +63,132 @@ window.merlinAI = {
         } catch (error) {
             console.error('❌ Merlin AI initialization failed:', error);
             return false;
+        }
+    },
+    
+    /**
+     * Verify user has sufficient GBUV balance for operation
+     * @param {string} flowName - Name of the AI flow
+     * @param {string} userPublicKey - User's Solana wallet public key
+     * @returns {object} - {success: boolean, balance: number, required: number, message: string}
+     */
+    async verifyPayment(flowName, userPublicKey) {
+        if (!this.payment.enabled) {
+            return { success: true, message: 'Payment system disabled' };
+        }
+        
+        const cost = this.payment.prices[flowName] || 0;
+        
+        if (cost === 0) {
+            return { success: true, message: 'Free operation' };
+        }
+        
+        try {
+            // Get user's wallet
+            const wallet = window.walletFactory?.getWallet(userPublicKey);
+            
+            if (!wallet) {
+                return {
+                    success: false,
+                    required: cost,
+                    balance: 0,
+                    message: `❌ Wallet not found. Please log in or create an account.`
+                };
+            }
+            
+            const balance = wallet.gbuvBalance || 0;
+            
+            if (balance < cost) {
+                return {
+                    success: false,
+                    required: cost,
+                    balance: balance,
+                    message: `❌ Insufficient GBUV. Required: ${cost} GBUV, Balance: ${balance} GBUV`
+                };
+            }
+            
+            return {
+                success: true,
+                required: cost,
+                balance: balance,
+                message: `✅ Payment verified: ${cost} GBUV`
+            };
+            
+        } catch (error) {
+            console.error('Payment verification error:', error);
+            return {
+                success: false,
+                message: `❌ Payment verification failed: ${error.message}`
+            };
+        }
+    },
+    
+    /**
+     * Process GBUV payment for AI operation
+     * @param {string} flowName - Name of the AI flow
+     * @param {string} userPublicKey - User's Solana wallet public key
+     * @returns {object} - {success: boolean, transactionId: string, message: string}
+     */
+    async processPayment(flowName, userPublicKey) {
+        if (!this.payment.enabled) {
+            return { success: true, message: 'Payment system disabled' };
+        }
+        
+        const cost = this.payment.prices[flowName] || 0;
+        
+        if (cost === 0) {
+            return { success: true, message: 'Free operation' };
+        }
+        
+        try {
+            // Transfer GBUV to treasury
+            const result = await window.walletFactory?.transferGBUV(
+                userPublicKey,
+                this.payment.treasuryWallet,
+                cost
+            );
+            
+            if (!result) {
+                throw new Error('Transfer failed');
+            }
+            
+            // Record transaction
+            const transaction = {
+                id: `tx_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+                flowName: flowName,
+                from: userPublicKey,
+                to: this.payment.treasuryWallet,
+                amount: cost,
+                timestamp: new Date().toISOString(),
+                sessionId: this.telemetry.sessionId
+            };
+            
+            this.payment.transactions.push(transaction);
+            this.payment.totalCollected += cost;
+            
+            // Save to Firebase
+            if (window.firebaseDb && window.firestoreUtils) {
+                const { doc, collection, setDoc } = window.firestoreUtils;
+                const txDoc = doc(collection(window.firebaseDb, 'merlin_payments'), transaction.id);
+                await setDoc(txDoc, transaction);
+            }
+            
+            console.log(`💰 Payment processed: ${cost} GBUV for ${flowName}`);
+            console.log(`📊 Total collected: ${this.payment.totalCollected} GBUV`);
+            
+            return {
+                success: true,
+                transactionId: transaction.id,
+                amount: cost,
+                message: `✅ Paid ${cost} GBUV for ${flowName}`
+            };
+            
+        } catch (error) {
+            console.error('Payment processing error:', error);
+            return {
+                success: false,
+                message: `❌ Payment failed: ${error.message}`
+            };
         }
     },
     
@@ -161,10 +305,34 @@ window.merlinAI = {
     /**
      * FLOW: Analyze Code File
      * Provides quality assessment, suggestions, and improvement estimates
+     * COST: 5 GBUV per analysis
      * @param {object} nodeData - {name, language, metrics, value, functions}
-     * @returns {Promise<object>} - {quality, suggestions, security, performance, refactorHours}
+     * @param {string} userPublicKey - User's Solana wallet public key
+     * @returns {Promise<object>} - {quality, suggestions, security, performance, refactorHours, payment}
      */
-    async analyzeCodeFlow(nodeData) {
+    async analyzeCodeFlow(nodeData, userPublicKey) {
+        // Verify and process payment
+        const paymentCheck = await this.verifyPayment('analyzeCodeFlow', userPublicKey);
+        if (!paymentCheck.success) {
+            console.error('🚫', paymentCheck.message);
+            return {
+                error: 'PAYMENT_REQUIRED',
+                message: paymentCheck.message,
+                cost: paymentCheck.required,
+                balance: paymentCheck.balance
+            };
+        }
+        
+        const payment = await this.processPayment('analyzeCodeFlow', userPublicKey);
+        if (!payment.success) {
+            console.error('🚫', payment.message);
+            return {
+                error: 'PAYMENT_FAILED',
+                message: payment.message
+            };
+        }
+        
+        console.log('✅ Payment processed:', payment.message);
         const startTime = Date.now();
         const prompt = `You are Merlin, an expert code analyst for the GemBot repository valuation system.
 
@@ -332,10 +500,34 @@ Your overall assessment and key takeaway for the development team.`;
     /**
      * FLOW: Suggest Fix for Issue
      * Provides actionable steps to resolve a detected code issue
+     * COST: 10 GBUV per fix suggestion
      * @param {object} issue - {type, file, description, metrics}
-     * @returns {Promise<object>} - {text, model, timestamp}
+     * @param {string} userPublicKey - User's Solana wallet public key
+     * @returns {Promise<object>} - {text, model, timestamp, payment}
      */
-    async suggestFixFlow(issue) {
+    async suggestFixFlow(issue, userPublicKey) {
+        // Verify and process payment
+        const paymentCheck = await this.verifyPayment('suggestFixFlow', userPublicKey);
+        if (!paymentCheck.success) {
+            console.error('🚫', paymentCheck.message);
+            return {
+                error: 'PAYMENT_REQUIRED',
+                message: paymentCheck.message,
+                cost: paymentCheck.required,
+                balance: paymentCheck.balance
+            };
+        }
+        
+        const payment = await this.processPayment('suggestFixFlow', userPublicKey);
+        if (!payment.success) {
+            console.error('🚫', payment.message);
+            return {
+                error: 'PAYMENT_FAILED',
+                message: payment.message
+            };
+        }
+        
+        console.log('✅ Payment processed:', payment.message);
         const startTime = Date.now();
         const prompt = `You are Merlin, a code fix specialist in the GemBot system.
 
@@ -394,11 +586,35 @@ Should this be fixed now, later, or not at all?`;
     /**
      * FLOW: Compare Two Repositories
      * Compares architecture, value, and quality between two repos
+     * COST: 20 GBUV per comparison
      * @param {object} repo1Data - First repository data
      * @param {object} repo2Data - Second repository data
-     * @returns {Promise<object>} - {text, model, timestamp}
+     * @param {string} userPublicKey - User's Solana wallet public key
+     * @returns {Promise<object>} - {text, model, timestamp, payment}
      */
-    async compareRepositoriesFlow(repo1Data, repo2Data) {
+    async compareRepositoriesFlow(repo1Data, repo2Data, userPublicKey) {
+        // Verify and process payment
+        const paymentCheck = await this.verifyPayment('compareRepositoriesFlow', userPublicKey);
+        if (!paymentCheck.success) {
+            console.error('🚫', paymentCheck.message);
+            return {
+                error: 'PAYMENT_REQUIRED',
+                message: paymentCheck.message,
+                cost: paymentCheck.required,
+                balance: paymentCheck.balance
+            };
+        }
+        
+        const payment = await this.processPayment('compareRepositoriesFlow', userPublicKey);
+        if (!payment.success) {
+            console.error('🚫', payment.message);
+            return {
+                error: 'PAYMENT_FAILED',
+                message: payment.message
+            };
+        }
+        
+        console.log('✅ Payment processed:', payment.message);
         const prompt = `You are Merlin, comparing two repositories in the GemBot system.
 
 📦 REPOSITORY 1: ${repo1Data.name}
@@ -437,11 +653,35 @@ Provide a comparative analysis:
     /**
      * FLOW: Predict Value After Changes
      * Estimates how proposed changes will affect repository value
+     * COST: 15 GBUV per prediction
      * @param {object} currentRepo - Current repository state
      * @param {array} proposedChanges - List of changes to make
-     * @returns {Promise<object>} - {text, model, timestamp}
+     * @param {string} userPublicKey - User's Solana wallet public key
+     * @returns {Promise<object>} - {text, model, timestamp, payment}
      */
-    async predictValueImpactFlow(currentRepo, proposedChanges) {
+    async predictValueImpactFlow(currentRepo, proposedChanges, userPublicKey) {
+        // Verify and process payment
+        const paymentCheck = await this.verifyPayment('predictValueImpactFlow', userPublicKey);
+        if (!paymentCheck.success) {
+            console.error('🚫', paymentCheck.message);
+            return {
+                error: 'PAYMENT_REQUIRED',
+                message: paymentCheck.message,
+                cost: paymentCheck.required,
+                balance: paymentCheck.balance
+            };
+        }
+        
+        const payment = await this.processPayment('predictValueImpactFlow', userPublicKey);
+        if (!payment.success) {
+            console.error('🚫', payment.message);
+            return {
+                error: 'PAYMENT_FAILED',
+                message: payment.message
+            };
+        }
+        
+        console.log('✅ Payment processed:', payment.message);
         const changesList = proposedChanges.map((c, i) => 
             `  ${i + 1}. ${c.description} (${c.estimatedHours} hours)`
         ).join('\n');
@@ -476,10 +716,34 @@ Should you proceed with these changes?`;
     
     /**
      * Quick Hello Flow - Test Connection
+     * COST: 1 GBUV per test
      * @param {string} name - User's name
-     * @returns {Promise<object>} - {text, model, timestamp}
+     * @param {string} userPublicKey - User's Solana wallet public key
+     * @returns {Promise<object>} - {text, model, timestamp, payment}
      */
-    async helloFlow(name) {
+    async helloFlow(name, userPublicKey) {
+        // Verify and process payment
+        const paymentCheck = await this.verifyPayment('helloFlow', userPublicKey);
+        if (!paymentCheck.success) {
+            console.error('🚫', paymentCheck.message);
+            return {
+                error: 'PAYMENT_REQUIRED',
+                message: paymentCheck.message,
+                cost: paymentCheck.required,
+                balance: paymentCheck.balance
+            };
+        }
+        
+        const payment = await this.processPayment('helloFlow', userPublicKey);
+        if (!payment.success) {
+            console.error('🚫', payment.message);
+            return {
+                error: 'PAYMENT_FAILED',
+                message: payment.message
+            };
+        }
+        
+        console.log('✅ Payment processed:', payment.message);
         const startTime = Date.now();
         const prompt = `Hello! I'm ${name} from the GemBot team. You are Merlin AI, the intelligent brain behind our repository valuation system. Please introduce yourself in 2-3 sentences and explain how you help analyze code repositories.`;
         const response = await this.generate(prompt);
