@@ -29,8 +29,16 @@ class GemBotSolanaWallet {
         // GBUV Token Mint Address - $GBUV on pump.fun
         this.GBUV_MINT = 'DPHcbu7wJEbcrnCYjXC8vHBkM39kT9xZg4mYayvrpump'; // pump.fun token
         
-        // Admin wallet address - DiamondBoi main vault
-        this.ADMIN_WALLET = '6HTjfgWZYMbENnMAJJFhxWR2VZDxdze3qV7zznSAsfk'; // DiamondBoi profile
+        // Admin wallet address - DiamondBoi main vault (USER CONTROLLED)
+        this.ADMIN_WALLET = '6HTjfgWZYMbENnMAJJFhxWR2VZDxdze3qV7zznSAsfk'; // Treasury/Vault
+        
+        // Agent wallet address - GemBot automated operations (SYSTEM CONTROLLED)
+        // ⚠️ Fund this wallet from ADMIN_WALLET for automated transactions
+        this.AGENT_WALLET = 'HjQWMfGqp8VzN3x4TnKmRLo2hX9sY6wD5pC1vB8aE2fU'; // GemBot Agent Operations
+        
+        // Wallet roles:
+        // - ADMIN_WALLET: Your controlled vault (cold storage, manual transactions)
+        // - AGENT_WALLET: Automated system wallet (hot wallet, AI agent operations)
         
         // Initialize storage
         this.initStorage();
