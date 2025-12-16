@@ -361,9 +361,27 @@ const GemBotAcademy = {
     
     /**
      * Load saved progress from localStorage
+     * NOW INCLUDES: Real user data from gembot_wallets and gembot_farm_save
      */
     loadProgress() {
         try {
+            // 🔄 LOAD REAL USER DATA FROM GEMBOT FARM
+            const wallets = JSON.parse(localStorage.getItem('gembot_wallets') || '{}');
+            const saveData = JSON.parse(localStorage.getItem('gembot_farm_save_0') || '{}');
+            
+            // Sync player data from game if available
+            if (saveData.player) {
+                this.player.level = Math.max(this.player.level, saveData.player.level || 1);
+                this.player.gems = saveData.player.gems || this.player.gems;
+                this.player.tokens = saveData.player.tokens || this.player.tokens;
+                console.log('🔄 Synced data from GemBot Farm:', {
+                    level: this.player.level,
+                    gems: this.player.gems,
+                    tokens: this.player.tokens
+                });
+            }
+            
+            // Load academy-specific progress
             const saved = localStorage.getItem('gembot_academy_progress');
             if (saved) {
                 const data = JSON.parse(saved);

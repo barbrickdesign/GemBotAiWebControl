@@ -24167,13 +24167,19 @@
                 const academyContent = GemBotAcademy.renderAcademyPanel();
                 academyModal.innerHTML = `
                     <div class="academy-modal-content" style="max-width:1000px;margin:0 auto;position:relative;">
-                        <button onclick="document.getElementById('academyModal').style.display='none'" 
+                        <button onclick="document.getElementById('academyModal').style.display='none'; document.body.style.overflow='auto';" 
                             style="position:absolute;right:15px;top:15px;background:rgba(255,255,255,0.1);border:none;color:white;
                             width:40px;height:40px;border-radius:50%;cursor:pointer;font-size:20px;z-index:10;">×</button>
                         ${academyContent}
                     </div>
                 `;
+                
+                // FIX: Force modal to display immediately with highest z-index
                 academyModal.style.display = 'block';
+                academyModal.style.zIndex = '99999';
+                document.body.style.overflow = 'hidden'; // Prevent background scroll
+                
+                console.log('🎓 Academy modal displayed - zIndex:', academyModal.style.zIndex);
                 
                 // Initialize Academy if not done
                 GemBotAcademy.init();
