@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAFETY_AND_DIAGNOSTICS_ENHANCED - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        <h1>GemBot Safety & Diagnostics Enhancements - December 6, 2025</h1>
+
+<h2>Overview</h2>
+<p>Critical safety features and diagnostic enhancements added to prevent motor runaway and provide detailed motion analysis.</p>
+
+<hr>
+
+<h2>🛡️ SAFETY FEATURES ADDED</h2>
+
+<h3>1. <strong>Emergency Motor Timeout</strong> (Arduino)</h3>
+
+<h4>What It Does:</h4>
+<ul><li class="ul-item">Monitors total runtime of all motors</li>
+<li class="ul-item">Auto-stops ALL motors after 5 seconds maximum</li>
+<li class="ul-item">Prevents runaway motors that hit limit switches</li></ul>
+
+<h4>How It Works:</h4>
+<pre class="code-block cpp" data-lang="cpp"><code>const unsigned long MOTOR_TIMEOUT = 5000;  // 5 second max</code></pre>
+
+<p>When any motor starts:</p>
+<ol><li class="ol-item">Records start time</li>
+<li class="ol-item">Monitors elapsed time in <code class="inline-code">handleContinuousMotors()</code></li>
+<li class="ol-item">If elapsed > 5 seconds → EMERGENCY STOP</li>
+<li class="ol-item">Releases all motors and logs to serial</li></ol>
+
+<h4>Serial Output:</h4>
+<pre class="code-block " data-lang="text"><code>[MOTOR START] Motors engaged
+<p>[EMERGENCY STOP] Motor timeout exceeded! Auto-stopping all motors.</p>
+<p>[SAFETY] All motors released</code></pre></p>
+
+<hr>
+
+<h3>2. <strong>Limit Switch Protection</strong> (Arduino)</h3>
+
+<h4>What It Does:</h4>
+<ul><li class="ul-item">Monitors all three limit switches (X, Y, P axes)</li>
+<li class="ul-item">Stops specific motor when limit hit</li>
+<li class="ul-item">Prevents mechanical collision damage</li></ul>
+
+<h4>Implementation:</h4>
+<p>Added new function <code class="inline-code">checkLimitSwitches()</code> called every 50ms</p>
+
+<pre class="code-block cpp" data-lang="cpp"><code>void checkLimitSwitches() {
+<p>    // Reads limit switch states</p>
+<p>    // If limit hit AND not previously logged:</p>
+<p>    //   - Stop corresponding motor</p>
+<p>    //   - Release motor power</p>
+<p>    //   - Log to serial</p>
+<p>}</code></pre></p>
+
+<h4>Serial Output:</h4>
+<pre class="code-block " data-lang="text"><code>[LIMIT SWITCH] X-axis limit reached! Stopping X motor.
+<p>[LIMIT SWITCH] Y-axis limit reached! Stopping Y motor.</p>
+<p>[LIMIT SWITCH] P-axis limit reached! Stopping P motor.</code></pre></p>
+
+<h4>Limit Switch States Tracked:</h4>
+<ul><li class="ul-item"><code class="inline-code">limitSwitchXHit</code> - X-axis home/limit</li>
+<li class="ul-item"><code class="inline-code">limitSwitchYHit</code> - Y-axis home/limit</li>
+<li class="ul-item"><code class="inline-code">limitSwitchPHit</code> - P-axis home/limit</li></ul>
+
+<hr>
+
+<h3>3. <strong>Motor Runtime Diagnostics</strong> (Arduino)</h3>
+
+<h4>What It Does:</h4>
+<ul><li class="ul-item">Logs motor start/stop events</li>
+<li class="ul-item">Tracks actual runtime duration</li>
+<li class="ul-item">Provides detailed diagnostic output</li></ul>
+
+<h4>Diagnostic Output:</h4>
+<pre class="code-block " data-lang="text"><code>[MOTOR START] Motors engaged
+<p>[MOTOR STOP] Runtime: 2345ms</code></pre></p>
+
+<h4>Control Variable:</h4>
+<pre class="code-block cpp" data-lang="cpp"><code>boolean diagnosticsEnabled = true;  // Toggle detailed logging</code></pre>
+
+<hr>
+
+<h2>📊 ENHANCED DIAGNOSTICS & LOGGING</h2>
+
+<h3>1. <strong>Motion Test Detailed Logging</strong> (HTML/JavaScript)</h3>
+
+<h4>What Changed:</h4>
+<p>Motion verification tests now capture and display:</p>
+
+<p><strong>Previous Output:</strong></p>
+<pre class="code-block " data-lang="text"><code>✓ X LEFT - Motion: DETECTED (0.54s)</code></pre>
+
+<p><strong>New Enhanced Output:</strong></p>
+<pre class="code-block " data-lang="text"><code>[14:32:45] X LEFT
+<p>Status: DETECTED ✅</p>
+<p>Detection Delay: 0.54s</p>
+<p>Max Motion: 12.34%</p>
+<p>Avg: 8.76%</p>
+<p>Samples: 25 frames</p>
+<p>Duration: 1.23s</code></pre></p>
+
+<h4>Data Captured:</h4>
+<ul><li class="ul-item"><strong>Timestamp</strong> - When test ran</li>
+<li class="ul-item"><strong>Detection Delay</strong> - Time until motion first detected</li>
+<li class="ul-item"><strong>Max Motion Percent</strong> - Peak motion detected</li>
+<li class="ul-item"><strong>Average Motion Percent</strong> - Mean across all samples</li>
+<li class="ul-item"><strong>Sample Count</strong> - Number of frames analyzed</li>
+<li class="ul-item"><strong>Duration</strong> - Total motion detection time</li></ul>
+
+<h4>Log Display:</h4>
+<ul><li class="ul-item"><strong>Green background</strong> if motion detected ✅</li>
+<li class="ul-item"><strong>Red background</strong> if motion NOT detected ❌</li>
+<li class="ul-item">Auto-scrolls to show latest results</li>
+<li class="ul-item">Color-coded status indicators</li></ul>
+
+<hr>
+
+<h3>2. <strong>Frame Quality Guidance</strong> (HTML/JavaScript)</h3>
+
+<h4>What It Does:</h4>
+<p>Real-time guidance on webcam frame quality during testing</p>
+
+<h4>Guidance Messages:</h4>
+<pre class="code-block " data-lang="text"><code>📸 Frame OK - Position machine in view
+<p>✅ Frame Good - Ready for testing</p>
+<p>⚠️ High noise - Reduce camera shake</p>
+<p>🚨 Too much motion - Stabilize camera</code></pre></p>
+
+<h4>How It Works:</h4>
+<ul><li class="ul-item">Tracks average motion across last 10 frames</li>
+<li class="ul-item">Analyzes baseline noise level</li>
+<li class="ul-item">Provides actionable guidance</li></ul>
+
+<p>| Average Motion | Message | Action |</p>
+<p>|---|---|---|</p>
+<p>| < 0.5% | Frame OK | Position machine in frame |</p>
+<p>| 0.5% - 2% | Frame Good | Ready to test motors |</p>
+<p>| 2% - 5% | High noise | Stabilize camera or reduce vibration |</p>
+<p>| > 5% | Too much | Fix camera shake before testing |</p>
+
+<h4>Visual Indicators:</h4>
+<ul><li class="ul-item"><strong>Green border</strong> = Frame is stable (good for testing)</li>
+<li class="ul-item"><strong>Red border</strong> = Excessive motion in frame</li>
+<li class="ul-item"><strong>Avg Motion %</strong> displayed in corner</li>
+<li class="ul-item">Real-time FPS counter</li></ul>
+
+<hr>
+
+<h3>3. <strong>Motion Analytics Dashboard</strong> (HTML)</h3>
+
+<h4>Real-Time Metrics:</h4>
+<ul><li class="ul-item"><strong>Motion Detection Status</strong> - Frame guidance (see above)</li>
+<li class="ul-item"><strong>Frame Rate</strong> - FPS counter updates every second</li>
+<li class="ul-item"><strong>Motion Pixels</strong> - Raw count and percentage</li>
+<li class="ul-item"><strong>Movement Detected</strong> - YES/NO with color feedback</li>
+<li class="ul-item"><strong>Expected Motion</strong> - Current test status</li></ul>
+
+<h4>Color Coding:</h4>
+<ul><li class="ul-item">🟢 Green = Motion detected / Frame good</li>
+<li class="ul-item">🟡 Orange = No motion detected / Motion in background</li>
+<li class="ul-item">🔴 Red = Error condition</li></ul>
+
+<hr>
+
+<h2>🧪 MOTION TEST IMPROVEMENTS</h2>
+
+<h3>Before vs After</h3>
+
+<p><strong>BEFORE:</strong></p>
+<ul><li class="ul-item">Simple pass/fail</li>
+<li class="ul-item">No timing info</li>
+<li class="ul-item">No motion quality data</li>
+<li class="ul-item">One-time test</li></ul>
+
+<p><strong>AFTER:</strong></p>
+<ul><li class="ul-item">Detailed pass/fail with reason</li>
+<li class="ul-item">Multiple metrics captured</li>
+<li class="ul-item">Motion quality analysis</li>
+<li class="ul-item">Cumulative test history</li></ul>
+
+<h3>Test Process Enhanced:</h3>
+
+<ol><li class="ol-item"><strong>Pre-Test Frame Check</strong></li></ol>
+<p>   - Shows frame quality guidance</p>
+<p>   - "Stabilize camera" if baseline too noisy</p>
+<p>   - "Ready for testing" when frame is good</p>
+
+<ol><li class="ol-item"><strong>During Test</strong></li></ol>
+<p>   - Sends motor command</p>
+<p>   - Monitors for 2.5 seconds (extended from 2)</p>
+<p>   - Captures motion on every 100ms sample</p>
+<p>   - Tracks max motion, average motion, detection timing</p>
+
+<ol><li class="ol-item"><strong>Post-Test</strong></li></ol>
+<p>   - Sends reset command</p>
+<p>   - Logs comprehensive results</p>
+<p>   - Shows all captured metrics</p>
+<p>   - Appends to test history (scrollable log)</p>
+
+<ol><li class="ol-item"><strong>Interpretation</strong></li></ol>
+<p>   - If motion detected: "DETECTED ✅"</p>
+<p>   - If no motion: "NOT DETECTED ❌"</p>
+<p>   - Shows max motion % (higher = more responsive)</p>
+<p>   - Shows detection latency (lower = faster response)</p>
+
+<hr>
+
+<h2>📝 SERIAL MONITOR OUTPUT</h2>
+
+<h3>Safety Event Examples</h3>
+
+<p><strong>Motor Timeout Event:</strong></p>
+<pre class="code-block " data-lang="text"><code>[MOTOR START] Motors engaged
+<p>[MOTOR STOP] Runtime: 3456ms</p>
+<p>[MOTOR START] Motors engaged</p>
+<p>[EMERGENCY STOP] Motor timeout exceeded! Auto-stopping all motors.</p>
+<p>[SAFETY] All motors released</code></pre></p>
+
+<p><strong>Limit Switch Event:</strong></p>
+<pre class="code-block " data-lang="text"><code>[MOTOR START] Motors engaged
+<p>[LIMIT SWITCH] X-axis limit reached! Stopping X motor.</p>
+<p>[MOTOR STOP] Runtime: 1234ms</code></pre></p>
+
+<p><strong>Diagnostic Logging:</strong></p>
+<pre class="code-block " data-lang="text"><code>[MOTOR START] Motors engaged
+<p>  → Sending command: a (X LEFT)</p>
+<p>  → Motion detected after 0.54s</p>
+<p>  → Reset command sent (X RIGHT)</p>
+<p>[MOTOR STOP] Runtime: 2345ms</p>
+<p>✅ X axis test complete (12.34% max motion)</code></pre></p>
+
+<hr>
+
+<h2>🛠️ IMPLEMENTATION DETAILS</h2>
+
+<h3>Arduino Variables Added:</h3>
+<pre class="code-block cpp" data-lang="cpp"><code>// Emergency stop &amp; diagnostics
+<p>unsigned long motorStartTime = 0;</p>
+<p>const unsigned long MOTOR_TIMEOUT = 5000;</p>
+<p>boolean motorTimeoutTriggered = false;</p>
+<p>boolean diagnosticsEnabled = true;</p>
+
+<p>// Limit switch tracking</p>
+<p>boolean limitSwitchXHit = false;</p>
+<p>boolean limitSwitchYHit = false;</p>
+<p>boolean limitSwitchPHit = false;</code></pre></p>
+
+<h3>Arduino Functions Modified/Added:</h3>
+<ol><li class="ol-item"><code class="inline-code">handleContinuousMotors()</code> - Added timeout check</li>
+<li class="ol-item"><code class="inline-code">checkLimitSwitches()</code> - NEW function</li>
+<li class="ol-item">Motion tracking enhanced</li></ol>
+
+<h3>HTML/JavaScript Enhancements:</h3>
+<ol><li class="ol-item"><code class="inline-code">testMotionAxis()</code> - Enhanced logging</li>
+<li class="ol-item"><code class="inline-code">startMotionDetection()</code> - Added frame guidance</li>
+<li class="ol-item">Frame quality analysis added</li>
+<li class="ol-item">Cumulative test history logging</li></ol>
+
+<hr>
+
+<h2>✅ SAFETY CHECKLIST</h2>
+
+<p>Before running tests, verify:</p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Webcam is stable and positioned</li>
+<li class="checkbox"><input type="checkbox" disabled> Frame quality shows "Frame Good" ✅</li>
+<li class="checkbox"><input type="checkbox" disabled> All motors are de-energized</li>
+<li class="checkbox"><input type="checkbox" disabled> Limit switches are accessible</li>
+<li class="checkbox"><input type="checkbox" disabled> Emergency power switch is accessible</li>
+<li class="checkbox"><input type="checkbox" disabled> Serial monitor is open to see diagnostic output</li></ul>
+
+<hr>
+
+<h2>🚨 What to Do If...</h2>
+
+<h3>Motor Keeps Running</h3>
+<ol><li class="ol-item"><strong>Automatic:</strong> Will stop after 5 seconds (timeout)</li>
+<li class="ol-item"><strong>Manual:</strong> Press power button or E-stop</li>
+<li class="ol-item"><strong>Diagnostic:</strong> Check serial monitor for "[EMERGENCY STOP]" message</li></ol>
+
+<h3>Motor Hits Limit Switch</h3>
+<ol><li class="ol-item"><strong>Automatic:</strong> Motor stops immediately</li>
+<li class="ol-item"><strong>Serial Output:</strong> "[LIMIT SWITCH] X-axis limit reached!"</li>
+<li class="ol-item"><strong>Action:</strong> Manually reset machine position and retry</li></ol>
+
+<h3>Frame Quality Bad During Test</h3>
+<ol><li class="ol-item"><strong>Guidance Message:</strong> "🚨 Too much motion - Stabilize camera"</li>
+<li class="ol-item"><strong>Solution:</strong> </li></ol>
+<p>   - Secure camera to stable surface</p>
+<p>   - Remove vibrations from table</p>
+<p>   - Wait for baseline motion < 5%</p>
+<p>   - Retry test</p>
+
+<h3>Motion Not Detected</h3>
+<ol><li class="ol-item"><strong>Result:</strong> "NOT DETECTED ❌"</li>
+<li class="ol-item"><strong>Diagnostics:</strong></li></ol>
+<p>   - Check serial monitor for motor commands sent</p>
+<p>   - Verify motor is powered</p>
+<p>   - Check for jammed mechanical parts</p>
+<p>   - Verify limit switches aren't permanently engaged</p>
+
+<hr>
+
+<h2>📊 Data Logged for Each Test</h2>
+
+<pre class="code-block javascript" data-lang="javascript"><code>{
+<p>  timestamp: &quot;14:32:45&quot;,           // When test ran</p>
+<p>  axis: &quot;X&quot;,                       // Which axis</p>
+<p>  command: &quot;a&quot;,                    // Command sent</p>
+<p>  detected: true,                  // Motion detected?</p>
+<p>  detectionDelay: 0.54,            // Seconds to first motion</p>
+<p>  maxMotionPercent: 12.34,         // Peak motion %</p>
+<p>  avgMotionPercent: 8.76,          // Average motion %</p>
+<p>  sampleCount: 25,                 // Frames analyzed</p>
+<p>  duration: 1.23                   // Total test duration</p>
+<p>}</code></pre></p>
+
+<hr>
+
+<h2>🔄 Test Cycle Time</h2>
+
+<ul><li class="ul-item">Command send → ~0ms</li>
+<li class="ul-item">Motion detection → 0-1s (typical)</li>
+<li class="ul-item">Monitoring period → 2.5s</li>
+<li class="ul-item">Reset command → ~0ms</li>
+<li class="ul-item"><strong>Total per test:</strong> ~2.5-3.5 seconds</li>
+<li class="ul-item"><strong>All 4 axes:</strong> ~10-15 seconds</li></ul>
+
+<hr>
+
+<h2>🎯 What Success Looks Like</h2>
+
+<p><strong>Good Motion Test Result:</strong></p>
+<pre class="code-block " data-lang="text"><code>✓ X LEFT
+<p>Status: DETECTED ✅</p>
+<p>Detection Delay: 0.54s         ← Fast response</p>
+<p>Max Motion: 12.34%             ← Good signal strength</p>
+<p>Avg: 8.76%</p>
+<p>Samples: 25 frames</p>
+<p>Duration: 1.23s</code></pre></p>
+
+<p><strong>Bad Motion Test Result:</strong></p>
+<pre class="code-block " data-lang="text"><code>✓ X LEFT
+<p>Status: NOT DETECTED ❌        ← Motor didn&#039;t move</p>
+<p>Detection Delay: Unknown</p>
+<p>Max Motion: 0.02%              ← No motion signal</p>
+<p>Avg: 0.01%</p>
+<p>Samples: 25 frames</p>
+<p>Duration: 2.50s</code></pre></p>
+
+<hr>
+
+<h2>🔧 Troubleshooting Guide</h2>
+
+<p>| Symptom | Cause | Solution |</p>
+<p>|---|---|---|</p>
+<p>| Motor timeout every test | Limit switch hit | Check mechanical alignment |</p>
+<p>| Frame quality always red | Camera unstable | Clamp camera more firmly |</p>
+<p>| Motion % low (<2%) | Low lighting | Add light source |</p>
+<p>| Motion % jumps around | Auto-focus enabled | Disable camera auto-focus |</p>
+<p>| Tests pass but machine doesn't move | Mechanical jam | Manually move axis to free |</p>
+<p>| Serial monitor not showing diagnostics | Feature off | <code class="inline-code">diagnosticsEnabled = true</code> |</p>
+
+<hr>
+
+<h2>📈 Performance Metrics to Track</h2>
+
+<p>For warehouse deployment with 1000+ machines:</p>
+<ul><li class="ul-item"><strong>Average motion detection latency</strong> (goal: <1s)</li>
+<li class="ul-item"><strong>False negative rate</strong> (should be 0%)</li>
+<li class="ul-item"><strong>Timeout frequency</strong> (goal: 0 per 100 tests)</li>
+<li class="ul-item"><strong>Limit switch trigger rate</strong> (track for maintenance)</li>
+<li class="ul-item"><strong>Average max motion %</strong> per axis (baseline for comparison)</li></ul>
+
+<hr>
+
+<h2>🚀 Future Enhancements</h2>
+
+<p>Potential next-phase additions:</p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Machine learning to predict failures</li>
+<li class="checkbox"><input type="checkbox" disabled> Automatic motion baseline calibration</li>
+<li class="checkbox"><input type="checkbox" disabled> Historical trend analysis</li>
+<li class="checkbox"><input type="checkbox" disabled> Alert system for degrading performance</li>
+<li class="checkbox"><input type="checkbox" disabled> Automatic maintenance scheduling</li>
+<li class="checkbox"><input type="checkbox" disabled> Cross-machine performance comparison</li></ul>
+
+<hr>
+
+<p><strong>Version:</strong> 2.0 - December 6, 2025  </p>
+<p><strong>Status:</strong> ✅ Ready for Safety Testing  </p>
+<p><strong>Safety Level:</strong> ENHANCED with Emergency Stop & Diagnostics</p>
+
+        <div class="generated-notice">
+            🤖 Auto-generated from SAFETY_AND_DIAGNOSTICS_ENHANCED.md by GemBot Neural Dashboard Agent<br>
+            Generated: 2025-12-16T13:52:23.844Z
+        </div>
+    </div>
+</body>
+</html>

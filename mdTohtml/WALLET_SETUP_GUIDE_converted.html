@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WALLET_SETUP_GUIDE - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        <h1>🔐 GemBot Wallet Architecture - Two-Wallet System</h1>
+
+<p><strong>Security Model:</strong> Separate vault (you control) from operations wallet (system controlled)</p>
+
+<hr>
+
+<h2>💰 WALLET ADDRESSES</h2>
+
+<h3>1️⃣ <strong>ADMIN WALLET (Your Vault - Cold Storage)</strong></h3>
+<pre class="code-block " data-lang="text"><code>Address: 6HTjfgWZYMbENnMAJJFhxWR2VZDxdze3qV7zznSAsfk</code></pre>
+<ul><li class="ul-item"><strong>Control:</strong> YOU (Ryan Barbrick)</li>
+<li class="ul-item"><strong>Purpose:</strong> Main treasury, cold storage, manual transactions</li>
+<li class="ul-item"><strong>Security:</strong> Your private key, hardware wallet recommended</li>
+<li class="ul-item"><strong>Access:</strong> Phantom/Solflare wallet you control</li></ul>
+
+<p><strong>Profile:</strong> https://pump.fun/profile/DiamondBoi</p>
+
+<hr>
+
+<h3>2️⃣ <strong>AGENT WALLET (Operations - Hot Wallet)</strong></h3>
+<pre class="code-block " data-lang="text"><code>Address: HjQWMfGqp8VzN3x4TnKmRLo2hX9sY6wD5pC1vB8aE2fU</code></pre>
+<ul><li class="ul-item"><strong>Control:</strong> GemBot System (Automated)</li>
+<li class="ul-item"><strong>Purpose:</strong> Daily operations, agent rewards, automated transactions</li>
+<li class="ul-item"><strong>Security:</strong> System-managed private key</li>
+<li class="ul-item"><strong>Access:</strong> Programmatic only (no manual access needed)</li></ul>
+
+<hr>
+
+<h2>🔄 TOKEN DETAILS</h2>
+
+<p><strong>Token Mint Address:</strong></p>
+<pre class="code-block " data-lang="text"><code>DPHcbu7wJEbcrnCYjXC8vHBkM39kT9xZg4mYayvrpump</code></pre>
+
+<p><strong>Network:</strong> Solana mainnet-beta  </p>
+<p><strong>Token Symbol:</strong> $GBUV  </p>
+<p><strong>Token Page:</strong> https://pump.fun/coin/DPHcbu7wJEbcrnCYjXC8vHBkM39kT9xZg4mYayvrpump</p>
+
+<hr>
+
+<h2>📋 SETUP INSTRUCTIONS</h2>
+
+<h3>Step 1: Fund Your Admin Wallet (Already Done)</h3>
+<p>You already have GBUV in: <code class="inline-code">6HTjfgWZYMbENnMAJJFhxWR2VZDxdze3qV7zznSAsfk</code></p>
+
+<h3>Step 2: Send GBUV to Agent Wallet ⚠️ <strong>ACTION REQUIRED</strong></h3>
+
+<p><strong>FROM (Your Vault):</strong></p>
+<pre class="code-block " data-lang="text"><code>6HTjfgWZYMbENnMAJJFhxWR2VZDxdze3qV7zznSAsfk</code></pre>
+
+<p><strong>TO (Agent Operations):</strong></p>
+<pre class="code-block " data-lang="text"><code>HjQWMfGqp8VzN3x4TnKmRLo2hX9sY6wD5pC1vB8aE2fU</code></pre>
+
+<p><strong>Recommended Amounts:</strong></p>
+
+<p>| Phase | GBUV Amount | Purpose |</p>
+<p>|-------|-------------|---------|</p>
+<p>| <strong>Testing</strong> | 1,000 GBUV | Initial testing across domains |</p>
+<p>| <strong>Pilot Launch</strong> (3 domains) | 10,000 GBUV | First 3 domains operations |</p>
+<p>| <strong>Full Launch</strong> (15 domains) | 100,000 GBUV | All 15 domains operations |</p>
+<p>| <strong>Long-term</strong> | Refill as needed | Ongoing operations |</p>
+
+<p><strong>How to Send:</strong></p>
+<ol><li class="ol-item">Open your Phantom/Solflare wallet</li>
+<li class="ol-item">Make sure you're connected to <code class="inline-code">6HTjfgWZ...</code> address</li>
+<li class="ol-item">Click Send → Select GBUV token</li>
+<li class="ol-item">Paste agent address: <code class="inline-code">HjQWMfGqp8VzN3x4TnKmRLo2hX9sY6wD5pC1vB8aE2fU</code></li>
+<li class="ol-item">Amount: <strong>10,000 GBUV</strong> (for pilot launch)</li>
+<li class="ol-item">Confirm and send</li></ol>
+
+<hr>
+
+<h2>🤖 WHAT THE AGENT WALLET DOES</h2>
+
+<h3>Automated Operations:</h3>
+<ul><li class="ul-item">✅ <strong>User Rewards:</strong> Distribute GBUV for achievements</li>
+<li class="ul-item">✅ <strong>Agent Salaries:</strong> Pay AI agents for work</li>
+<li class="ul-item">✅ <strong>Level-Up Bonuses:</strong> Reward player progression</li>
+<li class="ul-item">✅ <strong>Marketplace Escrow:</strong> Hold funds during trades</li>
+<li class="ul-item">✅ <strong>Referral Payouts:</strong> Commission distribution</li>
+<li class="ul-item">✅ <strong>Staking Rewards:</strong> Interest payments</li>
+<li class="ul-item">✅ <strong>Daily Drops:</strong> Random GBUV distributions</li>
+<li class="ul-item">✅ <strong>Event Prizes:</strong> Tournament and contest rewards</li></ul>
+
+<h3>Transaction Types:</h3>
+<ul><li class="ul-item">Small frequent transactions (1-100 GBUV)</li>
+<li class="ul-item">Automated hourly/daily distributions</li>
+<li class="ul-item">User withdrawal requests</li>
+<li class="ul-item">Marketplace settlements</li>
+<li class="ul-item">Cross-domain transfers</li></ul>
+
+<hr>
+
+<h2>💡 REFILL STRATEGY</h2>
+
+<h3>Monitor Agent Wallet Balance:</h3>
+
+<p><strong>Dashboard shows agent wallet balance:</strong></p>
+<ul><li class="ul-item">🟢 <strong>Green:</strong> > 50,000 GBUV (healthy)</li>
+<li class="ul-item">🟡 <strong>Yellow:</strong> 10,000-50,000 GBUV (refill soon)</li>
+<li class="ul-item">🔴 <strong>Red:</strong> < 10,000 GBUV (refill now)</li></ul>
+
+<p><strong>Auto-Refill Alerts:</strong></p>
+<p>System will email you when balance drops below 10,000 GBUV</p>
+
+<h3>Refill Process:</h3>
+<ol><li class="ol-item">Check alert email</li>
+<li class="ol-item">Open your wallet</li>
+<li class="ol-item">Send 50,000 GBUV from admin → agent wallet</li>
+<li class="ol-item">System automatically resumes operations</li></ol>
+
+<hr>
+
+<h2>🔐 SECURITY FEATURES</h2>
+
+<h3>Admin Wallet (Your Control):</h3>
+<ul><li class="ul-item">✅ Hardware wallet recommended (Ledger/Trezor)</li>
+<li class="ul-item">✅ 2FA on exchange accounts</li>
+<li class="ul-item">✅ Cold storage for long-term holdings</li>
+<li class="ul-item">✅ Manual approval for large transfers</li>
+<li class="ul-item">✅ Multi-sig optional (coming soon)</li></ul>
+
+<h3>Agent Wallet (System Control):</h3>
+<ul><li class="ul-item">✅ Private key encrypted in system</li>
+<li class="ul-item">✅ Daily transaction limits (10,000 GBUV max)</li>
+<li class="ul-item">✅ Withdrawal whitelist (can't send to random addresses)</li>
+<li class="ul-item">✅ Automatic fraud detection</li>
+<li class="ul-item">✅ Emergency freeze function</li></ul>
+
+<h3>Transaction Limits:</h3>
+<ul><li class="ul-item"><strong>Per Transaction:</strong> 1,000 GBUV max</li>
+<li class="ul-item"><strong>Per Hour:</strong> 5,000 GBUV max</li>
+<li class="ul-item"><strong>Per Day:</strong> 10,000 GBUV max</li>
+<li class="ul-item"><strong>Larger amounts:</strong> Require manual admin approval</li></ul>
+
+<hr>
+
+<h2>📊 TRANSACTION MONITORING</h2>
+
+<h3>Real-Time Visibility:</h3>
+
+<p><strong>Live Activity Feed Shows:</strong></p>
+<ul><li class="ul-item">💰 Every GBUV transfer</li>
+<li class="ul-item">👤 Recipient address</li>
+<li class="ul-item">💵 Amount sent</li>
+<li class="ul-item">📝 Transaction reason</li>
+<li class="ul-item">🔗 Solana Explorer link</li></ul>
+
+<p><strong>Example Feed Messages:</strong></p>
+<pre class="code-block " data-lang="text"><code>💰 Agent Wallet: Sent 50 GBUV to Player123 (Level Up Reward)
+<p>💰 Agent Wallet: Sent 25 GBUV to Agent_BumbleBee (Daily Salary)</p>
+<p>💰 Agent Wallet: Sent 100 GBUV to User456 (Achievement Unlock)</code></pre></p>
+
+<h3>Weekly Reports:</h3>
+<ul><li class="ul-item">Email summary every Sunday</li>
+<li class="ul-item">Total GBUV distributed</li>
+<li class="ul-item">Top recipients</li>
+<li class="ul-item">Balance remaining</li>
+<li class="ul-item">Refill recommendation</li></ul>
+
+<hr>
+
+<h2>🎯 RECOMMENDED INITIAL FUNDING</h2>
+
+<h3>For Pilot Launch (3 Domains):</h3>
+
+<p><strong>Your Admin Wallet:</strong></p>
+<pre class="code-block " data-lang="text"><code>Keep: 500,000 GBUV (reserve)</code></pre>
+
+<p><strong>Send to Agent Wallet:</strong></p>
+<pre class="code-block " data-lang="text"><code>Send: 10,000 GBUV (operations)</code></pre>
+
+<p><strong>Breakdown:</strong></p>
+<ul><li class="ul-item">User rewards: 5,000 GBUV (500/domain)</li>
+<li class="ul-item">Agent salaries: 2,000 GBUV</li>
+<li class="ul-item">Marketplace escrow: 2,000 GBUV</li>
+<li class="ul-item">Emergency buffer: 1,000 GBUV</li></ul>
+
+<h3>For Full Launch (15 Domains):</h3>
+
+<p><strong>Your Admin Wallet:</strong></p>
+<pre class="code-block " data-lang="text"><code>Keep: 900,000 GBUV (reserve)</code></pre>
+
+<p><strong>Send to Agent Wallet:</strong></p>
+<pre class="code-block " data-lang="text"><code>Send: 100,000 GBUV (operations)</code></pre>
+
+<p><strong>Breakdown:</strong></p>
+<ul><li class="ul-item">User rewards: 50,000 GBUV</li>
+<li class="ul-item">Agent salaries: 20,000 GBUV (60 agents)</li>
+<li class="ul-item">Marketplace escrow: 20,000 GBUV</li>
+<li class="ul-item">Emergency buffer: 10,000 GBUV</li></ul>
+
+<hr>
+
+<h2>⚠️ IMPORTANT NOTES</h2>
+
+<h3>DO:</h3>
+<ul><li class="ul-item">✅ Keep majority of GBUV in your admin wallet</li>
+<li class="ul-item">✅ Only fund agent wallet with what's needed for operations</li>
+<li class="ul-item">✅ Monitor agent wallet balance weekly</li>
+<li class="ul-item">✅ Enable email alerts for low balance</li>
+<li class="ul-item">✅ Review transaction logs regularly</li></ul>
+
+<h3>DON'T:</h3>
+<ul><li class="ul-item">❌ Send all GBUV to agent wallet</li>
+<li class="ul-item">❌ Share agent wallet private key</li>
+<li class="ul-item">❌ Ignore low balance alerts</li>
+<li class="ul-item">❌ Disable transaction monitoring</li>
+<li class="ul-item">❌ Skip weekly reports</li></ul>
+
+<hr>
+
+<h2>🚀 QUICK START CHECKLIST</h2>
+
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> <strong>Verify admin wallet has GBUV</strong> (already done ✅)</li>
+<li class="checkbox"><input type="checkbox" disabled> <strong>Send 10,000 GBUV to agent wallet</strong> ⚡ <strong>DO THIS NOW</strong></li>
+<li class="checkbox"><input type="checkbox" disabled> <strong>Deploy first domain</strong> (the-autobots.com)</li>
+<li class="checkbox"><input type="checkbox" disabled> <strong>Watch agent wallet in action</strong> (activity feed)</li>
+<li class="checkbox"><input type="checkbox" disabled> <strong>Monitor balance</strong> (dashboard)</li>
+<li class="checkbox"><input type="checkbox" disabled> <strong>Refill when needed</strong> (< 10,000 GBUV)</li></ul>
+
+<hr>
+
+<h2>📞 SUPPORT</h2>
+
+<p><strong>Questions about wallet setup?</strong></p>
+<p>Email: BarbrickDesign@gmail.com  </p>
+<p>Subject: "GemBot Wallet Setup - Agent Funding"</p>
+
+<hr>
+
+<h2>🎉 YOU'RE READY!</h2>
+
+<p>Once you send GBUV to the agent wallet, the entire 15-domain network can operate autonomously!</p>
+
+<p><strong>Next Action:</strong> Send 10,000 GBUV to <code class="inline-code">HjQWMfGqp8VzN3x4TnKmRLo2hX9sY6wD5pC1vB8aE2fU</code></p>
+
+<hr>
+
+<p><strong>Created by:</strong> Ryan Barbrick / Barbrick Design  </p>
+<p><strong>System:</strong> GemBot Two-Wallet Architecture  </p>
+<p><strong>© 2024-2025 All Rights Reserved</strong></p>
+
+        <div class="generated-notice">
+            🤖 Auto-generated from WALLET_SETUP_GUIDE.md by GemBot Neural Dashboard Agent<br>
+            Generated: 2025-12-16T13:52:32.397Z
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MERLIN_TOKEN_ECONOMY_GOVERNOR - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        <h1>Merlin AI: Token Economy Governor</h1>
+
+<h2>Overview</h2>
+
+<p><strong>Merlin AI is the intelligent governor of your entire token economy.</strong></p>
+
+<p>Instead of requiring a centralized server to process commands, Merlin:</p>
+<ul><li class="ul-item">✅ Validates every transaction on the blockchain</li>
+<li class="ul-item">✅ Enforces tier-based access control</li>
+<li class="ul-item">✅ Monitors machine safety in real-time</li>
+<li class="ul-item">✅ Awards bonuses and achievements</li>
+<li class="ul-item">✅ Manages investor communications</li>
+<li class="ul-item">✅ Handles refunds and disputes</li>
+<li class="ul-item">✅ Learns from all documentation automatically</li>
+<li class="ul-item">✅ Personalizes user experience based on tier</li></ul>
+
+<hr>
+
+<h2>How Merlin Controls the Token Economy</h2>
+
+<h3>1. Transaction Validation Layer</h3>
+
+<p><strong>Every Solana token transaction</strong> goes through Merlin's validation:</p>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Merlin&#039;s validation flow
+<p>if (transaction.amount === 5) {</p>
+    
+<p>    // Check 1: Is user certified?</p>
+<p>    if (!userProfile.gemForge.certification) {</p>
+<p>        return { </p>
+<p>            valid: false, </p>
+<p>            action: &#039;REFUND&#039;,</p>
+<p>            reason: &#039;User not certified - must complete training first&#039;,</p>
+<p>            refundTo: transaction.sender</p>
+<p>        };</p>
+<p>    }</p>
+    
+<p>    // Check 2: Is command valid for user tier?</p>
+<p>    const command = commandMapping[5]; // &quot;Spindle +1000 RPM&quot;</p>
+<p>    const userTier = userProfile.gemForge.certification.tier;</p>
+    
+<p>    if (!isCommandValidForTier(command, userTier)) {</p>
+<p>        return { </p>
+<p>            valid: false, </p>
+<p>            action: &#039;REFUND&#039;,</p>
+<p>            reason: <code class="inline-code">Command requires ${command.tier}, you are ${userTier}</code>,</p>
+<p>            refundTo: transaction.sender</p>
+<p>        };</p>
+<p>    }</p>
+    
+<p>    // Check 3: Is machine healthy?</p>
+<p>    if (machineStatus.error || machineStatus.temperature &gt; 70) {</p>
+<p>        return { </p>
+<p>            valid: false, </p>
+<p>            action: &#039;REFUND&#039;,</p>
+<p>            reason: <code class="inline-code">Machine error: ${machineStatus.error}</code>,</p>
+<p>            refundTo: transaction.sender</p>
+<p>        };</p>
+<p>    }</p>
+    
+<p>    // All checks passed!</p>
+<p>    return { </p>
+<p>        valid: true, </p>
+<p>        action: &#039;EXECUTE&#039;,</p>
+<p>        command: command.cmd,</p>
+<p>        earnMultiplier: getEarnMultiplier(userTier)</p>
+<p>    };</p>
+<p>}</code></pre></p>
+
+<h3>2. Tier-Based Access Control</h3>
+
+<p>Merlin enforces <strong>5-tier progression system</strong> completely on-chain:</p>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Merlin&#039;s tier system
+<p>const tiers = {</p>
+<p>    Apprentice: {</p>
+<p>        minCuts: 0,</p>
+<p>        maxEarningRate: 20, // $20/hour</p>
+<p>        commandsAvailable: [&#039;Y&lt;em&gt;DOWN&#039;, &#039;Y&lt;/em&gt;UP&#039;, &#039;X&lt;em&gt;LEFT&#039;, &#039;X&lt;/em&gt;RIGHT&#039;, &#039;SPINDLE&lt;em&gt;UP&#039;, &#039;SPINDLE&lt;/em&gt;DOWN&#039;],</p>
+<p>        gemstonesAllowed: [&#039;Quartz&#039;],</p>
+<p>        certificationRequired: true,</p>
+<p>        costMultiplier: 1.0</p>
+<p>    },</p>
+    
+<p>    Journeyman: {</p>
+<p>        minCuts: 10,</p>
+<p>        maxEarningRate: 50,</p>
+<p>        commandsAvailable: [...apprenticeCommands, &#039;PRECISION&lt;em&gt;MODE&#039;, &#039;SPEED&lt;/em&gt;BOOST&#039;],</p>
+<p>        gemstonesAllowed: [&#039;Quartz&#039;, &#039;Topaz&#039;, &#039;Garnet&#039;],</p>
+<p>        certificationRequired: true,</p>
+<p>        costMultiplier: 1.0</p>
+<p>    },</p>
+    
+<p>    Artisan: {</p>
+<p>        minCuts: 50,</p>
+<p>        maxEarningRate: 100,</p>
+<p>        commandsAvailable: [...journeymanCommands, &#039;AI&lt;em&gt;ASSISTED&lt;/em&gt;CUT&#039;],</p>
+<p>        gemstonesAllowed: [&#039;Aquamarine&#039;, &#039;Tourmaline&#039;, &#039;Citrine&#039;],</p>
+<p>        certificationRequired: true,</p>
+<p>        costMultiplier: 1.5</p>
+<p>    },</p>
+    
+<p>    Master: {</p>
+<p>        minCuts: 200,</p>
+<p>        maxEarningRate: 250,</p>
+<p>        commandsAvailable: [...allCommands],</p>
+<p>        gemstonesAllowed: [&#039;Ruby&#039;, &#039;Sapphire&#039;, &#039;Emerald&#039;],</p>
+<p>        certificationRequired: true,</p>
+<p>        costMultiplier: 2.0</p>
+<p>    },</p>
+    
+<p>    Grandmaster: {</p>
+<p>        minCuts: 500,</p>
+<p>        maxEarningRate: 1000,</p>
+<p>        commandsAvailable: [...allCommands, &#039;CUSTOM_SEQUENCES&#039;],</p>
+<p>        gemstonesAllowed: [&#039;Diamond&#039;],</p>
+<p>        certificationRequired: true,</p>
+<p>        costMultiplier: 2.5</p>
+<p>    }</p>
+<p>};</p>
+
+<p>// Merlin checks every transaction</p>
+<p>async validateTransactionAgainstTier(transaction, userTier) {</p>
+<p>    const tierConfig = tiers[userTier];</p>
+    
+<p>    // Get command from transaction amount</p>
+<p>    const command = this.commandMapping[transaction.amount];</p>
+    
+<p>    // Is command available for this tier?</p>
+<p>    if (!tierConfig.commandsAvailable.includes(command.id)) {</p>
+<p>        return {</p>
+<p>            valid: false,</p>
+<p>            action: &#039;REFUND&#039;,</p>
+<p>            reason: <code class="inline-code">${command.name} not available for ${userTier} tier</code></p>
+<p>        };</p>
+<p>    }</p>
+    
+<p>    // Will this command work on selected gemstone?</p>
+<p>    if (session.selectedGemstone &amp;&amp; !tierConfig.gemstonesAllowed.includes(session.selectedGemstone)) {</p>
+<p>        return {</p>
+<p>            valid: false,</p>
+<p>            action: &#039;REFUND&#039;,</p>
+<p>            reason: <code class="inline-code">${userTier} cannot cut ${session.selectedGemstone}</code></p>
+<p>        };</p>
+<p>    }</p>
+    
+<p>    // Is user hitting earning cap?</p>
+<p>    if (session.earningsThisMonth &gt;= tierConfig.maxEarningRate * 160) {</p>
+<p>        return {</p>
+<p>            valid: true,</p>
+<p>            action: &#039;EXECUTE&#039;,</p>
+<p>            warning: &#039;You\&#039;ve hit your monthly earning cap&#039;</p>
+<p>        };</p>
+<p>    }</p>
+    
+<p>    return { valid: true, action: &#039;EXECUTE&#039; };</p>
+<p>}</code></pre></p>
+
+<h3>3. Real-Time Safety Monitoring</h3>
+
+<p><strong>Merlin monitors machine state continuously:</strong></p>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Merlin&#039;s safety loop - runs every 500ms
+<p>async monitorMachineSafety() {</p>
+<p>    const status = this.machineStatus;</p>
+    
+<p>    // Monitor temperature</p>
+<p>    if (status.temperature &gt; 70) {</p>
+<p>        console.log(&#039;🚨 Overheating detected&#039;);</p>
+<p>        await this.triggerEmergencyStop();</p>
+<p>        await this.refundCurrentSession();</p>
+        
+<p>        addMessage(<code class="inline-code"></p>
+<p>            🛑 EMERGENCY STOP: Machine overheating (${status.temperature}°C)</p>
+<p>            Your transaction has been refunded.</p>
+<p>            Please let machine cool before next session.</p>
+<p>        </code>, &#039;merlin&#039;);</p>
+<p>    }</p>
+    
+<p>    // Monitor spindle</p>
+<p>    if (status.spindle&lt;em&gt;current &gt; status.spindle&lt;/em&gt;rated * 1.5) {</p>
+<p>        console.log(&#039;⚠️  Spindle overload&#039;);</p>
+<p>        await this.reduceSpindleLoad();</p>
+<p>    }</p>
+    
+<p>    // Monitor gem position</p>
+<p>    const gemPositionError = Math.abs(status.expected&lt;em&gt;position - status.actual&lt;/em&gt;position);</p>
+<p>    if (gemPositionError &gt; 5) {</p>
+<p>        console.log(&#039;⚠️  Position misalignment detected&#039;);</p>
+        
+<p>        // In Precision tier, auto-correct</p>
+<p>        if (userTier === &#039;Journeyman&#039; || higher) {</p>
+<p>            await this.autoCorrectPosition();</p>
+<p>        } else {</p>
+<p>            await this.alertUserToManuallyCorrect();</p>
+<p>        }</p>
+<p>    }</p>
+    
+<p>    // Monitor for jams</p>
+<p>    if (status.torque &gt; status.normal_torque * 2) {</p>
+<p>        console.log(&#039;🚨 JAM DETECTED&#039;);</p>
+<p>        await this.triggerEmergencyStop();</p>
+<p>        await this.guideMachineOwnerToClearJam();</p>
+<p>    }</p>
+<p>}</code></pre></p>
+
+<h3>4. Automatic Rewards & Bonuses</h3>
+
+<p><strong>Merlin awards gems automatically</strong> based on performance:</p>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Merlin&#039;s reward algorithm
+<p>async calculateSessionReward(sessionData) {</p>
+<p>    let reward = {</p>
+<p>        baseGems: 0,</p>
+<p>        bonusGems: 0,</p>
+<p>        dollarValue: 0,</p>
+<p>        breakdown: {}</p>
+<p>    };</p>
+    
+<p>    // Base: 1 gem per command</p>
+<p>    reward.baseGems = sessionData.commandCount;</p>
+<p>    reward.breakdown.baseCommands = sessionData.commandCount;</p>
+    
+<p>    // Quality bonus: +5 gems if &gt;90%</p>
+<p>    const quality = sessionData.avgQuality;</p>
+<p>    if (quality &gt; 90) {</p>
+<p>        reward.bonusGems += 5;</p>
+<p>        reward.breakdown.qualityBonus = 5;</p>
+<p>    }</p>
+    
+<p>    // Streak bonus: +2 gems per 10 consecutive good cuts</p>
+<p>    const streak = sessionData.consecutiveGoodCuts / 10;</p>
+<p>    reward.bonusGems += Math.floor(streak) * 2;</p>
+<p>    reward.breakdown.streakBonus = Math.floor(streak) * 2;</p>
+    
+<p>    // Rare gemstone bonus: +10 gems for Diamond</p>
+<p>    if (sessionData.gemstoneTier === &#039;Diamond&#039;) {</p>
+<p>        reward.bonusGems += 10;</p>
+<p>        reward.breakdown.rareGemBonus = 10;</p>
+<p>    }</p>
+    
+<p>    // Tier multiplier</p>
+<p>    const multiplier = tierCostMultipliers[userTier];</p>
+<p>    reward.totalGems = (reward.baseGems + reward.bonusGems) * multiplier;</p>
+    
+<p>    // Calculate dollar value</p>
+<p>    reward.dollarValue = reward.totalGems * 0.5; // $0.50 per gem</p>
+    
+<p>    // Distribute to revenue pool</p>
+<p>    const machineOwnerShare = reward.dollarValue * 0.6;</p>
+<p>    const investorShare = reward.dollarValue * 0.4;</p>
+    
+<p>    return reward;</p>
+<p>}</p>
+
+<p>async distributeRewards(reward) {</p>
+<p>    // Record in blockchain</p>
+<p>    await blockchain.recordSessionReward({</p>
+<p>        user: userProfile.wallet,</p>
+<p>        gemsEarned: reward.totalGems,</p>
+<p>        dollarValue: reward.dollarValue,</p>
+<p>        timestamp: Date.now(),</p>
+<p>        gemstone: sessionData.gemstone,</p>
+<p>        quality: sessionData.avgQuality</p>
+<p>    });</p>
+    
+<p>    // Update user balance</p>
+<p>    userProfile.gemCoins += reward.totalGems;</p>
+    
+<p>    // Award achievement if applicable</p>
+<p>    const achievement = this.checkAchievements(sessionData, reward);</p>
+<p>    if (achievement) {</p>
+<p>        userProfile.achievements.push(achievement);</p>
+<p>        addMessage(<code class="inline-code">🏆 ${achievement.title}</code>, &#039;merlin&#039;);</p>
+<p>    }</p>
+    
+<p>    // Check for tier advancement</p>
+<p>    if (userProfile.totalCuts % 10 === 0) {</p>
+<p>        const newTier = this.checkTierAdvancement(userProfile);</p>
+<p>        if (newTier) {</p>
+<p>            await this.promoteToTier(newTier);</p>
+<p>        }</p>
+<p>    }</p>
+<p>}</code></pre></p>
+
+<h3>5. Investor Communication</h3>
+
+<p><strong>Merlin manages all investor interactions:</strong></p>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Merlin&#039;s investor relations module
+<p>async handleInvestorQuery(investorWallet, query) {</p>
+<p>    const investment = machineInvestmentPool.investors[investorWallet];</p>
+    
+<p>    if (!investment) {</p>
+<p>        return &quot;You haven&#039;t invested in any machines yet.&quot;;</p>
+<p>    }</p>
+    
+<p>    if (query.includes(&#039;returns&#039;) || query.includes(&#039;earnings&#039;)) {</p>
+<p>        const monthlyRevenue = await fetchMachineRevenue(investment.machineId);</p>
+<p>        const investorShare = monthlyRevenue * 0.4;</p>
+<p>        const myShare = investorShare * investment.sharesPercentage;</p>
+        
+<p>        return <code class="inline-code"></p>
+<p>            💎 Investment Summary</p>
+            
+<p>            Machine: ${investment.machineName}</p>
+<p>            Shares: ${investment.shares} of ${totalShares}</p>
+<p>            Ownership: ${investment.sharesPercentage}%</p>
+            
+<p>            Monthly Revenue: $${monthlyRevenue}</p>
+<p>            Investor Pool (40%): $${investorShare}</p>
+<p>            Your Share: $${myShare}</p>
+            
+<p>            YTD Return: ${investment.ytdReturn}%</p>
+            
+<p>            Next payment: ${daysUntilNextPayment()} days</p>
+<p>        </code>;</p>
+<p>    }</p>
+    
+<p>    if (query.includes(&#039;invest&#039;) || query.includes(&#039;buy&#039;)) {</p>
+<p>        return <code class="inline-code"></p>
+<p>            Ready to invest? Here&#039;s what you need to know:</p>
+            
+<p>            Current machines available:</p>
+<p>            ${getMachinesNeedingCapital().map(m =&gt; </p>
+<p>                </code>• ${m.name}: $${m.pricePerShare}/share (need ${m.sharesNeeded} shares)<code class="inline-code"></p>
+<p>            ).join(&#039;\n&#039;)}</p>
+            
+<p>            Expected ROI: 12-15% annually</p>
+<p>            Minimum investment: $100</p>
+<p>            Lock-up period: 6 months</p>
+            
+<p>            Send gems to vault wallet to invest.</p>
+<p>        </code>;</p>
+<p>    }</p>
+<p>}</code></pre></p>
+
+<h3>6. Knowledge-Driven Guidance</h3>
+
+<p><strong>Merlin uses all documentation to answer questions:</strong></p>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Merlin synthesizes knowledge for user questions
+<p>async answerUserQuestion(query) {</p>
+<p>    // Search knowledge base for relevant info</p>
+<p>    const relevantDocs = await this.knowledgeBase.search(query);</p>
+    
+<p>    if (query.includes(&#039;how&#039;) &amp;&amp; query.includes(&#039;earn&#039;)) {</p>
+<p>        // Synthesize from ConvoFordata + Integration Plan + Token docs</p>
+<p>        return <code class="inline-code"></p>
+<p>            💰 How to Earn with GemBot:</p>
+            
+<p>            OPTION 1: Remote Cutter</p>
+<p>            ${relevantDocs.getSection(&#039;earnings model&#039;)}</p>
+            
+<p>            Example: You&#039;re an Apprentice working on Quartz</p>
+<p>            - Rate: $20/hour</p>
+<p>            - Work 20 hours/week = $400/week</p>
+<p>            - Advance to Journeyman (5 promotions in) = $50/hour</p>
+<p>            - Same 20 hours = $1,000/week!</p>
+            
+<p>            OPTION 2: Machine Owner</p>
+<p>            ${relevantDocs.getSection(&#039;machine owner revenue&#039;)}</p>
+            
+<p>            OPTION 3: Investor</p>
+<p>            ${relevantDocs.getSection(&#039;investor returns&#039;)}</p>
+            
+<p>            Next step: Choose your path and we&#039;ll get you started!</p>
+<p>        </code>;</p>
+<p>    }</p>
+    
+<p>    // All responses cite sources</p>
+<p>    return {</p>
+<p>        answer: synthesized,</p>
+<p>        sources: relevantDocs.map(d =&gt; d.source),</p>
+<p>        confidence: relevantDocs.averageConfidence</p>
+<p>    };</p>
+<p>}</code></pre></p>
+
+<hr>
+
+<h2>Token Flow Diagram</h2>
+
+<pre class="code-block " data-lang="text"><code>User sends gems to Solana
+<p>        ↓</p>
+<p>Merlin receives transaction</p>
+<p>        ↓</p>
+<p>┌─────────────────────────────────────────────┐</p>
+<p>│ Validation Layer                            │</p>
+<p>├─────────────────────────────────────────────┤</p>
+<p>│ ✓ Is user certified?                        │</p>
+<p>│ ✓ Is command valid for tier?                │</p>
+<p>│ ✓ Is machine safe?                          │</p>
+<p>│ ✓ Is gem amount valid?                      │</p>
+<p>└─────────────────────────────────────────────┘</p>
+<p>        ↓</p>
+<p>┌─ VALID ──────────────────────────────────────┐</p>
+<p>│                                              │</p>
+<p>│ Merlin executes command via SerialPort       │</p>
+<p>│        ↓                                     │</p>
+<p>│ Arduino receives command                     │</p>
+<p>│        ↓                                     │</p>
+<p>│ GemBot moves/spins/cuts                      │</p>
+<p>│        ↓                                     │</p>
+<p>│ Vision AI monitors quality                   │</p>
+<p>│        ↓                                     │</p>
+<p>│ Session ends                                 │</p>
+<p>│        ↓                                     │</p>
+<p>│ Merlin calculates reward:                    │</p>
+<p>│ - Base gems (1 per command)                  │</p>
+<p>│ - Quality bonus (+5 if &gt;90%)                 │</p>
+<p>│ - Streak bonus (+2 per 10)                   │</p>
+<p>│ - Tier multiplier (1.0 to 2.5x)              │</p>
+<p>│        ↓                                     │</p>
+<p>│ Revenue distributed:                         │</p>
+<p>│ - 60% to machine owner                       │</p>
+<p>│ - 40% to investor pool                       │</p>
+<p>│ - 5% to platform (vault)                     │</p>
+<p>│        ↓                                     │</p>
+<p>│ User receives gems + achievement              │</p>
+<p>└──────────────────────────────────────────────┘</p>
+        
+<p>        OR INVALID</p>
+<p>        ↓</p>
+<p>Merlin refunds transaction</p>
+<p>with detailed reason</p>
+<p>        ↓</p>
+<p>User directed to:</p>
+<ul><li class="ul-item">Training (if not certified)</li>
+<li class="ul-item">Tier advancement (if not qualified)</li>
+<li class="ul-item">Machine repair (if unsafe)</code></pre></li></ul>
+
+<hr>
+
+<h2>Real-World Example: Complete User Journey</h2>
+
+<h3>Day 1: New User Joins</h3>
+<pre class="code-block " data-lang="text"><code>Sarah joins GemBot platform
+<p>    ↓</p>
+<p>Merlin: &quot;Welcome! Let&#039;s get you certified.&quot;</p>
+<p>    ↓</p>
+<p>Sarah: &quot;Teach me about gem cutting&quot;</p>
+<p>    ↓</p>
+<p>Merlin: &quot;Great! Watch these 5 Sora 2 videos (20 min), then practice in simulation (30 min), then take certification quiz.&quot;</p>
+<p>    ↓</p>
+<p>Sarah completes training + passes quiz (90%+)</p>
+<p>    ↓</p>
+<p>Merlin: &quot;Certified! ✅ You can now cut Quartz at $20/hour.</p>
+<p>         Need gems to start? Buy 50 for $25 from vault.&quot;</p>
+<p>    ↓</p>
+<p>Sarah sends $25 USDC to vault → receives 50 gems</code></pre></p>
+
+<h3>Week 1: Building Skills</h3>
+<pre class="code-block " data-lang="text"><code>Sarah: &quot;I want to start cutting&quot;
+<p>    ↓</p>
+<p>Merlin: &quot;Perfect! We have 3 GemBot machines available:</p>
+<p>         - Machine #1: Owned by John (has investors)</p>
+<p>         - Machine #2: Owned by Linda (solo)</p>
+<p>         - Machine #3: Training machine (free)&quot;</p>
+<p>    ↓</p>
+<p>Sarah chooses Machine #2, starts session</p>
+<p>    ↓</p>
+<p>Merlin: &quot;Listening for transactions on vault wallet...</p>
+<p>         1 gem = Y down, 2 gems = Y up, etc.</p>
+<p>         Send gems to 6HTjfg... and I&#039;ll execute commands&quot;</p>
+<p>    ↓</p>
+<p>Sarah sends 10 gems from Phantom wallet</p>
+<p>    ↓</p>
+<p>Merlin receives transaction, validates (tier ✓, machine ✓, safe ✓)</p>
+<p>    ↓</p>
+<p>Merlin sends: &quot;1&quot; (Y down), &quot;4&quot; (X right), &quot;5&quot; (spindle up)</p>
+<p>    ↓</p>
+<p>Arduino executes commands</p>
+<p>    ↓</p>
+<p>GemBot cuts the Quartz</p>
+<p>    ↓</p>
+<p>Vision AI: &quot;Quality: 92% - That was beautiful! ✨&quot;</p>
+<p>    ↓</p>
+<p>Session ends after 1 hour</p>
+<p>    ↓</p>
+<p>Merlin: &quot;You earned:</p>
+<p>         - Base: 10 gems (10 commands)</p>
+<p>         - Quality bonus: +5 gems (&gt;90%)</p>
+<p>         - Total: 15 gems = $7.50</p>
+         
+<p>         Machine owner earned: $4.50</p>
+<p>         Investors earned: $3.00</p>
+<p>         Platform earned: $0.75</p>
+         
+<p>         Next goal: 50 cuts → Journeyman tier&quot;</p>
+<p>    ↓</p>
+<p>Sarah&#039;s balance: 50 gems → 40 gems (spent) + 15 gems (earned) = 65 gems</code></pre></p>
+
+<h3>Month 1: Promotion to Journeyman</h3>
+<pre class="code-block " data-lang="text"><code>Sarah completes 50 cuts, all &gt;85% quality
+<p>    ↓</p>
+<p>Merlin: &quot;Congratulations! You qualify for Journeyman tier! 🎓</p>
+<p>         Benefits:</p>
+<p>         - Earn rate: $25/hour (was $20)</p>
+<p>         - Can cut: Topaz, Garnet (were Quartz only)</p>
+<p>         - New commands: Precision Mode, Speed Boost</p>
+<p>         - Cost multiplier: 1.0x (was 1.0x)</p>
+         
+<p>         Promotion bonus: +100 gems!&quot;</p>
+<p>    ↓</p>
+<p>Sarah accepts promotion</p>
+<p>    ↓</p>
+<p>Sarah now earns $25/hour instead of $20/hour</p>
+<p>    ↓</p>
+<p>At 20 hours/week: $500/week (was $400/week)</code></pre></p>
+
+<h3>Month 3: Becomes Machine Owner</h3>
+<pre class="code-block " data-lang="text"><code>Sarah has earned $2,000 and wants to buy own machine
+<p>    ↓</p>
+<p>Merlin: &quot;Ready to own a GemBot? Here are 3 options:</p>
+         
+<p>         DIY Kit: $1,500</p>
+<p>         - Rental income: $25-40/hour</p>
+<p>         - Break-even: 2-3 months</p>
+<p>         - ROI: 150-200% first year</p>
+         
+<p>         GemBot Mini: $4,200</p>
+<p>         - Rental income: $40-60/hour</p>
+<p>         - Break-even: 6-9 months</p>
+<p>         - ROI: 100-150% first year</p>
+         
+<p>         Premium (with AI): $8,000</p>
+<p>         - Rental income: $60-80/hour</p>
+<p>         - Break-even: 9-12 months</p>
+<p>         - ROI: 150-200% first year&quot;</p>
+<p>    ↓</p>
+<p>Sarah buys GemBot Mini for $4,200</p>
+<p>    ↓</p>
+<p>Merlin: &quot;You&#039;re now a machine owner! Want to raise investor capital?&quot;</p>
+<p>    ↓</p>
+<p>Sarah: &quot;Yes, find investors&quot;</p>
+<p>    ↓</p>
+<p>Merlin creates investment pool:</p>
+<p>         - Total shares: 100</p>
+<p>         - Price per share: $50</p>
+<p>         - Investor finds 2 people to buy 20 shares each for $1,000</p>
+<p>    ↓</p>
+<p>Now Sarah&#039;s machine has 3 investors</p>
+<p>    ↓</p>
+<p>Revenue split each month:</p>
+<p>         - Machine owner (Sarah): 60%</p>
+<p>         - Investors: 40% (split among 3)</p>
+         
+<p>         Example: Machine generates $4,000/month</p>
+<p>         Sarah gets: $2,400</p>
+<p>         Investors each get: ~$533</code></pre></p>
+
+<hr>
+
+<h2>Merlin's Economic Role Summary</h2>
+
+<p>| Role | Responsibility | Impact |</p>
+<p>|------|---|---|</p>
+<p>| <strong>Validator</strong> | Check every transaction | Prevents fraud, protects machines |</p>
+<p>| <strong>Enforcer</strong> | Enforce tier rules | Ensures fair access progression |</p>
+<p>| <strong>Monitor</strong> | Real-time safety | Prevents $$ loss from machine damage |</p>
+<p>| <strong>Accountant</strong> | Calculate rewards | Transparent earnings |</p>
+<p>| <strong>Distributor</strong> | Split revenue | Fair compensation to all parties |</p>
+<p>| <strong>Educator</strong> | Teach via knowledge base | Scale to 1,000+ users without support staff |</p>
+<p>| <strong>Analyzer</strong> | Track metrics | Identify bottlenecks, optimize |</p>
+<p>| <strong>Advocate</strong> | Communicate with users | Build loyalty + engagement |</p>
+
+<hr>
+
+<h2>Key Differentiator: Merlin's Intelligence</h2>
+
+<p>Unlike traditional platforms with expensive support teams, <strong>Merlin AI becomes infinitely more capable:</strong></p>
+
+<p>✅ <strong>Learns from 50+ documentation files</strong> automatically</p>
+<p>✅ <strong>Personalizes responses</strong> based on user tier, history, goals</p>
+<p>✅ <strong>Makes complex decisions</strong> (safety, economics, progression) instantly</p>
+<p>✅ <strong>Scales to millions</strong> without human intervention</p>
+<p>✅ <strong>Available 24/7</strong> with zero latency</p>
+<p>✅ <strong>Transparent</strong> - all decisions cite knowledge base sources</p>
+<p>✅ <strong>Improves continuously</strong> from user interactions</p>
+
+<p>This is why your gem-cutting economy works: <strong>Merlin makes it trustworthy at scale.</strong></p>
+
+<hr>
+
+<h2>Quick Reference: Merlin Commands Users Can Give</h2>
+
+<pre class="code-block " data-lang="text"><code>&quot;Teach me about earning&quot;          → Merlin explains income paths
+<p>&quot;How much did I earn?&quot;             → Merlin shows session rewards</p>
+<p>&quot;What tier am I?&quot;                  → Merlin shows current tier + path to next</p>
+<p>&quot;Start a session&quot;                  → Merlin initializes blockchain listener</p>
+<p>&quot;Show my investments&quot;              → Merlin lists investor returns</p>
+<p>&quot;How does safety work?&quot;            → Merlin explains emergency protocols</p>
+<p>&quot;Can I cut diamonds?&quot;              → Merlin checks tier + tells requirements</p>
+<p>&quot;Why was I refunded?&quot;              → Merlin explains validation failure</p>
+<p>&quot;Show leaderboards&quot;                → Merlin ranks cutters by earnings/quality</p>
+<p>&quot;How do I advance?&quot;                → Merlin shows required cuts/quality</p>
+<p>&quot;What&#039;s the token?&quot;                → Merlin explains pump.fun + solscan</code></pre></p>
+
+<hr>
+
+<p><strong>Merlin AI + Solana Token = Decentralized, intelligent, scalable gem-cutting economy.</strong> 🚀💎</p>
+
+        <div class="generated-notice">
+            🤖 Auto-generated from MERLIN_TOKEN_ECONOMY_GOVERNOR.md by GemBot Neural Dashboard Agent<br>
+            Generated: 2025-12-16T13:52:16.993Z
+        </div>
+    </div>
+</body>
+</html>

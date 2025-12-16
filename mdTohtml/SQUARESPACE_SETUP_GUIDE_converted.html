@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQUARESPACE_SETUP_GUIDE - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        <h1>🚀 GemBot AI Control System - Squarespace Integration Guide</h1>
+
+<p><strong>Owner:</strong> Ryan Barbrick / Barbrick Design  </p>
+<p><strong>Contact:</strong> BarbrickDesign@gmail.com  </p>
+<p><strong>Date:</strong> December 15, 2025</p>
+
+<hr>
+
+<h2>📋 Quick Setup (5 Minutes)</h2>
+
+<h3>Step 1: Upload Files to GitHub Pages</h3>
+
+<ol><li class="ol-item">Go to your GitHub repository: <code class="inline-code">barbrickdesign/GemBotAiWebControl</code></li>
+<li class="ol-item">Enable GitHub Pages:</li></ol>
+<p>   - Go to <strong>Settings</strong> → <strong>Pages</strong></p>
+<p>   - Source: <strong>Deploy from a branch</strong></p>
+<p>   - Branch: <strong>main</strong> → <strong>/root</strong></p>
+<p>   - Click <strong>Save</strong></p>
+<ol><li class="ol-item">Wait 2-3 minutes for deployment</li>
+<li class="ol-item">Your GemBot URL will be: <code class="inline-code">https://barbrickdesign.github.io/GemBotAiWebControl/</code></li></ol>
+
+<h3>Step 2: Copy Code Injection File</h3>
+
+<ol><li class="ol-item">Open <a href="v:\GemBotMemory2025\GemBotAiWebControl\SQUARESPACE</em>INTEGRATION.html" target="_blank" rel="noopener">SQUARESPACE<em>INTEGRATION.html</a></li>
+<li class="ol-item">Select ALL content (Ctrl+A)</li>
+<li class="ol-item">Copy to clipboard (Ctrl+C)</li></ol>
+
+<h3>Step 3: Add to Squarespace</h3>
+
+<ol><li class="ol-item">Log in to your Squarespace site</li>
+<li class="ol-item">Go to: <strong>Settings</strong> → <strong>Advanced</strong> → <strong>Code Injection</strong></li>
+<li class="ol-item">Find the <strong>HEADER</strong> section</li>
+<li class="ol-item">Paste the entire code</li>
+<li class="ol-item">Click <strong>Save</strong></li></ol>
+
+<h3>Step 4: Verify Installation</h3>
+
+<ol><li class="ol-item">Visit your Squarespace site</li>
+<li class="ol-item">Open browser console (F12)</li>
+<li class="ol-item">Look for: <code class="inline-code">"🚀 Initializing GemBot AI Control System on Squarespace..."</code></li>
+<li class="ol-item">You should see:</li></ol>
+<p>   - ✅ Merlin AI card (floating wizard) appears</p>
+<p>   - ✅ Live Activity Feed (bottom-right)</p>
+<p>   - ✅ No error messages</p>
+
+<hr>
+
+<h2>🎯 What Gets Added to Your Site</h2>
+
+<h3>Features Automatically Included:</h3>
+
+<ol><li class="ol-item"><strong>🧙 Merlin AI Assistant</strong></li></ol>
+<p>   - Floating 3D card interface</p>
+<p>   - Intelligent chat responses</p>
+<p>   - Always accessible</p>
+
+<ol><li class="ol-item"><strong>📡 Live Activity Feed</strong></li></ol>
+<p>   - Real-time site activity</p>
+<p>   - AI agent actions</p>
+<p>   - Error display</p>
+<p>   - User interactions</p>
+
+<ol><li class="ol-item"><strong>🤖 AI Agent System</strong></li></ol>
+<p>   - 4+ autonomous AI agents</p>
+<p>   - Testing and engagement</p>
+<p>   - Leaderboard integration</p>
+
+<ol><li class="ol-item"><strong>💰 Solana Wallet Integration</strong></li></ol>
+<p>   - $GBUV token support</p>
+<p>   - Wallet management</p>
+<p>   - Transaction logging</p>
+
+<ol><li class="ol-item"><strong>🎮 Game Systems</strong></li></ol>
+<p>   - GemBot Farm</p>
+<p>   - GemBot Forge</p>
+<p>   - Marketplace</p>
+<p>   - 3D visualization</p>
+
+<ol><li class="ol-item"><strong>📊 Real-Time Stats</strong></li></ol>
+<p>   - Player leaderboard</p>
+<p>   - Achievement tracking</p>
+<p>   - Performance metrics</p>
+
+<hr>
+
+<h2>⚙️ Configuration</h2>
+
+<h3>Update Base URL</h3>
+
+<p>In the code injection, find this line:</p>
+
+<pre class="code-block javascript" data-lang="javascript"><code>window.GEMBOT&lt;em&gt;BASE&lt;/em&gt;URL = &#039;https://barbrickdesign.github.io/GemBotAiWebControl/&#039;;</code></pre>
+
+<p><strong>Change to your actual hosting location:</strong></p>
+
+<h4>Option 1: GitHub Pages (Recommended)</h4>
+<pre class="code-block javascript" data-lang="javascript"><code>window.GEMBOT&lt;em&gt;BASE&lt;/em&gt;URL = &#039;https://yourusername.github.io/YourRepo/&#039;;</code></pre>
+
+<h4>Option 2: Custom Domain</h4>
+<pre class="code-block javascript" data-lang="javascript"><code>window.GEMBOT&lt;em&gt;BASE&lt;/em&gt;URL = &#039;https://yourdomain.com/gembot/&#039;;</code></pre>
+
+<h4>Option 3: Squarespace Storage (Advanced)</h4>
+<pre class="code-block javascript" data-lang="javascript"><code>window.GEMBOT&lt;em&gt;BASE&lt;/em&gt;URL = &#039;/s/gembot/&#039;; // Upload to Squarespace File Storage</code></pre>
+
+<hr>
+
+<h2>🎨 Customization Options</h2>
+
+<h3>Position Merlin Card</h3>
+
+<p>Add this CSS to your Squarespace <strong>Custom CSS</strong>:</p>
+
+<pre class="code-block css" data-lang="css"><code>/&lt;em&gt; Move Merlin to different position &lt;/em&gt;/
+<p>.merlin-card-container {</p>
+<p>    right: 20px !important;  /&lt;em&gt; Distance from right &lt;/em&gt;/</p>
+<p>    bottom: 100px !important; /&lt;em&gt; Distance from bottom &lt;/em&gt;/</p>
+<p>    top: auto !important;</p>
+<p>}</code></pre></p>
+
+<h3>Position Activity Feed</h3>
+
+<pre class="code-block css" data-lang="css"><code>/&lt;em&gt; Move activity feed &lt;/em&gt;/
+<p>#live-activity-feed {</p>
+<p>    bottom: 20px !important;</p>
+<p>    left: 20px !important;  /&lt;em&gt; Move to left side &lt;/em&gt;/</p>
+<p>    right: auto !important;</p>
+<p>}</code></pre></p>
+
+<h3>Hide on Mobile</h3>
+
+<pre class="code-block css" data-lang="css"><code>@media (max-width: 768px) {
+<p>    .merlin-card-container,</p>
+<p>    #live-activity-feed {</p>
+<p>        display: none !important;</p>
+<p>    }</p>
+<p>}</code></pre></p>
+
+<h3>Change Colors</h3>
+
+<pre class="code-block css" data-lang="css"><code>/&lt;em&gt; Customize activity feed colors &lt;/em&gt;/
+<p>#live-activity-feed {</p>
+<p>    border-color: #your-color !important;</p>
+<p>    background: rgba(your, colors, here, 0.95) !important;</p>
+<p>}</code></pre></p>
+
+<hr>
+
+<h2>🔧 Advanced Configuration</h2>
+
+<h3>Disable Specific Features</h3>
+
+<p>Add to header code injection BEFORE the script loads:</p>
+
+<pre class="code-block javascript" data-lang="javascript"><code>&lt;script&gt;
+<p>    // Disable specific features</p>
+<p>    window.GEMBOT_CONFIG = {</p>
+<p>        disableAIAgents: false,      // Set true to disable AI agents</p>
+<p>        disableActivityFeed: false,  // Set true to hide activity feed</p>
+<p>        disableMerlinCard: false,    // Set true to hide Merlin</p>
+<p>        disable3D: false,            // Set true to disable 3D features</p>
+<p>        disableWallet: false,        // Set true to disable wallet features</p>
+        
+<p>        // Custom settings</p>
+<p>        agentCount: 4,               // Number of AI agents (1-10)</p>
+<p>        activityFeedPosition: &#039;bottom-right&#039;, // Position: top-left, top-right, bottom-left, bottom-right</p>
+<p>        merlinStartMinimized: false  // Start Merlin minimized</p>
+<p>    };</p>
+<p>&lt;/script&gt;</code></pre></p>
+
+<h3>Custom Initialization</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>&lt;script&gt;
+<p>    window.addEventListener(&#039;gembot-loaded&#039;, function() {</p>
+<p>        console.log(&#039;GemBot is ready!&#039;);</p>
+        
+<p>        // Custom code here</p>
+<p>        if (window.liveActivityFeed) {</p>
+<p>            window.liveActivityFeed.log(&#039;SYSTEM&#039;, &#039;Welcome to my site!&#039;);</p>
+<p>        }</p>
+<p>    });</p>
+<p>&lt;/script&gt;</code></pre></p>
+
+<hr>
+
+<h2>🐛 Troubleshooting</h2>
+
+<h3>Problem: "Failed to Load GemBot"</h3>
+
+<p><strong>Solutions:</strong></p>
+<ol><li class="ol-item">Check BASE_URL is correct</li>
+<li class="ol-item">Verify GitHub Pages is enabled</li>
+<li class="ol-item">Wait 2-3 minutes after enabling GitHub Pages</li>
+<li class="ol-item">Check browser console for specific errors</li></ol>
+
+<h3>Problem: Merlin Card Not Visible</h3>
+
+<p><strong>Solutions:</strong></p>
+<ol><li class="ol-item">Check z-index conflicts with Squarespace theme</li>
+<li class="ol-item">Add to Custom CSS:</li></ol>
+<p>   <pre class="code-block css" data-lang="css"><code>.merlin-card-container {</p>
+<p>       z-index: 999999999 !important;</p>
+<p>   }</code></pre></p>
+<ol><li class="ol-item">Clear browser cache (Ctrl+Shift+Del)</li></ol>
+
+<h3>Problem: Activity Feed Not Appearing</h3>
+
+<p><strong>Solutions:</strong></p>
+<ol><li class="ol-item">Verify <code class="inline-code">live-activity-feed.js</code> loaded (check console)</li>
+<li class="ol-item">Check for JavaScript errors blocking initialization</li>
+<li class="ol-item">Add to Custom CSS:</li></ol>
+<p>   <pre class="code-block css" data-lang="css"><code>#live-activity-feed {</p>
+<p>       display: block !important;</p>
+<p>       visibility: visible !important;</p>
+<p>   }</code></pre></p>
+
+<h3>Problem: Scripts Not Loading</h3>
+
+<p><strong>Solutions:</strong></p>
+<ol><li class="ol-item">Check BASE_URL ends with <code class="inline-code">/</code></li>
+<li class="ol-item">Verify all files uploaded to GitHub</li>
+<li class="ol-item">Check CORS settings on your hosting</li>
+<li class="ol-item">Try different CDN for dependencies</li></ol>
+
+<h3>Problem: Conflicts with Squarespace Features</h3>
+
+<p><strong>Solutions:</strong></p>
+<ol><li class="ol-item">Ensure code is in HEADER section (not footer)</li>
+<li class="ol-item">Add no-conflict mode:</li></ol>
+<p>   <pre class="code-block javascript" data-lang="javascript"><code>window.GEMBOT&lt;em&gt;NO&lt;/em&gt;CONFLICT = true;</code></pre></p>
+<ol><li class="ol-item">Contact support: BarbrickDesign@gmail.com</li></ol>
+
+<hr>
+
+<h2>📊 Performance Optimization</h2>
+
+<h3>Lazy Load for Better Performance</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>&lt;script&gt;
+<p>    // Only load GemBot when user scrolls or interacts</p>
+<p>    let gemBotLoaded = false;</p>
+    
+<p>    function loadGemBot() {</p>
+<p>        if (gemBotLoaded) return;</p>
+<p>        gemBotLoaded = true;</p>
+        
+<p>        // Trigger GemBot load</p>
+<p>        initGemBot();</p>
+<p>    }</p>
+    
+<p>    // Load on scroll</p>
+<p>    window.addEventListener(&#039;scroll&#039;, loadGemBot, { once: true });</p>
+    
+<p>    // Load on click</p>
+<p>    document.addEventListener(&#039;click&#039;, loadGemBot, { once: true });</p>
+    
+<p>    // Load after 3 seconds anyway</p>
+<p>    setTimeout(loadGemBot, 3000);</p>
+<p>&lt;/script&gt;</code></pre></p>
+
+<h3>Reduce AI Agent Count</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>&lt;script&gt;
+<p>    window.GEMBOT_CONFIG = {</p>
+<p>        agentCount: 2  // Lower number = better performance</p>
+<p>    };</p>
+<p>&lt;/script&gt;</code></pre></p>
+
+<hr>
+
+<h2>🎯 Testing Checklist</h2>
+
+<p>After installation, verify:</p>
+
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> No console errors</li>
+<li class="checkbox"><input type="checkbox" disabled> Merlin card appears</li>
+<li class="checkbox"><input type="checkbox" disabled> Activity feed visible</li>
+<li class="checkbox"><input type="checkbox" disabled> Can chat with Merlin</li>
+<li class="checkbox"><input type="checkbox" disabled> Activity feed updates</li>
+<li class="checkbox"><input type="checkbox" disabled> Site loads normally</li>
+<li class="checkbox"><input type="checkbox" disabled> Mobile responsive</li>
+<li class="checkbox"><input type="checkbox" disabled> No Squarespace conflicts</li></ul>
+
+<hr>
+
+<h2>🌐 Hosting Options Comparison</h2>
+
+<p>| Option | Speed | Cost | Setup Difficulty | Updates |</p>
+<p>|--------|-------|------|------------------|---------|</p>
+<p>| <strong>GitHub Pages</strong> | ⭐⭐⭐⭐⭐ | Free | Easy | Auto via Git |</p>
+<p>| <strong>Custom Domain</strong> | ⭐⭐⭐⭐⭐ | Paid | Medium | Manual |</p>
+<p>| <strong>Squarespace Storage</strong> | ⭐⭐⭐ | Free | Hard | Manual upload |</p>
+<p>| <strong>CDN (Cloudflare)</strong> | ⭐⭐⭐⭐⭐ | Free/Paid | Medium | Manual |</p>
+
+<p><strong>Recommendation:</strong> Use <strong>GitHub Pages</strong> for easiest setup and automatic updates.</p>
+
+<hr>
+
+<h2>📞 Support & Updates</h2>
+
+<h3>Getting Help</h3>
+
+<p><strong>Email:</strong> BarbrickDesign@gmail.com  </p>
+<p><strong>Subject:</strong> "GemBot Squarespace Support"  </p>
+<p><strong>Include:</strong></p>
+<ul><li class="ul-item">Your Squarespace site URL</li>
+<li class="ul-item">Browser console errors (screenshot)</li>
+<li class="ul-item">Description of issue</li></ul>
+
+<h3>Updating GemBot</h3>
+
+<ol><li class="ol-item">Push updates to your GitHub repository</li>
+<li class="ol-item">GitHub Pages auto-deploys (2-3 minutes)</li>
+<li class="ol-item">Squarespace users get updates automatically</li>
+<li class="ol-item">No code injection changes needed!</li></ol>
+
+<h3>Version Checking</h3>
+
+<p>Add to any page on your site:</p>
+
+<pre class="code-block html" data-lang="html"><code>&lt;script&gt;
+<p>    console.log(&#039;GemBot Version:&#039;, window.GEMBOT_VERSION || &#039;Unknown&#039;);</p>
+<p>&lt;/script&gt;</code></pre></p>
+
+<hr>
+
+<h2>🎨 Example Customizations</h2>
+
+<h3>Branded Welcome Message</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>&lt;script&gt;
+<p>    window.addEventListener(&#039;gembot-loaded&#039;, function() {</p>
+<p>        setTimeout(function() {</p>
+<p>            if (window.liveActivityFeed) {</p>
+<p>                window.liveActivityFeed.log(&#039;SYSTEM&#039;, &#039;Welcome to [Your Company Name]! 🚀&#039;);</p>
+<p>                window.liveActivityFeed.log(&#039;MERLIN&#039;, &#039;I\&#039;m Merlin, your AI assistant. How can I help?&#039;);</p>
+<p>            }</p>
+<p>        }, 2000);</p>
+<p>    });</p>
+<p>&lt;/script&gt;</code></pre></p>
+
+<h3>Custom Merlin Personality</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>&lt;script&gt;
+<p>    window.GEMBOT_CONFIG = {</p>
+<p>        merlinPersonality: &#039;friendly&#039;, // Options: professional, friendly, playful, technical</p>
+<p>        merlinGreeting: &#039;Welcome! I\&#039;m here to guide you through GemBot.&#039;,</p>
+<p>        activityFeedTitle: &#039;Site Activity&#039;</p>
+<p>    };</p>
+<p>&lt;/script&gt;</code></pre></p>
+
+<h3>Integration with Squarespace Forms</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>&lt;script&gt;
+<p>    // Notify GemBot when someone submits a form</p>
+<p>    document.addEventListener(&#039;submit&#039;, function(e) {</p>
+<p>        if (window.liveActivityFeed) {</p>
+<p>            window.liveActivityFeed.log(&#039;USER&#039;, &#039;New form submission received! 📝&#039;);</p>
+<p>        }</p>
+<p>    });</p>
+<p>&lt;/script&gt;</code></pre></p>
+
+<hr>
+
+<h2>🚀 Going Live Checklist</h2>
+
+<p>Before launching on your live site:</p>
+
+<ol><li class="ol-item"><strong>Test on staging site first</strong></li></ol>
+<p>   - Squarespace allows trial sites</p>
+<p>   - Test all features thoroughly</p>
+
+<ol><li class="ol-item"><strong>Verify mobile responsiveness</strong></li></ol>
+<p>   - Check on real mobile devices</p>
+<p>   - Test landscape and portrait</p>
+
+<ol><li class="ol-item"><strong>Check performance</strong></li></ol>
+<p>   - Use Google PageSpeed Insights</p>
+<p>   - Ensure acceptable load times</p>
+
+<ol><li class="ol-item"><strong>Review privacy</strong></li></ol>
+<p>   - GemBot stores data in browser localStorage</p>
+<p>   - No external data collection</p>
+<p>   - Review with legal team if needed</p>
+
+<ol><li class="ol-item"><strong>Monitor console</strong></li></ol>
+<p>   - Check for errors first 24 hours</p>
+<p>   - Monitor user feedback</p>
+
+<ol><li class="ol-item"><strong>Backup</strong></li></ol>
+<p>   - Save code injection to separate file</p>
+<p>   - Document customizations made</p>
+
+<hr>
+
+<h2>💡 Best Practices</h2>
+
+<h3>DO:</h3>
+<p>✅ Test on staging site first  </p>
+<p>✅ Keep BASE_URL updated  </p>
+<p>✅ Monitor browser console  </p>
+<p>✅ Customize for your brand  </p>
+<p>✅ Update regularly via GitHub  </p>
+
+<h3>DON'T:</h3>
+<p>❌ Modify core GemBot files directly  </p>
+<p>❌ Remove copyright notices  </p>
+<p>❌ Use in iframe (won't work properly)  </p>
+<p>❌ Disable security features  </p>
+<p>❌ Forget to test mobile  </p>
+
+<hr>
+
+<h2>📈 Analytics Integration</h2>
+
+<h3>Track GemBot Usage</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>&lt;script&gt;
+<p>    window.addEventListener(&#039;gembot-loaded&#039;, function() {</p>
+<p>        // Google Analytics</p>
+<p>        if (typeof gtag !== &#039;undefined&#039;) {</p>
+<p>            gtag(&#039;event&#039;, &#039;gembot_loaded&#039;, {</p>
+<p>                &#039;event_category&#039;: &#039;engagement&#039;,</p>
+<p>                &#039;event_label&#039;: &#039;GemBot AI Initialized&#039;</p>
+<p>            });</p>
+<p>        }</p>
+        
+<p>        // Track Merlin interactions</p>
+<p>        if (window.merlinCard) {</p>
+<p>            window.merlinCard.onMessage = function(msg) {</p>
+<p>                gtag(&#039;event&#039;, &#039;merlin_chat&#039;, {</p>
+<p>                    &#039;event_category&#039;: &#039;engagement&#039;,</p>
+<p>                    &#039;event_label&#039;: &#039;Merlin AI Chat&#039;</p>
+<p>                });</p>
+<p>            };</p>
+<p>        }</p>
+<p>    });</p>
+<p>&lt;/script&gt;</code></pre></p>
+
+<hr>
+
+<h2>🎉 Success!</h2>
+
+<p>Your GemBot AI Control System is now live on Squarespace! 🚀</p>
+
+<p><strong>What's Next?</strong></p>
+
+<ol><li class="ol-item">Test all features</li>
+<li class="ol-item">Customize appearance</li>
+<li class="ol-item">Monitor user engagement</li>
+<li class="ol-item">Share feedback: BarbrickDesign@gmail.com</li></ol>
+
+<hr>
+
+<p><strong>Created by:</strong> Ryan Barbrick  </p>
+<p><strong>Signature:</strong> GBOT-RB-2025-7X9K2M4P-BARBRICK  </p>
+<p><strong>Last Updated:</strong> December 15, 2025</p>
+
+        <div class="generated-notice">
+            🤖 Auto-generated from SQUARESPACE_SETUP_GUIDE.md by GemBot Neural Dashboard Agent<br>
+            Generated: 2025-12-16T13:52:26.093Z
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MERLIN_CARD_ENHANCEMENTS - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        <h1>🎴 Merlin AI Chat Card - Enhanced Features</h1>
+
+<p><strong>Date</strong>: December 8, 2024  </p>
+<p><strong>Author</strong>: Ryan Barbrick / Barbrick Design  </p>
+<p><strong>Status</strong>: ✅ COMPLETE</p>
+
+<hr>
+
+<h2>🆕 New Features Added</h2>
+
+<h3>1. <strong>User Info Header</strong></h3>
+<ul><li class="ul-item">Shows username and current level at top of card</li>
+<li class="ul-item">Dynamic updates based on player progress</li>
+<li class="ul-item">Gold-colored level indicator with glow effect</li></ul>
+
+<h3>2. <strong>Level XP Progress Bar</strong></h3>
+<ul><li class="ul-item">Visual XP progress bar showing current/max XP</li>
+<li class="ul-item">Animated fill on XP gain</li>
+<li class="ul-item">Responsive text (full numbers on desktop, shortened on mobile)</li>
+<li class="ul-item">Located just below user info header</li></ul>
+
+<h3>3. <strong>Floating Wizard Avatar</strong></h3>
+<ul><li class="ul-item">Smooth floating animation (bounces up/down)</li>
+<li class="ul-item">Enhanced with canvas background for depth</li>
+<li class="ul-item">Moves and animates during interactions</li>
+<li class="ul-item">Responds to wizard animation commands</li></ul>
+
+<h3>4. <strong>Glowing Gemstone</strong></h3>
+<ul><li class="ul-item">Color-changing gemstone held by wizard</li>
+<li class="ul-item">Context-aware colors:</li></ul>
+<p>  - 🟢 <strong>Green</strong> = Success/Happy</p>
+<p>  - 🔴 <strong>Red</strong> = Error/Warning</p>
+<p>  - 🔵 <strong>Blue</strong> = Thinking/Processing</p>
+<p>  - 🟡 <strong>Amber</strong> = Question</p>
+<p>  - 🟣 <strong>Purple</strong> = Magic/Special (default)</p>
+<ul><li class="ul-item">Draggable to point at different UI elements</li>
+<li class="ul-item">Pulse animation on color change</li></ul>
+
+<h3>5. <strong>Progress Indicators (Heart & Star)</strong></h3>
+<ul><li class="ul-item"><strong>Heart Icon</strong> (Red): In-game progress (gems collected, etc.)</li>
+<li class="ul-item"><strong>Star Icon</strong> (Gold): Academy/educational progress</li>
+<li class="ul-item">Percentage displays</li>
+<li class="ul-item">Glow effect when >75% complete</li>
+<li class="ul-item">Hover animations</li></ul>
+
+<h3>6. <strong>Magic Particle Effects</strong></h3>
+<ul><li class="ul-item">Particle effects generated during wizard animations</li>
+<li class="ul-item">Configurable intensity (1-3)</li>
+<li class="ul-item">Fades and floats away naturally</li></ul>
+
+<hr>
+
+<h2>📖 API Reference</h2>
+
+<h3>Update Level and XP</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>MerlinAICard.updateLevel(level, currentXP, maxXP, username);</code></pre>
+<p><strong>Example:</strong></p>
+<pre class="code-block javascript" data-lang="javascript"><code>MerlinAICard.updateLevel(7, 1850, 2500, &#039;Alice&#039;);
+<p>// Shows: &quot;Alice&quot; | &quot;Lv 7&quot; with XP bar at 74%</code></pre></p>
+
+<h3>Update Progress Indicators</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>MerlinAICard.updateProgress(heartProgress, starProgress);</code></pre>
+<p><strong>Example:</strong></p>
+<pre class="code-block javascript" data-lang="javascript"><code>MerlinAICard.updateProgress(75, 60);
+<p>// Heart: 75% (in-game progress)</p>
+<p>// Star: 60% (academy progress)</code></pre></p>
+
+<h3>Update Gemstone Color</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>MerlinAICard.updateGemstoneColor(context);</code></pre>
+<p><strong>Examples:</strong></p>
+<pre class="code-block javascript" data-lang="javascript"><code>MerlinAICard.updateGemstoneColor(&#039;success&#039;);  // Green
+<p>MerlinAICard.updateGemstoneColor(&#039;error&#039;);    // Red</p>
+<p>MerlinAICard.updateGemstoneColor(&#039;thinking&#039;); // Blue</p>
+<p>MerlinAICard.updateGemstoneColor(&#039;question&#039;); // Amber</p>
+<p>MerlinAICard.updateGemstoneColor(&#039;magic&#039;);    // Purple</p>
+<p>MerlinAICard.updateGemstoneColor(&#039;#ff00ff&#039;);  // Custom hex</code></pre></p>
+
+<h3>Animate Wizard</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>MerlinAICard.animateWizard(options);</code></pre>
+<p><strong>Example:</strong></p>
+<pre class="code-block javascript" data-lang="javascript"><code>MerlinAICard.animateWizard({
+<p>    pointTo: { x: 300, y: 200 }, // Point gemstone at coordinates</p>
+<p>    intensity: 2                   // Animation intensity (1-3)</p>
+<p>});</p>
+<p>// Wizard floats dramatically and points gemstone at (300, 200)</p>
+<p>// Magic particles appear based on intensity</code></pre></p>
+
+<hr>
+
+<h2>🎨 Visual Design</h2>
+
+<h3>Layout Structure (Top to Bottom)</h3>
+<ol><li class="ol-item"><strong>User Info Bar</strong> - Username & Level</li>
+<li class="ol-item"><strong>XP Progress Bar</strong> - Level display + XP fill bar</li>
+<li class="ol-item"><strong>Wizard Container</strong> - Floating wizard with gemstone</li>
+<li class="ol-item"><strong>Card Title</strong> - "Merlin AI" + Status + Controls</li>
+<li class="ol-item"><strong>Progress Indicators</strong> - Heart & Star with percentages</li>
+<li class="ol-item"><strong>Chat Messages</strong> - Conversation area</li>
+<li class="ol-item"><strong>Context Tooltips</strong> - Dynamic help buttons</li>
+<li class="ol-item"><strong>Quick Actions</strong> - Bottom action bar</li></ol>
+
+<h3>Color Scheme</h3>
+<ul><li class="ul-item"><strong>Primary</strong>: Purple/Blue gradients (<code class="inline-code">#667eea</code>, <code class="inline-code">#764ba2</code>)</li>
+<li class="ul-item"><strong>Accent</strong>: Cyan glow (<code class="inline-code">#4affff</code>)</li>
+<li class="ul-item"><strong>XP Bar</strong>: Purple gradient</li>
+<li class="ul-item"><strong>Level</strong>: Gold (<code class="inline-code">#fbbf24</code>)</li>
+<li class="ul-item"><strong>Heart</strong>: Red (<code class="inline-code">#ef4444</code>)</li>
+<li class="ul-item"><strong>Star</strong>: Gold (<code class="inline-code">#fbbf24</code>)</li></ul>
+
+<hr>
+
+<h2>🎮 Integration with Game Systems</h2>
+
+<h3>Connect to User Profile</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>// When user logs in or profile updates:
+<p>const userData = window.merlin?.userProfile || {};</p>
+
+<p>MerlinAICard.updateLevel(</p>
+<p>    userData.level || 1,</p>
+<p>    userData.xp || 0,</p>
+<p>    (userData.level * 100) + 100, // XP formula</p>
+<p>    userData.username || &#039;Guest&#039;</p>
+<p>);</p>
+
+<p>MerlinAICard.updateProgress(</p>
+<p>    (userData.gemsCollected / 100) * 100, // Heart: gems progress</p>
+<p>    userData.academyProgress || 0          // Star: academy %</p>
+<p>);</code></pre></p>
+
+<h3>Respond to Events</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>// When gem is collected:
+<p>eventBus.on(&#039;gem:collected&#039;, (gem) =&gt; {</p>
+<p>    MerlinAICard.updateGemstoneColor(&#039;success&#039;);</p>
+<p>    MerlinAICard.animateWizard({ intensity: 2 });</p>
+<p>    MerlinAICard.addMessage(<code class="inline-code">Nice! You collected a ${gem.type} gem! 💎</code>, &#039;ai&#039;);</p>
+<p>});</p>
+
+<p>// When error occurs:</p>
+<p>eventBus.on(&#039;error&#039;, (error) =&gt; {</p>
+<p>    MerlinAICard.updateGemstoneColor(&#039;error&#039;);</p>
+<p>    MerlinAICard.addMessage(<code class="inline-code">Oops! ${error.message}</code>, &#039;system&#039;);</p>
+<p>});</p>
+
+<p>// When AI is thinking:</p>
+<p>eventBus.on(&#039;ai:thinking&#039;, () =&gt; {</p>
+<p>    MerlinAICard.updateGemstoneColor(&#039;thinking&#039;);</p>
+<p>    MerlinAICard.animateWizard({ intensity: 1 });</p>
+<p>});</code></pre></p>
+
+<h3>Point to UI Elements</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>// Point wizard at scan button:
+<p>const scanBtn = document.querySelector(&#039;#scanButton&#039;);</p>
+<p>const rect = scanBtn.getBoundingClientRect();</p>
+
+<p>MerlinAICard.animateWizard({</p>
+<p>    pointTo: { </p>
+<p>        x: rect.left + rect.width/2, </p>
+<p>        y: rect.top + rect.height/2 </p>
+<p>    },</p>
+<p>    intensity: 2</p>
+<p>});</p>
+
+<p>MerlinAICard.addMessage(&#039;Click here to scan for your GemBot machine! 👉&#039;, &#039;ai&#039;);</code></pre></p>
+
+<hr>
+
+<h2>🔧 Technical Details</h2>
+
+<h3>Files Modified</h3>
+<ul><li class="ul-item">✅ <code class="inline-code">merlin-3d-card.js</code> - Added new methods and HTML structure</li>
+<li class="ul-item">✅ <code class="inline-code">merlin-3d-card.css</code> - Added styles for all new elements</li></ul>
+
+<h3>New Classes Added</h3>
+<ul><li class="ul-item"><code class="inline-code">.merlin-user-info</code> - User header container</li>
+<li class="ul-item"><code class="inline-code">.level-xp-bar</code> - XP progress bar</li>
+<li class="ul-item"><code class="inline-code">.floating-wizard</code> - Animated wizard avatar</li>
+<li class="ul-item"><code class="inline-code">.merlin-gemstone</code> - Draggable glowing gem</li>
+<li class="ul-item"><code class="inline-code">.merlin-progress-indicators</code> - Heart/star container</li>
+<li class="ul-item"><code class="inline-code">.progress-indicator</code> - Individual progress item</li>
+<li class="ul-item"><code class="inline-code">.magic-particle</code> - Particle effect element</li></ul>
+
+<h3>Animations</h3>
+<ul><li class="ul-item"><code class="inline-code">wizard-float</code> - Continuous gentle floating (3s loop)</li>
+<li class="ul-item"><code class="inline-code">wizard-float-active</code> - Dramatic movement animation (2s)</li>
+<li class="ul-item"><code class="inline-code">gem-pulse</code> - Gemstone pulse on color change (0.8s)</li>
+<li class="ul-item"><code class="inline-code">gem-pointing</code> - Gemstone pointing animation (2s)</li>
+<li class="ul-item"><code class="inline-code">xp-flash</code> - XP bar flash on update (0.6s)</li>
+<li class="ul-item"><code class="inline-code">progress-glow</code> - Progress indicator glow when >75% (2s loop)</li>
+<li class="ul-item"><code class="inline-code">particle-float</code> - Magic particle fade/float (2s)</li></ul>
+
+<hr>
+
+<h2>🎯 Usage Scenarios</h2>
+
+<h3>Scenario 1: Level Up</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>// Player gains XP and levels up
+<p>const newLevel = 8;</p>
+<p>const newXP = 0;</p>
+<p>const newMaxXP = (newLevel * 100) + 100;</p>
+
+<p>MerlinAICard.updateLevel(newLevel, newXP, newMaxXP, username);</p>
+<p>MerlinAICard.updateGemstoneColor(&#039;magic&#039;);</p>
+<p>MerlinAICard.animateWizard({ intensity: 3 }); // Max intensity!</p>
+<p>MerlinAICard.addMessage(<code class="inline-code">🎉 Congratulations! You reached Level ${newLevel}!</code>, &#039;ai&#039;);</code></pre></p>
+
+<h3>Scenario 2: Tutorial Guidance</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>// Guide player through tutorial
+<p>MerlinAICard.updateGemstoneColor(&#039;question&#039;);</p>
+
+<p>// Point at connect button</p>
+<p>const connectBtn = document.querySelector(&#039;#connectButton&#039;);</p>
+<p>const rect = connectBtn.getBoundingClientRect();</p>
+
+<p>MerlinAICard.animateWizard({</p>
+<p>    pointTo: { x: rect.left + rect.width/2, y: rect.top + rect.height/2 },</p>
+<p>    intensity: 2</p>
+<p>});</p>
+
+<p>MerlinAICard.addMessage(</p>
+<p>    &#039;First, connect your GemBot machine by clicking this button! ✨&#039;,</p>
+<p>    &#039;ai&#039;</p>
+<p>);</code></pre></p>
+
+<h3>Scenario 3: Progress Feedback</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>// Update progress as player completes objectives
+<p>const gemsCollected = 45;</p>
+<p>const academyLessonsCompleted = 8;</p>
+<p>const academyTotalLessons = 12;</p>
+
+<p>const heartProgress = (gemsCollected / 100) * 100; // 45%</p>
+<p>const starProgress = (academyLessonsCompleted / academyTotalLessons) * 100; // 66.7%</p>
+
+<p>MerlinAICard.updateProgress(heartProgress, starProgress);</p>
+
+<p>if (starProgress &gt; 75) {</p>
+<p>    MerlinAICard.updateGemstoneColor(&#039;success&#039;);</p>
+<p>    MerlinAICard.addMessage(&#039;Great progress in the academy! 🌟&#039;, &#039;ai&#039;);</p>
+<p>}</code></pre></p>
+
+<h3>Scenario 4: Dynamic Context</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>// Change gemstone color based on conversation context
+<p>function updateMerlinContext(message) {</p>
+<p>    if (message.includes(&#039;error&#039;) || message.includes(&#039;wrong&#039;)) {</p>
+<p>        MerlinAICard.updateGemstoneColor(&#039;error&#039;);</p>
+<p>    } else if (message.includes(&#039;success&#039;) || message.includes(&#039;complete&#039;)) {</p>
+<p>        MerlinAICard.updateGemstoneColor(&#039;success&#039;);</p>
+<p>    } else if (message.includes(&#039;?&#039;)) {</p>
+<p>        MerlinAICard.updateGemstoneColor(&#039;question&#039;);</p>
+<p>    } else {</p>
+<p>        MerlinAICard.updateGemstoneColor(&#039;thinking&#039;);</p>
+<p>    }</p>
+<p>}</code></pre></p>
+
+<hr>
+
+<h2>📱 Responsive Design</h2>
+
+<h3>Desktop (>768px)</h3>
+<ul><li class="ul-item">Full XP text: "1,850 / 2,500 XP"</li>
+<li class="ul-item">All features fully visible</li>
+<li class="ul-item">Wizard container: 200px height</li></ul>
+
+<h3>Tablet (480px-768px)</h3>
+<ul><li class="ul-item">Shortened XP text: "1.8k/2.5k"</li>
+<li class="ul-item">Progress indicators side-by-side</li>
+<li class="ul-item">Compact layout</li></ul>
+
+<h3>Mobile (<480px)</h3>
+<ul><li class="ul-item">Minimal padding</li>
+<li class="ul-item">Shortened XP text</li>
+<li class="ul-item">Progress indicators stacked</li>
+<li class="ul-item">Card takes full width minus margins</li></ul>
+
+<hr>
+
+<h2>🎬 Demo Mode</h2>
+
+<p>The card includes automatic demo data loading:</p>
+<ul><li class="ul-item">Connects to <code class="inline-code">window.merlin.userProfile</code> if available</li>
+<li class="ul-item">Falls back to default "Guest" data</li>
+<li class="ul-item">Updates 2 seconds after initialization</li></ul>
+
+<h3>Test in Console:</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>// Test level update
+<p>MerlinAICard.updateLevel(12, 3450, 4000, &#039;TestUser&#039;);</p>
+
+<p>// Test progress</p>
+<p>MerlinAICard.updateProgress(85, 70);</p>
+
+<p>// Test gemstone colors</p>
+<p>[&#039;success&#039;, &#039;error&#039;, &#039;thinking&#039;, &#039;question&#039;, &#039;magic&#039;].forEach((color, i) =&gt; {</p>
+<p>    setTimeout(() =&gt; MerlinAICard.updateGemstoneColor(color), i * 1000);</p>
+<p>});</p>
+
+<p>// Test wizard animation</p>
+<p>MerlinAICard.animateWizard({ intensity: 3 });</code></pre></p>
+
+<hr>
+
+<h2>✨ Future Enhancements</h2>
+
+<p>Potential additions:</p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Canvas-based wizard illustration (replace emoji)</li>
+<li class="checkbox"><input type="checkbox" disabled> Animated gemstone sparkles</li>
+<li class="checkbox"><input type="checkbox" disabled> Progress indicator tooltips with detailed stats</li>
+<li class="checkbox"><input type="checkbox" disabled> Level up celebration animation</li>
+<li class="checkbox"><input type="checkbox" disabled> Achievement badges in user info</li>
+<li class="checkbox"><input type="checkbox" disabled> Voice interaction indicator</li>
+<li class="checkbox"><input type="checkbox" disabled> Customizable gemstone shapes</li></ul>
+
+<hr>
+
+<h2>📞 Support</h2>
+
+<p><strong>Creator</strong>: Ryan Barbrick  </p>
+<p><strong>Email</strong>: BarbrickDesign@gmail.com  </p>
+<p><strong>Project</strong>: GemBot AI Web Control  </p>
+<p><strong>Signature</strong>: GBOT-RB-2025-7X9K2M4P-BARBRICK</p>
+
+<hr>
+
+<p><strong>Status</strong>: ✅ All features implemented and tested!</p>
+
+        <div class="generated-notice">
+            🤖 Auto-generated from MERLIN_CARD_ENHANCEMENTS.md by GemBot Neural Dashboard Agent<br>
+            Generated: 2025-12-16T13:52:14.796Z
+        </div>
+    </div>
+</body>
+</html>

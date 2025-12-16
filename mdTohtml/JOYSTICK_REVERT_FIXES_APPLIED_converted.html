@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JOYSTICK_REVERT_FIXES_APPLIED - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        <h1>joystickRevert - Web Motor Control Implementation</h1>
+
+<h2>Date: December 6, 2025</h2>
+
+<h3>Fixes Applied</h3>
+
+<h4>1. Removed Duplicate 'q' Case</h4>
+<ul><li class="ul-item"><strong>Line:</strong> ~914 (old)</li>
+<li class="ul-item"><strong>Issue:</strong> Had old dimension adjustment code: <code class="inline-code">roundDesiredWidth += .1;</code></li>
+<li class="ul-item"><strong>Fix:</strong> Removed entirely to avoid compilation error</li>
+<li class="ul-item"><strong>Reason:</strong> Replaced with new P CCW motor control command</li></ul>
+
+<h4>2. Removed Duplicate 'o' Case</h4>
+<ul><li class="ul-item"><strong>Line:</strong> ~952 (old)</li>
+<li class="ul-item"><strong>Issue:</strong> Had old dimension adjustment code: <code class="inline-code">roundWidth += .1;</code></li>
+<li class="ul-item"><strong>Fix:</strong> Removed entirely to avoid compilation error</li>
+<li class="ul-item"><strong>Reason:</strong> Replaced with new INDEX INC motor control command</li></ul>
+
+<h4>3. Added Web Motor Control Commands</h4>
+
+<p>The following new motor control cases were added to the <code class="inline-code">getKey()</code> function:</p>
+
+<pre class="code-block " data-lang="text"><code>&#039;a&#039; = X LEFT (web control)
+<p>&#039;d&#039; = X RIGHT (web control)</p>
+<p>&#039;w&#039; = Y UP (web control)</p>
+<p>&#039;z&#039; = Y DOWN (web control)</p>
+<p>&#039;q&#039; = P CCW (web control + Y limit safety check)</p>
+<p>&#039;e&#039; = P CW (web control + Y limit safety check)</p>
+<p>&#039;i&#039; = INDEX DECREMENT (web control)</p>
+<p>&#039;o&#039; = INDEX INCREMENT (web control)</p>
+<p>&#039;t&#039; = TOGGLE SPEED MODE (placeholder - web control)</code></pre></p>
+
+<h3>Current Status</h3>
+
+<p>✅ <strong>No Compilation Errors</strong></p>
+<p>✅ <strong>All Motor Control Commands Present</strong></p>
+<p>✅ <strong>No Duplicate Cases</strong></p>
+<p>✅ <strong>Ready for Upload</strong></p>
+
+<h3>Motor Control Implementation Details</h3>
+
+<h4>X-Axis Control ('a' LEFT, 'd' RIGHT)</h4>
+<ul><li class="ul-item">'a': <code class="inline-code">XaxisMotor->step(1,FORWARD,SINGLE)</code> + <code class="inline-code">countX--</code></li>
+<li class="ul-item">'d': <code class="inline-code">XaxisMotor->step(1,BACKWARD,SINGLE)</code> + <code class="inline-code">countX++</code></li></ul>
+
+<h4>Y-Axis Control ('w' UP, 'z' DOWN)</h4>
+<ul><li class="ul-item">'w': <code class="inline-code">YaxisMotor->step(1,BACKWARD,MICROSTEP)</code> + <code class="inline-code">countY--</code></li>
+<li class="ul-item">'z': <code class="inline-code">YaxisMotor->step(1,FORWARD,MICROSTEP)</code> + <code class="inline-code">countY++</code></li></ul>
+
+<h4>P-Axis Control ('q' CCW, 'e' CW) - WITH SAFETY</h4>
+<ul><li class="ul-item">'q': IF <code class="inline-code">LimitY == HIGH</code> then <code class="inline-code">PaxisMotor->step(1,FORWARD,MICROSTEP)</code> + <code class="inline-code">countY++</code></li>
+<li class="ul-item">'e': IF <code class="inline-code">LimitY == HIGH</code> then <code class="inline-code">PaxisMotor->step(1,BACKWARD,MICROSTEP)</code> + <code class="inline-code">countY--</code></li></ul>
+
+<p><strong>Safety Feature:</strong> P-axis only moves when Y limit is NOT pressed (HIGH)</p>
+
+<h4>Index Motor Control ('i' DEC, 'o' INC)</h4>
+<ul><li class="ul-item">'i': <code class="inline-code">indexMotor.step(-5)</code> (5 units backward)</li>
+<li class="ul-item">'o': <code class="inline-code">indexMotor.step(5)</code> (5 units forward)</li></ul>
+
+<h3>File Information</h3>
+
+<p><strong>File:</strong> <code class="inline-code">joystickRevert<em>copy</em>20251206152907.ino</code></p>
+<p><strong>Total Lines:</strong> 3012</p>
+<p><strong>Last Modified:</strong> December 6, 2025</p>
+
+<h3>Testing Checklist</h3>
+
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Upload to Arduino Mega</li>
+<li class="checkbox"><input type="checkbox" disabled> Test X-axis left/right via web interface</li>
+<li class="checkbox"><input type="checkbox" disabled> Test Y-axis up/down via web interface</li>
+<li class="checkbox"><input type="checkbox" disabled> Test P-axis CCW/CW via web interface</li>
+<li class="checkbox"><input type="checkbox" disabled> Verify P-axis safety gate (blocks when Y pressed)</li>
+<li class="checkbox"><input type="checkbox" disabled> Test Index motor increment/decrement</li>
+<li class="checkbox"><input type="checkbox" disabled> Verify position counters update correctly</li>
+<li class="checkbox"><input type="checkbox" disabled> Test menu navigation still works</li>
+<li class="checkbox"><input type="checkbox" disabled> Test switch test function</li>
+<li class="checkbox"><input type="checkbox" disabled> Verify Nextion display updates (if applicable)</li></ul>
+
+<h3>Command Reference</h3>
+
+<p><strong>From Web Interface (GemBot<em>Web</em>Control_DualMode.html):</strong></p>
+<ul><li class="ul-item">X LEFT button → sends 'a'</li>
+<li class="ul-item">X RIGHT button → sends 'd'</li>
+<li class="ul-item">Y UP button → sends 'w'</li>
+<li class="ul-item">Y DOWN button → sends 'z'</li>
+<li class="ul-item">P CCW button → sends 'q'</li>
+<li class="ul-item">P CW button → sends 'e'</li>
+<li class="ul-item">Index DEC button → sends 'i'</li>
+<li class="ul-item">Index INC button → sends 'o'</li>
+<li class="ul-item">Speed Toggle button → sends 't'</li></ul>
+
+<p><strong>Menu Navigation (unchanged):</strong></p>
+<ul><li class="ul-item">'0' = ENTER</li>
+<li class="ul-item">'1' = LEFT</li>
+<li class="ul-item">'2' = EXIT</li>
+<li class="ul-item">'3' = RIGHT</li>
+<li class="ul-item">'8' = UP/PRINT MENU</li></ul>
+
+<hr>
+
+<h3>Technical Notes</h3>
+
+<p>The joystickRevert file was originally a baseline working version without web motor control. This update adds web interface motor commands while preserving the working menu system and switch test functionality.</p>
+
+<p>The architecture uses serial input mutual exclusion (if/else if) to prevent command conflicts between web (Serial0) and Nextion (Serial1) inputs. All motor commands are handled directly in the <code class="inline-code">getKey()</code> function switch statement.</p>
+
+        <div class="generated-notice">
+            🤖 Auto-generated from JOYSTICK_REVERT_FIXES_APPLIED.md by GemBot Neural Dashboard Agent<br>
+            Generated: 2025-12-16T13:52:12.372Z
+        </div>
+    </div>
+</body>
+</html>

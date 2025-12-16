@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TESTING_CHECKLIST - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        <h1>Implementation & Testing Checklist</h1>
+<p><strong>December 6, 2025</strong> | GemBot Web Interface Enhancements</p>
+
+<hr>
+
+<h2>✅ Code Implementation Checklist</h2>
+
+<h3>Phase 1: Global Variables & Constants</h3>
+<ul class="checklist"><li class="checkbox checked"><input type="checkbox" checked disabled> Added Y<em>AXIS</em>PRECISION_SPEED constant (100 RPM)</li>
+<li class="checkbox checked"><input type="checkbox" checked disabled> Added X<em>AXIS</em>PRECISION_SPEED constant (1000 RPM)</li>
+<li class="checkbox checked"><input type="checkbox" checked disabled> Added P<em>AXIS</em>PRECISION_SPEED constant (300 RPM)</li>
+<li class="checkbox checked"><input type="checkbox" checked disabled> Added INDEX<em>PRECISION</em>SPEED constant (300 RPM)</li>
+<li class="checkbox checked"><input type="checkbox" checked disabled> Added Y<em>AXIS</em>FAST_SPEED constant (200 RPM)</li>
+<li class="checkbox checked"><input type="checkbox" checked disabled> Added X<em>AXIS</em>FAST_SPEED constant (2000 RPM)</li>
+<li class="checkbox checked"><input type="checkbox" checked disabled> Added P<em>AXIS</em>FAST_SPEED constant (800 RPM)</li>
+<li class="checkbox checked"><input type="checkbox" checked disabled> Added INDEX<em>FAST</em>SPEED constant (800 RPM)</li>
+<li class="checkbox checked"><input type="checkbox" checked disabled> Added fastMode global boolean (initialized to false)</li>
+<li class="checkbox checked"><input type="checkbox" checked disabled> Added JoystickControl struct for future enhancements</li></ul>
+
+<h3>Phase 2: Motor Initialization</h3>
+<ul class="checklist"><li class="checkbox checked"><input type="checkbox" checked disabled> Changed setSpeed() calls to use named constants</li>
+<li class="checkbox checked"><input type="checkbox" checked disabled> Set initial mode to PRECISION</li>
+<li class="checkbox checked"><input type="checkbox" checked disabled> Added startup message to Serial Monitor</li></ul>
+
+<h3>Phase 3: Speed Toggle Function</h3>
+<ul class="checklist"><li class="checkbox checked"><input type="checkbox" checked disabled> Created updateMotorSpeeds() function</li>
+<li class="checkbox checked"><input type="checkbox" checked disabled> Added FAST mode branch (sets all motors to fast speeds)</li>
+<li class="checkbox checked"><input type="checkbox" checked disabled> Added PRECISION mode branch (sets all motors to precision speeds)</li>
+<li class="checkbox checked"><input type="checkbox" checked disabled> Added LCD display feedback for mode change</li>
+<li class="checkbox checked"><input type="checkbox" checked disabled> Added 800ms delay for visibility</li>
+<li class="checkbox checked"><input type="checkbox" checked disabled> Added Serial logging for both modes</li></ul>
+
+<h3>Phase 4: P-Axis Home Safety</h3>
+<ul class="checklist"><li class="checkbox checked"><input type="checkbox" checked disabled> Added P-axis position check before homing</li>
+<li class="checkbox checked"><input type="checkbox" checked disabled> Added Y-axis clear logic (50 steps at MICROSTEP)</li>
+<li class="checkbox checked"><input type="checkbox" checked disabled> Added LCD feedback during Y clearance</li>
+<li class="checkbox checked"><input type="checkbox" checked disabled> Added Serial logging for safety gate activation</li>
+<li class="checkbox checked"><input type="checkbox" checked disabled> Added safety delay after Y moves clear</li></ul>
+
+<h3>Phase 5: Web Command Handler</h3>
+<ul class="checklist"><li class="checkbox checked"><input type="checkbox" checked disabled> Added handler for 't'/'T' (speed toggle)</li>
+<li class="checkbox checked"><input type="checkbox" checked disabled> Added handler for 'w'/'W' (Y-axis up)</li>
+<li class="checkbox checked"><input type="checkbox" checked disabled> Added handler for 'z'/'Z' (Y-axis down)</li>
+<li class="checkbox checked"><input type="checkbox" checked disabled> Added handler for 'a'/'A' (X-axis left)</li>
+<li class="checkbox checked"><input type="checkbox" checked disabled> Added handler for 'd'/'D' (X-axis right)</li>
+<li class="checkbox checked"><input type="checkbox" checked disabled> Added handler for 'q'/'Q' (P-axis up)</li>
+<li class="checkbox checked"><input type="checkbox" checked disabled> Added handler for 'e'/'E' (P-axis down)</li>
+<li class="checkbox checked"><input type="checkbox" checked disabled> Implemented precision mode step counts (1 step for Y, X, P)</li>
+<li class="checkbox checked"><input type="checkbox" checked disabled> Implemented fast mode step counts (10 for Y, 5 for X, 3 for P)</li>
+<li class="checkbox checked"><input type="checkbox" checked disabled> Added Serial logging for all movements</li>
+<li class="checkbox checked"><input type="checkbox" checked disabled> Clear Start variable after processing</li></ul>
+
+<hr>
+
+<h2>🧪 Basic Functionality Tests</h2>
+
+<h3>Test 1: Speed Toggle</h3>
+<p><strong>Command:</strong> Send 't' from web interface</p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Motors change speed</li>
+<li class="checkbox"><input type="checkbox" disabled> LCD displays "FAST MODE" or "PRECISION MODE"</li>
+<li class="checkbox"><input type="checkbox" disabled> Serial shows "INFO: Motors set to FAST mode" or "...PRECISION mode"</li>
+<li class="checkbox"><input type="checkbox" disabled> Send 't' again to toggle back</li>
+<li class="checkbox"><input type="checkbox" disabled> Can toggle multiple times without issues</li></ul>
+
+<h3>Test 2: Y-Axis Precision Movement</h3>
+<p><strong>Setup:</strong> Ensure fastMode = false</p>
+<p><strong>Command:</strong> Send 'w' (or 'W')</p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Y-axis moves UP exactly 1 step</li>
+<li class="checkbox"><input type="checkbox" disabled> Serial shows "Y UP (PRECISION): 1 step"</li>
+<li class="checkbox"><input type="checkbox" disabled> Send 'w' multiple times - should move 1 step each time</li>
+<li class="checkbox"><input type="checkbox" disabled> No rapid movement observed</li></ul>
+
+<h3>Test 3: Y-Axis Fast Movement</h3>
+<p><strong>Setup:</strong> Send 't' to enable fastMode</p>
+<p><strong>Command:</strong> Send 'w' (or 'W')</p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Y-axis moves UP approximately 10 steps</li>
+<li class="checkbox"><input type="checkbox" disabled> Serial shows "Y UP (FAST): 10 steps"</li>
+<li class="checkbox"><input type="checkbox" disabled> Noticeably faster than precision mode</li>
+<li class="checkbox"><input type="checkbox" disabled> Send 'z' to move down fast</li>
+<li class="checkbox"><input type="checkbox" disabled> Serial shows "Y DOWN (FAST): 10 steps"</li></ul>
+
+<h3>Test 4: X-Axis Precision Movement</h3>
+<p><strong>Setup:</strong> fastMode = false</p>
+<p><strong>Commands:</strong> Send 'a' (or 'A') and 'd' (or 'D')</p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Send 'a': X-axis moves LEFT 1 step, Serial shows "X LEFT (PRECISION): 1 step"</li>
+<li class="checkbox"><input type="checkbox" disabled> Send 'd': X-axis moves RIGHT 1 step, Serial shows "X RIGHT (PRECISION): 1 step"</li>
+<li class="checkbox"><input type="checkbox" disabled> Repeat multiple times - should be consistent single steps</li></ul>
+
+<h3>Test 5: X-Axis Fast Movement</h3>
+<p><strong>Setup:</strong> Send 't' to enable fastMode</p>
+<p><strong>Commands:</strong> Send 'a' and 'd'</p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Send 'a': X-axis moves LEFT 5 steps, Serial shows "X LEFT (FAST): 5 steps"</li>
+<li class="checkbox"><input type="checkbox" disabled> Send 'd': X-axis moves RIGHT 5 steps, Serial shows "X RIGHT (FAST): 5 steps"</li>
+<li class="checkbox"><input type="checkbox" disabled> Notably faster than precision mode</li>
+<li class="checkbox"><input type="checkbox" disabled> Multiple repetitions work consistently</li></ul>
+
+<h3>Test 6: P-Axis Precision Movement</h3>
+<p><strong>Setup:</strong> fastMode = false</p>
+<p><strong>Commands:</strong> Send 'q' (or 'Q') and 'e' (or 'E')</p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Send 'q': P-axis rotates UP 1 step, Serial shows "P UP (PRECISION): 1 step"</li>
+<li class="checkbox"><input type="checkbox" disabled> Send 'e': P-axis rotates DOWN 1 step, Serial shows "P DOWN (PRECISION): 1 step"</li>
+<li class="checkbox"><input type="checkbox" disabled> Fine control observed</li>
+<li class="checkbox"><input type="checkbox" disabled> Multiple presses give consistent single steps</li></ul>
+
+<h3>Test 7: P-Axis Fast Movement</h3>
+<p><strong>Setup:</strong> Send 't' to enable fastMode</p>
+<p><strong>Commands:</strong> Send 'q' and 'e'</p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Send 'q': P-axis rotates UP ~3 steps, Serial shows "P UP (FAST): 3 steps"</li>
+<li class="checkbox"><input type="checkbox" disabled> Send 'e': P-axis rotates DOWN ~3 steps, Serial shows "P DOWN (FAST): 3 steps"</li>
+<li class="checkbox"><input type="checkbox" disabled> Faster response than precision mode</li></ul>
+
+<h3>Test 8: Case Insensitivity</h3>
+<p><strong>Commands:</strong> Send uppercase and lowercase versions</p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Send 't' and 'T' - both toggle speed</li>
+<li class="checkbox"><input type="checkbox" disabled> Send 'w' and 'W' - both move Y up</li>
+<li class="checkbox"><input type="checkbox" disabled> Send 'z' and 'Z' - both move Y down</li>
+<li class="checkbox"><input type="checkbox" disabled> Send 'a' and 'A' - both move X left</li>
+<li class="checkbox"><input type="checkbox" disabled> Send 'd' and 'D' - both move X right</li>
+<li class="checkbox"><input type="checkbox" disabled> Send 'q' and 'Q' - both move P up</li>
+<li class="checkbox"><input type="checkbox" disabled> Send 'e' and 'E' - both move P down</li></ul>
+
+<h3>Test 9: Menu Navigation Still Works</h3>
+<p><strong>Commands:</strong> Send '0', '1', '2', '3' for menu navigation</p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> '0' (ENTER) navigates menus normally</li>
+<li class="checkbox"><input type="checkbox" disabled> '1' (LEFT) navigates menus normally</li>
+<li class="checkbox"><input type="checkbox" disabled> '2' (EXIT) releases motors and closes menu</li>
+<li class="checkbox"><input type="checkbox" disabled> '3' (RIGHT) navigates menus normally</li>
+<li class="checkbox"><input type="checkbox" disabled> Menu system unchanged by new web commands</li></ul>
+
+<h3>Test 10: Motor Release</h3>
+<p><strong>Command:</strong> Send '2' (EXIT) from menu</p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Y-axis motor stops and releases</li>
+<li class="checkbox"><input type="checkbox" disabled> X-axis motor stops and releases</li>
+<li class="checkbox"><input type="checkbox" disabled> P-axis continues if in automatic sequence</li>
+<li class="checkbox"><input type="checkbox" disabled> Pressing '2' again stops everything</li>
+<li class="checkbox"><input type="checkbox" disabled> Serial shows motor release happening</li></ul>
+
+<hr>
+
+<h2>🛡️ Safety & Edge Case Tests</h2>
+
+<h3>Test 11: P-Axis Home Safety Gate</h3>
+<p><strong>Setup:</strong> Machine at 90° with stone at grinding wheel</p>
+<p><strong>Command:</strong> Send menu HOME or 'k' character</p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> LCD shows "P Axis Check"</li>
+<li class="checkbox"><input type="checkbox" disabled> LCD shows "Y Clear of Wheel"</li>
+<li class="checkbox"><input type="checkbox" disabled> LCD shows "Moving away..."</li>
+<li class="checkbox"><input type="checkbox" disabled> Y-axis moves UP (away from wheel) 50 steps</li>
+<li class="checkbox"><input type="checkbox" disabled> Serial shows "INFO: P axis already at home position (90°)"</li>
+<li class="checkbox"><input type="checkbox" disabled> Serial shows "INFO: Moving Y axis clear of wheel first for safety"</li>
+<li class="checkbox"><input type="checkbox" disabled> Serial shows "INFO: Y axis cleared, safe to reference P home"</li>
+<li class="checkbox"><input type="checkbox" disabled> After Y clears, home sequence completes normally</li>
+<li class="checkbox"><input type="checkbox" disabled> Machine successfully homes with stone safe</li></ul>
+
+<h3>Test 12: Home Without P Safety Trigger</h3>
+<p><strong>Setup:</strong> Machine NOT at 90° (angle rotated away from home)</p>
+<p><strong>Command:</strong> Send home command</p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> LCD shows "Setting Home"</li>
+<li class="checkbox"><input type="checkbox" disabled> Does NOT show "Y Clear of Wheel" message</li>
+<li class="checkbox"><input type="checkbox" disabled> Y-axis homes normally without extra movements</li>
+<li class="checkbox"><input type="checkbox" disabled> Home completes successfully in normal time</li>
+<li class="checkbox"><input type="checkbox" disabled> Serial shows normal home sequence (no safety gate logs)</li></ul>
+
+<h3>Test 13: Rapid Toggle Switching</h3>
+<p><strong>Command:</strong> Send 't' repeatedly (5+ times)</p>
+<p><strong>Expected:</strong></p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> No errors after repeated toggling</li>
+<li class="checkbox"><input type="checkbox" disabled> Motor speeds respond correctly each time</li>
+<li class="checkbox"><input type="checkbox" disabled> LCD displays consistently update</li>
+<li class="checkbox"><input type="checkbox" disabled> Serial shows all toggles logged</li>
+<li class="checkbox"><input type="checkbox" disabled> Motors responsive after final toggle</li></ul>
+
+<h3>Test 14: Command During Motor Movement</h3>
+<p><strong>Setup:</strong> Start Y-axis moving (press 'w' then immediately send 'q')</p>
+<p><strong>Expected:</strong></p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Previous Y movement completes</li>
+<li class="checkbox"><input type="checkbox" disabled> P-axis responds to 'q' command</li>
+<li class="checkbox"><input type="checkbox" disabled> Motors handle sequential commands without conflict</li>
+<li class="checkbox"><input type="checkbox" disabled> No halting or unexpected behavior</li></ul>
+
+<h3>Test 15: Machine Limits</h3>
+<p><strong>Setup:</strong> Move X-axis to mechanical limit</p>
+<p><strong>Command:</strong> Send 'd' (move right) multiple times at limit</p>
+<p><strong>Expected:</strong></p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Motor stalls at limit (normal Adafruit behavior)</li>
+<li class="checkbox"><input type="checkbox" disabled> Commands logged to Serial</li>
+<li class="checkbox"><input type="checkbox" disabled> No errors or crashes</li>
+<li class="checkbox"><input type="checkbox" disabled> Can command 'a' to move back left normally</li></ul>
+
+<hr>
+
+<h2>📝 Workflow Tests</h2>
+
+<h3>Test 16: Complete Precision Setup Workflow</h3>
+<pre class="code-block " data-lang="text"><code>1. Start in PRECISION mode (default)
+<p>   [ ] Confirmed by LCD display or &#039;t&#039; toggle</p>
+   
+<ol><li class="ol-item">Send &#039;a&#039; multiple times to position X</li></ol>
+<p>   [ ] Each press = 1 step left</p>
+   
+<ol><li class="ol-item">Send &#039;q&#039; multiple times to adjust angle</li></ol>
+<p>   [ ] Each press = 1 step up</p>
+   
+<ol><li class="ol-item">Send &#039;e&#039; to fine-tune angle down</li></ol>
+<p>   [ ] Each press = 1 step down</p>
+   
+<ol><li class="ol-item">Send &#039;w&#039; to move stone up from wheel</li></ol>
+<p>   [ ] Each press = 1 step up</p>
+   
+<p>Result: Stone positioned precisely for cutting</code></pre></p>
+
+<h3>Test 17: Complete Fast Repositioning Workflow</h3>
+<pre class="code-block " data-lang="text"><code>1. Send &#039;t&#039; to switch to FAST mode
+<p>   [ ] LCD shows &quot;FAST MODE&quot;</p>
+   
+<ol><li class="ol-item">Send &#039;z&#039; to move stone to wheel quickly</li></ol>
+<p>   [ ] Y moves 10 steps down</p>
+   
+<ol><li class="ol-item">Send &#039;a&#039; to index to next facet</li></ol>
+<p>   [ ] X moves 5 steps left</p>
+   
+<ol><li class="ol-item">Send &#039;e&#039; to adjust angle</li></ol>
+<p>   [ ] P moves 3 steps down</p>
+   
+<ol><li class="ol-item">Send &#039;t&#039; to switch back to PRECISION</li></ol>
+<p>   [ ] LCD shows &quot;PRECISION MODE&quot;</p>
+   
+<ol><li class="ol-item">Send &#039;q&#039; to fine-tune angle</li></ol>
+<p>   [ ] P moves 1 step up (fine precision)</p>
+   
+<p>Result: Rapid repositioning with final precision adjustment</code></pre></p>
+
+<h3>Test 18: Home Sequence Workflow</h3>
+<pre class="code-block " data-lang="text"><code>1. From manual control, navigate to HOME
+<p>   [ ] Send menu commands to access HOME</p>
+   
+<ol><li class="ol-item">Select HOME</li></ol>
+<p>   [ ] If at 90°: Y moves 50 steps away from wheel</p>
+<p>   [ ] Automatic safety gate activates</p>
+   
+<ol><li class="ol-item">Continue home sequence</li></ol>
+<p>   [ ] Y-axis homes up to limit</p>
+<p>   [ ] X-axis homes backward to limit</p>
+<p>   [ ] P-axis homes to 90° with limit switch</p>
+   
+<ol><li class="ol-item">After home completes</li></ol>
+<p>   [ ] All positions reset to zero</p>
+<p>   [ ] Machine ready for cutting</p>
+   
+<p>Result: Safe home sequence with automatic safety</code></pre></p>
+
+<hr>
+
+<h2>📊 Serial Monitor Verification</h2>
+
+<h3>Expected Serial Output Format</h3>
+
+<p><strong>On 't' (Toggle Speed):</strong></p>
+<pre class="code-block " data-lang="text"><code>INFO: Motors set to FAST mode
+<p>(or)</p>
+<p>INFO: Motors set to PRECISION mode</code></pre></p>
+
+<p><strong>On 'w' (Y Up):</strong></p>
+<pre class="code-block " data-lang="text"><code>Y UP (PRECISION): 1 step
+<p>(or in fast mode)</p>
+<p>Y UP (FAST): 10 steps</code></pre></p>
+
+<p><strong>On 'a' (X Left):</strong></p>
+<pre class="code-block " data-lang="text"><code>X LEFT (PRECISION): 1 step
+<p>(or in fast mode)</p>
+<p>X LEFT (FAST): 5 steps</code></pre></p>
+
+<p><strong>On 'q' (P Up):</strong></p>
+<pre class="code-block " data-lang="text"><code>P UP (PRECISION): 1 step
+<p>(or in fast mode)</p>
+<p>P UP (FAST): 3 steps</code></pre></p>
+
+<p><strong>During P-Axis Home Safety Gate:</strong></p>
+<pre class="code-block " data-lang="text"><code>INFO: P axis already at home position (90°)
+<p>INFO: Moving Y axis clear of wheel first for safety</p>
+<p>INFO: Y axis cleared, safe to reference P home</code></pre></p>
+
+<hr>
+
+<h2>✅ Final Verification Checklist</h2>
+
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Code compiles without errors</li>
+<li class="checkbox"><input type="checkbox" disabled> Arduino uploads successfully</li>
+<li class="checkbox"><input type="checkbox" disabled> Serial Monitor shows startup "Motors initialized in PRECISION mode"</li>
+<li class="checkbox"><input type="checkbox" disabled> All 10 basic functionality tests pass</li>
+<li class="checkbox"><input type="checkbox" disabled> All 5 safety & edge case tests pass</li>
+<li class="checkbox"><input type="checkbox" disabled> All 3 workflow tests complete successfully</li>
+<li class="checkbox"><input type="checkbox" disabled> Serial Monitor output matches expected format</li>
+<li class="checkbox"><input type="checkbox" disabled> No unexpected crashes or hangs</li>
+<li class="checkbox"><input type="checkbox" disabled> Touch screen controls still work normally</li>
+<li class="checkbox"><input type="checkbox" disabled> Menu navigation (0,1,2,3) still works normally</li>
+<li class="checkbox"><input type="checkbox" disabled> Motor speeds visibly different in fast vs precision</li>
+<li class="checkbox"><input type="checkbox" disabled> P-axis home safety gate triggers automatically</li>
+<li class="checkbox"><input type="checkbox" disabled> All movements smooth and responsive</li>
+<li class="checkbox"><input type="checkbox" disabled> LCD feedback displays correctly</li></ul>
+
+<hr>
+
+<h2>🎯 Sign-Off</h2>
+
+<p><strong>Date Tested:</strong> <strong><em><em></em></strong><strong><em></em></em></strong>__</p>
+<p><strong>Tester Name:</strong> <strong><em><em></em></strong><strong><em></em></em></strong>__</p>
+<p><strong>All Tests Passed:</strong> [ ] YES [ ] NO</p>
+
+<p><strong>Notes:</strong></p>
+<p><strong><em><em></em></strong><strong><em></em></em></strong><strong><em><em></em></strong><strong><em></em></em></strong><strong><em><em></em></strong><strong><em></em></em></strong><strong><em><em></em></strong><strong><em></em></em></strong><strong><em><em></em></strong><strong></em></strong></p>
+<p><strong><em><em></em></strong><strong><em></em></em></strong><strong><em><em></em></strong><strong><em></em></em></strong><strong><em><em></em></strong><strong><em></em></em></strong><strong><em><em></em></strong><strong><em></em></em></strong><strong><em><em></em></strong><strong></em></strong></p>
+<p><strong><em><em></em></strong><strong><em></em></em></strong><strong><em><em></em></strong><strong><em></em></em></strong><strong><em><em></em></strong><strong><em></em></em></strong><strong><em><em></em></strong><strong><em></em></em></strong><strong><em><em></em></strong><strong></em></strong></p>
+
+<p><strong>Issues Found:</strong></p>
+<p><strong><em><em></em></strong><strong><em></em></em></strong><strong><em><em></em></strong><strong><em></em></em></strong><strong><em><em></em></strong><strong><em></em></em></strong><strong><em><em></em></strong><strong><em></em></em></strong><strong><em><em></em></strong><strong></em></strong></p>
+<p><strong><em><em></em></strong><strong><em></em></em></strong><strong><em><em></em></strong><strong><em></em></em></strong><strong><em><em></em></strong><strong><em></em></em></strong><strong><em><em></em></strong><strong><em></em></em></strong><strong><em><em></em></strong><strong></em></strong></p>
+<p><strong><em><em></em></strong><strong><em></em></em></strong><strong><em><em></em></strong><strong><em></em></em></strong><strong><em><em></em></strong><strong><em></em></em></strong><strong><em><em></em></strong><strong><em></em></em></strong><strong><em><em></em></strong><strong></em></strong></p>
+
+
+        <div class="generated-notice">
+            🤖 Auto-generated from TESTING_CHECKLIST.md by GemBot Neural Dashboard Agent<br>
+            Generated: 2025-12-16T13:52:29.169Z
+        </div>
+    </div>
+</body>
+</html>

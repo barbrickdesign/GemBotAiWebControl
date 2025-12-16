@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GEMBOT_SPECIFICATIONS_COMPLETE - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        <h1>GemBot Specifications & Features Complete Reference</h1>
+
+<h2>🎯 Overview</h2>
+
+<p>The <strong>GemBot</strong> is a professional-grade, automated robotic faceting machine designed for precision gemstone cutting and polishing. It automates the complex process of creating multiple facets on gemstones with accuracy and repeatability that would be extremely difficult to achieve manually.</p>
+
+<hr>
+
+<h2>🤖 Core Functionality</h2>
+
+<h3>Primary Purpose</h3>
+<p>Automated cutting and polishing of gemstones with precision faceting capabilities for:</p>
+<ul><li class="ul-item">Diamond cutting</li>
+<li class="ul-item">Colored gemstone faceting</li>
+<li class="ul-item">Crown and pavilion facet creation</li>
+<li class="ul-item">Table polishing</li>
+<li class="ul-item">Custom design implementation</li></ul>
+
+<h3>Operational Modes</h3>
+
+<h4>Manual Control Mode</h4>
+<ul><li class="ul-item"><strong>X-Axis Control</strong>: Left/Right positioning (stone approach/retract from wheel)</li>
+<li class="ul-item"><strong>Y-Axis Control</strong>: Height adjustment (cutting platform up/down)</li>
+<li class="ul-item"><strong>Angle Control</strong>: Facet angle adjustment via secondary stepper motor</li>
+<li class="ul-item"><strong>Index Control</strong>: 96-step rotational positioning for exact facet placement</li>
+<li class="ul-item"><strong>Real-time Readouts</strong>: Live display of all axis positions and angles</li></ul>
+
+<h4>Automated Cut Mode</h4>
+<ul><li class="ul-item">Pre-programmed cutting sequences</li>
+<li class="ul-item">Input specific gemstone dimensions</li>
+<li class="ul-item">Automated facet generation following design parameters</li>
+<li class="ul-item">Consistent results across multiple stones</li>
+<li class="ul-item">Support for standard cuts (brilliant, emerald, cushion, etc.)</li></ul>
+
+<hr>
+
+<h2>⚙️ Technical Specifications</h2>
+
+<h3>Motor System (5 Stepper Motors Total)</h3>
+
+<h4>1. Index Motor (X-Axis)</h4>
+<ul><li class="ul-item"><strong>Type</strong>: Stepper Motor (NEMA 17 standard)</li>
+<li class="ul-item"><strong>Steps per Revolution</strong>: 200</li>
+<li class="ul-item"><strong>Microstepping</strong>: 16x capability</li>
+<li class="ul-item"><strong>Total Microsteps</strong>: 3,200 per revolution</li>
+<li class="ul-item"><strong>Facet Positions</strong>: 96-step index system</li>
+<li class="ul-item"><strong>Microsteps per Facet</strong>: 33.33 steps</li>
+<li class="ul-item"><strong>Rotation</strong>: Bi-directional (clockwise/counterclockwise)</li>
+<li class="ul-item"><strong>Purpose</strong>: Rotates gemstone through 96 precisely-indexed facet positions</li></ul>
+
+<h4>2. Y-Axis Motor (Height Control)</h4>
+<ul><li class="ul-item"><strong>Type</strong>: Stepper Motor (NEMA 17)</li>
+<li class="ul-item"><strong>Steps per Revolution</strong>: 200</li>
+<li class="ul-item"><strong>Microstepping</strong>: 16x</li>
+<li class="ul-item"><strong>Total Microsteps</strong>: 3,200 per revolution</li>
+<li class="ul-item"><strong>Travel Range</strong>: ~20.6mm (approximately 3,300 microsteps max)</li>
+<li class="ul-item"><strong>Resolution</strong>: ~0.006mm per microstep</li>
+<li class="ul-item"><strong>Purpose</strong>: Controls platform height (approach/retract from spinning wheel)</li></ul>
+
+<h4>3. X-Axis Motor (Lateral Movement)</h4>
+<ul><li class="ul-item"><strong>Type</strong>: Stepper Motor (NEMA 17)</li>
+<li class="ul-item"><strong>Steps per Revolution</strong>: 200</li>
+<li class="ul-item"><strong>Microstepping</strong>: 16x</li>
+<li class="ul-item"><strong>Total Microsteps</strong>: 3,200 per revolution</li>
+<li class="ul-item"><strong>Travel Range</strong>: ~240mm (full carriage movement)</li>
+<li class="ul-item"><strong>Purpose</strong>: Left/right positioning of cutting platform</li></ul>
+
+<h4>4. Spindle Motor (P-Axis)</h4>
+<ul><li class="ul-item"><strong>Type</strong>: Stepper Motor or Variable Speed DC Motor</li>
+<li class="ul-item"><strong>Speed Range</strong>: Variable RPM</li>
+<li class="ul-item"><strong>Purpose</strong>: Rotates the grinding wheel at controlled speeds</li></ul>
+
+<h4>5. Secondary Angle Motor</h4>
+<ul><li class="ul-item"><strong>Type</strong>: Stepper Motor (NEMA 17)</li>
+<li class="ul-item"><strong>Purpose</strong>: Controls facet angle adjustment</li>
+<li class="ul-item"><strong>Range</strong>: Full 360° capability</li>
+<li class="ul-item"><strong>Resolution</strong>: Fine angle control for precise cut angles</li></ul>
+
+<h3>Control Board & Electronics</h3>
+<ul><li class="ul-item">Dedicated control circuitry for motor coordination</li>
+<li class="ul-item">Real-time position tracking on all axes</li>
+<li class="ul-item">Touch screen interface for manual and automated control</li>
+<li class="ul-item">Pre-defined cutting programs for standard gemstone shapes</li>
+<li class="ul-item">Emergency stop system</li>
+<li class="ul-item">Safety interlocks</li></ul>
+
+<hr>
+
+<h2>🔧 Frame & Structure</h2>
+
+<h3>Aluminum Frame (20x20mm Extrusion Rails)</h3>
+<ul><li class="ul-item">Rigid structural support using professional-grade aluminum</li>
+<li class="ul-item">Four vertical corner posts providing stability</li>
+<li class="ul-item">Horizontal top rail for ball screw mounting</li>
+<li class="ul-item">Designed for minimal deflection during cutting operations</li></ul>
+
+<h3>Key Mechanical Components</h3>
+
+<p><strong>Ball Screws</strong>:</p>
+<ul><li class="ul-item">X-Axis Ball Screw: Mounted on top rails for left-right carriage movement</li>
+<li class="ul-item">Y-Axis Ball Screw: Controls vertical platform height</li>
+<li class="ul-item">Preloaded for precision and minimal backlash</li></ul>
+
+<p><strong>Linear Bearings</strong>:</p>
+<ul><li class="ul-item">Enable smooth, frictionless movement</li>
+<li class="ul-item">Low-wear design for extended service life</li></ul>
+
+<p><strong>Grinding Wheel Spindle</strong>:</p>
+<ul><li class="ul-item">Horizontal orientation (wheel sits flat)</li>
+<li class="ul-item">100mm diameter grinding wheel</li>
+<li class="ul-item">Replaceable grit options</li></ul>
+
+<hr>
+
+<h2>💎 Grinding Wheel System</h2>
+
+<h3>Wheel Specifications</h3>
+
+<p><strong>Size</strong>: 80-100mm diameter × 12-15mm thickness</p>
+
+<p><strong>Grit Options</strong> (Color-Coded):</p>
+
+<p>| Grit | Color | Purpose | Stage |</p>
+<p>|------|-------|---------|-------|</p>
+<p>| <strong>60-80</strong> | Light Gray (#C0C0C0) | Rough shaping | Initial facet definition |</p>
+<p>| <strong>120</strong> | Dark Gray (#A9A9A9) | Coarse grinding | Facet refinement |</p>
+<p>| <strong>220</strong> | Medium Gray (#808080) | Fine grinding | Surface preparation |</p>
+<p>| <strong>600+</strong> | Very Dark Gray (#696969) | Polishing | Final shine & finish |</p>
+
+<h3>Lap Types</h3>
+
+<p><strong>Diamond Laps</strong> (Topper Laps):</p>
+<ul><li class="ul-item"><strong>600 Grit</strong>: Aggressive material removal</li>
+<li class="ul-item"><strong>1200 Grit</strong>: Standard grinding stage</li>
+<li class="ul-item"><strong>2000 Grit</strong>: Fine grinding and detail work</li>
+<li class="ul-item"><strong>3000 Grit</strong>: Pre-polish preparation</li></ul>
+
+<p><strong>Copper Lap</strong>:</p>
+<ul><li class="ul-item">Used with diamond polishing paste</li>
+<li class="ul-item">Provides soft polishing surface</li>
+<li class="ul-item">Best for final finishing and shine</li></ul>
+
+<h3>Polishing Compounds</h3>
+
+<p><strong>Diamond Paste Range</strong>:</p>
+<ul><li class="ul-item"><strong>4K Grit</strong>: Initial polishing</li>
+<li class="ul-item"><strong>8K Grit</strong>: Medium polish</li>
+<li class="ul-item"><strong>14K Grit</strong>: Fine polish</li>
+<li class="ul-item"><strong>50K Grit</strong>: Ultra-fine polish</li>
+<li class="ul-item"><strong>100K Grit</strong>: Mirror finish</li>
+<li class="ul-item"><strong>200K Grit</strong>: Final high-gloss polish</li></ul>
+
+<hr>
+
+<h2>🎨 Chuck & Dop Stick System</h2>
+
+<h3>Chuck Assembly</h3>
+<ul><li class="ul-item"><strong>Type</strong>: Rotating collet chuck</li>
+<li class="ul-item"><strong>Mount</strong>: Attached to index gear/motor assembly</li>
+<li class="ul-item"><strong>Purpose</strong>: Securely holds the dop stick during cutting</li>
+<li class="ul-item"><strong>Rotation</strong>: Couples with 96-step index motor for precise facet positioning</li></ul>
+
+<h3>Dop Stick (Removable)</h3>
+<ul><li class="ul-item"><strong>Material</strong>: Typically hardwood or specialized polymer</li>
+<li class="ul-item"><strong>Length</strong>: 60-80mm</li>
+<li class="ul-item"><strong>Diameter</strong>: 8-10mm</li>
+<li class="ul-item"><strong>Design</strong>: Removable for hand preparation of rough stones</li>
+<li class="ul-item"><strong>Interface</strong>: Fits securely in chuck, quick-release capability</li></ul>
+
+<h3>Gemstone Attachment</h3>
+<ul><li class="ul-item"><strong>Process</strong>: Rough stones are hand-prepared first</li>
+<li class="ul-item"><strong>Mounting</strong>: Glued to the dop stick using specialized adhesive</li>
+<li class="ul-item"><strong>Orientation</strong>: Positioned for optimal cutting geometry</li>
+<li class="ul-item"><strong>Removability</strong>: Stones can be removed after cutting for inspection</li></ul>
+
+<hr>
+
+<h2>🔨 Workflow: Stone Preparation & Cutting</h2>
+
+<h3>Phase 1: Hand Preparation (Pre-Machine)</h3>
+<ol><li class="ol-item"><strong>Stone Selection</strong> - Choose rough gemstone from inventory</li>
+<li class="ol-item"><strong>Visual Inspection</strong> - Check for cracks, inclusions, and grain direction</li>
+<li class="ol-item"><strong>Initial Planning</strong> - Determine optimal cutting design based on stone shape</li>
+<li class="ol-item"><strong>Hand Faceting</strong> (Optional) - Create initial table facet by hand</li>
+<li class="ol-item"><strong>Adhesive Preparation</strong> - Apply appropriate adhesive to dop stick</li></ol>
+
+<h3>Phase 2: Machine Setup</h3>
+<ol><li class="ol-item"><strong>Mount Stone</strong> - Secure dop stick with glued stone into chuck</li>
+<li class="ol-item"><strong>Wheel Selection</strong> - Install appropriate grit wheel for cutting stage</li>
+<li class="ol-item"><strong>Position Calibration</strong> - Home all axes and set reference positions</li>
+<li class="ol-item"><strong>Coolant Setup</strong> - Activate water cooling system</li></ol>
+
+<h3>Phase 3: Automated Cutting (CNC)</h3>
+<ol><li class="ol-item"><strong>Input Parameters</strong> - Enter desired cut specifications</li></ol>
+<p>   - Cut type (brilliant, emerald, etc.)</p>
+<p>   - Desired angles</p>
+<p>   - Facet sequence</p>
+<ol><li class="ol-item"><strong>Auto-Execute</strong> - Machine follows programmed sequence</li>
+<li class="ol-item"><strong>Position Feedback</strong> - Real-time display of index, height, and angle</li>
+<li class="ol-item"><strong>Automatic Progression</strong> - Index rotates through each facet position</li></ol>
+
+<h3>Phase 4: Manual Fine-Tuning (if needed)</h3>
+<ol><li class="ol-item"><strong>Height Adjustment</strong> - Fine-tune stone approach using Y-axis controls</li>
+<li class="ol-item"><strong>Angle Correction</strong> - Adjust facet angles using secondary motor</li>
+<li class="ol-item"><strong>Inspection</strong> - Visual check of each facet during cutting</li>
+<li class="ol-item"><strong>Pressure Adjustment</strong> - Modify cutting pressure by adjusting height</li></ol>
+
+<h3>Phase 5: Wheel Changes & Progression</h3>
+<ol><li class="ol-item"><strong>Coarse Grit</strong> (60-80): Rough facet definition</li>
+<li class="ol-item"><strong>Medium Grit</strong> (120-220): Refinement and detail work</li>
+<li class="ol-item"><strong>Fine Grit</strong> (600+): Pre-polish preparation</li>
+<li class="ol-item"><strong>Polish Stage</strong>: Diamond paste with copper lap for final finish</li></ol>
+
+<h3>Phase 6: Removal & Inspection</h3>
+<ol><li class="ol-item"><strong>Retract Platform</strong> - Raise cutting platform away from wheel</li>
+<li class="ol-item"><strong>Remove Stone</strong> - Lift stone and dop stick from chuck</li>
+<li class="ol-item"><strong>Clean</strong> - Remove coolant and dust</li>
+<li class="ol-item"><strong>Inspect</strong> - Check facets for quality and accuracy</li>
+<li class="ol-item"><strong>Post-Polish</strong> - Hand-finish or additional polish if needed</li></ol>
+
+<hr>
+
+<h2>📊 Precision & Accuracy Specifications</h2>
+
+<h3>Positioning Accuracy</h3>
+<ul><li class="ul-item"><strong>X-Axis Repeatability</strong>: ±0.1mm</li>
+<li class="ul-item"><strong>Y-Axis Repeatability</strong>: ±0.01mm (0.006mm per microstep)</li>
+<li class="ul-item"><strong>Index Positioning</strong>: ±1 facet position (96-point accuracy)</li>
+<li class="ul-item"><strong>Angle Accuracy</strong>: ±0.1°</li></ul>
+
+<h3>Material Removal Rate</h3>
+<ul><li class="ul-item"><strong>Coarse Grit</strong>: 0.5-1.0mm per facet (initial stage)</li>
+<li class="ul-item"><strong>Medium Grit</strong>: 0.2-0.5mm per facet</li>
+<li class="ul-item"><strong>Fine Grit</strong>: 0.05-0.2mm per facet</li>
+<li class="ul-item"><strong>Polish</strong>: 0.01-0.05mm final smoothing</li></ul>
+
+<h3>Speed & Performance</h3>
+<ul><li class="ul-item"><strong>Spindle Speed</strong>: 2,000-10,000 RPM (variable)</li>
+<li class="ul-item"><strong>Cutting Time per Stone</strong>: 15-45 minutes (depending on complexity)</li>
+<li class="ul-item"><strong>Batch Processing</strong>: Can cut multiple stones sequentially</li>
+<li class="ul-item"><strong>Design Complexity</strong>: Support for 30+ facet designs</li></ul>
+
+<hr>
+
+<h2>🧊 Cooling & Contamination Control</h2>
+
+<h3>Water Cooling System</h3>
+<ul><li class="ul-item"><strong>Reservoir</strong>: 20-30L capacity</li>
+<li class="ul-item"><strong>Pump</strong>: Submersible coolant pump</li>
+<li class="ul-item"><strong>Delivery</strong>: Spray/drip system onto grinding wheel</li>
+<li class="ul-item"><strong>Purpose</strong>: </li></ul>
+<p>  - Removes heat from friction</p>
+<p>  - Prevents stone thermal damage</p>
+<p>  - Extends wheel life</p>
+<p>  - Reduces dust generation</p>
+
+<h3>Dust Collection (Optional)</h3>
+<ul><li class="ul-item">Vacuum connection point</li>
+<li class="ul-item">Reduces airborne diamond particles</li>
+<li class="ul-item">Healthier work environment</li></ul>
+
+<hr>
+
+<h2>🛠️ Accessories & Add-ons</h2>
+
+<h3>Included Components</h3>
+<ul><li class="ul-item">Set of diamond topper laps (600, 1200, 2000, 3000 grit)</li>
+<li class="ul-item">Copper polishing lap</li>
+<li class="ul-item">Diamond polishing paste kit (4K-200K grit range)</li>
+<li class="ul-item">Dop sticks (assorted sizes)</li>
+<li class="ul-item">Chuck adapters for different dop sizes</li>
+<li class="ul-item">Water coolant concentrate</li></ul>
+
+<h3>Optional Upgrades</h3>
+
+<h4>AI Vision System (Future)</h4>
+<ul><li class="ul-item"><strong>Camera</strong>: High-resolution optical sensor</li>
+<li class="ul-item"><strong>Object Recognition</strong>: AI-powered facet detection</li>
+<li class="ul-item"><strong>ML Capability</strong>: Machine learning for:</li></ul>
+<p>  - Automatic facet quality assessment</p>
+<p>  - Stone geometry analysis</p>
+<p>  - Optimal cut path planning</p>
+<p>  - Defect detection</p>
+<p>  - Light refraction prediction</p>
+<ul><li class="ul-item"><strong>Integration</strong>: Feeds data back to control system for real-time optimization</li></ul>
+
+<h4>Enhanced Features</h4>
+<ul><li class="ul-item">Network connectivity for remote monitoring</li>
+<li class="ul-item">Expanded design library (50+ cuts)</li>
+<li class="ul-item">Advanced analytics and statistics</li>
+<li class="ul-item">Multi-language support</li>
+<li class="ul-item">Custom cut upload capability</li></ul>
+
+<hr>
+
+<h2>💰 Pricing & Specifications</h2>
+
+<h3>Base Machine Cost</h3>
+<ul><li class="ul-item"><strong>Retail Price</strong> (Early 2024): <strong>$4,120</strong> (built-to-order)</li>
+<li class="ul-item"><strong>Typical Shipping</strong>: Additional $200-500 depending on location</li>
+<li class="ul-item"><strong>Warranty</strong>: 1-2 years on parts and labor (varies by supplier)</li></ul>
+
+<h3>What's Included</h3>
+<ul><li class="ul-item">✅ Complete machine assembly</li>
+<li class="ul-item">✅ Stepper motors and control board</li>
+<li class="ul-item">✅ Initial wheel set (4 diamond laps + copper lap)</li>
+<li class="ul-item">✅ Starter polishing compound kit</li>
+<li class="ul-item">✅ 5-6 dop sticks</li>
+<li class="ul-item">✅ Basic training/documentation</li>
+<li class="ul-item">✅ USB/network connectivity</li></ul>
+
+<h3>Optional Add-ons</h3>
+<ul><li class="ul-item">Enhanced software package: +$300-500</li>
+<li class="ul-item">AI camera upgrade: +$2,000-3,000 (future release)</li>
+<li class="ul-item">Extended warranty (3-5 years): +$400-800</li>
+<li class="ul-item">Professional training: +$500-1,000</li>
+<li class="ul-item">Custom cut design service: +$100-300 per design</li></ul>
+
+<hr>
+
+<h2>🎓 Training & Certification</h2>
+
+<h3>Basic Operation (8-12 hours)</h3>
+<ul><li class="ul-item">Machine setup and calibration</li>
+<li class="ul-item">Manual control fundamentals</li>
+<li class="ul-item">Safety procedures</li>
+<li class="ul-item">Basic automated cutting</li>
+<li class="ul-item">Wheel changing and maintenance</li></ul>
+
+<h3>Advanced Programming (16-20 hours)</h3>
+<ul><li class="ul-item">Custom cut design creation</li>
+<li class="ul-item">Automated sequence programming</li>
+<li class="ul-item">Parameter optimization</li>
+<li class="ul-item">Troubleshooting and maintenance</li>
+<li class="ul-item">Batch processing workflows</li></ul>
+
+<h3>Professional Certification (40+ hours)</h3>
+<ul><li class="ul-item">Master faceting techniques</li>
+<li class="ul-item">Advanced stone preparation</li>
+<li class="ul-item">Design optimization</li>
+<li class="ul-item">Business practices for professional cutters</li>
+<li class="ul-item">AI system operation (when available)</li></ul>
+
+<hr>
+
+<h2>📈 Production Capabilities</h2>
+
+<h3>Throughput</h3>
+<ul><li class="ul-item"><strong>Stones per Day</strong> (8-hour shift): 8-15 depending on complexity</li>
+<li class="ul-item"><strong>Batch Size</strong>: Single stone or unlimited (sequential)</li>
+<li class="ul-item"><strong>Design Complexity</strong>: Simple (15-20 min) to Complex (45+ min)</li></ul>
+
+<h3>Quality Metrics</h3>
+<ul><li class="ul-item"><strong>Facet Accuracy</strong>: ±0.5° angle tolerance</li>
+<li class="ul-item"><strong>Surface Finish</strong>: Ra 0.2-0.8μm (depending on grit)</li>
+<li class="ul-item"><strong>Consistency</strong>: >95% facet uniformity across batch</li>
+<li class="ul-item"><strong>Yield Rate</strong>: 90-98% depending on stone quality</li></ul>
+
+<h3>Maintenance Schedule</h3>
+<ul><li class="ul-item"><strong>Daily</strong>: Coolant level check, basic cleaning</li>
+<li class="ul-item"><strong>Weekly</strong>: Wheel inspection, bearing lubrication</li>
+<li class="ul-item"><strong>Monthly</strong>: Full system calibration, motor testing</li>
+<li class="ul-item"><strong>Quarterly</strong>: Coolant replacement, deep cleaning</li>
+<li class="ul-item"><strong>Annually</strong>: Belt/bearing replacement, software updates</li></ul>
+
+<hr>
+
+<h2>🌟 Key Advantages Over Manual Cutting</h2>
+
+<p>| Feature | Manual | GemBot |</p>
+<p>|---------|--------|--------|</p>
+<p>| <strong>Speed</strong> | 1-2 stones/day | 8-15 stones/day |</p>
+<p>| <strong>Consistency</strong> | 60-70% | 95%+ |</p>
+<p>| <strong>Precision</strong> | ±1-2° | ±0.1° |</p>
+<p>| <strong>Learning Curve</strong> | 2-5 years | 2-3 weeks |</p>
+<p>| <strong>Repetitive Strain</strong> | High | Minimal |</p>
+<p>| <strong>Design Complexity</strong> | Limited by skill | Unlimited |</p>
+<p>| <strong>Cost per Stone</strong> | High labor | Low labor |</p>
+<p>| <strong>Training Time</strong> | Very long | Moderate |</p>
+
+<hr>
+
+<h2>🔒 Safety Features</h2>
+
+<h3>Emergency Systems</h3>
+<ul><li class="ul-item"><strong>Emergency Stop Button</strong>: Immediate power cutoff</li>
+<li class="ul-item"><strong>Interlock Switch</strong>: Prevents operation if cover open</li>
+<li class="ul-item"><strong>Thermal Monitoring</strong>: Automatic shutdown if overheating</li>
+<li class="ul-item"><strong>Motor Stall Detection</strong>: Stops if excessive resistance</li></ul>
+
+<h3>Operator Safety</h3>
+<ul><li class="ul-item">Enclosed cutting area with transparent guard</li>
+<li class="ul-item">Automatic spindle stop on power loss</li>
+<li class="ul-item">Coolant splash guards</li>
+<li class="ul-item">Non-pinch points on moving parts</li>
+<li class="ul-item">Clear labeling and warning indicators</li></ul>
+
+<h3>Maintenance Safety</h3>
+<ul><li class="ul-item">Isolated power circuits</li>
+<li class="ul-item">Motor lockout capability during maintenance</li>
+<li class="ul-item">Pressure release points before disassembly</li>
+<li class="ul-item">Temperature interlocks on hot components</li></ul>
+
+<hr>
+
+<h2>📝 Specifications Summary Table</h2>
+
+<p>| Parameter | Specification |</p>
+<p>|-----------|---------------|</p>
+<p>| <strong>Machine Type</strong> | CNC Robotic Faceting Machine |</p>
+<p>| <strong>Power Supply</strong> | 110-240V AC, 50-60Hz |</p>
+<p>| <strong>Power Consumption</strong> | 500-800W average |</p>
+<p>| <strong>Footprint</strong> | 800mm × 600mm × 400mm |</p>
+<p>| <strong>Weight</strong> | 45-55 kg |</p>
+<p>| <strong>Stepper Motors</strong> | 5 × NEMA 17 (200 steps/rev) |</p>
+<p>| <strong>Max Travel (X)</strong> | 240mm |</p>
+<p>| <strong>Max Travel (Y)</strong> | ~20.6mm |</p>
+<p>| <strong>Index Positions</strong> | 96 discrete positions |</p>
+<p>| <strong>Wheel Diameter</strong> | 80-100mm |</p>
+<p>| <strong>Wheel Speed Range</strong> | 2,000-10,000 RPM |</p>
+<p>| <strong>Coolant Capacity</strong> | 20-30L |</p>
+<p>| <strong>Interface</strong> | 7" Touch Screen + USB |</p>
+<p>| <strong>Design Library</strong> | 30+ standard cuts |</p>
+<p>| <strong>Warranty</strong> | 12-24 months |</p>
+<p>| <strong>Certification</strong> | CE/FCC (varies by region) |</p>
+
+<hr>
+
+<h2>🚀 Future Roadmap</h2>
+
+<h3>Planned Enhancements</h3>
+<ol><li class="ol-item"><strong>AI Vision Integration</strong> - Real-time facet quality monitoring</li>
+<li class="ol-item"><strong>Cloud Connectivity</strong> - Remote monitoring and design sharing</li>
+<li class="ol-item"><strong>Mobile App</strong> - Smartphone control and status updates</li>
+<li class="ol-item"><strong>Expanded Library</strong> - 100+ design templates</li>
+<li class="ol-item"><strong>Wireless Control</strong> - Eliminate tether requirements</li>
+<li class="ol-item"><strong>Advanced Analytics</strong> - ML-driven optimization suggestions</li></ol>
+
+<h3>Community Features (Planned)</h3>
+<ul><li class="ul-item">Design sharing marketplace</li>
+<li class="ul-item">User community forums</li>
+<li class="ul-item">Video tutorial library</li>
+<li class="ul-item">Professional network access</li></ul>
+
+<hr>
+
+<h2>📞 Support & Resources</h2>
+
+<h3>Documentation</h3>
+<ul><li class="ul-item">Complete assembly manual</li>
+<li class="ul-item">Operation guide (40+ pages)</li>
+<li class="ul-item">Troubleshooting reference</li>
+<li class="ul-item">Design template library</li>
+<li class="ul-item">Video tutorial series (20+ videos)</li></ul>
+
+<h3>Technical Support</h3>
+<ul><li class="ul-item">Email support: 24-hour response</li>
+<li class="ul-item">Phone support: Business hours</li>
+<li class="ul-item">Remote diagnostics available</li>
+<li class="ul-item">Spare parts available</li>
+<li class="ul-item">Firmware updates (free)</li></ul>
+
+<h3>Community</h3>
+<ul><li class="ul-item">User forum: 500+ active members</li>
+<li class="ul-item">Monthly webinars: Advanced techniques</li>
+<li class="ul-item">Design contests: Community challenges</li>
+<li class="ul-item">Knowledge base: 2,000+ articles</li></ul>
+
+<hr>
+
+<h2>🎯 Ideal Applications</h2>
+
+<h3>Professional Use</h3>
+<ul><li class="ul-item">Custom jewelry design studios</li>
+<li class="ul-item">Diamond cutting operations</li>
+<li class="ul-item">Gemstone retail shops</li>
+<li class="ul-item">Training institutions</li>
+<li class="ul-item">Research facilities</li></ul>
+
+<h3>Hobbyist/Enthusiast</h3>
+<ul><li class="ul-item">Gem collecting and customization</li>
+<li class="ul-item">Stone preparation for jewelry makers</li>
+<li class="ul-item">Educational demonstrations</li>
+<li class="ul-item">Precision hobby machining</li>
+<li class="ul-item">Art & craft applications</li></ul>
+
+<h3>Industrial</h3>
+<ul><li class="ul-item">High-volume gemstone production</li>
+<li class="ul-item">Standardized cut manufacturing</li>
+<li class="ul-item">Quality control and sorting</li>
+<li class="ul-item">Material research</li>
+<li class="ul-item">Prototype development</li></ul>
+
+<hr>
+
+<p><strong>Last Updated</strong>: December 2025  </p>
+<p><strong>Version</strong>: 2.0 - Complete Specifications  </p>
+<p><strong>Status</strong>: Production Ready</p>
+
+        <div class="generated-notice">
+            🤖 Auto-generated from GEMBOT_SPECIFICATIONS_COMPLETE.md by GemBot Neural Dashboard Agent<br>
+            Generated: 2025-12-16T13:52:09.761Z
+        </div>
+    </div>
+</body>
+</html>

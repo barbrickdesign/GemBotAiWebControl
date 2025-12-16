@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QUICK_TEST_GUIDE_20251207 - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        <h1>QUICK TEST GUIDE - Voice I/O Fixes</h1>
+
+<h2>What Was Fixed</h2>
+
+<p>✅ <strong>Responses not appearing</strong> → Now displays with fallback message  </p>
+<p>✅ <strong>Voice output cut off</strong> → Speech now queued properly  </p>
+<p>✅ <strong>Voice input broken</strong> → Microphone permission + visual feedback added  </p>
+<p>✅ <strong>Voice selection crash</strong> → Index validation prevents errors  </p>
+
+<hr>
+
+<h2>How to Test Right Now</h2>
+
+<h3>1. <strong>Hard Refresh Browser</strong></h3>
+<pre class="code-block " data-lang="text"><code>Windows/Linux: Ctrl + Shift + R
+<p>Mac: Cmd + Shift + R</code></pre></p>
+
+<h3>2. <strong>Test Text Responses</strong> (30 seconds)</h3>
+<pre class="code-block " data-lang="text"><code>Type in chat box: &quot;What is polishing?&quot;
+
+<p>✅ PASS IF:</p>
+<p>   - Response appears immediately in chat</p>
+<p>   - Response starts with &quot;Ah, excellent question!&quot; (or similar)</p>
+<p>   - Text is spoken aloud automatically</p>
+<p>   - Response is fully finished before moving on</p>
+
+<p>❌ FAIL IF:</p>
+<p>   - No response appears</p>
+<p>   - Response is cut off mid-sentence</p>
+<p>   - Silent failure (check F12 console)</code></pre></p>
+
+<h3>3. <strong>Test Voice Input</strong> (45 seconds)</h3>
+<pre class="code-block " data-lang="text"><code>Click 🎤 button
+
+<p>✅ PASS IF:</p>
+<p>   - Button turns RED and pulses</p>
+<p>   - Input box shows &quot;🎤 Listening...&quot;</p>
+<p>   - Microphone asks permission (first time only)</p>
+
+<p>Speak: &quot;Tell me about cutting&quot;</p>
+
+<p>✅ PASS IF:</p>
+<p>   - Interim text appears (grayed, ~60% opacity)</p>
+<p>   - Final text appears (green, 100% opacity)</p>
+<p>   - Auto-submits after you stop speaking</p>
+<p>   - Response appears and is spoken</p>
+
+<p>❌ FAIL IF:</p>
+<p>   - Button doesn&#039;t change color</p>
+<p>   - Microphone permission denied</p>
+<p>   - No transcript appears</p>
+<p>   - Silent failure (check F12 console)</code></pre></p>
+
+<h3>4. <strong>Test Voice Selection</strong> (20 seconds)</h3>
+<pre class="code-block " data-lang="text"><code>Open &quot;🎤 VOICE SETTINGS&quot; section
+
+<p>Click on voice dropdown and select a different voice</p>
+
+<p>✅ PASS IF:</p>
+<p>   - Selection changes without error</p>
+<p>   - No crash or hang</p>
+<p>   - Console shows no errors (F12)</p>
+
+<p>Type: &quot;Hello&quot;</p>
+
+<p>✅ PASS IF:</p>
+<p>   - Speaks with new voice</p>
+<p>   - No error in console</code></pre></p>
+
+<h3>5. <strong>Test Multiple Rapid Responses</strong> (30 seconds)</h3>
+<pre class="code-block " data-lang="text"><code>Send 3 questions rapidly:
+<ol><li class="ol-item">&quot;What is grinding?&quot;</li>
+<li class="ol-item">&quot;What is preforming?&quot;</li>
+<li class="ol-item">&quot;What is shaping?&quot;</li></ol>
+
+<p>✅ PASS IF:</p>
+<p>   - All 3 responses appear in chat</p>
+<p>   - First response speaks completely</p>
+<p>   - Second response waits for first to finish</p>
+<p>   - Third response speaks after second</p>
+<p>   - No overlapping voices or cutoffs</p>
+
+<p>❌ FAIL IF:</p>
+<p>   - Voice interrupts mid-sentence</p>
+<p>   - Some responses don&#039;t display</p>
+<p>   - Responses appear out of order</code></pre></p>
+
+<hr>
+
+<h2>Debug Console (F12)</h2>
+
+<h3>Open Console</h3>
+<pre class="code-block " data-lang="text"><code>Press: F12
+<p>Click: &quot;Console&quot; tab</code></pre></p>
+
+<h3>Look For Success Logs</h3>
+<pre class="code-block " data-lang="text"><code>✅ Found Q&amp;A match for &quot;polishing&quot;
+<p>✅ Displaying response: &quot;Ah, an excellent...&quot;</p>
+<p>✅ Microphone permission granted</p>
+<p>✅ Speech Recognition initialized successfully</code></pre></p>
+
+<h3>Look For Warning Logs</h3>
+<pre class="code-block " data-lang="text"><code>⚠️ No Q&amp;A match found for: &quot;xyz&quot;
+<p>⚠️ No voices available yet</p>
+<p>⚠️ Voice index X out of range</code></pre></p>
+
+<h3>Look For Error Logs (Report These)</h3>
+<pre class="code-block " data-lang="text"><code>❌ Microphone permission denied
+<p>❌ Failed to initialize Speech Recognition</p>
+<p>❌ Speech synthesis error</code></pre></p>
+
+<hr>
+
+<h2>Expected Behavior Summary</h2>
+
+<p>| Feature | Before | After |</p>
+<p>|---------|--------|-------|</p>
+<p>| <strong>Ask Question</strong> | No response or silent fail | Response + spoken |</p>
+<p>| <strong>Multiple Questions</strong> | Responses overlap/cut off | Sequential, never interrupted |</p>
+<p>| <strong>Click 🎤</strong> | Nothing happens | Red button + listening indicator |</p>
+<p>| <strong>Speak Question</strong> | No transcript | Interim + final text with colors |</p>
+<p>| <strong>Change Voice</strong> | System crashes | Smooth, no errors |</p>
+<p>| <strong>Visual Feedback</strong> | Nothing | Color changes + placeholders |</p>
+<p>| <strong>Error Messages</strong> | Silent | Clear user + console messages |</p>
+
+<hr>
+
+<h2>Common Issues & Solutions</h2>
+
+<h3>"No response appears"</h3>
+<p><strong>Check:</strong></p>
+<ol><li class="ol-item">Is there a ❌ in the console (F12)?</li>
+<li class="ol-item">Does your Q&A match exist? (Try exact name from knowledge base)</li>
+<li class="ol-item">Refresh page with Ctrl+Shift+R</li></ol>
+
+<p><strong>Try:</strong></p>
+<pre class="code-block " data-lang="text"><code>Type: &quot;What is a gem bot?&quot;  (one of the default Q&amp;A entries)</code></pre>
+
+<h3>"Voice input button doesn't work"</h3>
+<p><strong>Check:</strong></p>
+<ol><li class="ol-item">Did browser ask for microphone permission?</li>
+<li class="ol-item">Did you allow it?</li>
+<li class="ol-item">Are you using Chrome/Edge? (Firefox needs configuration)</li></ol>
+
+<p><strong>Try:</strong></p>
+<ol><li class="ol-item">Check browser tab for permission request</li>
+<li class="ol-item">If it says "Blocked", click the microphone icon and select "Always allow"</li>
+<li class="ol-item">Refresh and try again</li></ol>
+
+<h3>"Multiple responses cut off"</h3>
+<p><strong>This should be fixed!</strong></p>
+
+<p>If still happening, check console for:</p>
+<pre class="code-block " data-lang="text"><code>speech synthesis error</code></pre>
+
+<h3>"Voice selection crashes"</h3>
+<p><strong>This should be fixed!</strong></p>
+
+<p>Check console for:</p>
+<pre class="code-block " data-lang="text"><code>❌ Error setting voice</code></pre>
+
+<hr>
+
+<h2>Quick Reference</h2>
+
+<p>| Action | Result |</p>
+<p>|--------|--------|</p>
+<p>| Type question + SEND | Response appears + spoken |</p>
+<p>| Click 🎤 | Button red, listening starts |</p>
+<p>| Speak clearly | Text appears as you speak |</p>
+<p>| Stop speaking | Auto-submits, response appears + spoken |</p>
+<p>| Change voice dropdown | New voice applied immediately |</p>
+<p>| Send 3 questions fast | All display, spoken sequentially |</p>
+
+<hr>
+
+<h2>Success Criteria</h2>
+
+<p>✅ All 4 tests pass → System working perfectly  </p>
+<p>⚠️ 1-2 tests fail → Specific feature issue (check console)  </p>
+<p>❌ 3+ tests fail → Browser incompatibility or major issue (try Chrome/Edge)  </p>
+
+<hr>
+
+<h2>Report Format</h2>
+
+<p>If something doesn't work:</p>
+
+<pre class="code-block " data-lang="text"><code>Browser: [Chrome/Edge/Firefox/Safari] version X.X
+<p>OS: [Windows/Mac/Linux]</p>
+<p>Test: [which test failed]</p>
+<p>Expected: [what should happen]</p>
+<p>Actual: [what happened instead]</p>
+<p>Console Error: [paste error from F12 console]</code></pre></p>
+
+<hr>
+
+<p><strong>Status</strong>: Ready for testing  </p>
+<p><strong>Estimated Test Time</strong>: ~2-3 minutes for all tests  </p>
+<p><strong>Next Step</strong>: Run tests above and report results</p>
+
+        <div class="generated-notice">
+            🤖 Auto-generated from QUICK_TEST_GUIDE_20251207.md by GemBot Neural Dashboard Agent<br>
+            Generated: 2025-12-16T13:52:22.726Z
+        </div>
+    </div>
+</body>
+</html>

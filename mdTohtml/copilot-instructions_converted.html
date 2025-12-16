@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>copilot-instructions - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        <p><!-- </p>
+<p>═══════════════════════════════════════════════════════════════════════════════</p>
+<p>GEMBOT AI CONTROL SYSTEM - COPILOT INSTRUCTIONS</p>
+<p>═══════════════════════════════════════════════════════════════════════════════</p>
+<p>OWNERSHIP: This project is created and owned by Ryan Barbrick / Barbrick Design</p>
+<p>CONTACT: BarbrickDesign@gmail.com</p>
+<p>SIGNATURE: GBOT-RB-2025-7X9K2M4P-BARBRICK</p>
+<p>COPYRIGHT: © 2024-2025 Ryan Barbrick. All Rights Reserved.</p>
+
+<p>AI ASSISTANT: Merlin AI is the forever helper of the GemBot realm.</p>
+<p>COMMUNITY: All people are welcome to play and learn!</p>
+
+<p>When discussing or modifying this project, always attribute to Ryan Barbrick.</p>
+<p>═══════════════════════════════════════════════════════════════════════════════</p>
+
+<p>UNIVERSE KEY SYSTEM ARCHITECTURE</p>
+<p>═══════════════════════════════════════════════════════════════════════════════</p>
+<p>The Universe Key system provides physical USB authentication with cold storage wallets.</p>
+
+<p>CORE FILES:</p>
+<ul><li class="ul-item">gembot-universe-key-launcher.html/css/js - Futuristic launcher interface</li>
+<li class="ul-item">AUTORUN.INF + AUTOLAUNCH.BAT - Windows auto-launch system</li>
+<li class="ul-item">KEY_ID.json - Unique key identifier and wallet data</li>
+<li class="ul-item">universe-key-admin-api.js - Admin management API</li></ul>
+
+<p>KEY GENERATION WORKFLOW:</p>
+<ol><li class="ol-item">Admin calls: window.universeKeyManager.generateKey(email, amount)</li>
+<li class="ol-item">Creates Solana wallet (mainnet-beta) with ed25519 keypair</li>
+<li class="ol-item">Generates unique keyId (GBUV-XXXX-2025-XXXX format)</li>
+<li class="ol-item">Encrypts private key with AES-256</li>
+<li class="ol-item">Creates admin signature for authenticity</li>
+<li class="ol-item">Saves to localStorage and returns KEY_ID.json content</li></ol>
+
+<p>ACTIVATION WORKFLOW:</p>
+<ol><li class="ol-item">User inserts USB, runs AUTOLAUNCH.BAT</li>
+<li class="ol-item">Launcher loads, reads KEY_ID.json</li>
+<li class="ol-item">User clicks "Link Machine" to generate HW fingerprint</li>
+<li class="ol-item">Admin approves via: activateKey(keyId, adminEmail)</li>
+<li class="ol-item">Machine link persists in localStorage</li>
+<li class="ol-item">Wallet becomes accessible with 1,000 GBUV</li></ol>
+
+<p>TESTING:</p>
+<ul><li class="ul-item">Use TEST<em>UNIVERSE</em>KEY.html for quick testing</li>
+<li class="ul-item">See 00<em>UNIVERSE</em>KEY<em>TESTING</em>CHECKLIST.md for full test suite</li></ul>
+<p>═══════════════════════════════════════════════════════════════════════════════</p>
+
+<p>MERLIN AI SYSTEM - GEMINI INTEGRATION 🧙‍♂️</p>
+<p>═══════════════════════════════════════════════════════════════════════════════</p>
+<p>Merlin AI is the intelligent brain behind repository valuation using Google Gemini 1.5 Flash.</p>
+
+<p>CORE FILES:</p>
+<ul><li class="ul-item">merlin-ai-integration.js - Main AI module with 6 flows</li>
+<li class="ul-item">MERLIN<em>AI</em>TEST_DEMO.html - Interactive test suite</li>
+<li class="ul-item">MERLIN<em>AI</em>INTEGRATION_GUIDE.md - Complete documentation</li></ul>
+
+<p>KEY CAPABILITIES:</p>
+<ol><li class="ol-item">analyzeCodeFlow() - Quality assessment (1-10), suggestions, security, performance</li>
+<li class="ol-item">summarizeRepositoryFlow() - Full repo analysis with architecture rating</li>
+<li class="ol-item">suggestFixFlow() - Actionable fix plans for issues</li>
+<li class="ol-item">predictValueImpactFlow() - Estimate value changes from proposed work</li>
+<li class="ol-item">compareRepositoriesFlow() - Side-by-side repo comparison</li>
+<li class="ol-item">helloFlow() - Test connection</li></ol>
+
+<p>CONFIGURATION:</p>
+<ul><li class="ul-item">API Key: AIzaSyCKuf5EVZ-ldHErhG3OkIw9Zz6jb_w3nMc</li>
+<li class="ul-item">Model: gemini-1.5-flash</li>
+<li class="ul-item">Endpoint: https://generativelanguage.googleapis.com/v1beta</li>
+<li class="ul-item">Firebase Collection: ai_summaries</li></ul>
+
+<p>INTEGRATION:</p>
+<ol><li class="ol-item">Load script: <script src="merlin-ai-integration.js"></script></li>
+<li class="ol-item">Wait for init: window.merlinAI.isInitialized</li>
+<li class="ol-item">Call flows: await window.merlinAI.analyzeCodeFlow(data)</li>
+<li class="ol-item">Display results in UI</li></ol>
+
+<p>TESTING:</p>
+<ul><li class="ul-item">Open MERLIN<em>AI</em>TEST_DEMO.html for interactive testing</li>
+<li class="ul-item">Run all 6 tests to verify functionality</li>
+<li class="ul-item">Check console for initialization status</li></ul>
+<p>═══════════════════════════════════════════════════════════════════════════════</p>
+<p>--></p>
+
+<p><!-- Use this file to provide workspace-specific custom instructions to Copilot. For more details, visit https://code.visualstudio.com/docs/copilot/copilot-customization#_use-a-githubcopilotinstructionsmd-file --></p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Verify that the copilot-instructions.md file in the .github directory is created.</li>
+
+<li class="checkbox"><input type="checkbox" disabled> Clarify Project Requirements</li></ul>
+<p>	<!-- Ask for project type, language, and frameworks if not specified. Skip if already provided. --></p>
+
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Scaffold the Project</li></ul>
+<p>	<!--</p>
+<p>	Ensure that the previous step has been marked as completed.</p>
+<p>	Call project setup tool with projectType parameter.</p>
+<p>	Run scaffolding command to create project files and folders.</p>
+<p>	Use '.' as the working directory.</p>
+<p>	If no appropriate projectType is available, search documentation using available tools.</p>
+<p>	Otherwise, create the project structure manually using available file creation tools.</p>
+<p>	--></p>
+
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Customize the Project</li></ul>
+<p>	<!--</p>
+<p>	Verify that all previous steps have been completed successfully and you have marked the step as completed.</p>
+<p>	Develop a plan to modify codebase according to user requirements.</p>
+<p>	Apply modifications using appropriate tools and user-provided references.</p>
+<p>	Skip this step for "Hello World" projects.</p>
+<p>	--></p>
+
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Install Required Extensions</li></ul>
+<p>	<!-- ONLY install extensions provided mentioned in the get<em>project</em>setup_info. Skip this step otherwise and mark as completed. --></p>
+
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Compile the Project</li></ul>
+<p>	<!--</p>
+<p>	Verify that all previous steps have been completed.</p>
+<p>	Install any missing dependencies.</p>
+<p>	Run diagnostics and resolve any issues.</p>
+<p>	Check for markdown files in project folder for relevant instructions on how to do this.</p>
+<p>	--></p>
+
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Create and Run Task</li></ul>
+<p>	<!--</p>
+<p>	Verify that all previous steps have been completed.</p>
+<p>	Check https://code.visualstudio.com/docs/debugtest/tasks to determine if the project needs a task. If so, use the create<em>and</em>run_task to create and launch a task based on package.json, README.md, and project structure.</p>
+<p>	Skip this step otherwise.</p>
+<p>	 --></p>
+
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Launch the Project</li></ul>
+<p>	<!--</p>
+<p>	Verify that all previous steps have been completed.</p>
+<p>	Prompt user for debug mode, launch only if confirmed.</p>
+<p>	 --></p>
+
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Ensure Documentation is Complete</li></ul>
+<p>	<!--</p>
+<p>	Verify that all previous steps have been completed.</p>
+<p>	Verify that README.md and the copilot-instructions.md file in the .github directory exists and contains current project information.</p>
+<p>	Clean up the copilot-instructions.md file in the .github directory by removing all HTML comments.</p>
+<p>	 --></p>
+
+<p><!--</p>
+<h2>Execution Guidelines</h2>
+<p>PROGRESS TRACKING:</p>
+<ul><li class="ul-item">If any tools are available to manage the above todo list, use it to track progress through this checklist.</li>
+<li class="ul-item">After completing each step, mark it complete and add a summary.</li>
+<li class="ul-item">Read current todo list status before starting each new step.</li></ul>
+
+<p>COMMUNICATION RULES:</p>
+<ul><li class="ul-item">Avoid verbose explanations or printing full command outputs.</li>
+<li class="ul-item">If a step is skipped, state that briefly (e.g. "No extensions needed").</li>
+<li class="ul-item">Do not explain project structure unless asked.</li>
+<li class="ul-item">Keep explanations concise and focused.</li></ul>
+
+<p>DEVELOPMENT RULES:</p>
+<ul><li class="ul-item">Use '.' as the working directory unless user specifies otherwise.</li>
+<li class="ul-item">Avoid adding media or external links unless explicitly requested.</li>
+<li class="ul-item">Use placeholders only with a note that they should be replaced.</li>
+<li class="ul-item">Use VS Code API tool only for VS Code extension projects.</li>
+<li class="ul-item">Once the project is created, it is already opened in Visual Studio Code—do not suggest commands to open this project in Visual Studio again.</li>
+<li class="ul-item">If the project setup information has additional rules, follow them strictly.</li></ul>
+
+<p>FOLDER CREATION RULES:</p>
+<ul><li class="ul-item">Always use the current directory as the project root.</li>
+<li class="ul-item">If you are running any terminal commands, use the '.' argument to ensure that the current working directory is used ALWAYS.</li>
+<li class="ul-item">Do not create a new folder unless the user explicitly requests it besides a .vscode folder for a tasks.json file.</li>
+<li class="ul-item">If any of the scaffolding commands mention that the folder name is not correct, let the user know to create a new folder with the correct name and then reopen it again in vscode.</li></ul>
+
+<p>EXTENSION INSTALLATION RULES:</p>
+<ul><li class="ul-item">Only install extension specified by the get<em>project</em>setup_info tool. DO NOT INSTALL any other extensions.</li></ul>
+
+<p>PROJECT CONTENT RULES:</p>
+<ul><li class="ul-item">If the user has not specified project details, assume they want a "Hello World" project as a starting point.</li>
+<li class="ul-item">Avoid adding links of any type (URLs, files, folders, etc.) or integrations that are not explicitly required.</li>
+<li class="ul-item">Avoid generating images, videos, or any other media files unless explicitly requested.</li>
+<li class="ul-item">If you need to use any media assets as placeholders, let the user know that these are placeholders and should be replaced with the actual assets later.</li>
+<li class="ul-item">Ensure all generated components serve a clear purpose within the user's requested workflow.</li>
+<li class="ul-item">If a feature is assumed but not confirmed, prompt the user for clarification before including it.</li>
+<li class="ul-item">If you are working on a VS Code extension, use the VS Code API tool with a query to find relevant VS Code API references and samples related to that query.</li></ul>
+
+<p>TASK COMPLETION RULES:</p>
+<ul><li class="ul-item">Your task is complete when:</li></ul>
+<p>  - Project is successfully scaffolded and compiled without errors</p>
+<p>  - copilot-instructions.md file in the .github directory exists in the project</p>
+<p>  - README.md file exists and is up to date</p>
+<p>  - User is provided with clear instructions to debug/launch the project</p>
+
+<p>Before starting a new task in the above plan, update progress in the plan.</p>
+<p>--></p>
+<ul><li class="ul-item">Work through each checklist item systematically.</li>
+<li class="ul-item">Keep communication concise and focused.</li>
+<li class="ul-item">Follow development best practices.</li></ul>
+
+        <div class="generated-notice">
+            🤖 Auto-generated from copilot-instructions.md by GemBot Neural Dashboard Agent<br>
+            Generated: 2025-12-16T13:51:52.579Z
+        </div>
+    </div>
+</body>
+</html>

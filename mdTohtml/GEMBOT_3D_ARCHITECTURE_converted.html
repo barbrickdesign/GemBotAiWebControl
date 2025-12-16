@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GEMBOT_3D_ARCHITECTURE - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        <h1>GemBot 3D Visualization Architecture & Technical Specifications</h1>
+
+<h2>System Overview</h2>
+
+<p>The GemBot 3D visualization system is a <strong>safety-critical, real-time simulation</strong> that must accurately mirror both virtual and physical machine states. This system serves dual purposes:</p>
+
+<ol><li class="ol-item"><strong>Educational/Game Mode</strong> - Virtual machine for user training</li>
+<li class="ol-item"><strong>Physical Machine Mirror</strong> - Real-time sync with actual hardware for remote operation safety</li></ol>
+
+<hr>
+
+<h2>Critical Safety Requirements</h2>
+
+<h3>Position Accuracy</h3>
+<ul><li class="ul-item"><strong>No guessing about stone position relative to wheel</strong></li>
+<li class="ul-item">All coordinates must be precisely calculated from motor microstep values</li>
+<li class="ul-item">Visual representation must match data readouts exactly</li>
+<li class="ul-item">If visual and data differ, the visual is WRONG (not the data)</li></ul>
+
+<h3>Synchronization</h3>
+<ul><li class="ul-item"><strong>Real-time updates</strong> as UI controls change motor positions</li>
+<li class="ul-item"><strong>Latency < 50ms</strong> for safety-critical operations</li>
+<li class="ul-item"><strong>State consistency</strong> - 3D view always matches control panel data</li>
+<li class="ul-item"><strong>Connection monitoring</strong> - Clear indication of physical vs virtual mode</li></ul>
+
+<h3>Operational Modes</h3>
+<ul><li class="ul-item"><strong>Virtual Mode</strong> - Standalone testing/training with no hardware</li>
+<li class="ul-item"><strong>Physical Mode</strong> - Real-time mirror of connected hardware</li>
+<li class="ul-item"><strong>Fallback Mode</strong> - Default to virtual if connection lost</li>
+<li class="ul-item"><strong>Disconnect Detection</strong> - Immediate visual indication if physical connection drops</li></ul>
+
+<hr>
+
+<h2>Machine Coordinate System</h2>
+
+<h3>Motor Specifications (from actual hardware)</h3>
+
+<h4>Index Motor (Stone Rotation)</h4>
+<ul><li class="ul-item"><strong>Steps per Revolution</strong>: 200 native steps</li>
+<li class="ul-item"><strong>Microstepping</strong>: 16x</li>
+<li class="ul-item"><strong>Total Microsteps</strong>: 3,200 per revolution</li>
+<li class="ul-item"><strong>Physical Positions</strong>: 96 facet index positions</li>
+<li class="ul-item"><strong>Calculation</strong>: 3,200 microsteps ÷ 96 positions = 33.33 microsteps per facet position</li>
+<li class="ul-item"><strong>Angular Resolution</strong>: 360° ÷ 3,200 = 0.1125° per microstep</li>
+<li class="ul-item"><strong>Default Home</strong>: Index 0 = 0°</li>
+<li class="ul-item"><strong>Rotation</strong>: Clockwise positive (as viewed from above)</li></ul>
+
+<h4>Y-Axis Motor (Height/Approach Control)</h4>
+<ul><li class="ul-item"><strong>Steps per Revolution</strong>: 200 native steps</li>
+<li class="ul-item"><strong>Microstepping</strong>: 16x</li>
+<li class="ul-item"><strong>Total Microsteps</strong>: 3,200 per revolution</li>
+<li class="ul-item"><strong>Physical Travel</strong>: ~20.6mm (height adjustment)</li>
+<li class="ul-item"><strong>Motor to Mechanism</strong>: Likely through gear reduction or screw pitch</li>
+<li class="ul-item"><strong>Screw Pitch</strong>: Assumed 2mm (common for ball screws)</li>
+<li class="ul-item"><strong>Calculation</strong>: If 2mm pitch: 3,200 microsteps = 6.4mm (scaling required)</li>
+<li class="ul-item"><strong>Actual Range</strong>: ~20.6mm ÷ 6.4mm per rev = ~3.2 revolutions max</li>
+<li class="ul-item"><strong>Maximum Microsteps</strong>: ~10,240 microsteps</li>
+<li class="ul-item"><strong>Safe Home</strong>: Y = 0 (platform fully retracted from wheel)</li>
+<li class="ul-item"><strong>Safe Limit</strong>: Y = max (platform fully extended, stone far from wheel)</li>
+<li class="ul-item"><strong>Default Position</strong>: Y calibrated by "Rough Calibration"</li></ul>
+
+<h4>X-Axis Motor (Lateral/Left-Right Movement)</h4>
+<ul><li class="ul-item"><strong>Steps per Revolution</strong>: 200 native steps</li>
+<li class="ul-item"><strong>Microstepping</strong>: 16x</li>
+<li class="ul-item"><strong>Total Microsteps</strong>: 3,200 per revolution</li>
+<li class="ul-item"><strong>Physical Travel</strong>: ~240mm (full left-right carriage range)</li>
+<li class="ul-item"><strong>Maximum Revolutions</strong>: 240mm ÷ 2mm pitch = 120 revolutions</li>
+<li class="ul-item"><strong>Maximum Microsteps</strong>: ~384,000 microsteps total range</li>
+<li class="ul-item"><strong>Position Resolution</strong>: 240mm ÷ 384,000 = 0.000625mm per microstep</li>
+<li class="ul-item"><strong>Default Home</strong>: X = 0 (center position)</li>
+<li class="ul-item"><strong>Safe Limits</strong>: X min/max defined by mechanical stops</li></ul>
+
+<h4>Angle Motor (Facet Angle Control)</h4>
+<ul><li class="ul-item"><strong>Type</strong>: Secondary axis control</li>
+<li class="ul-item"><strong>Range</strong>: 0-360° (full rotation)</li>
+<li class="ul-item"><strong>Step Size</strong>: 0.1125° per microstep (same as index motor)</li>
+<li class="ul-item"><strong>Common Angles</strong>: 45°, 90°, etc. for standard facet cuts</li>
+<li class="ul-item"><strong>Default</strong>: 90° (table facet, perpendicular to wheel)</li></ul>
+
+<h4>Spindle Motor (Wheel Rotation)</h4>
+<ul><li class="ul-item"><strong>Type</strong>: Continuous rotation or stepper</li>
+<li class="ul-item"><strong>Speed Range</strong>: 2,000-10,000 RPM (variable)</li>
+<li class="ul-item"><strong>Purpose</strong>: Rotates grinding wheel</li>
+<li class="ul-item"><strong>Visual</strong>: Show as spinning cylinder in 3D</li></ul>
+
+<hr>
+
+<h2>Physical Machine Layout (3D Coordinate System)</h2>
+
+<h3>Global Origin (0, 0, 0)</h3>
+<ul><li class="ul-item"><strong>Position</strong>: Center of grinding wheel axis</li>
+<li class="ul-item"><strong>Reference</strong>: Front-left-bottom corner of machine base</li>
+<li class="ul-item"><strong>Units</strong>: Millimeters</li></ul>
+
+<h3>Machine Base</h3>
+<ul><li class="ul-item"><strong>Dimensions</strong>: ~600mm W × ~400mm D × ~300mm H (external)</li>
+<li class="ul-item"><strong>Frame Material</strong>: Black aluminum extrusion 20×20mm</li>
+<li class="ul-item"><strong>Frame Type</strong>: Rectangular cage structure</li>
+<li class="ul-item"><strong>Footprint</strong>: Mounted on wooden workbench</li></ul>
+
+<h3>Grinding Wheel Assembly</h3>
+<ul><li class="ul-item"><strong>Position</strong>: Z = +150mm (height above base)</li>
+<li class="ul-item"><strong>Diameter</strong>: 100mm</li>
+<li class="ul-item"><strong>Thickness</strong>: 14mm</li>
+<li class="ul-item"><strong>Orientation</strong>: Horizontal (flat face down toward stone)</li>
+<li class="ul-item"><strong>Center Coordinates</strong>: (300, 300, 150) - relative to machine origin</li>
+<li class="ul-item"><strong>Rotation</strong>: Continuous Z-axis rotation (spindle motor)</li>
+<li class="ul-item"><strong>Grit Colors</strong>: </li></ul>
+<p>  - Coarse (60-80): Light gray (#C0C0C0)</p>
+<p>  - Medium (120): Dark gray (#A9A9A9)</p>
+<p>  - Fine (220): Medium gray (#808080)</p>
+<p>  - Polish (600+): Very dark gray (#696969)</p>
+
+<h3>Y-Axis Carriage (Height Control)</h3>
+<ul><li class="ul-item"><strong>Movement</strong>: Vertical (Z-axis)</li>
+<li class="ul-item"><strong>Range</strong>: Z from 100mm (retracted) to 120.6mm (extended)</li>
+<li class="ul-item"><strong>Parent</strong>: Fixed to frame via ball screws</li>
+<li class="ul-item"><strong>Controls</strong>: Stone approach/retract from wheel</li>
+<li class="ul-item"><strong>Home Position</strong>: Z = 100mm (fully retracted, safe distance from wheel)</li>
+<li class="ul-item"><strong>Default Cutting Position</strong>: Z = ~110mm (calibrated distance)</li></ul>
+
+<h3>X-Axis Carriage (Left-Right Movement)</h3>
+<ul><li class="ul-item"><strong>Movement</strong>: Horizontal (Y-axis, left-right when viewed from front)</li>
+<li class="ul-item"><strong>Range</strong>: Y from -120mm to +120mm (240mm total)</li>
+<li class="ul-item"><strong>Parent</strong>: Mounted on Y-axis carriage</li>
+<li class="ul-item"><strong>Controls</strong>: Stone position relative to wheel center</li>
+<li class="ul-item"><strong>Home Position</strong>: Y = 0mm (center)</li>
+<li class="ul-item"><strong>Travel Speed</strong>: Proportional to microstep rate</li></ul>
+
+<h3>Chuck Assembly</h3>
+<ul><li class="ul-item"><strong>Position</strong>: Above Y-axis carriage</li>
+<li class="ul-item"><strong>Mounting</strong>: Rotates with index motor</li>
+<li class="ul-item"><strong>Diameter</strong>: 30mm</li>
+<li class="ul-item"><strong>Height</strong>: 60mm from carriage</li>
+<li class="ul-item"><strong>Holds</strong>: Dop stick (10mm diameter)</li>
+<li class="ul-item"><strong>Rotation</strong>: Z-axis (96-position index, 96-step motor)</li>
+<li class="ul-item"><strong>Orientation</strong>: Points downward toward wheel</li></ul>
+
+<h3>Dop Stick (Removable)</h3>
+<ul><li class="ul-item"><strong>Diameter</strong>: 10mm</li>
+<li class="ul-item"><strong>Length</strong>: 80mm</li>
+<li class="ul-item"><strong>Material</strong>: Wood/hardwood (cream color)</li>
+<li class="ul-item"><strong>Mount Point</strong>: Inserted into chuck</li>
+<li class="ul-item"><strong>Rotation</strong>: Follows chuck rotation (96 discrete index positions)</li>
+<li class="ul-item"><strong>Stone Mounting</strong>: Stone glued to bottom of dop stick</li>
+<li class="ul-item"><strong>Removal</strong>: Can be removed by user for hand prep</li></ul>
+
+<h3>Gemstone (On Dop Stick)</h3>
+<ul><li class="ul-item"><strong>Shape</strong>: Polyhedron (varies by design)</li>
+<li class="ul-item"><strong>Mount</strong>: Glued to bottom of dop stick</li>
+<li class="ul-item"><strong>Size Range</strong>: ~10-30mm (varies)</li>
+<li class="ul-item"><strong>Color</strong>: Golden/amber (visual indicator)</li>
+<li class="ul-item"><strong>Position</strong>: Directly below dop stick</li>
+<li class="ul-item"><strong>Distance to Wheel</strong>: Calculated as wheel<em>height - stone</em>height - Y_position</li>
+<li class="ul-item"><strong>Removal</strong>: Can be unglued and replaced</li></ul>
+
+<hr>
+
+<h2>3D Machine Component Hierarchy</h2>
+
+<pre class="code-block " data-lang="text"><code>MachineRoot (0, 0, 0)
+<p>├── Base Platform (Frame)</p>
+<p>│   ├── Front-Left Rail</p>
+<p>│   ├── Front-Right Rail</p>
+<p>│   ├── Back-Left Rail</p>
+<p>│   ├── Back-Right Rail</p>
+<p>│   ├── Top-Front Rail</p>
+<p>│   ├── Top-Back Rail</p>
+<p>│   ├── Support Brackets (×2)</p>
+<p>│   └── Ground Reference Plane</p>
+<p>│</p>
+<p>├── Spindle Assembly (Fixed)</p>
+<p>│   ├── Motor Housing (0, 0, 0)</p>
+<p>│   ├── Motor Shaft (animated - spins continuously)</p>
+<p>│   └── Grinding Wheel (animated - follows spindle motor)</p>
+<p>│</p>
+<p>├── X-Axis System (Parent: Base)</p>
+<p>│   ├── Ball Screw X (horizontal, Y-axis oriented)</p>
+<p>│   ├── X-Axis Carriage (moves along screw)</p>
+<p>│   │   └── Parent: Ball Screw X (position = X_microsteps)</p>
+<p>│   │</p>
+<p>│   └── Y-Axis System (Parent: X-Axis Carriage)</p>
+<p>│       ├── Ball Screw Y (vertical, Z-axis oriented)</p>
+<p>│       ├── Y-Axis Platform (moves along screw)</p>
+<p>│       │   └── Parent: Ball Screw Y (position = Y_microsteps)</p>
+<p>│       │</p>
+<p>│       └── Index Motor Assembly (Parent: Y-Axis Platform)</p>
+<p>│           ├── Motor Housing</p>
+<p>│           ├── Motor Shaft (rotates with index motor)</p>
+<p>│           ├── Index Gear (96-tooth, follows motor)</p>
+<p>│           ├── Chuck Assembly (rotates with index gear)</p>
+<p>│           │   └── Dop Stick (inserted into chuck)</p>
+<p>│           │       └── Gemstone (mounted on dop stick)</p>
+<p>│           │</p>
+<p>│           ├── Control Panel Display</p>
+<p>│           ├── Cooling System</p>
+<p>│           └── Cable Management</p>
+<p>│</p>
+<p>├── Workbench Table (Parent: Static Ground)</p>
+<p>│   ├── Table Surface (wood)</p>
+<p>│   ├── Rough Stone Holder</p>
+<p>│   │   ├── Stone Sample 1 (clickable)</p>
+<p>│   │   ├── Stone Sample 2 (clickable)</p>
+<p>│   │   ├── Stone Sample 3 (clickable)</p>
+<p>│   │   ├── Stone Sample 4 (clickable)</p>
+<p>│   │   ├── Stone Sample 5 (clickable)</p>
+<p>│   │   └── Stone Sample 6 (clickable)</p>
+<p>│   ├── Dop Stick Holder</p>
+<p>│   │   ├── Dop Stick A (clickable, removable)</p>
+<p>│   │   ├── Dop Stick B (clickable, removable)</p>
+<p>│   │   ├── Dop Stick C (clickable, removable)</p>
+<p>│   │   └── Dop Stick D (clickable, removable)</p>
+<p>│   ├── Grinding Wheel Storage</p>
+<p>│   │   ├── Wheel - 60 Grit (clickable)</p>
+<p>│   │   ├── Wheel - 120 Grit (clickable)</p>
+<p>│   │   ├── Wheel - 220 Grit (clickable)</p>
+<p>│   │   └── Wheel - Polish (clickable)</p>
+<p>│   ├── Polishing Compound Bottles</p>
+<p>│   ├── Tools Container</p>
+<p>│   ├── Coolant Bottle</p>
+<p>│   └── Documentation/Manuals</p>
+<p>│</p>
+<p>└── Environment</p>
+<p>    ├── Room Background</p>
+<p>    ├── Lighting (3-point: key, fill, back)</p>
+<p>    └── Shadows</code></pre></p>
+
+<hr>
+
+<h2>Real-Time Data Synchronization</h2>
+
+<h3>Motor Position Tracking</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// X-Axis Position
+<p>xPosition_mm = (xMicrosteps / 3200) * 2; // 2mm screw pitch</p>
+<p>xLocation = xMicrosteps; // Raw value for UI display</p>
+
+<p>// Y-Axis Position</p>
+<p>yPosition_mm = (yMicrosteps / 3200) * 2; // 2mm screw pitch</p>
+<p>yLocation = yMicrosteps; // Raw value for UI display</p>
+
+<p>// Index Position (96-step discrete)</p>
+<p>indexPosition = (indexMicrosteps % 3200) / 33.33; // 0-95</p>
+<p>indexAngle = (indexPosition / 96) * 360; // 0-360°</p>
+
+<p>// Angle Motor Position</p>
+<p>anglePosition_degrees = (angleMicrosteps % 3200) * 0.1125; // 0-360°</p>
+
+<p>// Spindle Position</p>
+<p>wheelRotation = spindleRPM * deltaTime; // Continuous rotation</code></pre></p>
+
+<h3>3D Position Calculations</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Stone Position in 3D Space
+<p>stoneX = machine.position.x + xPosition_mm - 120; // Offset to center</p>
+<p>stoneY = machine.position.y + (300 - (Y&lt;em&gt;SAFE&lt;/em&gt;DISTANCE - yPosition_mm));</p>
+<p>stoneZ = machine.position.z + (wheelHeight - stoneSize/2);</p>
+
+<p>// Distance to Wheel</p>
+<p>distanceToWheel = wheelHeight - stoneZ;</p>
+<p>// CRITICAL: If distanceToWheel &lt; 0, stone is TOUCHING or PENETRATING wheel (ERROR)</code></pre></p>
+
+<h3>Data Binding (UI ↔ 3D)</h3>
+
+<p>| Control | 3D Effect | Safety Check |</p>
+<p>|---------|-----------|--------------|</p>
+<p>| X Slider | Move carriage left/right | Mechanical limits: ±120mm |</p>
+<p>| Y Slider | Move platform up/down | Limits: 0-20.6mm safe zone |</p>
+<p>| Index Button | Rotate chuck 96 positions | Discrete steps, no intermediate |</p>
+<p>| Angle Button | Adjust facet angle | Continuous, 0-360° |</p>
+<p>| Spindle Power | Wheel rotation speed | RPM limits enforced |</p>
+
+<hr>
+
+<h2>Interactive Objects & Pick Detection</h2>
+
+<h3>Selectable Objects</h3>
+<ol><li class="ol-item"><strong>Rough Stones</strong> (Clickable in 3D)</li></ol>
+<p>   - Ray casting from camera through mouse position</p>
+<p>   - Highlight on hover</p>
+<p>   - Select on click</p>
+<p>   - Display info panel</p>
+
+<ol><li class="ol-item"><strong>Dop Sticks</strong> (Clickable, Removable)</li></ol>
+<p>   - Can be picked up from holder</p>
+<p>   - Can be inserted into chuck</p>
+<p>   - Shows attachment point when carried</p>
+
+<ol><li class="ol-item"><strong>Grinding Wheels</strong> (Clickable, Swappable)</li></ol>
+<p>   - Can be removed from spindle</p>
+<p>   - Can be installed on spindle</p>
+<p>   - Grit color changes 3D display</p>
+
+<h3>Pick Detection Implementation</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>// Ray casting for 3D object selection
+<p>const raycaster = new THREE.Raycaster();</p>
+<p>const mouse = new THREE.Vector2();</p>
+
+<p>window.addEventListener(&#039;click&#039;, function(event) {</p>
+<p>  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;</p>
+<p>  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;</p>
+  
+<p>  raycaster.setFromCamera(mouse, camera);</p>
+<p>  const intersects = raycaster.intersectObjects(selectableObjects);</p>
+  
+<p>  if (intersects.length &gt; 0) {</p>
+<p>    const clickedObject = intersects[0].object;</p>
+<p>    handleObjectSelection(clickedObject);</p>
+<p>  }</p>
+<p>});</code></pre></p>
+
+<hr>
+
+<h2>Visual Fidelity Standards</h2>
+
+<h3>Model Accuracy</h3>
+<ul><li class="ul-item"><strong>Wheel Assembly</strong>: ±2mm tolerance (actual wheel dimensions)</li>
+<li class="ul-item"><strong>Chuck Position</strong>: ±1mm relative to wheel</li>
+<li class="ul-item"><strong>Stone Distance</strong>: ±0.5mm (critical for safety)</li>
+<li class="ul-item"><strong>Frame Geometry</strong>: ±5mm (non-critical, but visible)</li></ul>
+
+<h3>Material Realism</h3>
+<ul><li class="ul-item"><strong>Aluminum</strong>: Brushed aluminum texture, slight reflections</li>
+<li class="ul-item"><strong>Black Metal</strong>: Matte black, no reflections</li>
+<li class="ul-item"><strong>Grinding Wheel</strong>: Realistic grit pattern, texture mapping</li>
+<li class="ul-item"><strong>Wood (Dop/Table)</strong>: Wood grain texture</li>
+<li class="ul-item"><strong>Stone</strong>: Translucent with golden/amber color</li></ul>
+
+<h3>Lighting & Shadows</h3>
+<ul><li class="ul-item"><strong>Key Light</strong>: 45° above, slightly from front (simulates workshop light)</li>
+<li class="ul-item"><strong>Fill Light</strong>: Opposite side, lower intensity (reduces shadows)</li>
+<li class="ul-item"><strong>Back Light</strong>: Behind scene for depth</li>
+<li class="ul-item"><strong>Real-time Shadows</strong>: Shows stone approaching wheel</li>
+<li class="ul-item"><strong>Ambient Light</strong>: Enables visibility of all surfaces</li></ul>
+
+<hr>
+
+<h2>Performance Considerations</h2>
+
+<h3>Optimization</h3>
+<ul><li class="ul-item"><strong>LOD (Level of Detail)</strong>: Reduce detail on distant objects</li>
+<li class="ul-item"><strong>Culling</strong>: Hide objects outside camera view</li>
+<li class="ul-item"><strong>Batching</strong>: Combine static meshes (frame, base)</li>
+<li class="ul-item"><strong>Update Rate</strong>: 60 FPS minimum for real-time response</li>
+<li class="ul-item"><strong>Motor Update Rate</strong>: Match UI control rate (typically 100ms)</li></ul>
+
+<h3>Memory Management</h3>
+<ul><li class="ul-item"><strong>Texture Atlasing</strong>: Combine textures where possible</li>
+<li class="ul-item"><strong>Geometry Reuse</strong>: Cylinders/boxes for multiple parts</li>
+<li class="ul-item"><strong>Pool Objects</strong>: Reuse stones/dops instead of creating new</li></ul>
+
+<hr>
+
+<h2>Safety-Critical Data Validation</h2>
+
+<h3>Pre-Movement Checks</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>function validateMotorCommand(motor, targetValue) {
+<p>  // Check against mechanical limits</p>
+<p>  if (targetValue &lt; motor.minLimit || targetValue &gt; motor.maxLimit) {</p>
+<p>    return { valid: false, reason: &quot;Exceeds mechanical limit&quot; };</p>
+<p>  }</p>
+  
+<p>  // Check for collision</p>
+<p>  if (motor === yAxis) {</p>
+<p>    const stonePos = calculateStonePosition(targetValue);</p>
+<p>    if (stonePos.z &gt; wheelPos.z) {</p>
+<p>      return { valid: false, reason: &quot;Stone collision with wheel&quot; };</p>
+<p>    }</p>
+<p>  }</p>
+  
+<p>  return { valid: true };</p>
+<p>}</code></pre></p>
+
+<h3>Redundant Position Display</h3>
+<ul><li class="ul-item"><strong>3D Visual</strong>: Shows exact position visually</li>
+<li class="ul-item"><strong>Data Readout</strong>: Shows coordinates in UI</li>
+<li class="ul-item"><strong>Discrepancy Alert</strong>: If visual ≠ data, ERROR condition</li>
+<li class="ul-item"><strong>Operator Must Verify</strong>: Before executing critical movements</li></ul>
+
+<hr>
+
+<h2>Development Phases</h2>
+
+<h3>Phase 1: Core 3D Rendering</h3>
+<ul><li class="ul-item">Machine geometry (frame, motors, chuck, wheel)</li>
+<li class="ul-item">Basic lighting and materials</li>
+<li class="ul-item">Static positioning</li></ul>
+
+<h3>Phase 2: Real-Time Synchronization</h3>
+<ul><li class="ul-item">Motor data binding</li>
+<li class="ul-item">Live position updates</li>
+<li class="ul-item">Smooth animations</li></ul>
+
+<h3>Phase 3: Interactive Objects</h3>
+<ul><li class="ul-item">Clickable workbench items</li>
+<li class="ul-item">Drag-and-drop functionality</li>
+<li class="ul-item">State management</li></ul>
+
+<h3>Phase 4: Safety Features</h3>
+<ul><li class="ul-item">Collision detection</li>
+<li class="ul-item">Limit enforcement</li>
+<li class="ul-item">Error visualization</li></ul>
+
+<h3>Phase 5: Physical Machine Integration</h3>
+<ul><li class="ul-item">Hardware communication</li>
+<li class="ul-item">Real-time mirroring</li>
+<li class="ul-item">Connection monitoring</li></ul>
+
+<h3>Phase 6: Polish & Optimization</h3>
+<ul><li class="ul-item">Visual refinements</li>
+<li class="ul-item">Performance tuning</li>
+<li class="ul-item">User experience improvements</li></ul>
+
+<hr>
+
+<h2>Testing & Validation</h2>
+
+<h3>Unit Tests</h3>
+<ul><li class="ul-item">Motor calculation accuracy</li>
+<li class="ul-item">Collision detection</li>
+<li class="ul-item">Position synchronization</li></ul>
+
+<h3>Integration Tests</h3>
+<ul><li class="ul-item">UI ↔ 3D synchronization</li>
+<li class="ul-item">Physical ↔ Virtual mirroring</li>
+<li class="ul-item">Error handling</li></ul>
+
+<h3>Safety Tests</h3>
+<ul><li class="ul-item">Mechanical limit enforcement</li>
+<li class="ul-item">Stone-to-wheel distance monitoring</li>
+<li class="ul-item">Emergency stop verification</li></ul>
+
+<h3>User Acceptance Tests</h3>
+<ul><li class="ul-item">Training workflow validation</li>
+<li class="ul-item">Intuitive control verification</li>
+<li class="ul-item">Safety procedure verification</li></ul>
+
+<hr>
+
+<p><strong>Document Version</strong>: 1.0  </p>
+<p><strong>Last Updated</strong>: December 9, 2025  </p>
+<p><strong>Status</strong>: Architecture Phase Complete - Ready for Implementation</p>
+
+        <div class="generated-notice">
+            🤖 Auto-generated from GEMBOT_3D_ARCHITECTURE.md by GemBot Neural Dashboard Agent<br>
+            Generated: 2025-12-16T13:52:08.826Z
+        </div>
+    </div>
+</body>
+</html>

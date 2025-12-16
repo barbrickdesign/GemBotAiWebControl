@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VISION_QUICK_REFERENCE - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        <h1>Camera/ML Vision Integration - Quick Reference Card</h1>
+
+<p><strong>Bookmark this page for quick lookup during implementation</strong></p>
+
+<hr>
+
+<h2>The 6 Implementation Steps (At a Glance)</h2>
+
+<h3>Step 1: Add Global Vision Object</h3>
+<p><strong>Location</strong>: Line ~4110 (before <code class="inline-code">const mlState = {...}</code>)  </p>
+<p><strong>Code</strong>: Copy from VISION<em>CODE</em>COPY_PASTE.md section "1. GLOBAL VISION DATA STRUCTURE"  </p>
+<p><strong>Lines</strong>: +25  </p>
+<p><strong>Time</strong>: 3 minutes  </p>
+
+<h3>Step 2: Add Vision Methods to AI Class  </h3>
+<p><strong>Location</strong>: Inside GemBotAI class (after getSmartContextResponse method)  </p>
+<p><strong>Code</strong>: Copy 4 methods from VISION<em>CODE</em>COPY_PASTE.md section "2. VISION METHODS"</p>
+<ul><li class="ul-item">updateAIVisionContext()</li>
+<li class="ul-item">generateVisualStateDescription()</li>
+<li class="ul-item">generateVisualRecommendations()</li>
+<li class="ul-item">getVisionData()</li></ul>
+
+<p><strong>Lines</strong>: +170  </p>
+<p><strong>Time</strong>: 8 minutes  </p>
+
+<h3>Step 3: Update Method Signature</h3>
+<p><strong>Location</strong>: Line 2240 (getSmartContextResponse method)  </p>
+<p><strong>Find</strong>: <code class="inline-code">getSmartContextResponse(query, speed, mode, posX, posY) {</code>  </p>
+<p><strong>Replace</strong>: <code class="inline-code">getSmartContextResponse(query, speed, mode, posX, posY, visionData = null) {</code>  </p>
+<p><strong>Lines</strong>: 1 (modified)  </p>
+<p><strong>Time</strong>: 1 minute  </p>
+
+<h3>Step 4: Add Response Patterns</h3>
+<p><strong>Location</strong>: Inside getSmartContextResponse() - BEFORE existing patterns  </p>
+<p><strong>Code</strong>: Copy 6 patterns from VISION<em>CODE</em>COPY_PASTE.md section "4. NEW RESPONSE PATTERNS"</p>
+<ol><li class="ol-item">Camera/Vision questions</li>
+<li class="ol-item">Positioning with visual feedback</li>
+<li class="ol-item">Lighting/Illumination</li>
+<li class="ol-item">Problem diagnosis</li>
+<li class="ol-item">Focus/Clarity</li>
+<li class="ol-item">Detection/Visibility</li></ol>
+
+<p><strong>Lines</strong>: +150  </p>
+<p><strong>Time</strong>: 5 minutes  </p>
+
+<h3>Step 5: Modify Conversation Method</h3>
+<p><strong>Location</strong>: Line 2332 (getConversationalResponse method)  </p>
+<p><strong>Add Line</strong>: <code class="inline-code">const visionData = this.getVisionData();</code>  </p>
+<p><strong>Modify Line</strong>: Pass visionData to getSmartContextResponse()  </p>
+<p><strong>Lines</strong>: +2 (modified: 1 added, 1 changed)  </p>
+<p><strong>Time</strong>: 2 minutes  </p>
+
+<h3>Step 6: Hook into Video Processing</h3>
+<p><strong>Location</strong>: Line 4065 (inside processVideoFrames, ML detection section)  </p>
+<p><strong>Add</strong>: Call <code class="inline-code">gemBotAI.updateAIVisionContext(features, predictions);</code>  </p>
+<p><strong>Lines</strong>: +3  </p>
+<p><strong>Time</strong>: 2 minutes  </p>
+
+<hr>
+
+<h2>Data Structure Reference</h2>
+
+<h3>aiVisionContext Object</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>{
+<p>    currentFrame: {</p>
+<p>        timestamp: timestamp,           // When analyzed</p>
+<p>        brightness: 0-255,              // Brightness value</p>
+<p>        focusQuality: 0-100,            // Focus percentage</p>
+<p>        centerBrightness: 0-255,        // Center brightness</p>
+<p>        hasValidFrames: true/false      // Frames available?</p>
+<p>    },</p>
+<p>    detections: {</p>
+<p>        found: true/false,              // Objects detected?</p>
+<p>        count: number,                  // How many objects</p>
+<p>        objects: [],                    // Detection array</p>
+<p>        maxConfidence: 0-1,             // Best confidence</p>
+<p>        averageConfidence: 0-1          // Average confidence</p>
+<p>    },</p>
+<p>    visualState: &quot;string&quot;,              // Description</p>
+<p>    lightingStatus: &quot;string&quot;,           // Lighting description</p>
+<p>    detectionStatus: &quot;string&quot;,          // Detection description</p>
+<p>    recommendations: []                 // Action items</p>
+<p>}</code></pre></p>
+
+<hr>
+
+<h2>Vision-Aware Response Pattern Template</h2>
+
+<p>Use this template to add more patterns:</p>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// [TOPIC] questions - NEW
+<p>if (/regex|pattern|here/.test(lowerQuery)) {</p>
+<p>    if (visionData &amp;&amp; visionData.hasVision) {</p>
+<p>        // Construct response using vision data</p>
+<p>        let response = <code class="inline-code">I observe: ${visionData.visualState}. </code>;</p>
+<p>        response += <code class="inline-code">Brightness: ${visionData.brightness}/255, </code>;</p>
+<p>        response += <code class="inline-code">Focus: ${visionData.focusQuality}%. </code>;</p>
+        
+<p>        if (visionData.objectsDetected) {</p>
+<p>            response += <code class="inline-code">Detected ${visionData.detectionCount} object(s).</code>;</p>
+<p>        } else {</p>
+<p>            response += <code class="inline-code">No objects visible.</code>;</p>
+<p>        }</p>
+        
+<p>        return response;</p>
+<p>    } else {</p>
+<p>        return <code class="inline-code">Please start the camera first to enable visual monitoring.</code>;</p>
+<p>    }</p>
+<p>}</code></pre></p>
+
+<hr>
+
+<h2>Method Quick Reference</h2>
+
+<h3>updateAIVisionContext(frameFeatures, mlDetections)</h3>
+<ul><li class="ul-item"><strong>Called From</strong>: processVideoFrames()</li>
+<li class="ul-item"><strong>Parameters</strong>: </li></ul>
+<p>  - frameFeatures: {brightness, focusQuality, centerBrightness}</p>
+<p>  - mlDetections: Array of detected objects</p>
+<ul><li class="ul-item"><strong>Does</strong>: Updates aiVisionContext with latest camera/ML data</li></ul>
+
+<h3>generateVisualStateDescription()</h3>
+<ul><li class="ul-item"><strong>Called From</strong>: updateAIVisionContext()</li>
+<li class="ul-item"><strong>Does</strong>: Creates human-readable descriptions of visual state</li>
+<li class="ul-item"><strong>Updates</strong>: visualState, lightingStatus, detectionStatus</li></ul>
+
+<h3>generateVisualRecommendations()</h3>
+<ul><li class="ul-item"><strong>Called From</strong>: generateVisualStateDescription()</li>
+<li class="ul-item"><strong>Does</strong>: Creates actionable recommendations</li>
+<li class="ul-item"><strong>Updates</strong>: recommendations array</li></ul>
+
+<h3>getVisionData()</h3>
+<ul><li class="ul-item"><strong>Called From</strong>: getConversationalResponse()</li>
+<li class="ul-item"><strong>Returns</strong>: Current vision context object</li>
+<li class="ul-item"><strong>Used By</strong>: getSmartContextResponse()</li></ul>
+
+<hr>
+
+<h2>Testing Quick Commands</h2>
+
+<h3>In Browser Console:</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Check vision context exists
+<p>console.log(aiVisionContext);</p>
+
+<p>// Check AI has vision methods</p>
+<p>console.log(gemBotAI.getVisionData);</p>
+<p>console.log(gemBotAI.updateAIVisionContext);</p>
+
+<p>// Test vision data</p>
+<p>console.log(gemBotAI.getVisionData());</p>
+
+<p>// Start camera and test</p>
+<p>// Type in chat: &quot;Can you see the stone?&quot;</p>
+<p>// Should return vision data description</code></pre></p>
+
+<hr>
+
+<h2>Common Patterns to Trigger</h2>
+
+<h3>Trigger Camera/Vision Response</h3>
+<p>"Can you see the stone?"  </p>
+<p>"What do you see?"  </p>
+<p>"Describe the view"  </p>
+<p>"Camera status?"</p>
+
+<h3>Trigger Positioning Response</h3>
+<p>"Where should I move?"  </p>
+<p>"Tell me position"  </p>
+<p>"Is it in the right spot?"</p>
+
+<h3>Trigger Lighting Response</h3>
+<p>"Is lighting good?"  </p>
+<p>"Brightness okay?"  </p>
+<p>"Should I add light?"</p>
+
+<h3>Trigger Problem Response</h3>
+<p>"It's not working"  </p>
+<p>"Why can't I see?"  </p>
+<p>"Something's wrong"</p>
+
+<h3>Trigger Focus Response</h3>
+<p>"Is it in focus?"  </p>
+<p>"How's clarity?"  </p>
+<p>"Need to adjust focus?"</p>
+
+<h3>Trigger Detection Response</h3>
+<p>"Can you detect it?"  </p>
+<p>"Object visible?"  </p>
+<p>"Confidence level?"</p>
+
+<hr>
+
+<h2>File Location Quick Map</h2>
+
+<p>| What | Location | Line |</p>
+<p>|------|----------|------|</p>
+<p>| aiVisionContext | GemBot<em>Control</em>AI.html | ~4110 |</p>
+<p>| Vision methods | GemBotAI class | After 2330 |</p>
+<p>| getSmartContextResponse | GemBotAI class | 2240 |</p>
+<p>| getConversationalResponse | GemBotAI class | 2332 |</p>
+<p>| processVideoFrames | Page level | 4039 |</p>
+<p>| ML detection call | processVideoFrames | ~4065 |</p>
+
+<hr>
+
+<h2>Verification Checklist (Quick)</h2>
+
+<p>After each step:</p>
+
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Step 1: aiVisionContext defined before mlState</li>
+<li class="checkbox"><input type="checkbox" disabled> Step 2: All 4 methods in GemBotAI class, proper indentation</li>
+<li class="checkbox"><input type="checkbox" disabled> Step 3: getSmartContextResponse signature includes visionData</li>
+<li class="checkbox"><input type="checkbox" disabled> Step 4: All 6 patterns added, check visionData first</li>
+<li class="checkbox"><input type="checkbox" disabled> Step 5: getConversationalResponse gets and passes visionData</li>
+<li class="checkbox"><input type="checkbox" disabled> Step 6: processVideoFrames calls updateAIVisionContext</li></ul>
+
+<p><strong>Final Check</strong>: No errors in VS Code Problems panel ✅</p>
+
+<hr>
+
+<h2>Common Issues & Quick Fixes</h2>
+
+<p>| Issue | Quick Fix |</p>
+<p>|-------|-----------|</p>
+<p>| "Cannot read property getVisionData" | Verify getVisionData() method added to GemBotAI |</p>
+<p>| Vision patterns don't match | Patterns must be BEFORE generic patterns in getSmartContextResponse() |</p>
+<p>| aiVisionContext undefined | Must be declared at global scope, before mlState |</p>
+<p>| updateAIVisionContext not called | Must be inside if (mlState.frameCount % 30 === 0) block |</p>
+<p>| Vision data always empty | Check camera is active, ML model loaded, frames processing |</p>
+
+<hr>
+
+<h2>Before/After Examples</h2>
+
+<h3>Example 1: Camera Question</h3>
+<pre class="code-block " data-lang="text"><code>BEFORE: &quot;I&#039;m ready to help. Tell me about your work.&quot;
+<p>AFTER: &quot;I&#039;m watching your workspace: Good - optimal for precision | </p>
+<p>        Clear visibility - 1 object(s) detected with 92% confidence.&quot;</code></pre></p>
+
+<h3>Example 2: Position Question  </h3>
+<pre class="code-block " data-lang="text"><code>BEFORE: &quot;Current position: X=45, Y=32. Use buttons to move...&quot;
+<p>AFTER: &quot;Current position: X=45, Y=32. 👁️ I see: Clear visibility - </p>
+<p>        1 object(s) detected. Focus quality: 88%.&quot;</code></pre></p>
+
+<h3>Example 3: Problem Question</h3>
+<pre class="code-block " data-lang="text"><code>BEFORE: &quot;(1) Check connection... (2) Click HOME... (3) Try again...&quot;
+<p>AFTER: &quot;Visual check: Stone is clearly visible. (1) Check connection...</p>
+<p>        (2) Click HOME... (3) Try again...&quot;</code></pre></p>
+
+<hr>
+
+<h2>Response Pattern Checklist</h2>
+
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Camera/Vision pattern - Tests if camera sees objects</li>
+<li class="checkbox"><input type="checkbox" disabled> Positioning pattern - References visibility in positioning advice</li>
+<li class="checkbox"><input type="checkbox" disabled> Lighting pattern - Reports actual brightness value</li>
+<li class="checkbox"><input type="checkbox" disabled> Problem Diagnosis - Uses visual data to diagnose issues</li>
+<li class="checkbox"><input type="checkbox" disabled> Focus/Clarity - Reports focus quality percentage</li>
+<li class="checkbox"><input type="checkbox" disabled> Detection - Confirms object detection with confidence</li></ul>
+
+<p>All 6 should reference vision data when available ✅</p>
+
+<hr>
+
+<h2>Timing Breakdown</h2>
+
+<p>| Step | Time |</p>
+<p>|------|------|</p>
+<p>| Step 1: Add global object | 3 min |</p>
+<p>| Step 2: Add 4 methods | 8 min |</p>
+<p>| Step 3: Update signature | 1 min |</p>
+<p>| Step 4: Add 6 patterns | 5 min |</p>
+<p>| Step 5: Modify conversation | 2 min |</p>
+<p>| Step 6: Hook into processing | 2 min |</p>
+<p>| <strong>Total Implementation</strong> | <strong>20-30 min</strong> |</p>
+<p>| Testing | 10 min |</p>
+<p>| <strong>Complete Project</strong> | <strong>30-40 min</strong> |</p>
+
+<hr>
+
+<h2>Success Indicators</h2>
+
+<p>After implementation, try these in chat:</p>
+
+<ol><li class="ol-item">"Can you see the stone?" → AI reports what it sees ✅</li>
+<li class="ol-item">"Where should I move it?" → Includes focus quality ✅</li>
+<li class="ol-item">"Is lighting good?" → Reports brightness value ✅</li>
+<li class="ol-item">"It won't work" → Uses visual diagnostics ✅</li>
+<li class="ol-item">"Is it in focus?" → Reports focus percentage ✅</li>
+<li class="ol-item">Turn off camera, ask question → Graceful fallback ✅</li></ol>
+
+<p>All 6 should work correctly for successful implementation ✅</p>
+
+<hr>
+
+<h2>Rollback Instructions (If Needed)</h2>
+
+<p>To undo all changes:</p>
+<ol><li class="ol-item">Delete aiVisionContext global</li>
+<li class="ol-item">Delete 4 vision methods from GemBotAI</li>
+<li class="ol-item">Restore getSmartContextResponse() signature to original</li>
+<li class="ol-item">Delete 6 vision-aware patterns</li>
+<li class="ol-item">Restore getConversationalResponse() to original</li>
+<li class="ol-item">Remove updateAIVisionContext() call from processVideoFrames()</li></ol>
+
+<p>Or simply restore from backup of GemBot<em>Control</em>AI.html</p>
+
+<hr>
+
+<h2>Documentation File Guide</h2>
+
+<p>| Need | Read File |</p>
+<p>|------|-----------|</p>
+<p>| Quick overview | VISION<em>COMPLETE</em>DELIVERY.md |</p>
+<p>| Step-by-step guide | VISION<em>INTEGRATION</em>QUICKSTART.md |</p>
+<p>| Exact code to copy | VISION<em>CODE</em>COPY_PASTE.md |</p>
+<p>| Architecture details | CAMERA<em>ML</em>VISION_INTEGRATION.md |</p>
+<p>| All code together | GEMBOT<em>AI</em>VISION_CODE.js |</p>
+<p>| This reference | VISION<em>QUICK</em>REFERENCE.md |</p>
+
+<hr>
+
+<h2>Copy/Paste Quick Links</h2>
+
+<p><strong>Section 1</strong>: aiVisionContext global  </p>
+<p><strong>Section 2</strong>: 4 vision methods  </p>
+<p><strong>Section 3</strong>: Modify getSmartContextResponse() signature  </p>
+<p><strong>Section 4</strong>: Add 6 response patterns  </p>
+<p><strong>Section 5</strong>: Modify getConversationalResponse()  </p>
+<p><strong>Section 6</strong>: Hook into processVideoFrames()  </p>
+
+<p>All in: <strong>VISION<em>CODE</em>COPY_PASTE.md</strong></p>
+
+<hr>
+
+<h2>Key Metrics After Implementation</h2>
+
+<ul><li class="ul-item">Vision updates: Every 30 frames (~500ms at 60fps)</li>
+<li class="ul-item">Response generation time: <5ms additional</li>
+<li class="ul-item">Memory overhead: ~5 KB</li>
+<li class="ul-item">Breaking changes: None ✅</li>
+<li class="ul-item">Backward compatibility: Full ✅</li>
+<li class="ul-item">Camera required: No (graceful fallback) ✅</li></ul>
+
+<hr>
+
+<h2>Ready to Start?</h2>
+
+<ol><li class="ol-item"><strong>Understand</strong>: Read VISION<em>COMPLETE</em>DELIVERY.md (5 min)</li>
+<li class="ol-item"><strong>Learn Steps</strong>: Read VISION<em>INTEGRATION</em>QUICKSTART.md (15 min)</li>
+<li class="ol-item"><strong>Get Code</strong>: Open VISION<em>CODE</em>COPY_PASTE.md</li>
+<li class="ol-item"><strong>Implement</strong>: Follow 6 steps (20-30 min)</li>
+<li class="ol-item"><strong>Test</strong>: Run verification checks (10 min)</li>
+<li class="ol-item"><strong>Celebrate</strong>: AI can now see! 🎉</li></ol>
+
+<p><strong>Total Time to Completion</strong>: ~1 hour</p>
+
+<hr>
+
+<h2>Last Minute Reminders</h2>
+
+<p>✅ Backup your original file first  </p>
+<p>✅ Read QUICKSTART before starting  </p>
+<p>✅ Use COPY_PASTE for exact code  </p>
+<p>✅ Add new patterns BEFORE existing patterns  </p>
+<p>✅ Verify indentation matches class methods  </p>
+<p>✅ Test with camera ON and OFF  </p>
+<p>✅ Check browser console for errors  </p>
+<p>✅ Celebrate when "Can you see it?" works!</p>
+
+<hr>
+
+<p><strong>READY? Let's go!</strong> 🚀</p>
+
+<p>Start with: VISION<em>INTEGRATION</em>QUICKSTART.md</p>
+
+        <div class="generated-notice">
+            🤖 Auto-generated from VISION_QUICK_REFERENCE.md by GemBot Neural Dashboard Agent<br>
+            Generated: 2025-12-16T13:52:31.730Z
+        </div>
+    </div>
+</body>
+</html>

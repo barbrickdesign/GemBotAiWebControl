@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HOME_FUNCTION_ISSUE_ANALYSIS - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        <h1>Home Function Issue Analysis - GemBot WorkingMini2025</h1>
+
+<p><strong>Date:</strong> December 6, 2025  </p>
+<p><strong>Issue:</strong> After Switch Test, Home function sometimes fails:</p>
+<ul><li class="ul-item">Y axis doesn't trigger limit switch</li>
+<li class="ul-item">Y axis goes down and angle just sets to 90 instead of completing home</li>
+<li class="ul-item">Workaround: Re-running home function fixes it</li></ul>
+
+<hr>
+
+<h2>🔍 Root Cause Identified</h2>
+
+<h3>Problem #1: Y Limit Switch State Not Reset After Switch Test</h3>
+
+<p><strong>Location:</strong> <code class="inline-code">settingsHome()</code> function (line 2768)</p>
+
+<pre class="code-block cpp" data-lang="cpp"><code>void settingsHome(){
+<p>  limitSwitchy.resetCount();  // ← This DOES reset count</p>
+<p>  int ystepCount = 0;</p>
+<p>  // ... but the switch STATE may still be &quot;pressed&quot; from switchTest()</code></pre></p>
+
+<p><strong>Issue:</strong> The <code class="inline-code">resetCount()</code> only resets the <em>count</em>, NOT the actual button state. If the Y switch was pressed during <code class="inline-code">switchTest()</code> and not released, the <code class="inline-code">limitSwitchy.isPressed()</code> call in <code class="inline-code">settingsHome()</code> will fail because the switch is already in the pressed state.</p>
+
+<h3>Problem #2: Y Limit Switch State Tracking</h3>
+
+<p><strong>In switchTest()</strong> (line 2436):</p>
+<pre class="code-block cpp" data-lang="cpp"><code>while(testYSet != 90){
+<p>    limitSwitchy.loop();</p>
+<p>    if(limitSwitchy.isPressed()){</p>
+<p>        // ... test complete</p>
+<p>        testYSet = 90;  // Exit loop WITHOUT waiting for release</p>
+<p>    }</p>
+<p>}</code></pre></p>
+
+<p><strong>Then immediately after</strong>, if user navigates to <code class="inline-code">settingsHome()</code> without releasing the Y switch physically:</p>
+<ul><li class="ul-item">The ezButton library still thinks the switch is pressed</li>
+<li class="ul-item"><code class="inline-code">limitSwitchy.isPressed()</code> returns false (because it only triggers on transitions: untouched→touched)</li>
+<li class="ul-item">The home function can't detect when the switch is pressed again</li></ul>
+
+<h3>Problem #3: P Axis Gets Set to 90 Early</h3>
+
+<p><strong>Location:</strong> <code class="inline-code">settingsHome()</code> (line 2866)</p>
+
+<pre class="code-block cpp" data-lang="cpp"><code>while(homePSet != 90){
+<p>    limitSwitchp.loop();</p>
+<p>    PaxisMotor-&gt;step(1,BACKWARD,MICROSTEP);</p>
+<p>    if(limitSwitchp.isPressed()){</p>
+<p>        homePSet = 90;  // ← P angle is set to 90 immediately</p>
+<p>        // ...</p>
+<p>    }</p>
+<p>}</code></pre></p>
+
+<p>If the Y limit switch detection fails (Problem #1), the code skips the Y homing while loop and jumps directly to P angle homing. This explains why you see "angle just sets to 90 without proper home function."</p>
+
+<hr>
+
+<h2>✅ Solutions</h2>
+
+<h3>Solution #1: Force Limit Switch State Reset</h3>
+
+<p>Add explicit state reset in <code class="inline-code">settingsHome()</code>:</p>
+
+<pre class="code-block cpp" data-lang="cpp"><code>void settingsHome(){
+<p>  // Reset Y limit switch state completely</p>
+<p>  limitSwitchy.resetCount();</p>
+<p>  limitSwitchy.loop();  // Call loop to update internal state</p>
+  
+<p>  // Wait for switch to be released (if pressed)</p>
+<p>  int releaseTimeout = 0;</p>
+<p>  while(limitSwitchy.getState() == 1 &amp;&amp; releaseTimeout &lt; 200) {</p>
+<p>    limitSwitchy.loop();</p>
+<p>    delay(10);</p>
+<p>    releaseTimeout++;</p>
+<p>  }</p>
+  
+<p>  if(releaseTimeout &gt;= 200) {</p>
+<p>    Serial.println(&quot;WARNING: Y limit switch not released after Switch Test!&quot;);</p>
+<p>  }</p>
+  
+<p>  // Now safe to home</p>
+<p>  int ystepCount = 0;</p>
+<p>  homeYSet = 0;</p>
+<p>  // ... rest of code</code></pre></p>
+
+<h3>Solution #2: Add Explicit Switch Release Detection</h3>
+
+<p>Add a "release wait" before starting home sequence:</p>
+
+<pre class="code-block cpp" data-lang="cpp"><code>void settingsHome(){
+<p>  limitSwitchy.resetCount();</p>
+<p>  limitSwitchy.loop();</p>
+  
+<p>  // Ensure Y switch is fully released</p>
+<p>  lcd.clear();</p>
+<p>  lcd.setCursor(0,0);</p>
+<p>  lcd.print(&quot;Ready to Home&quot;);</p>
+<p>  lcd.setCursor(0,1);</p>
+<p>  lcd.print(&quot;Waiting for release&quot;);</p>
+  
+<p>  // Wait up to 2 seconds for switch to be released</p>
+<p>  unsigned long startTime = millis();</p>
+<p>  while(limitSwitchy.getState() == 1 &amp;&amp; (millis() - startTime) &lt; 2000) {</p>
+<p>    limitSwitchy.loop();</p>
+<p>    delay(10);</p>
+<p>  }</p>
+  
+<p>  // Now proceed with homing</p>
+<p>  lcd.clear();</p>
+<p>  int ystepCount = 0;</p>
+<p>  homeYSet = 0;</p>
+<p>  // ... rest of code</code></pre></p>
+
+<h3>Solution #3: Check Switch State Before Motion</h3>
+
+<p>Add safety check in Y homing loop:</p>
+
+<pre class="code-block cpp" data-lang="cpp"><code>while(homeYSet == 0){
+<p>  limitSwitchy.loop();</p>
+  
+<p>  // Safety: Skip motion if switch is already pressed</p>
+<p>  if(limitSwitchy.getState() == 0) {  // Only move if not pressed</p>
+<p>    YaxisMotor-&gt;step(1,BACKWARD,SINGLE);</p>
+<p>    ystepCount += 1;</p>
+<p>  }</p>
+  
+<p>  if(limitSwitchy.isPressed()){</p>
+<p>    // Switch just got pressed</p>
+<p>    Serial.println(&quot;y limit switch: Untouched -&gt; Touched 16&quot;);</p>
+<p>    homeYSet = homeYSet + 1;</p>
+<p>    // ... offset and positioning</p>
+<p>  }</p>
+  
+<p>  // Timeout safety: If no press after 5000 steps, abort</p>
+<p>  if(ystepCount &gt; 5000) {</p>
+<p>    Serial.println(&quot;ERROR: Y homing timeout - switch may be stuck!&quot;);</p>
+<p>    homeYSet = 1;</p>
+<p>    // Could add retry logic here</p>
+<p>  }</p>
+<p>}</code></pre></p>
+
+<h3>Solution #4: Recommended Comprehensive Fix</h3>
+
+<p><strong>Best approach - combine Solutions #1 and #3:</strong></p>
+
+<pre class="code-block cpp" data-lang="cpp"><code>void settingsHome(){
+<p>  // Part 1: Reset and wait for release</p>
+<p>  limitSwitchy.resetCount();</p>
+<p>  limitSwitchy.loop();</p>
+  
+<p>  Serial.println(&quot;DEBUG: settingsHome() - Resetting Y limit switch&quot;);</p>
+  
+<p>  // Wait for Y switch to be fully released (from Switch Test)</p>
+<p>  unsigned long releaseTimeout = millis();</p>
+<p>  while(limitSwitchy.getState() == 1) {</p>
+<p>    limitSwitchy.loop();</p>
+<p>    delay(5);</p>
+<p>    if(millis() - releaseTimeout &gt; 2000) {</p>
+<p>      Serial.println(&quot;ERROR: Y switch stuck in pressed state!&quot;);</p>
+<p>      break;</p>
+<p>    }</p>
+<p>  }</p>
+  
+<p>  Serial.println(&quot;DEBUG: Y switch ready for homing&quot;);</p>
+  
+<p>  // Part 2: Proceed with normal homing</p>
+<p>  int ystepCount = 0;</p>
+<p>  homeYSet = 0;</p>
+<p>  homeYSet2 = 0;</p>
+<p>  homeYPosition = 0;</p>
+  
+<p>  lcd.clear();</p>
+<p>  lcd.setCursor(0,0);</p>
+<p>  lcd.print(&quot;Homing Y&quot;);</p>
+  
+<p>  while(homeYSet == 0){</p>
+<p>    limitSwitchy.loop();</p>
+    
+<p>    // Step only if switch not currently pressed</p>
+<p>    if(limitSwitchy.getState() == 0) {</p>
+<p>      YaxisMotor-&gt;step(1,BACKWARD,SINGLE);</p>
+<p>      ystepCount += 1;</p>
+<p>    }</p>
+    
+<p>    // Detect press transition</p>
+<p>    if(limitSwitchy.isPressed()){</p>
+<p>      Serial.println(&quot;Y switch pressed at step: &quot; + String(ystepCount));</p>
+<p>      lcd.print(&quot; Set&quot;);</p>
+<p>      homeYSet = homeYSet + 1;</p>
+      
+<p>      // Offset from switch</p>
+<p>      YaxisMotor-&gt;step(100,FORWARD,MICROSTEP);</p>
+<p>      homeYPosition = 0;</p>
+      
+<p>      // Double-check for bouncing</p>
+<p>      delay(50);</p>
+<p>    }</p>
+    
+<p>    // Timeout protection</p>
+<p>    if(ystepCount &gt; 10000) {</p>
+<p>      Serial.println(&quot;ERROR: Y homing exceeded 10000 steps!&quot;);</p>
+<p>      homeYSet = 1;</p>
+<p>      break;</p>
+<p>    }</p>
+<p>  }</p>
+  
+<p>  // Continue with X and P homing...</p>
+<p>}</code></pre></p>
+
+<hr>
+
+<h2>📋 Comparison Table</h2>
+
+<p>| Issue | Before | After |</p>
+<p>|-------|--------|-------|</p>
+<p>| Y switch state after test | May be stuck pressed | Explicitly released |</p>
+<p>| Y motion detection | Miss transitions | Reliably detects |</p>
+<p>| Angle jumping to 90 | Yes (skips Y homing) | No (Y completes first) |</p>
+<p>| Timeout protection | None | 10000 step limit |</p>
+<p>| Debug visibility | Minimal | Full state logging |</p>
+
+<hr>
+
+<h2>🧪 Testing Procedure</h2>
+
+<p>After implementing the fix:</p>
+
+<ol><li class="ol-item">Run <strong>Switch Test</strong> (press all 3 switches)</li>
+<li class="ol-item">Immediately run <strong>Home</strong> function</li>
+<li class="ol-item">Verify:</li></ol>
+<p>   - ✅ Y axis moves up toward switch</p>
+<p>   - ✅ Y switch triggers (see "y limit switch: Untouched -> Touched" in console)</p>
+<p>   - ✅ Y axis backs off 100 steps</p>
+<p>   - ✅ X homing proceeds</p>
+<p>   - ✅ P angle sets to 90</p>
+<p>   - ✅ Manual Control page displays</p>
+
+<ol><li class="ol-item">Run Home 5+ times consecutively without reset</li></ol>
+<p>   - All attempts should succeed consistently</p>
+
+<hr>
+
+<h2>📝 Recommendation</h2>
+
+<p>Implement <strong>Solution #4</strong> as it:</p>
+<ul><li class="ul-item">✅ Handles state reset properly</li>
+<li class="ul-item">✅ Adds timeout protection</li>
+<li class="ul-item">✅ Provides debug output to diagnose issues</li>
+<li class="ul-item">✅ Prevents motion during problematic states</li>
+<li class="ul-item">✅ Most robust against bounce/timing issues</li></ul>
+
+<p>The issue is definitely <strong>not</strong> in the touch screen script - it's the switch state not being properly managed between functions.</p>
+
+
+        <div class="generated-notice">
+            🤖 Auto-generated from HOME_FUNCTION_ISSUE_ANALYSIS.md by GemBot Neural Dashboard Agent<br>
+            Generated: 2025-12-16T13:52:10.456Z
+        </div>
+    </div>
+</body>
+</html>

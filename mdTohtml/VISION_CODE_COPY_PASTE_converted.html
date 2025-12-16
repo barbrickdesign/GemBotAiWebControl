@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VISION_CODE_COPY_PASTE - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        <h1>Camera/ML Vision Integration - Copy/Paste Code Reference</h1>
+
+<p>This file contains exact code blocks ready to copy and paste into GemBot<em>Control</em>AI.html</p>
+
+<hr>
+
+<h2>1. GLOBAL VISION DATA STRUCTURE</h2>
+
+<p><strong>Location</strong>: Line 4110 (before <code class="inline-code">const mlState = {...}</code>)</p>
+
+<p><strong>Exact Code to Add</strong>:</p>
+<pre class="code-block javascript" data-lang="javascript"><code>// ==================== AI VISION CONTEXT ====================
+<p>const aiVisionContext = {</p>
+<p>    // Current frame analysis from ML</p>
+<p>    currentFrame: {</p>
+<p>        timestamp: null,        // When frame was analyzed</p>
+<p>        brightness: 0,          // 0-255 brightness value</p>
+<p>        focusQuality: 0,        // 0-100 focus quality percentage</p>
+<p>        centerBrightness: 0,    // Center area brightness</p>
+<p>        hasValidFrames: false   // Are we getting frames?</p>
+<p>    },</p>
+    
+<p>    // Object detection results</p>
+<p>    detections: {</p>
+<p>        found: false,           // Any objects detected?</p>
+<p>        count: 0,               // Number of objects found</p>
+<p>        objects: [],            // Array of detected objects</p>
+<p>        maxConfidence: 0,       // Highest confidence (0-1)</p>
+<p>        averageConfidence: 0    // Average confidence across detections</p>
+<p>    },</p>
+    
+<p>    // Analysis quality</p>
+<p>    analysis: {</p>
+<p>        lastUpdateTime: null,</p>
+<p>        framesSinceLastDetection: 0,</p>
+<p>        detectionFrequency: 0,  // How often detections occur</p>
+<p>        averageFocusQuality: 0  // Running average focus quality</p>
+<p>    },</p>
+    
+<p>    // AI-friendly description of current visual state</p>
+<p>    visualState: &#039;&#039;,            // &quot;Clear view, good lighting, object visible&quot;</p>
+<p>    lightingStatus: &#039;&#039;,         // &quot;Optimal&quot;, &quot;Dim&quot;, &quot;Bright&quot;</p>
+<p>    detectionStatus: &#039;&#039;,        // &quot;Object visible&quot;, &quot;No clear objects&quot;, &quot;Partially visible&quot;</p>
+<p>    recommendations: []         // Array of visual recommendations</p>
+<p>};</code></pre></p>
+
+<hr>
+
+<h2>2. VISION METHODS FOR GemBotAI CLASS</h2>
+
+<p><strong>Location</strong>: Inside GemBotAI class, after the <code class="inline-code">getSmartContextResponse()</code> method</p>
+
+<p><strong>Exact Code to Add</strong>:</p>
+
+<h3>Method 1: updateAIVisionContext()</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>/**
+<p>         * updateAIVisionContext()</p>
+<p>         * Called from processVideoFrames() to keep AI aware of current visual state</p>
+<p>         * Updates the global aiVisionContext with latest camera/ML data</p>
+<p>         */</p>
+<p>        updateAIVisionContext(frameFeatures, mlDetections) {</p>
+<p>            if (!frameFeatures || !mlDetections) return;</p>
+            
+<p>            // Update frame analysis</p>
+<p>            aiVisionContext.currentFrame.timestamp = frameFeatures.timestamp;</p>
+<p>            aiVisionContext.currentFrame.brightness = frameFeatures.brightness;</p>
+<p>            aiVisionContext.currentFrame.focusQuality = frameFeatures.focusQuality;</p>
+<p>            aiVisionContext.currentFrame.centerBrightness = frameFeatures.centerBrightness;</p>
+<p>            aiVisionContext.currentFrame.hasValidFrames = true;</p>
+            
+<p>            // Update detection results</p>
+<p>            aiVisionContext.detections.found = mlDetections.length &gt; 0;</p>
+<p>            aiVisionContext.detections.count = mlDetections.length;</p>
+<p>            aiVisionContext.detections.objects = mlDetections;</p>
+            
+<p>            if (mlDetections.length &gt; 0) {</p>
+<p>                const confidences = mlDetections.map(d =&gt; d.score);</p>
+<p>                aiVisionContext.detections.maxConfidence = Math.max(...confidences);</p>
+<p>                aiVisionContext.detections.averageConfidence = </p>
+<p>                    confidences.reduce((a, b) =&gt; a + b, 0) / confidences.length;</p>
+<p>                aiVisionContext.analysis.framesSinceLastDetection = 0;</p>
+<p>            } else {</p>
+<p>                aiVisionContext.analysis.framesSinceLastDetection++;</p>
+<p>            }</p>
+            
+<p>            // Generate visual state descriptions</p>
+<p>            this.generateVisualStateDescription();</p>
+<p>        }</code></pre></p>
+
+<h3>Method 2: generateVisualStateDescription()</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>/**
+<p>         * generateVisualStateDescription()</p>
+<p>         * Creates human-readable descriptions of current visual conditions</p>
+<p>         */</p>
+<p>        generateVisualStateDescription() {</p>
+<p>            const vision = aiVisionContext;</p>
+            
+<p>            // Lighting status</p>
+<p>            if (vision.currentFrame.brightness &lt; 80) {</p>
+<p>                vision.lightingStatus = &#039;Dim - consider increasing light&#039;;</p>
+<p>            } else if (vision.currentFrame.brightness &lt; 150) {</p>
+<p>                vision.lightingStatus = &#039;Moderate - adequate for work&#039;;</p>
+<p>            } else if (vision.currentFrame.brightness &lt; 220) {</p>
+<p>                vision.lightingStatus = &#039;Good - optimal for precision&#039;;</p>
+<p>            } else {</p>
+<p>                vision.lightingStatus = &#039;Bright - excellent lighting conditions&#039;;</p>
+<p>            }</p>
+            
+<p>            // Focus quality status</p>
+<p>            if (vision.currentFrame.focusQuality &gt; 85) {</p>
+<p>                vision.detectionStatus = &#039;Excellent focus - center is sharp&#039;;</p>
+<p>            } else if (vision.currentFrame.focusQuality &gt; 70) {</p>
+<p>                vision.detectionStatus = &#039;Good focus - mostly in alignment&#039;;</p>
+<p>            } else if (vision.currentFrame.focusQuality &gt; 50) {</p>
+<p>                vision.detectionStatus = &#039;Fair focus - some adjustment needed&#039;;</p>
+<p>            } else {</p>
+<p>                vision.detectionStatus = &#039;Poor focus - reposition for clarity&#039;;</p>
+<p>            }</p>
+            
+<p>            // Object detection status</p>
+<p>            if (vision.detections.found) {</p>
+<p>                const confidence = vision.detections.maxConfidence;</p>
+<p>                if (confidence &gt; 0.85) {</p>
+<p>                    vision.detectionStatus = <code class="inline-code">Clear visibility - ${vision.detections.count} object(s) detected with ${(confidence*100).toFixed(0)}% confidence</code>;</p>
+<p>                } else if (confidence &gt; 0.70) {</p>
+<p>                    vision.detectionStatus = <code class="inline-code">Visible - ${vision.detections.count} object(s) partially clear at ${(confidence*100).toFixed(0)}% confidence</code>;</p>
+<p>                } else {</p>
+<p>                    vision.detectionStatus = <code class="inline-code">Faint - ${vision.detections.count} object(s) barely visible at ${(confidence*100).toFixed(0)}% confidence</code>;</p>
+<p>                }</p>
+<p>            } else if (vision.analysis.framesSinceLastDetection &lt; 60) {</p>
+<p>                vision.detectionStatus = &#039;No objects visible in current frame&#039;;</p>
+<p>            } else {</p>
+<p>                vision.detectionStatus = &#039;No objects detected - check positioning&#039;;</p>
+<p>            }</p>
+            
+<p>            // Combined visual state</p>
+<p>            vision.visualState = <code class="inline-code">${vision.lightingStatus} | ${vision.detectionStatus}</code>;</p>
+            
+<p>            // Generate recommendations</p>
+<p>            this.generateVisualRecommendations();</p>
+<p>        }</code></pre></p>
+
+<h3>Method 3: generateVisualRecommendations()</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>/**
+<p>         * generateVisualRecommendations()</p>
+<p>         * Creates actionable recommendations based on visual analysis</p>
+<p>         */</p>
+<p>        generateVisualRecommendations() {</p>
+<p>            const vision = aiVisionContext;</p>
+<p>            vision.recommendations = [];</p>
+            
+<p>            // Lighting recommendations</p>
+<p>            if (vision.currentFrame.brightness &lt; 100) {</p>
+<p>                vision.recommendations.push(&#039;📍 Increase lighting - surface clarity is low&#039;);</p>
+<p>            } else if (vision.currentFrame.brightness &gt; 230) {</p>
+<p>                vision.recommendations.push(&#039;🌞 Reduce glare - consider adjusting light angle&#039;);</p>
+<p>            }</p>
+            
+<p>            // Focus recommendations</p>
+<p>            if (vision.currentFrame.focusQuality &lt; 65) {</p>
+<p>                vision.recommendations.push(&#039;🎯 Adjust stone position - focus quality is poor&#039;);</p>
+<p>            }</p>
+            
+<p>            // Detection recommendations</p>
+<p>            if (!vision.detections.found &amp;&amp; vision.analysis.framesSinceLastDetection &gt; 30) {</p>
+<p>                vision.recommendations.push(&#039;👀 Check if stone is properly positioned in frame&#039;);</p>
+<p>            } else if (vision.detections.found &amp;&amp; vision.detections.maxConfidence &lt; 0.7) {</p>
+<p>                vision.recommendations.push(&#039;🔍 Object partially obscured - reposition for clarity&#039;);</p>
+<p>            } else if (vision.detections.found &amp;&amp; vision.detections.maxConfidence &gt; 0.85) {</p>
+<p>                vision.recommendations.push(&#039;✅ Excellent visibility - ready for precision work&#039;);</p>
+<p>            }</p>
+            
+<p>            // Speed recommendations</p>
+<p>            if (vision.currentFrame.brightness &gt; 150 &amp;&amp; vision.detections.found) {</p>
+<p>                vision.recommendations.push(&#039;⚡ Lighting optimal - can proceed with current speed&#039;);</p>
+<p>            }</p>
+<p>        }</code></pre></p>
+
+<h3>Method 4: getVisionData()</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>/**
+<p>         * getVisionData()</p>
+<p>         * Returns current vision context for AI to use</p>
+<p>         */</p>
+<p>        getVisionData() {</p>
+<p>            return {</p>
+<p>                hasVision: aiVisionContext.currentFrame.hasValidFrames,</p>
+<p>                brightness: aiVisionContext.currentFrame.brightness,</p>
+<p>                focusQuality: aiVisionContext.currentFrame.focusQuality,</p>
+<p>                objectsDetected: aiVisionContext.detections.found,</p>
+<p>                detectionCount: aiVisionContext.detections.count,</p>
+<p>                confidence: aiVisionContext.detections.maxConfidence,</p>
+<p>                visualState: aiVisionContext.visualState,</p>
+<p>                lightingStatus: aiVisionContext.lightingStatus,</p>
+<p>                detectionStatus: aiVisionContext.detectionStatus,</p>
+<p>                recommendations: aiVisionContext.recommendations</p>
+<p>            };</p>
+<p>        }</code></pre></p>
+
+<hr>
+
+<h2>3. MODIFY getSmartContextResponse() SIGNATURE</h2>
+
+<p><strong>Location</strong>: Line 2240</p>
+
+<p><strong>Find</strong>:</p>
+<pre class="code-block javascript" data-lang="javascript"><code>getSmartContextResponse(query, speed, mode, posX, posY) {</code></pre>
+
+<p><strong>Replace with</strong>:</p>
+<pre class="code-block javascript" data-lang="javascript"><code>getSmartContextResponse(query, speed, mode, posX, posY, visionData = null) {</code></pre>
+
+<hr>
+
+<h2>4. NEW RESPONSE PATTERNS FOR getSmartContextResponse()</h2>
+
+<p><strong>Location</strong>: Inside <code class="inline-code">getSmartContextResponse()</code>, BEFORE existing pattern checks</p>
+
+<p><strong>Note</strong>: These should be added as the FIRST patterns to check, so they match before generic patterns.</p>
+
+<h3>Pattern 1: Camera/Vision Questions</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>// Camera/Vision questions - ADD FIRST
+<p>                if (/see|visible|camera|view|focus|clarity|bright|light|lens|frame/.test(lowerQuery)) {</p>
+<p>                    if (visionData &amp;&amp; visionData.hasVision) {</p>
+<p>                        let response = <code class="inline-code">I&#039;m watching your workspace: ${visionData.visualState}. </code>;</p>
+                        
+<p>                        if (visionData.recommendations.length &gt; 0) {</p>
+<p>                            response += visionData.recommendations.slice(0, 2).join(&#039; &#039;) + &#039; &#039;;</p>
+<p>                        }</p>
+                        
+<p>                        response += <code class="inline-code">Current readings: Brightness ${visionData.brightness}/255, Focus quality ${visionData.focusQuality}%. </code>;</p>
+                        
+<p>                        if (visionData.objectsDetected) {</p>
+<p>                            response += <code class="inline-code">I detect ${visionData.detectionCount} object(s) with ${(visionData.confidence*100).toFixed(0)}% confidence.</code>;</p>
+<p>                        } else {</p>
+<p>                            response += <code class="inline-code">No objects currently visible - check stone positioning.</code>;</p>
+<p>                        }</p>
+                        
+<p>                        return response;</p>
+<p>                    } else {</p>
+<p>                        return <code class="inline-code">Camera is not active. Click START CAMERA to begin visual monitoring of your workspace.</code>;</p>
+<p>                    }</p>
+<p>                }</code></pre></p>
+
+<h3>Pattern 2: Positioning with Visual Feedback</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>// Position/Movement questions - MODIFIED
+<p>                if (/position|where|move|axis|x-axis|y-axis|location|coordinate/.test(lowerQuery)) {</p>
+<p>                    let response = <code class="inline-code">POSITIONING: GemBot has 4 axes: X (left-right), Y (forward-back to lap), Rotation (spin stone), Index (switch laps). Current position: X=${posX}, Y=${posY}. Use buttons to move step-by-step or hold for continuous movement.</code>;</p>
+                    
+<p>                    if (visionData &amp;&amp; visionData.hasVision) {</p>
+<p>                        if (visionData.objectsDetected) {</p>
+<p>                            response += <code class="inline-code"> 👁️ I see: ${visionData.detectionStatus}</code>;</p>
+<p>                        }</p>
+<p>                        if (visionData.focusQuality &lt; 70) {</p>
+<p>                            response += <code class="inline-code"> Consider adjusting for better focus (currently ${visionData.focusQuality}%).</code>;</p>
+<p>                        }</p>
+<p>                    }</p>
+                    
+<p>                    return response;</p>
+<p>                }</code></pre></p>
+
+<h3>Pattern 3: Lighting/Illumination Questions</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>// Lighting questions - NEW
+<p>                if (/light|bright|dark|dim|illuminate|glow|shadow/.test(lowerQuery)) {</p>
+<p>                    if (visionData &amp;&amp; visionData.hasVision) {</p>
+<p>                        return <code class="inline-code">LIGHTING: I measure your workspace brightness at ${visionData.brightness}/255. ${visionData.lightingStatus}. ${visionData.recommendations.filter(r =&gt; r.includes(&#039;light&#039;) || r.includes(&#039;💡&#039;) || r.includes(&#039;🌞&#039;)).join(&#039; &#039;) || &#039;Current lighting is adequate for work.&#039;}</code>;</p>
+<p>                    } else {</p>
+<p>                        return <code class="inline-code">LIGHTING: Optimal gem cutting requires good, consistent lighting. Start the camera to see current light levels. Aim for brightness 150-220 for best visibility and precision.</code>;</p>
+<p>                    }</p>
+<p>                }</code></pre></p>
+
+<h3>Pattern 4: Problem Diagnosis with Visual Data</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>// Stuck/Emergency/Problem questions - MODIFIED
+<p>                if (/stuck|won&#039;t|error|problem|issue|help|trouble|can&#039;t|cannot|not working/.test(lowerQuery)) {</p>
+<p>                    let response = <code class="inline-code">Machine issue? </code>;</p>
+                    
+<p>                    if (visionData &amp;&amp; visionData.hasVision) {</p>
+<p>                        if (!visionData.objectsDetected &amp;&amp; visionData.brightness &gt; 100) {</p>
+<p>                            response += <code class="inline-code">Visual check: No object detected in camera. Is the stone positioned on the lap? </code>;</p>
+<p>                        } else if (visionData.focusQuality &lt; 60) {</p>
+<p>                            response += <code class="inline-code">Visual check: Object is detected but poorly focused (${visionData.focusQuality}% quality). Adjust stone position for clarity. </code>;</p>
+<p>                        } else if (visionData.objectsDetected &amp;&amp; visionData.focusQuality &gt; 75) {</p>
+<p>                            response += <code class="inline-code">Visual check: Stone is clearly visible and well-positioned. </code>;</p>
+<p>                        }</p>
+<p>                    }</p>
+                    
+<p>                    if (/connection|disconnect|lost|port/.test(lowerQuery)) {</p>
+<p>                        response = <code class="inline-code">Lost connection? (1) Click SCAN to find available ports. (2) Select correct COM port. (3) CONNECT. (4) Click HOME to reset position. (5) Check USB cable.</code>;</p>
+<p>                    } else {</p>
+<p>                        response += <code class="inline-code">Try this: (1) Check connection status (top-left indicator). (2) Click HOME to reset position. (3) Try buttons again. (4) If still stuck: EMERGENCY STOP, wait 2 seconds, DISCONNECT, then SCAN and RECONNECT.</code>;</p>
+<p>                    }</p>
+                    
+<p>                    return response;</p>
+<p>                }</code></pre></p>
+
+<h3>Pattern 5: Focus/Clarity Questions</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>// Focus/Clarity questions - NEW
+<p>                if (/focus|clear|clarity|sharp|blur|adjust position/.test(lowerQuery)) {</p>
+<p>                    if (visionData &amp;&amp; visionData.hasVision) {</p>
+<p>                        let response = <code class="inline-code">FOCUS: Current focus quality is ${visionData.focusQuality}%. </code>;</p>
+                        
+<p>                        if (visionData.focusQuality &gt; 80) {</p>
+<p>                            response += <code class="inline-code">Excellent! Your stone is well-positioned. Safe to proceed with cutting.</code>;</p>
+<p>                        } else if (visionData.focusQuality &gt; 65) {</p>
+<p>                            response += <code class="inline-code">Good focus - adequate for most work. Fine adjustments can improve further.</code>;</p>
+<p>                        } else {</p>
+<p>                            response += <code class="inline-code">Poor focus - reposition your stone carefully. Move slowly with STEP mode, watching the camera for sharpness improvement.</code>;</p>
+<p>                        }</p>
+                        
+<p>                        return response;</p>
+<p>                    } else {</p>
+<p>                        return <code class="inline-code">FOCUS: Start the camera to see focus quality. Use STEP mode to carefully position your stone until the center is sharp and clear.</code>;</p>
+<p>                    }</p>
+<p>                }</code></pre></p>
+
+<h3>Pattern 6: Detection/Visibility Questions</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>// Detection/Visibility questions - NEW
+<p>                if (/detect|see.*object|visibility|object|visible/.test(lowerQuery)) {</p>
+<p>                    if (visionData &amp;&amp; visionData.hasVision) {</p>
+<p>                        let response = <code class="inline-code">DETECTION: </code>;</p>
+                        
+<p>                        if (visionData.objectsDetected) {</p>
+<p>                            response += <code class="inline-code">I detect ${visionData.detectionCount} object(s). Confidence: ${(visionData.confidence*100).toFixed(0)}%. ${visionData.detectionStatus}. </code>;</p>
+<p>                            if (visionData.confidence &gt; 0.85) {</p>
+<p>                                response += <code class="inline-code">Visibility is excellent - clear for detailed work.</code>;</p>
+<p>                            } else if (visionData.confidence &gt; 0.7) {</p>
+<p>                                response += <code class="inline-code">Adequate visibility - consider minor positioning adjustments.</code>;</p>
+<p>                            } else {</p>
+<p>                                response += <code class="inline-code">Low confidence - reposition for better visibility.</code>;</p>
+<p>                            }</p>
+<p>                        } else {</p>
+<p>                            response += <code class="inline-code">No objects detected. Is your stone positioned in the camera view? Check alignment and try again.</code>;</p>
+<p>                        }</p>
+                        
+<p>                        return response;</p>
+<p>                    } else {</p>
+<p>                        return <code class="inline-code">DETECTION: Start the camera to see object detection. The AI will identify what&#039;s in frame and help guide positioning.</code>;</p>
+<p>                    }</p>
+<p>                }</code></pre></p>
+
+<hr>
+
+<h2>5. MODIFY getConversationalResponse() METHOD</h2>
+
+<p><strong>Location</strong>: Line 2332</p>
+
+<p><strong>Find</strong>:</p>
+<pre class="code-block javascript" data-lang="javascript"><code>getConversationalResponse(query) {
+<p>                const currentSpeed = motorSpeed || 1;</p>
+<p>                const currentMode = motorMode || &#039;continuous&#039;;</p>
+<p>                const posX = machineState?.currentState?.positionX || 0;</p>
+<p>                const posY = machineState?.currentState?.positionY || 0;</p>
+                
+<p>                // Try smart response first</p>
+<p>                let response = this.getSmartContextResponse(query, currentSpeed, currentMode, posX, posY);</code></pre></p>
+
+<p><strong>Replace with</strong>:</p>
+<pre class="code-block javascript" data-lang="javascript"><code>getConversationalResponse(query) {
+<p>                const currentSpeed = motorSpeed || 1;</p>
+<p>                const currentMode = motorMode || &#039;continuous&#039;;</p>
+<p>                const posX = machineState?.currentState?.positionX || 0;</p>
+<p>                const posY = machineState?.currentState?.positionY || 0;</p>
+                
+<p>                // 🆕 Get vision data for AI awareness</p>
+<p>                const visionData = this.getVisionData();</p>
+                
+<p>                // Try smart response first</p>
+<p>                let response = this.getSmartContextResponse(query, currentSpeed, currentMode, posX, posY, visionData);</code></pre></p>
+
+<hr>
+
+<h2>6. HOOK INTO processVideoFrames()</h2>
+
+<p><strong>Location</strong>: Line 4065 (inside the ML detection section)</p>
+
+<p><strong>Find</strong>:</p>
+<pre class="code-block javascript" data-lang="javascript"><code>// Run ML detection every 30 frames
+<p>                if (mlState.frameCount % 30 === 0 &amp;&amp; mlModelLoaded) {</p>
+<p>                    const predictions = await mlModel.detectObjects(video);</p>
+<p>                    mlState.detections = predictions;</p>
+                    
+<p>                    // Log frame analysis to session</p>
+<p>                    sessionRecorder.logFrameAnalysis(features, predictions);</code></pre></p>
+
+<p><strong>Replace with</strong>:</p>
+<pre class="code-block javascript" data-lang="javascript"><code>// Run ML detection every 30 frames
+<p>                if (mlState.frameCount % 30 === 0 &amp;&amp; mlModelLoaded) {</p>
+<p>                    const predictions = await mlModel.detectObjects(video);</p>
+<p>                    mlState.detections = predictions;</p>
+                    
+<p>                    // 🆕 UPDATE AI VISION CONTEXT</p>
+<p>                    if (gemBotAI) {</p>
+<p>                        gemBotAI.updateAIVisionContext(features, predictions);</p>
+<p>                    }</p>
+                    
+<p>                    // Log frame analysis to session</p>
+<p>                    sessionRecorder.logFrameAnalysis(features, predictions);</code></pre></p>
+
+<hr>
+
+<h2>Summary: Order of Changes</h2>
+
+<ol><li class="ol-item"><strong>Add aiVisionContext</strong> global (line ~4110)</li>
+<li class="ol-item"><strong>Add 4 vision methods</strong> to GemBotAI class</li>
+<li class="ol-item"><strong>Modify getSmartContextResponse()</strong> signature</li>
+<li class="ol-item"><strong>Add 6 vision-aware patterns</strong> to getSmartContextResponse()</li>
+<li class="ol-item"><strong>Modify getConversationalResponse()</strong> to pass visionData</li>
+<li class="ol-item"><strong>Hook processVideoFrames()</strong> to call updateAIVisionContext()</li></ol>
+
+<p><strong>Total Lines Added</strong>: ~400 lines</p>
+<p><strong>Total Lines Modified</strong>: 6 lines</p>
+<p><strong>Implementation Time</strong>: 20-30 minutes</p>
+
+<hr>
+
+<h2>Verification After Changes</h2>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Test in browser console:
+
+<p>// 1. Check aiVisionContext exists</p>
+<p>console.log(aiVisionContext);</p>
+
+<p>// 2. Check methods exist</p>
+<p>console.log(gemBotAI.getVisionData);</p>
+<p>console.log(gemBotAI.updateAIVisionContext);</p>
+
+<p>// 3. Start camera and check vision updates</p>
+<p>// Type in chat: &quot;Can you see the stone?&quot;</p>
+<p>// Should return vision data description</code></pre></p>
+
+<hr>
+
+<h2>Rollback Instructions</h2>
+
+<p>If you need to undo changes:</p>
+
+<ol><li class="ol-item"><strong>Remove aiVisionContext</strong> global object (delete block around line 4110)</li>
+<li class="ol-item"><strong>Remove 4 vision methods</strong> from GemBotAI class</li>
+<li class="ol-item"><strong>Revert getSmartContextResponse()</strong> signature to original</li>
+<li class="ol-item"><strong>Remove 6 vision patterns</strong> from getSmartContextResponse()</li>
+<li class="ol-item"><strong>Revert getConversationalResponse()</strong> to original</li>
+<li class="ol-item"><strong>Remove updateAIVisionContext() call</strong> from processVideoFrames()</li></ol>
+
+<p>All other code remains unchanged.</p>
+
+        <div class="generated-notice">
+            🤖 Auto-generated from VISION_CODE_COPY_PASTE.md by GemBot Neural Dashboard Agent<br>
+            Generated: 2025-12-16T13:52:31.093Z
+        </div>
+    </div>
+</body>
+</html>

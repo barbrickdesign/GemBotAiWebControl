@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MERLIN_CONTEXTUAL_GUIDANCE - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        <h1>🧙 Merlin AI Contextual Guidance System</h1>
+
+<h2>Overview</h2>
+<p>Merlin now acts as an intelligent guide that analyzes conversation context and automatically:</p>
+<ol><li class="ol-item"><strong>Flips the card</strong> to show the control panel</li>
+<li class="ol-item"><strong>Highlights specific buttons</strong> the user needs to press</li>
+<li class="ol-item"><strong>Provides clear instructions</strong> on what action to take</li></ol>
+
+<h2>🎯 How It Works</h2>
+
+<h3>Automatic Context Analysis</h3>
+<p>When a user sends a message, Merlin analyzes keywords to determine intent:</p>
+
+<pre class="code-block javascript" data-lang="javascript"><code>User: &quot;How do I plant gems?&quot;
+<p>Merlin: [Flips card] → [Highlights &quot;Plant Gems&quot; button] → &quot;🌱 Press &#039;Plant Gems&#039; to start growing your gem farm!&quot;</p>
+
+<p>User: &quot;I want to craft something&quot;</p>
+<p>Merlin: [Flips card] → [Highlights &quot;Craft Item&quot; button] → &quot;⚒️ Press &#039;Craft Item&#039; to forge something new!&quot;</p>
+
+<p>User: &quot;Where is the marketplace?&quot;</p>
+<p>Merlin: [Flips card] → [Highlights &quot;Marketplace&quot; button] → &quot;🛒 Press &#039;Marketplace&#039; to browse items!&quot;</code></pre></p>
+
+<h2>🎮 Control Panel Layout</h2>
+
+<h3>Back of Card (6 Sections)</h3>
+
+<pre class="code-block " data-lang="text"><code>╔═══════════════════════════════════════╗
+<p>║     🎮 GemBot Controls                ║</p>
+<p>╠═══════════════════════════════════════╣</p>
+<p>║  🧙‍♂️ Press the highlighted button... ║ ← Merlin&#039;s Advice Banner</p>
+<p>╠═══════════════════════════════════════╣</p>
+<p>║  🌾 Farm                              ║</p>
+<p>║  [🌱 Plant Gems]                      ║</p>
+<p>║  [💎 Harvest]                         ║</p>
+<p>║  [⬆️ Upgrade Farm]                    ║</p>
+<p>╠═══════════════════════════════════════╣</p>
+<p>║  🔨 Forge                             ║</p>
+<p>║  [⚒️ Craft Item]                      ║</p>
+<p>║  [🔧 Repair]                          ║</p>
+<p>║  [✨ Enhance]                         ║</p>
+<p>╠═══════════════════════════════════════╣</p>
+<p>║  🤖 Machine                           ║</p>
+<p>║  [🔍 Scan Area]                       ║</p>
+<p>║  [🔗 Connect]                         ║</p>
+<p>║  [📊 Analyze]                         ║</p>
+<p>╠═══════════════════════════════════════╣</p>
+<p>║  🏪 Trading                           ║</p>
+<p>║  [🛒 Marketplace]                     ║</p>
+<p>║  [💰 Trade Gems]                      ║</p>
+<p>║  [🎒 Inventory]                       ║</p>
+<p>╠═══════════════════════════════════════╣</p>
+<p>║  📚 Academy                           ║</p>
+<p>║  [📖 Learn Skill]                     ║</p>
+<p>║  [🎓 Tutorial]                        ║</p>
+<p>║  [📜 Guide]                           ║</p>
+<p>╠═══════════════════════════════════════╣</p>
+<p>║  ⚙️ System                            ║</p>
+<p>║  [⚙️ Settings]                        ║</p>
+<p>║  [❓ Help]                            ║</p>
+<p>║  [🚪 Exit]                            ║</p>
+<p>╠═══════════════════════════════════════╣</p>
+<p>║       [← Back to Chat]                ║</p>
+<p>╚═══════════════════════════════════════╝</code></pre></p>
+
+<h2>📚 Keyword Mappings</h2>
+
+<h3>🌾 Farm Actions</h3>
+<p>| User Says | Merlin Highlights | Advice |</p>
+<p>|-----------|-------------------|---------|</p>
+<p>| plant, grow, seed | Plant Gems | 🌱 Press "Plant Gems" to start growing |</p>
+<p>| harvest, collect, pick | Harvest | 💎 Press "Harvest" to collect mature gems |</p>
+<p>| upgrade farm, improve | Upgrade Farm | ⬆️ Press "Upgrade Farm" to expand |</p>
+
+<h3>🔨 Forge Actions</h3>
+<p>| User Says | Merlin Highlights | Advice |</p>
+<p>|-----------|-------------------|---------|</p>
+<p>| craft, make, create | Craft Item | ⚒️ Press "Craft Item" to forge something |</p>
+<p>| repair, fix, broken | Repair | 🔧 Press "Repair" to fix damaged items |</p>
+<p>| enhance, upgrade, improve | Enhance | ✨ Press "Enhance" to power up items |</p>
+
+<h3>🤖 Machine Actions</h3>
+<p>| User Says | Merlin Highlights | Advice |</p>
+<p>|-----------|-------------------|---------|</p>
+<p>| scan, search, find | Scan Area | 🔍 Press "Scan Area" to discover resources |</p>
+<p>| connect, link, pair | Connect | 🔗 Press "Connect" to link your machine |</p>
+<p>| analyze, check, inspect | Analyze | 📊 Press "Analyze" to examine data |</p>
+
+<h3>🏪 Trading Actions</h3>
+<p>| User Says | Merlin Highlights | Advice |</p>
+<p>|-----------|-------------------|---------|</p>
+<p>| buy, shop, market | Marketplace | 🛒 Press "Marketplace" to browse items |</p>
+<p>| trade, sell, exchange | Trade Gems | 💰 Press "Trade Gems" to exchange |</p>
+<p>| inventory, items, bag | Inventory | 🎒 Press "Inventory" to view items |</p>
+
+<h3>📚 Academy Actions</h3>
+<p>| User Says | Merlin Highlights | Advice |</p>
+<p>|-----------|-------------------|---------|</p>
+<p>| learn, teach, skill | Learn Skill | 📖 Press "Learn Skill" for new abilities |</p>
+<p>| tutorial, how to | Tutorial | 🎓 Press "Tutorial" to learn basics |</p>
+<p>| guide | Guide | 📜 Press "Guide" for detailed help |</p>
+
+<h3>⚙️ System Actions</h3>
+<p>| User Says | Merlin Highlights | Advice |</p>
+<p>|-----------|-------------------|---------|</p>
+<p>| help, stuck, confused | Help | ❓ Press "Help" for assistance |</p>
+
+<h2>🎨 Visual Effects</h2>
+
+<h3>Advice Banner</h3>
+<ul><li class="ul-item"><strong>Purple gradient background</strong> with pulsing glow</li>
+<li class="ul-item"><strong>Wizard icon</strong> (🧙‍♂️) with drop shadow</li>
+<li class="ul-item"><strong>Dynamic text</strong> that changes based on context</li>
+<li class="ul-item"><strong>Animated pulse</strong> to draw attention</li></ul>
+
+<h3>Button Highlighting</h3>
+<pre class="code-block css" data-lang="css"><code>Normal Button:
+<p>┌─────────────────┐</p>
+<p>│ 🌱 Plant Gems   │ (Dark background)</p>
+<p>└─────────────────┘</p>
+
+<p>Highlighted Button:</p>
+<p>╔═════════════════╗</p>
+<p>║ 🌱 Plant Gems   ║ (Purple glow, scaled up)</p>
+<p>╚═════════════════╝ (Pulsing animation)</code></pre></p>
+
+<p><strong>Effects:</strong></p>
+<ul><li class="ul-item">Gradient purple background</li>
+<li class="ul-item">2px glowing border</li>
+<li class="ul-item">Scale: 1.05x (slightly larger)</li>
+<li class="ul-item">Translate: 8px right (stands out)</li>
+<li class="ul-item">Pulsing animation (1.5s loop)</li>
+<li class="ul-item">Box shadow: 0-40px purple glow</li></ul>
+
+<h2>🔧 API Methods</h2>
+
+<h3>Manual Guidance</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>// Guide user to specific control
+<p>MerlinCardIntegrated.guideToControl(&#039;plant&#039;, &#039;🌱 Plant your first gems!&#039;);</p>
+
+<p>// Parameters:</p>
+<p>// - actionId: &#039;plant&#039;, &#039;harvest&#039;, &#039;craft&#039;, &#039;scan&#039;, etc.</p>
+<p>// - advice: Custom text to display in banner</p>
+
+<p>// This will:</p>
+<p>// 1. Flip card to control panel (if not already)</p>
+<p>// 2. Update advice banner text</p>
+<p>// 3. Highlight the specified button</p>
+<p>// 4. Scroll button into view</p>
+<p>// 5. Animate gemstone + particles</code></pre></p>
+
+<h3>Automatic Analysis</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>// Analyze user message and auto-guide
+<p>const wasGuided = MerlinCardIntegrated.analyzeAndGuide(userMessage);</p>
+
+<p>// Returns: true if keyword matched and guidance triggered, false otherwise</code></pre></p>
+
+<h3>Handle Control Press</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>// Triggered when user clicks a control button
+<p>window.addEventListener(&#039;merlinControlAction&#039;, (e) =&gt; {</p>
+<p>    const action = e.detail.action; // &#039;plant&#039;, &#039;harvest&#039;, etc.</p>
+<p>    console.log(&#039;User pressed:&#039;, action);</p>
+    
+<p>    // Your game logic here</p>
+<p>    if (action === &#039;plant&#039;) {</p>
+<p>        GemBot.farm.plantGems();</p>
+<p>    }</p>
+<p>});</code></pre></p>
+
+<h2>💡 Usage Examples</h2>
+
+<h3>Example 1: Natural Conversation</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>User: &quot;I want to start a gem farm&quot;
+<p>Merlin: [Auto-analyzes keywords: &quot;start&quot;, &quot;gem&quot;, &quot;farm&quot;]</p>
+<p>        [Flips to control panel]</p>
+<p>        [Highlights &quot;Plant Gems&quot;]</p>
+<p>        &quot;🌱 Press &#039;Plant Gems&#039; to start growing your gem farm!&quot;</p>
+
+<p>User: [Clicks &quot;Plant Gems&quot; button]</p>
+<p>System: [Triggers &#039;merlinControlAction&#039; event]</p>
+<p>        [Executes GemBot.farm.plantGems()]</p>
+<p>Merlin: [Flips back to chat]</p>
+<p>        &quot;Executing plant... ✨&quot;</code></pre></p>
+
+<h3>Example 2: Multiple Keywords</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>User: &quot;How do I fix my broken items?&quot;
+<p>Merlin: [Detects: &quot;fix&quot;, &quot;broken&quot;]</p>
+<p>        [Flips to control panel]</p>
+<p>        [Highlights &quot;Repair&quot;]</p>
+<p>        &quot;🔧 Press &#039;Repair&#039; to fix damaged items!&quot;</code></pre></p>
+
+<h3>Example 3: No Match (Standard Response)</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>User: &quot;What&#039;s the weather like?&quot;
+<p>Merlin: [No keywords matched]</p>
+<p>        [Stays on chat side]</p>
+<p>        &quot;I received your message: What&#039;s the weather like?&quot;</p>
+<p>        [No guidance triggered]</code></pre></p>
+
+<h2>🎬 Animation Sequence</h2>
+
+<p>When guidance is triggered:</p>
+
+<pre class="code-block " data-lang="text"><code>1. Card flips (0.8s smooth rotation)
+<p>   └─ rotateY(180deg)</p>
+
+<ol><li class="ol-item">Advice banner pulses (immediately visible)</li></ol>
+<p>   └─ Glow animation starts</p>
+
+<ol><li class="ol-item">Target button highlights (0.3s delay)</li></ol>
+<p>   ├─ Scale up to 1.05x</p>
+<p>   ├─ Purple glow appears</p>
+<p>   ├─ Pulsing animation starts</p>
+<p>   └─ Scrolls into view (smooth)</p>
+
+<ol><li class="ol-item">Gemstone changes color (question = amber)</li></ol>
+<p>   └─ Color transition (0.8s)</p>
+
+<ol><li class="ol-item">Wizard animation triggers</li></ol>
+<p>   ├─ Pointing animation</p>
+<p>   └─ Magic particles (intensity 2)</code></pre></p>
+
+<p>After user presses button:</p>
+
+<pre class="code-block " data-lang="text"><code>1. Button press animation (0.3s)
+<p>   └─ Scale down slightly</p>
+
+<ol><li class="ol-item">Highlight removed</li></ol>
+<p>   └─ Returns to normal state</p>
+
+<ol><li class="ol-item">Card flips back (0.8s)</li></ol>
+<p>   └─ rotateY(0deg)</p>
+
+<ol><li class="ol-item">Merlin confirms action</li></ol>
+<p>   ├─ Gemstone: success color (green)</p>
+<p>   └─ Message: &quot;Executing {action}... ✨&quot;</code></pre></p>
+
+<h2>🔌 Integration with GemBot</h2>
+
+<h3>Connect to Existing Systems</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>// In your main GemBot code:
+
+<p>// Listen for Merlin control actions</p>
+<p>window.addEventListener(&#039;merlinControlAction&#039;, (e) =&gt; {</p>
+<p>    const { action } = e.detail;</p>
+    
+<p>    switch(action) {</p>
+<p>        case &#039;plant&#039;:</p>
+<p>            if (GemBotFarm) GemBotFarm.plantSeeds();</p>
+<p>            break;</p>
+<p>        case &#039;harvest&#039;:</p>
+<p>            if (GemBotFarm) GemBotFarm.harvestGems();</p>
+<p>            break;</p>
+<p>        case &#039;craft&#039;:</p>
+<p>            if (GemBotForge) GemBotForge.openCraftingMenu();</p>
+<p>            break;</p>
+<p>        case &#039;scan&#039;:</p>
+<p>            if (VirtualMachine3D) VirtualMachine3D.scanArea();</p>
+<p>            break;</p>
+<p>        case &#039;marketplace&#039;:</p>
+<p>            if (GemBotMarketplace) GemBotMarketplace.open();</p>
+<p>            break;</p>
+<p>        // ... etc</p>
+<p>    }</p>
+<p>});</p>
+
+<p>// Trigger guidance from AI responses</p>
+<p>window.addEventListener(&#039;aiResponse&#039;, (e) =&gt; {</p>
+<p>    const response = e.detail.message;</p>
+    
+<p>    // Let Merlin analyze and guide if relevant</p>
+<p>    MerlinCardIntegrated.analyzeAndGuide(response);</p>
+<p>});</code></pre></p>
+
+<h3>Custom Guidance Triggers</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>// When user enters new area
+<p>GemBot.on(&#039;enterArea&#039;, (area) =&gt; {</p>
+<p>    if (area === &#039;farm&#039;) {</p>
+<p>        MerlinCardIntegrated.guideToControl(&#039;plant&#039;, </p>
+<p>            &#039;🌾 Welcome to the farm! Start by planting gems.&#039;);</p>
+<p>    }</p>
+<p>});</p>
+
+<p>// When tutorial step completes</p>
+<p>GemBot.tutorial.on(&#039;stepComplete&#039;, (step) =&gt; {</p>
+<p>    if (step === 3) {</p>
+<p>        MerlinCardIntegrated.guideToControl(&#039;harvest&#039;,</p>
+<p>            &#039;🎓 Great job! Now try harvesting your first gem.&#039;);</p>
+<p>    }</p>
+<p>});</p>
+
+<p>// When low on resources</p>
+<p>GemBot.on(&#039;lowResources&#039;, () =&gt; {</p>
+<p>    MerlinCardIntegrated.guideToControl(&#039;marketplace&#039;,</p>
+<p>        &#039;⚠️ Running low on gems. Visit the marketplace!&#039;);</p>
+<p>});</code></pre></p>
+
+<h2>📊 Statistics & Tracking</h2>
+
+<p>Track guidance effectiveness:</p>
+<pre class="code-block javascript" data-lang="javascript"><code>let guidanceStats = {
+<p>    triggered: 0,</p>
+<p>    followed: 0,</p>
+<p>    ignored: 0</p>
+<p>};</p>
+
+<p>// When guidance triggers</p>
+<p>MerlinCardIntegrated.on(&#039;guidanceShown&#039;, (action) =&gt; {</p>
+<p>    guidanceStats.triggered++;</p>
+<p>});</p>
+
+<p>// When user presses highlighted button</p>
+<p>window.addEventListener(&#039;merlinControlAction&#039;, (e) =&gt; {</p>
+<p>    guidanceStats.followed++;</p>
+<p>});</p>
+
+<p>// Calculate effectiveness</p>
+<p>const effectiveness = (guidanceStats.followed / guidanceStats.triggered) * 100;</p>
+<p>console.log(<code class="inline-code">Merlin guidance followed ${effectiveness}% of the time</code>);</code></pre></p>
+
+<h2>🎯 Future Enhancements</h2>
+
+<h3>Planned Features:</h3>
+<ol><li class="ol-item"><strong>Voice Commands</strong> - "Merlin, show me how to plant"</li>
+<li class="ol-item"><strong>Multi-step Guidance</strong> - Show sequence of buttons</li>
+<li class="ol-item"><strong>Visual Arrows</strong> - Draw lines from Merlin to button</li>
+<li class="ol-item"><strong>Animated Tooltips</strong> - Floating help text on hover</li>
+<li class="ol-item"><strong>Learning Mode</strong> - Adapt suggestions based on user behavior</li>
+<li class="ol-item"><strong>Custom Mappings</strong> - Let users define their own keywords</li></ol>
+
+<h2>📱 Responsive Design</h2>
+
+<p>Control panel adapts to screen size:</p>
+<ul><li class="ul-item"><strong>Desktop (>768px)</strong>: 6-column grid</li>
+<li class="ul-item"><strong>Tablet (480-768px)</strong>: 3-column grid</li>
+<li class="ul-item"><strong>Mobile (<400px)</strong>: 2-column grid, smaller buttons</li></ul>
+
+<h2>🎨 Theming</h2>
+
+<p>Control panel uses consistent purple theme:</p>
+<pre class="code-block css" data-lang="css"><code>Primary: #9333ea (147, 51, 234)
+<p>Accent:  #a855f7 (168, 85, 247)</p>
+<p>Glow:    rgba(168, 85, 247, 0.8)</code></pre></p>
+
+<p>Highlighted button stands out with brighter purple and pulsing animation.</p>
+
+<hr>
+
+<p><strong>Merlin is now an intelligent contextual guide that helps users navigate GemBot by analyzing conversation and highlighting exactly what they need to do! 🧙✨</strong></p>
+
+        <div class="generated-notice">
+            🤖 Auto-generated from MERLIN_CONTEXTUAL_GUIDANCE.md by GemBot Neural Dashboard Agent<br>
+            Generated: 2025-12-16T13:52:15.287Z
+        </div>
+    </div>
+</body>
+</html>

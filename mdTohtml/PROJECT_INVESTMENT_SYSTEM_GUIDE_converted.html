@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PROJECT_INVESTMENT_SYSTEM_GUIDE - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        <h1>💎 PROJECT INVESTMENT SYSTEM - COMPLETE GUIDE</h1>
+
+<h2>Overview</h2>
+<p>The <strong>GemBot Project Investment System</strong> fully integrates project funding into the game economy, allowing players to invest their earned GBUV tokens into real projects from your GitHub portfolio. This creates a complete play-to-earn economy where gameplay funds development.</p>
+
+<hr>
+
+<h2>🎮 <strong>GAME INTEGRATION</strong></h2>
+
+<h3>How It Works</h3>
+<ol><li class="ol-item"><strong>Earn GBUV</strong> in the gembot cutting game</li>
+<li class="ol-item"><strong>Browse Projects</strong> in the Merlin Gallery</li>
+<li class="ol-item"><strong>Invest GBUV</strong> using blockchain transactions</li>
+<li class="ol-item"><strong>Earn Rewards</strong> (XP, Gems, Badges, Titles)</li>
+<li class="ol-item"><strong>Gain Voting Power</strong> for governance</li>
+<li class="ol-item"><strong>Receive ROI</strong> (5% quarterly dividends)</li></ol>
+
+<hr>
+
+<h2>📂 <strong>FILES CREATED</strong></h2>
+
+<h3>Core Systems</h3>
+<ul><li class="ul-item"><strong>project-investment-system.js</strong> - Main investment logic, blockchain transactions</li>
+<li class="ul-item"><strong>merlin-gallery-integrated.js</strong> - UI gallery with project cards</li>
+<li class="ul-item"><strong>investor-achievements.js</strong> - Achievement/reward gamification</li>
+<li class="ul-item"><strong>merlin-gallery-coverflow.html</strong> - Standalone gallery page</li></ul>
+
+<h3>Integration</h3>
+<ul><li class="ul-item">Added to <strong>GemBot<em>Control</em>AI.html</strong> (lines 244-246)</li>
+<li class="ul-item">Connects to <strong>automated-wallet-system.js</strong> for transactions</li>
+<li class="ul-item">Hooks into <strong>gembot-farm-game.js</strong> for rewards</li></ul>
+
+<hr>
+
+<h2>🚀 <strong>FEATURES</strong></h2>
+
+<h3>1. <strong>Project Discovery</strong></h3>
+<pre class="code-block javascript" data-lang="javascript"><code>// Automatically fetches HTML files from barbrickdesign.github.io
+<p>// Creates interactive cards with iframe previews</p>
+<p>// Real-time funding status display</code></pre></p>
+
+<ul><li class="ul-item">Grid view of all projects</li>
+<li class="ul-item">Live preview iframes</li>
+<li class="ul-item">Search & filter</li>
+<li class="ul-item">Funding progress bars</li></ul>
+
+<h3>2. <strong>Investment Mechanics</strong></h3>
+<pre class="code-block javascript" data-lang="javascript"><code>await projectInvestmentSystem.investInProject(projectPath, amount, username);</code></pre>
+
+<p><strong>What Happens:</strong></p>
+<ul><li class="ul-item">Validates GBUV balance</li>
+<li class="ul-item">Executes blockchain transaction (transferGBUV)</li>
+<li class="ul-item">Records investment in localStorage</li>
+<li class="ul-item">Awards XP, gems, badges</li>
+<li class="ul-item">Updates voting power</li>
+<li class="ul-item">Logs to activity feed</li>
+<li class="ul-item">Shows achievement notifications</li></ul>
+
+<h3>3. <strong>Investor Tiers</strong></h3>
+<p>| Tier | Min Investment | XP Bonus | Vote Power | Badge |</p>
+<p>|------|---------------|----------|------------|-------|</p>
+<p>| Bronze | 100 GBUV | 50 XP | 1 | 🥉 Bronze Investor |</p>
+<p>| Silver | 500 GBUV | 300 XP | 3 | 🥈 Silver Investor |</p>
+<p>| Gold | 1,000 GBUV | 750 XP | 5 | 🥇 Gold Investor |</p>
+<p>| Platinum | 5,000 GBUV | 5,000 XP | 10 | ⭐ Platinum Investor |</p>
+<p>| Diamond | 10,000 GBUV | 15,000 XP | 20 | 💎 Diamond Investor |</p>
+
+<h3>4. <strong>Achievements</strong> (21 total)</h3>
+<pre class="code-block " data-lang="text"><code>🌱 First Step - Make first investment
+<p>💯 Century Club - Invest 100 GBUV</p>
+<p>💎 Diamond Hands - Invest 1,000 GBUV</p>
+<p>🐋 Whale Alert - Invest 10,000 GBUV</p>
+<p>📊 Diversified Portfolio - 5 projects</p>
+<p>📈 Portfolio Master - 10 projects</p>
+<p>🐦 Early Bird - First investor in project</p>
+<p>🗳️ Democracy Participant - Vote on proposal</p>
+<p>💡 Visionary - Create proposal</p>
+<p>💰 Dividend Collector - Earn first ROI</p>
+<p>👑 Investment King - Reach #1 on leaderboard</code></pre></p>
+
+<h3>5. <strong>Governance System</strong></h3>
+<pre class="code-block javascript" data-lang="javascript"><code>// Create proposal (requires Gold tier + governance token)
+<p>await projectInvestmentSystem.createProposal(username, title, description, projectPath);</p>
+
+<p>// Vote (weighted by investment amount)</p>
+<p>await projectInvestmentSystem.voteOnProposal(username, proposalId, &#039;yes&#039;);</code></pre></p>
+
+<p><strong>Voting Power:</strong></p>
+<ul><li class="ul-item">Calculated from total investments</li>
+<li class="ul-item">Weighted votes (bigger investors = more power)</li>
+<li class="ul-item">Token-gated proposals (need governance token)</li>
+<li class="ul-item">7-day voting periods</li></ul>
+
+<h3>6. <strong>ROI Dividends</strong></h3>
+<pre class="code-block javascript" data-lang="javascript"><code>// Quarterly 5% returns
+<p>await projectInvestmentSystem.distributeDividends(username);</code></pre></p>
+
+<ul><li class="ul-item">Automatic quarterly payouts</li>
+<li class="ul-item">5% ROI on total investments</li>
+<li class="ul-item">Credited to GBUV balance</li>
+<li class="ul-item">Compounds over time</li></ul>
+
+<hr>
+
+<h2>🎯 <strong>USER FLOW</strong></h2>
+
+<h3>Step 1: Access Gallery</h3>
+<pre class="code-block " data-lang="text"><code>Click &quot;💎 Project Gallery&quot; button (bottom-right of game)
+<p>→ Panel opens showing all GitHub Pages projects</code></pre></p>
+
+<h3>Step 2: Browse Projects</h3>
+<pre class="code-block " data-lang="text"><code>- Search by name/path
+<ul><li class="ul-item">View live previews</li>
+<li class="ul-item">Check funding status</li>
+<li class="ul-item">See investor count</code></pre></li></ul>
+
+<h3>Step 3: Invest</h3>
+<pre class="code-block " data-lang="text"><code>1. Enter GBUV amount
+<ol><li class="ol-item">Click &quot;💎 Invest&quot;</li>
+<li class="ol-item">Transaction processes</li>
+<li class="ol-item">Achievement notification pops up</li>
+<li class="ol-item">XP/Gems awarded</li>
+<li class="ol-item">Portfolio updates</code></pre></li></ol>
+
+<h3>Step 4: Track Portfolio</h3>
+<pre class="code-block " data-lang="text"><code>Footer shows:
+<ul><li class="ul-item">Total Invested</li>
+<li class="ul-item">Project Count</li>
+<li class="ul-item">Voting Power</li>
+<li class="ul-item">Investor Tier Badge</code></pre></li></ul>
+
+<hr>
+
+<h2>🔐 <strong>SECURITY</strong></h2>
+
+<h3>Blockchain Validation</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>// Real Solana transactions (mainnet-beta)
+<p>const balance = await walletFactory.getGBUVBalance(publicKey);</p>
+<p>const txSignature = await walletFactory.transferGBUV(from, to, amount);</code></pre></p>
+
+<h3>Anti-Fraud Protection</h3>
+<ul><li class="ul-item">Checks user balance before investment</li>
+<li class="ul-item">Validates wallet ownership</li>
+<li class="ul-item">Records all transactions on-chain</li>
+<li class="ul-item">Security scoring for registrations</li></ul>
+
+<hr>
+
+<h2>📊 <strong>DATA STORAGE</strong></h2>
+
+<h3>LocalStorage Keys</h3>
+<pre class="code-block " data-lang="text"><code>investments_[username] - User&#039;s investment records
+<p>badges_[username] - Earned badges</p>
+<p>titles_[username] - Earned titles</p>
+<p>active&lt;em&gt;title&lt;/em&gt;[username] - Current display title</p>
+<p>achievements_[username] - Unlocked achievements</p>
+<p>governance_proposals - All proposals</p>
+<p>merlin&lt;em&gt;repo&lt;/em&gt;snapshot_v5 - Cached project data</code></pre></p>
+
+<h3>Investment Record Structure</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>{
+<p>  &quot;projectPath&quot;: {</p>
+<p>    &quot;invested&quot;: 1500,</p>
+<p>    &quot;transactions&quot;: [</p>
+<p>      {</p>
+<p>        &quot;amount&quot;: 500,</p>
+<p>        &quot;timestamp&quot;: 1734393600000,</p>
+<p>        &quot;txSignature&quot;: &quot;5x7Kd...&quot;,</p>
+<p>        &quot;type&quot;: &quot;investment&quot;</p>
+<p>      }</p>
+<p>    ],</p>
+<p>    &quot;firstInvestment&quot;: 1734307200000,</p>
+<p>    &quot;dividendsEarned&quot;: 75</p>
+<p>  }</p>
+<p>}</code></pre></p>
+
+<hr>
+
+<h2>🎨 <strong>UI COMPONENTS</strong></h2>
+
+<h3>Gallery Toggle Button</h3>
+<pre class="code-block css" data-lang="css"><code>Position: Fixed bottom-right (80px from bottom, 20px from right)
+<p>Z-index: 9001 (above game, below modals)</p>
+<p>Animation: Pulsing gradient effect</code></pre></p>
+
+<h3>Gallery Panel</h3>
+<pre class="code-block css" data-lang="css"><code>Size: 1400px × 900px (96vw × 90vh max)
+<p>Position: Centered overlay</p>
+<p>Z-index: 10001 (above everything except achievements)</code></pre></p>
+
+<h3>Project Cards</h3>
+<pre class="code-block css" data-lang="css"><code>Layout: CSS Grid (auto-fill, min 320px)
+<p>Preview: Iframe scaled to 0.267 (1200px → 320px)</p>
+<p>Progress: Gradient bar (purple theme)</code></pre></p>
+
+<h3>Achievement Notifications</h3>
+<pre class="code-block css" data-lang="css"><code>Position: Fixed top-right
+<p>Animation: Slide in from right</p>
+<p>Duration: 5 seconds</p>
+<p>Auto-dismiss with slide out</code></pre></p>
+
+<hr>
+
+<h2>🔧 <strong>API REFERENCE</strong></h2>
+
+<h3>ProjectInvestmentSystem</h3>
+
+<h4><code class="inline-code">getPortfolio(username)</code></h4>
+<p>Returns user's complete portfolio data</p>
+<pre class="code-block javascript" data-lang="javascript"><code>{
+<p>  totalInvested: 2500,</p>
+<p>  projectCount: 5,</p>
+<p>  votingPower: 8,</p>
+<p>  tier: &#039;gold&#039;,</p>
+<p>  investments: {...}</p>
+<p>}</code></pre></p>
+
+<h4><code class="inline-code">investInProject(projectPath, amount, username)</code></h4>
+<p>Executes investment with full reward system</p>
+<pre class="code-block javascript" data-lang="javascript"><code>const result = await investInProject(&#039;index.html&#039;, 500, &#039;ryan&#039;);
+<p>// Returns: { success, txSignature, newBalance, rewards, portfolio }</code></pre></p>
+
+<h4><code class="inline-code">getProjectStatus(projectPath)</code></h4>
+<p>Gets aggregate funding for a project</p>
+<pre class="code-block javascript" data-lang="javascript"><code>{
+<p>  totalInvested: 5000,</p>
+<p>  investorCount: 12,</p>
+<p>  investors: {...}</p>
+<p>}</code></pre></p>
+
+<h4><code class="inline-code">distributeDividends(username)</code></h4>
+<p>Calculates and pays ROI dividends</p>
+<pre class="code-block javascript" data-lang="javascript"><code>{
+<p>  success: true,</p>
+<p>  amount: 125,</p>
+<p>  nextDistribution: Date,</p>
+<p>  portfolioValue: 2500</p>
+<p>}</code></pre></p>
+
+<h4><code class="inline-code">createProposal(username, title, desc, projectPath)</code></h4>
+<p>Creates governance proposal (token-gated)</p>
+
+<h4><code class="inline-code">voteOnProposal(username, proposalId, vote)</code></h4>
+<p>Casts weighted vote ('yes', 'no', 'abstain')</p>
+
+<h4><code class="inline-code">getLeaderboard(limit)</code></h4>
+<p>Returns top investors by total investment</p>
+
+<h4><code class="inline-code">generateReport(username)</code></h4>
+<p>Complete investment analytics report</p>
+
+<h3>InvestorAchievementSystem</h3>
+
+<h4><code class="inline-code">checkAchievements(username, action, data)</code></h4>
+<p>Checks and awards achievements for action</p>
+<pre class="code-block javascript" data-lang="javascript"><code>const result = await checkAchievements(&#039;ryan&#039;, &#039;investment&#039;, {
+<p>  amount: 1000,</p>
+<p>  projectPath: &#039;gembot-universe-key.html&#039;</p>
+<p>});</p>
+<p>// Returns: { unlocked: [&#039;invest_1000&#039;], rewards: {...} }</code></pre></p>
+
+<h4><code class="inline-code">getUserAchievements(username)</code></h4>
+<p>Returns array of unlocked achievement IDs</p>
+
+<h4><code class="inline-code">getProgress(username)</code></h4>
+<p>Achievement completion statistics</p>
+<pre class="code-block javascript" data-lang="javascript"><code>{ unlocked: 8, total: 21, percentage: 38.1 }</code></pre>
+
+<h4><code class="inline-code">getActiveTitle(username)</code></h4>
+<p>Current display title or null</p>
+
+<h3>MerlinGallery</h3>
+
+<h4><code class="inline-code">window.merlinGallery.open()</code></h4>
+<p>Programmatically open gallery</p>
+
+<h4><code class="inline-code">window.merlinGallery.close()</code></h4>
+<p>Close gallery</p>
+
+<h4><code class="inline-code">window.merlinGallery.refresh()</code></h4>
+<p>Reload project data from GitHub</p>
+
+<h4><code class="inline-code">window.merlinGallery.updatePortfolio()</code></h4>
+<p>Refresh portfolio display</p>
+
+<hr>
+
+<h2>🧪 <strong>TESTING</strong></h2>
+
+<h3>Quick Test Commands</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>// Check system loaded
+<p>console.log(window.projectInvestmentSystem);</p>
+<p>console.log(window.investorAchievements);</p>
+<p>console.log(window.merlinGallery);</p>
+
+<p>// Get user session</p>
+<p>const session = JSON.parse(sessionStorage.getItem(&#039;gembot_session&#039;));</p>
+<p>console.log(&#039;User:&#039;, session.username);</p>
+
+<p>// Check portfolio</p>
+<p>const portfolio = projectInvestmentSystem.getPortfolio(session.username);</p>
+<p>console.log(&#039;Portfolio:&#039;, portfolio);</p>
+
+<p>// Check achievements</p>
+<p>const achievements = investorAchievements.getUserAchievements(session.username);</p>
+<p>console.log(&#039;Achievements:&#039;, achievements);</p>
+
+<p>// Get leaderboard</p>
+<p>const leaderboard = projectInvestmentSystem.getLeaderboard(10);</p>
+<p>console.log(&#039;Top 10:&#039;, leaderboard);</p>
+
+<p>// Open gallery</p>
+<p>merlinGallery.open();</code></pre></p>
+
+<h3>Test Investment (Local)</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>// Make test investment
+<p>await projectInvestmentSystem.investInProject(</p>
+<p>  &#039;test-project.html&#039;,</p>
+<p>  100,</p>
+<p>  session.username</p>
+<p>);</code></pre></p>
+
+<hr>
+
+<h2>🌟 <strong>GAME ECONOMY FLOW</strong></h2>
+
+<pre class="code-block " data-lang="text"><code>PLAY GAME → EARN GBUV → INVEST IN PROJECTS
+<p>     ↓           ↓              ↓</p>
+<p>  CUT GEMS → SELL STONES → VIEW GALLERY</p>
+<p>     ↓           ↓              ↓</p>
+<p>  GET XP  →  GET GBUV  → MAKE INVESTMENT</p>
+<p>     ↓           ↓              ↓</p>
+<p> LEVEL UP → MORE TOKENS → EARN MORE XP</p>
+<p>                             ↓</p>
+<p>                      GET BADGES/TITLES</p>
+<p>                             ↓</p>
+<p>                      GAIN VOTING POWER</p>
+<p>                             ↓</p>
+<p>                    PARTICIPATE GOVERNANCE</p>
+<p>                             ↓</p>
+<p>                      RECEIVE DIVIDENDS</p>
+<p>                             ↓</p>
+<p>                    REINVEST FOR GROWTH</code></pre></p>
+
+<hr>
+
+<h2>📈 <strong>MONETIZATION MODEL</strong></h2>
+
+<h3>For Players:</h3>
+<ul><li class="ul-item">Free to play</li>
+<li class="ul-item">Earn GBUV by playing</li>
+<li class="ul-item">Convert to real crypto (future)</li>
+<li class="ul-item">ROI from investments</li>
+<li class="ul-item">Governance participation</li></ul>
+
+<h3>For Projects:</h3>
+<ul><li class="ul-item">Get funded by community</li>
+<li class="ul-item">Transparent investment tracking</li>
+<li class="ul-item">Engaged investor base</li>
+<li class="ul-item">Built-in governance</li>
+<li class="ul-item">Marketing through game</li></ul>
+
+<h3>For Platform:</h3>
+<ul><li class="ul-item">Transaction fees (future)</li>
+<li class="ul-item">Premium features</li>
+<li class="ul-item">NFT marketplace</li>
+<li class="ul-item">Governance token value</li>
+<li class="ul-item">Community growth</li></ul>
+
+<hr>
+
+<h2>🎁 <strong>REWARDS SUMMARY</strong></h2>
+
+<h3>From Investments:</h3>
+<ul><li class="ul-item">XP (scales with amount)</li>
+<li class="ul-item">Bonus Gems (1 gem per 100 GBUV)</li>
+<li class="ul-item">Tier badges (Bronze → Diamond)</li>
+<li class="ul-item">Special titles (Whale, King, etc.)</li>
+<li class="ul-item">Voting power</li>
+<li class="ul-item">Quarterly dividends (5% ROI)</li></ul>
+
+<h3>From Achievements:</h3>
+<ul><li class="ul-item">21 unique achievements</li>
+<li class="ul-item">Total 25,000+ XP available</li>
+<li class="ul-item">5,000+ Gems available</li>
+<li class="ul-item">12 unique badges</li>
+<li class="ul-item">4 exclusive titles</li>
+<li class="ul-item">Notifications & fanfare</li></ul>
+
+<hr>
+
+<h2>🔮 <strong>FUTURE ENHANCEMENTS</strong></h2>
+
+<ol><li class="ol-item"><strong>NFT Badges</strong> - Mint achievement badges as NFTs</li>
+<li class="ol-item"><strong>Real Crypto Conversion</strong> - GBUV → SOL swaps</li>
+<li class="ol-item"><strong>Project Proposals</strong> - Community votes on new projects</li>
+<li class="ol-item"><strong>Staking</strong> - Lock GBUV for boosted rewards</li>
+<li class="ol-item"><strong>Referral System</strong> - Earn rewards for bringing investors</li>
+<li class="ol-item"><strong>Mobile App</strong> - Native iOS/Android versions</li>
+<li class="ol-item"><strong>Analytics Dashboard</strong> - Detailed investment insights</li>
+<li class="ol-item"><strong>Social Features</strong> - Friend lists, leaderboards, chat</li>
+<li class="ol-item"><strong>Seasonal Events</strong> - Limited-time investment bonuses</li>
+<li class="ol-item"><strong>DAO Integration</strong> - Full decentralized governance</li></ol>
+
+<hr>
+
+<h2>🚦 <strong>GETTING STARTED</strong></h2>
+
+<h3>For Users:</h3>
+<ol><li class="ol-item">Play game → Earn GBUV</li>
+<li class="ol-item">Click "💎 Project Gallery" button</li>
+<li class="ol-item">Browse projects</li>
+<li class="ol-item">Invest & earn rewards!</li></ol>
+
+<h3>For Developers:</h3>
+<ol><li class="ol-item">Files auto-load with GemBot<em>Control</em>AI.html</li>
+<li class="ol-item">Check browser console for initialization</li>
+<li class="ol-item">Use window.* APIs for custom features</li>
+<li class="ol-item">All data in localStorage for easy debugging</li></ol>
+
+<hr>
+
+<h2>📞 <strong>SUPPORT</strong></h2>
+
+<h3>Common Issues:</h3>
+
+<p><strong>"Please log in to invest"</strong></p>
+<p>→ Register or log in via auth modal</p>
+
+<p><strong>"Insufficient GBUV balance"</strong></p>
+<p>→ Play game to earn more tokens</p>
+
+<p><strong>"Investment failed"</strong></p>
+<p>→ Check console for error details</p>
+
+<p><strong>Gallery not loading</strong></p>
+<p>→ Check internet connection (fetches from GitHub API)</p>
+
+<p><strong>Achievements not unlocking</strong></p>
+<p>→ Verify game is saving properly</p>
+
+<hr>
+
+<h2>🎉 <strong>SUCCESS METRICS</strong></h2>
+
+<p>Track these KPIs:</p>
+<ul><li class="ul-item">Total GBUV invested</li>
+<li class="ul-item">Number of active investors</li>
+<li class="ul-item">Project funding completion rate</li>
+<li class="ul-item">Achievement unlock rate</li>
+<li class="ul-item">Governance participation</li>
+<li class="ul-item">User retention</li>
+<li class="ul-item">Average investment amount</li>
+<li class="ul-item">Leaderboard competition</li></ul>
+
+<hr>
+
+<h2>💡 <strong>TIPS FOR MAXIMIZING REWARDS</strong></h2>
+
+<ol><li class="ol-item"><strong>Diversify</strong> - Invest in multiple projects for achievements</li>
+<li class="ol-item"><strong>Go Early</strong> - First investors get "Early Bird" badge</li>
+<li class="ol-item"><strong>Big Bets</strong> - Large investments unlock tier bonuses</li>
+<li class="ol-item"><strong>Stay Active</strong> - Monthly consistency achievement</li>
+<li class="ol-item"><strong>Vote Often</strong> - Democracy participation XP</li>
+<li class="ol-item"><strong>Compound</strong> - Reinvest dividends for growth</li>
+<li class="ol-item"><strong>Compete</strong> - Climb leaderboard for top ranks</li>
+<li class="ol-item"><strong>Complete</strong> - Help projects reach 100% funding</li></ol>
+
+<hr>
+
+<p><strong>Created:</strong> December 16, 2025</p>
+<p><strong>Version:</strong> 1.0.0</p>
+<p><strong>Author:</strong> Ryan Barbrick / Barbrick Design</p>
+<p><strong>Signature:</strong> GBOT-INVESTMENT-2025-INTEGRATED</p>
+
+        <div class="generated-notice">
+            🤖 Auto-generated from PROJECT_INVESTMENT_SYSTEM_GUIDE.md by GemBot Neural Dashboard Agent<br>
+            Generated: 2025-12-16T13:52:20.515Z
+        </div>
+    </div>
+</body>
+</html>

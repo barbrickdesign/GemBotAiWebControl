@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INTELLIGENT_QA_SYSTEM_COMPLETE - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        <h1>🤖 MERLIN AI - INTELLIGENT QUESTION-ANSWERING SYSTEM</h1>
+
+<h2>✅ <strong>Smart AI Implementation - COMPLETE</strong></h2>
+
+<p>The GemBot AI has been completely upgraded from generic conversational responses to an intelligent question-answering system that actually understands and responds to user queries.</p>
+
+<hr>
+
+<h2>🎯 <strong>The Problem (What You Reported)</strong></h2>
+
+<p>When users asked questions like:</p>
+<ul><li class="ul-item">"What is a gem bot?"</li>
+<li class="ul-item">"What do you know about the user manual?"</li>
+<li class="ul-item">"What are the stone properties of diamond?"</li></ul>
+
+<p>The AI was cycling through generic conversational responses:</p>
+<ul><li class="ul-item">"I sense your mind at work. Channel that energy into understanding the machine..."</li>
+<li class="ul-item">"The journey of cutting stones is one of continuous learning..."</li>
+<li class="ul-item">"Wisdom comes in many forms..."</li></ul>
+
+<p><strong>Result</strong>: Users got no actual answers - just philosophical deflections.</p>
+
+<hr>
+
+<h2>✅ <strong>The Solution Implemented</strong></h2>
+
+<h3><strong>1. Comprehensive Q&A Knowledge Base</strong> (40+ Q&A pairs)</h3>
+<p>Added a complete "qa" section with direct answers to common questions:</p>
+<ul><li class="ul-item">What is GemBot?</li>
+<li class="ul-item">How does it work?</li>
+<li class="ul-item">What's in the User Manual?</li>
+<li class="ul-item">How to cut diamond/ruby/sapphire/emerald/opal?</li>
+<li class="ul-item">What are the three cutting phases?</li>
+<li class="ul-item">Emergency procedures?</li>
+<li class="ul-item">And 30+ more</li></ul>
+
+<h3><strong>2. Semantic Matching Engine</strong></h3>
+<p>New <code class="inline-code">findBestKnowledgeMatch()</code> method that:</p>
+<ul><li class="ul-item">Searches ALL knowledge categories simultaneously</li>
+<li class="ul-item">Calculates similarity score for each potential match</li>
+<li class="ul-item">Returns the best matching answer with confidence score</li></ul>
+
+<h3><strong>3. Intelligent Query Processing</strong></h3>
+<p>Enhanced <code class="inline-code">handleUserQuery()</code> method that:</p>
+<ul><li class="ul-item"><strong>Priority 1</strong>: Checks for "what is" / "what are" questions first</li>
+<li class="ul-item"><strong>Priority 2</strong>: Uses semantic matching to find relevant answers</li>
+<li class="ul-item"><strong>Priority 3</strong>: Falls back to intent-based responses</li>
+<li class="ul-item"><strong>Priority 4</strong>: Uses fallback conversational responses</li></ul>
+
+<h3><strong>4. Smart Similarity Calculator</strong></h3>
+<p><code class="inline-code">calculateSimilarity()</code> method that:</p>
+<ul><li class="ul-item">Recognizes exact key matches (high score)</li>
+<li class="ul-item">Handles underscores and spaces in knowledge keys</li>
+<li class="ul-item">Matches partial words and variations</li>
+<li class="ul-item">Scores based on relevance</li>
+<li class="ul-item">Caps score at 1.0</li></ul>
+
+<h3><strong>5. Answer Generation</strong></h3>
+<p><code class="inline-code">generateResponseFromMatch()</code> method that:</p>
+<ul><li class="ul-item">Formats answers with category-appropriate introductions</li>
+<li class="ul-item">For modes: "Ah, the modes!..."</li>
+<li class="ul-item">For stones: "Ah, the Diamond!..."</li>
+<li class="ul-item">For safety: "Regarding safety..."</li>
+<li class="ul-item">Maintains Merlin wizard personality</li></ul>
+
+<hr>
+
+<h2>📚 <strong>Comprehensive Q&A Knowledge Base</strong></h2>
+
+<h3><strong>What is...?</strong> Questions (10+)</h3>
+<p>✅ What is GemBot</p>
+<p>✅ What is this machine</p>
+<p>✅ What is a gembot</p>
+<p>✅ What can you do</p>
+<p>✅ How does this work</p>
+
+<h3><strong>How to...?</strong> Questions (15+)</h3>
+<p>✅ How to use</p>
+<p>✅ How to cut diamond</p>
+<p>✅ How to cut ruby</p>
+<p>✅ How to cut sapphire</p>
+<p>✅ How to cut emerald</p>
+<p>✅ How to cut opal</p>
+<p>✅ How to position stone</p>
+<p>✅ How to switch stones</p>
+<p>✅ How to start</p>
+
+<h3><strong>Manual & Reference</strong> (5+)</h3>
+<p>✅ User manual</p>
+<p>✅ What does manual contain</p>
+<p>✅ What is lap</p>
+<p>✅ Lap selection</p>
+<p>✅ Three phases</p>
+
+<h3><strong>Technical Explanations</strong> (15+)</h3>
+<p>✅ What are the axes</p>
+<p>✅ How many speeds</p>
+<p>✅ What is step mode</p>
+<p>✅ What is continuous</p>
+<p>✅ Emergency stop</p>
+<p>✅ What if stuck</p>
+<p>✅ Connection lost</p>
+
+<h3><strong>Process Guidance</strong> (10+)</h3>
+<p>✅ What is roughing</p>
+<p>✅ What is fine cutting</p>
+<p>✅ What is polishing</p>
+<p>✅ Safety tips</p>
+<p>✅ And more...</p>
+
+<hr>
+
+<h2>🧠 <strong>How It Works</strong></h2>
+
+<h3><strong>Example 1: User asks "What is a gem bot?"</strong></h3>
+
+<pre class="code-block " data-lang="text"><code>1. User: &quot;What is a gem bot?&quot;
+<ol><li class="ol-item">System detects: /what is|what are|tell me about/</li>
+<li class="ol-item">Goes to answerWhatQuestion()</li>
+<li class="ol-item">Searches qa section for &#039;what is gembot&#039;</li>
+<li class="ol-item">Finds match in knowledge.qa[&#039;what is a gembot&#039;]</li>
+<li class="ol-item">Returns: &quot;GemBot is a precision automated gemstone cutting machine...&quot;</li>
+<li class="ol-item">User gets ACTUAL ANSWER ✅</code></pre></li></ol>
+
+<h3><strong>Example 2: User asks "What properties does diamond have?"</strong></h3>
+
+<pre class="code-block " data-lang="text"><code>1. User: &quot;What properties does diamond have?&quot;
+<ol><li class="ol-item">System detects: /what is|what are/</li>
+<li class="ol-item">Goes to answerWhatQuestion()</li>
+<li class="ol-item">findBestKnowledgeMatch() searches all categories</li>
+<li class="ol-item">Scores similarities:</li></ol>
+<p>   - stones[&#039;diamond&#039;]: High score (0.95)</p>
+<p>   - Other categories: Lower scores</p>
+<ol><li class="ol-item">Finds best match: category=stones, key=diamond</li>
+<li class="ol-item">Returns: &quot;Diamond demands respect. Hard, unforgiving...&quot;</li>
+<li class="ol-item">User gets RELEVANT ANSWER ✅</code></pre></li></ol>
+
+<h3><strong>Example 3: User asks "How do I rough cut?"</strong></h3>
+
+<pre class="code-block " data-lang="text"><code>1. User: &quot;How do I rough cut?&quot;
+<ol><li class="ol-item">System detects: /what is|what are/ doesn&#039;t match</li>
+<li class="ol-item">Goes to other intent detection</li>
+<li class="ol-item">No exact intent match</li>
+<li class="ol-item">Calls findBestKnowledgeMatch()</li>
+<li class="ol-item">Searches knowledge base</li>
+<li class="ol-item">Matches against cutting[&#039;roughing&#039;]</li>
+<li class="ol-item">Returns: &quot;Roughing is Phase 1 of cutting...&quot;</li>
+<li class="ol-item">User gets HELPFUL ANSWER ✅</code></pre></li></ol>
+
+<hr>
+
+<h2>🔄 <strong>System Flow</strong></h2>
+
+<pre class="code-block " data-lang="text"><code>User Question
+<p>    ↓</p>
+<p>Is it &quot;what is/are&quot;? → YES → answerWhatQuestion()</p>
+<p>    ↓                          ↓</p>
+<p>   NO                    Search Q&amp;A section</p>
+<p>    ↓                      ↓</p>
+<p>Intent Detection      Match found? YES → Return Q&amp;A answer</p>
+<p>    ↓                      ↓</p>
+<p>   Match?               NO</p>
+<p>    ↓                      ↓</p>
+<p>  YES → Use Intent     findBestKnowledgeMatch()</p>
+<p>    ↓     Response        ↓</p>
+<p>   NO      ↓            Score match</p>
+<p>    ↓      |              ↓</p>
+<p>Semantic   |            Score &gt; 0.5?</p>
+<p>Match      |              ↓</p>
+<p>    ↓      |            YES → Return matched answer</p>
+<p>    ↓      |              ↓</p>
+<p>High      Low            NO</p>
+<p>Score     Score           ↓</p>
+<p>    ↓      |          getConversational()</p>
+<p>Generate  |          (fallback)</p>
+<p>Response  |              ↓</p>
+<p>    ↓      └─────────────┘</p>
+<p>    └──────────┬──────────┘</p>
+<p>              ↓</p>
+<p>        Display Answer</p>
+<p>           with Merlin</p>
+<p>          Personality</code></pre></p>
+
+<hr>
+
+<h2>💡 <strong>Key Improvements</strong></h2>
+
+<h3><strong>Before (Generic System)</strong></h3>
+<pre class="code-block " data-lang="text"><code>User: &quot;What is a gem bot?&quot;
+<p>AI: &quot;Wisdom comes in many forms. Ask me of cutting techniques, </p>
+<p>    stone properties, machine control, or the mysteries of </p>
+<p>    lapidary work, and I shall illuminate the path.&quot;</p>
+<p>Result: NO ANSWER ❌</code></pre></p>
+
+<h3><strong>After (Intelligent System)</strong></h3>
+<pre class="code-block " data-lang="text"><code>User: &quot;What is a gem bot?&quot;
+<p>AI: &quot;GemBot is a precision automated gemstone cutting machine. </p>
+<p>    It uses motorized axes to position gemstones against a spinning </p>
+<p>    lap at exact angles. You control it through this web interface </p>
+<p>    while I guide you through the cutting process.&quot;</p>
+<p>Result: ACTUAL ANSWER ✅</code></pre></p>
+
+<hr>
+
+<h2>🎯 <strong>Test Cases - Expected Behavior</strong></h2>
+
+<h3><strong>Test 1: What Questions</strong></h3>
+<pre class="code-block " data-lang="text"><code>Q: &quot;What is a gem bot?&quot;
+<p>A: &quot;GemBot is a precision automated gemstone cutting machine...&quot;</p>
+
+<p>Q: &quot;What is the user manual?&quot;</p>
+<p>A: &quot;The User Manual contains all technical specifications...&quot;</p>
+
+<p>Q: &quot;What are the three phases?&quot;</p>
+<p>A: &quot;Gem cutting has three phases: ROUGHING, FINE CUTTING, and POLISHING...&quot;</code></pre></p>
+
+<h3><strong>Test 2: How Questions</strong></h3>
+<pre class="code-block " data-lang="text"><code>Q: &quot;How do I cut a diamond?&quot;
+<p>A: &quot;Diamond is hard and demanding. Begin with SPEED 4-5...&quot;</p>
+
+<p>Q: &quot;How to switch stones?&quot;</p>
+<p>A: &quot;To switch stones: 1) Press HOME...&quot;</p>
+
+<p>Q: &quot;How do I polish?&quot;</p>
+<p>A: &quot;Polishing is Phase 3 - creating final brilliance...&quot;</code></pre></p>
+
+<h3><strong>Test 3: Property Questions</strong></h3>
+<pre class="code-block " data-lang="text"><code>Q: &quot;What are the stone properties of diamond?&quot;
+<p>A: &quot;Diamond demands respect. Hard, unforgiving. Requires patience...&quot;</p>
+
+<p>Q: &quot;Tell me about emerald&quot;</p>
+<p>A: &quot;Emerald is brittle and temperamental. Work slowly, gently...&quot;</code></pre></p>
+
+<h3><strong>Test 4: Technical Questions</strong></h3>
+<pre class="code-block " data-lang="text"><code>Q: &quot;What is step mode?&quot;
+<p>A: &quot;STEP mode gives you precise, single-step movements...&quot;</p>
+
+<p>Q: &quot;How many speeds are there?&quot;</p>
+<p>A: &quot;The GemBot has 5 speed levels...&quot;</p>
+
+<p>Q: &quot;What is the emergency stop?&quot;</p>
+<p>A: &quot;The EMERGENCY STOP button instantly cuts power to all motors...&quot;</code></pre></p>
+
+<hr>
+
+<h2>📊 <strong>System Architecture</strong></h2>
+
+<h3><strong>New Methods Added</strong></h3>
+
+<ol><li class="ol-item"><strong><code class="inline-code">findBestKnowledgeMatch(query)</code></strong></li></ol>
+<p>   - Searches all knowledge categories</p>
+<p>   - Calculates similarity for each entry</p>
+<p>   - Returns best match with confidence score</p>
+
+<ol><li class="ol-item"><strong><code class="inline-code">calculateSimilarity(query, key, value)</code></strong></li></ol>
+<p>   - Matches query words against knowledge keys</p>
+<p>   - Weights exact matches higher</p>
+<p>   - Handles variations (underscores, spaces)</p>
+<p>   - Returns 0-1.0 confidence score</p>
+
+<ol><li class="ol-item"><strong><code class="inline-code">answerWhatQuestion(query, bestMatch)</code></strong></li></ol>
+<p>   - Specifically handles "what is" questions</p>
+<p>   - Checks Q&A section first</p>
+<p>   - Falls back to semantic matching</p>
+<p>   - Returns null if no good match</p>
+
+<ol><li class="ol-item"><strong><code class="inline-code">generateResponseFromMatch(match)</code></strong></li></ol>
+<p>   - Formats answer with personality</p>
+<p>   - Adds category-specific introductions</p>
+<p>   - Maintains Merlin wizard tone</p>
+
+<h3><strong>Enhanced Methods</strong></h3>
+
+<ul><li class="ul-item"><strong><code class="inline-code">handleUserQuery(query)</code></strong> - Now uses semantic matching</li>
+<li class="ul-item"><strong>Intent detection</strong> - Still works, now lower priority</li>
+<li class="ul-item"><strong>Fallback responses</strong> - Only used if nothing else matches</li></ul>
+
+<hr>
+
+<h2>🎙️ <strong>Merlin Personality Preserved</strong></h2>
+
+<p>All answers maintain the Merlin wizard personality:</p>
+<ul><li class="ul-item">Poetic language</li>
+<li class="ul-item">Wisdom-based tone</li>
+<li class="ul-item">Respectful addressing ("seeker")</li>
+<li class="ul-item">Encouraging and supportive</li></ul>
+
+<p><strong>Example</strong>:</p>
+<pre class="code-block " data-lang="text"><code>Q: &quot;What is polishing?&quot;
+<p>A: &quot;Polishing is Phase 3 - creating final brilliance and shine. </p>
+<p>   Use SPEED 1-2 in STEP mode exclusively. Use polish lap. </p>
+<p>   Extremely light touches. This is where a rough stone becomes </p>
+<p>   a brilliant gem.&quot;</code></pre></p>
+
+<hr>
+
+<h2>📈 <strong>Knowledge Base Statistics</strong></h2>
+
+<ul><li class="ul-item"><strong>Q&A Section</strong>: 40+ direct question-answer pairs</li>
+<li class="ul-item"><strong>Modes</strong>: 2 entries</li>
+<li class="ul-item"><strong>Speeds</strong>: 5 entries</li>
+<li class="ul-item"><strong>Axes</strong>: 4 entries</li>
+<li class="ul-item"><strong>Safety</strong>: 3 entries</li>
+<li class="ul-item"><strong>Cutting</strong>: 10 entries</li>
+<li class="ul-item"><strong>Stones</strong>: 5 entries</li>
+<li class="ul-item"><strong>Total Knowledge Entries</strong>: 70+</li></ul>
+
+<hr>
+
+<h2>✅ <strong>Implementation Checklist</strong></h2>
+
+<ul><li class="ul-item">✅ Q&A knowledge base created (40+ answers)</li>
+<li class="ul-item">✅ Semantic matching engine implemented</li>
+<li class="ul-item">✅ Smart query processing added</li>
+<li class="ul-item">✅ Similarity calculation improved</li>
+<li class="ul-item">✅ Answer generation with personality</li>
+<li class="ul-item">✅ Priority-based intent detection</li>
+<li class="ul-item">✅ Fallback system preserved</li>
+<li class="ul-item">✅ All previous features intact</li>
+<li class="ul-item">✅ No syntax errors</li>
+<li class="ul-item">✅ Ready for testing</li></ul>
+
+<hr>
+
+<h2>🚀 <strong>How to Test</strong></h2>
+
+<ol><li class="ol-item"><strong>Hard refresh</strong>: Ctrl+Shift+R</li>
+<li class="ol-item"><strong>Ask direct questions</strong>:</li></ol>
+<p>   - "What is a gem bot?"</p>
+<p>   - "How do I cut a diamond?"</p>
+<p>   - "What is the user manual?"</p>
+<p>   - "What are the three phases?"</p>
+<ol><li class="ol-item"><strong>Expect real answers</strong> instead of generic responses</li>
+<li class="ol-item"><strong>Voice will speak the answer</strong> (with Merlin's slow, deep voice)</li></ol>
+
+<hr>
+
+<h2>🎯 <strong>Expected Results</strong></h2>
+
+<h3>Before Fix</h3>
+<pre class="code-block " data-lang="text"><code>User: &quot;What is a gem bot?&quot;
+<p>Response: Generic conversational deflection</p>
+<p>Result: User confused ❌</code></pre></p>
+
+<h3>After Fix</h3>
+<pre class="code-block " data-lang="text"><code>User: &quot;What is a gem bot?&quot;
+<p>Response: &quot;GemBot is a precision automated gemstone cutting machine...&quot;</p>
+<p>Result: User gets actual answer ✅</code></pre></p>
+
+<hr>
+
+<h2>🔮 <strong>Future Enhancements</strong></h2>
+
+<p>Optional additions could include:</p>
+<ul><li class="ul-item">Local LLM integration (Ollama for advanced reasoning)</li>
+<li class="ul-item">Machine learning from user interactions</li>
+<li class="ul-item">Personalized cutting recommendations</li>
+<li class="ul-item">Advanced troubleshooting based on error patterns</li>
+<li class="ul-item">Integration with actual User Manual PDF</li>
+<li class="ul-item">Context awareness across multiple questions</li></ul>
+
+<hr>
+
+<h2>📁 <strong>File Updated</strong></h2>
+
+<ul><li class="ul-item"><code class="inline-code">GemBot<em>Control</em>AI.html</code> - Now with intelligent Q&A system</li></ul>
+
+<p><strong>Status</strong>: ✅ <strong>READY FOR TESTING</strong></p>
+
+<p>The Merlin AI now actually answers your questions instead of deflecting them!</p>
+
+
+        <div class="generated-notice">
+            🤖 Auto-generated from INTELLIGENT_QA_SYSTEM_COMPLETE.md by GemBot Neural Dashboard Agent<br>
+            Generated: 2025-12-16T13:52:12.073Z
+        </div>
+    </div>
+</body>
+</html>

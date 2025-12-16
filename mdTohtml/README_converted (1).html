@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>README - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        <h1>🤖 GemBot AI Web Control System</h1>
+
+<blockquote><strong>Created by Ryan Barbrick</strong> | © 2024-2025 Barbrick Design | All Rights Reserved</blockquote>
+<blockquote>> 📧 Contact: BarbrickDesign@gmail.com | 🔗 GitHub: <a href="https://github.com/barbrickdesign" target="_blank" rel="noopener">@barbrickdesign</a></blockquote>
+
+<hr>
+
+<h2>🔒 OWNERSHIP NOTICE</h2>
+
+<p><strong>This project is the intellectual property of Ryan Barbrick / Barbrick Design.</strong></p>
+
+<ul><li class="ul-item"><strong>Creator & Owner</strong>: Ryan Barbrick</li>
+<li class="ul-item"><strong>Contact</strong>: BarbrickDesign@gmail.com</li>
+<li class="ul-item"><strong>AI Assistant</strong>: Merlin AI (Forever Helper of the GemBot Realm)</li>
+<li class="ul-item"><strong>Community</strong>: All people welcome to play and learn!</li></ul>
+
+<p>⚠️ <strong>Unauthorized copying, reproduction, or sale without compensation to Ryan Barbrick is prohibited.</strong></p>
+<p>See <a href="OWNERSHIP.md" target="_blank" rel="noopener">OWNERSHIP.md</a> and <a href="AI</em>ATTRIBUTION.md" target="_blank" rel="noopener">AI<em>ATTRIBUTION.md</a> for full details.</p>
+
+<hr>
+
+<p>An interactive AI-powered learning platform with real-time control capabilities, mobile integration, and intelligent tutoring through Merlin AI.</p>
+
+<h2>📊 Current Status (Last Updated: December 15, 2025)</h2>
+
+<h3>✅ Working Features</h3>
+<p>| Feature | Status | Notes |</p>
+<p>|---------|--------|-------|</p>
+<p>| Page Load | ✅ Working | Site loads correctly |</p>
+<p>| Authentication UI | ✅ Working | Auto-continues as guest after 3 seconds |</p>
+<p>| Merlin AI Responses | ✅ Working | AI chat and responses functional |</p>
+<p>| 3D Visualization | ✅ Working | Babylon.js virtual machine renders |</p>
+<p>| Mobile Detection | ✅ Working | Lightweight mode on mobile devices |</p>
+<p>| QR Code Generation | ✅ Working | For mobile device connection |</p>
+<p>| Local Storage | ✅ Working | Saves user progress and settings |</p>
+<p>| Game Integration | ✅ Working | Optional enhancement module |</p>
+<p>| Console Logging | ✅ Working | Debug output visible in F12 console |</p>
+<p>| GemBot Farm Game | ✅ Working | Access via profile menu → 🎮 GemBot Farm |</p>
+
+<h3>⚠️ Known Issues / Expected Warnings</h3>
+<p>| Feature | Status | Notes |</p>
+<p>|---------|--------|-------|</p>
+<p>| Firebase Auth | ⚠️ Limited | Falls back to localStorage (expected on GitHub Pages) |</p>
+<p>| WebSocket Sync | ⚠️ Expected | 404 errors normal - no WebSocket server on static hosting |</p>
+<p>| Multi-device Sync | ⚠️ Optional | Requires server setup for full functionality |</p>
+
+<h3>🔧 Recent Fixes (December 15, 2025)</h3>
+<ul><li class="ul-item">Removed 740 lines of duplicate/corrupted code</li>
+<li class="ul-item">Added early stubs for <code class="inline-code">authSystem</code> and <code class="inline-code">leaderboardUI</code> to prevent reference errors</li>
+<li class="ul-item">Fixed duplicate <code class="inline-code">AccessibilityMode</code> class declaration</li>
+<li class="ul-item">Fixed auth overlay auto-continuing as guest after 3 seconds</li>
+<li class="ul-item">Removed unnecessary error banners for optional modules</li></ul>
+
+<hr>
+
+<h2>✨ Features</h2>
+
+<h3>🎓 Intelligent Learning System</h3>
+<ul><li class="ul-item"><strong>Merlin AI Mentor</strong>: Personalized AI tutor that adapts to your learning pace</li>
+<li class="ul-item"><strong>Progressive Curriculum</strong>: Structured lessons from beginner to advanced</li>
+<li class="ul-item"><strong>Real-time Feedback</strong>: Instant responses to your questions and progress</li>
+<li class="ul-item"><strong>Gamified Learning</strong>: Earn gems, level up, and track streaks</li>
+<li class="ul-item"><strong>Knowledge Persistence</strong>: AI remembers what you've learned</li></ul>
+
+<h3>📱 Mobile Integration</h3>
+<ul><li class="ul-item"><strong>Cross-Device Support</strong>: Use desktop and mobile devices together</li>
+<li class="ul-item"><strong>QR Code Connection</strong>: Easy one-tap mobile access via QR code</li>
+<li class="ul-item"><strong>Camera Streaming</strong>: Stream mobile device camera to desktop for analysis</li>
+<li class="ul-item"><strong>Network Discovery</strong>: Automatic detection of devices on your network</li>
+<li class="ul-item"><strong>Lightweight Mobile UI</strong>: Optimized interface for phone and tablet</li></ul>
+
+<h3>🎮 Control Features</h3>
+<ul><li class="ul-item"><strong>Motor Control</strong>: Precision control with step/continuous modes</li>
+<li class="ul-item"><strong>Joystick Input</strong>: Real-time analog control on mobile devices</li>
+<li class="ul-item"><strong>Serial Communication</strong>: Direct hardware integration via Arduino</li>
+<li class="ul-item"><strong>Responsive Design</strong>: Works on desktop, tablet, and mobile</li>
+<li class="ul-item"><strong>Real-time Status</strong>: Live feedback from connected hardware</li></ul>
+
+<h3>🔑 Universe Key System (NEW!)</h3>
+<ul><li class="ul-item"><strong>Physical USB Authentication</strong>: Collectible USB keys with cold storage wallets</li>
+<li class="ul-item"><strong>1,000 GBUV Preloaded</strong>: Each key contains 1,000 GemBot Universe tokens</li>
+<li class="ul-item"><strong>Machine Linking</strong>: Secure hardware fingerprinting for single-machine activation</li>
+<li class="ul-item"><strong>Futuristic Launcher</strong>: Animated starfield interface with 8-button action grid</li>
+<li class="ul-item"><strong>Admin Management API</strong>: Complete key generation, activation, and tracking system</li>
+<li class="ul-item"><strong>Auto-Launch</strong>: Windows AUTORUN.INF + BAT script for one-click access</li>
+<li class="ul-item"><strong>Cold Storage</strong>: AES-256 encrypted Solana wallet with private keys</li>
+<li class="ul-item"><strong>Warranty & Support</strong>: 1-year warranty included with each physical key</li></ul>
+
+<h3>🔬 AI Vision System</h3>
+<ul><li class="ul-item"><strong>Object Detection</strong>: TensorFlow.js-powered COCO-SSD model (desktop only)</li>
+<li class="ul-item"><strong>Real-time Analysis</strong>: Live video processing and detection</li>
+<li class="ul-item"><strong>Image Adjustment</strong>: Brightness, contrast, and saturation controls</li>
+<li class="ul-item"><strong>Mobile Camera Support</strong>: Use iPhone/Android cameras</li>
+<li class="ul-item"><strong>Lightweight Mobile Mode</strong>: No ML overhead for fast mobile access</li></ul>
+
+<h3>🛡️ Security & Anti-Fraud System</h3>
+<ul><li class="ul-item"><strong>Multi-Layer Detection</strong>: 6-layer fraud detection (IP, fingerprinting, email validation)</li>
+<li class="ul-item"><strong>Suspicion Scoring</strong>: 0-100 score based on behavior patterns</li>
+<li class="ul-item"><strong>Automated Wallet Allocation</strong>: 100 GBUV for safe users, 10 GBUV for suspicious accounts</li>
+<li class="ul-item"><strong>Admin Dashboard</strong>: Complete security monitoring with IP tracking and flagged accounts</li>
+<li class="ul-item"><strong>Rate Limiting</strong>: Prevents spam and abuse</li>
+<li class="ul-item"><strong>Real-time Alerts</strong>: Instant notifications for high-risk registrations</li></ul>
+
+<h3>📊 Admin Dashboard</h3>
+<ul><li class="ul-item"><strong>AI Agent Management</strong>: Monitor and control all AI agents (security, wallet, academy, support)</li>
+<li class="ul-item"><strong>Security Dashboard</strong>: View fraud detection stats, IP tracking, and flagged accounts</li>
+<li class="ul-item"><strong>Wallet Management</strong>: Track all user wallets, balances, and transactions</li>
+<li class="ul-item"><strong>Code Editor</strong>: Built-in Monaco editor with GitHub integration</li>
+<li class="ul-item"><strong>Visual Editor</strong>: Direct DOM manipulation for live site updates</li>
+<li class="ul-item"><strong>User Management</strong>: View and manage all registered users</li>
+<li class="ul-item"><strong>Game Control</strong>: Monitor in-game activity and statistics</li>
+<li class="ul-item"><strong>Settings</strong>: Configure GitHub tokens, deployment options, and system settings</li></ul>
+
+<h2>🚀 Quick Start</h2>
+
+<h3>Local Deployment</h3>
+
+<pre class="code-block bash" data-lang="bash"><code>&lt;h1&gt;Clone the repository&lt;/h1&gt;
+<p>git clone https://github.com/barbrickdesign/GemBotAiWebControl.git</p>
+<p>cd GemBotAiWebControl</p>
+
+<p>&lt;h1&gt;Install dependencies&lt;/h1&gt;</p>
+<p>npm install</p>
+
+<p>&lt;h1&gt;Start the server&lt;/h1&gt;</p>
+<p>npm start</code></pre></p>
+
+<p>Then open:</p>
+<ul><li class="ul-item"><strong>Desktop</strong>: <code class="inline-code">http://localhost:8000</code></li>
+<li class="ul-item"><strong>Mobile (same WiFi)</strong>: Scan QR code or visit <code class="inline-code">http://{your-ip}:8000</code></li></ul>
+
+<h3>🔑 Universe Key Quick Start</h3>
+
+<p><strong>If you have a physical Universe Key USB:</strong></p>
+<ol><li class="ol-item">Insert USB into your Windows PC</li>
+<li class="ol-item">Double-click <code class="inline-code">AUTOLAUNCH.BAT</code> on the USB drive</li>
+<li class="ol-item">Launcher opens automatically in your browser</li>
+<li class="ol-item">Click "🔗 Link Machine" to activate on your device</li>
+<li class="ol-item">Access your 1,000 GBUV wallet and project files</li></ol>
+
+<p><strong>Testing the Universe Key System:</strong></p>
+<ol><li class="ol-item">Open <code class="inline-code">TEST<em>UNIVERSE</em>KEY.html</code> in your browser</li>
+<li class="ol-item">Click "🔑 Open Universe Key Launcher" to test the interface</li>
+<li class="ol-item">Click "⚙️ Test Admin API" to test key generation and management</li>
+<li class="ol-item">See <code class="inline-code">00<em>UNIVERSE</em>KEY<em>TESTING</em>CHECKLIST.md</code> for complete testing guide</li></ol>
+
+<p><strong>Admin: Generate New Universe Keys:</strong></p>
+<pre class="code-block javascript" data-lang="javascript"><code>// Load admin API in browser console
+<p>const script = document.createElement(&#039;script&#039;);</p>
+<p>script.src = &#039;universe-key-admin-api.js&#039;;</p>
+<p>document.head.appendChild(script);</p>
+
+<p>// Generate new key</p>
+<p>const newKey = await window.universeKeyManager.generateKey(&#039;owner@email.com&#039;, 1000);</p>
+<p>console.log(newKey);</p>
+
+<p>// Copy KEY_ID.json output to USB drive</code></pre></p>
+
+<h3>Public Deployment (Render.com)</h3>
+
+<ol><li class="ol-item">Connect your GitHub repo to <a href="https://render.com" target="_blank" rel="noopener">Render.com</a></li>
+<li class="ol-item">Use the <code class="inline-code">render.yaml</code> configuration provided</li>
+<li class="ol-item">Deploy automatically - your public URL will be ready instantly</li></ol>
+
+<h2>📚 Usage Guide</h2>
+
+<h3>Getting Started</h3>
+<ol><li class="ol-item"><strong>Desktop</strong>: Opens full interface with AI vision</li>
+<li class="ol-item"><strong>Mobile</strong>: Lightweight interface loads instantly</li>
+<li class="ol-item"><strong>Connect</strong>: QR code appears automatically on desktop</li>
+<li class="ol-item"><strong>Learn</strong>: Start with Merlin by clicking "Start Teaching"</li>
+<li class="ol-item"><strong>Control</strong>: Use motors, camera, and commands from any device</li></ol>
+
+<h3>Learning with Merlin</h3>
+<ul><li class="ul-item">Answer knowledge check questions</li>
+<li class="ul-item">Receive personalized curriculum</li>
+<li class="ul-item">Earn gems and unlock tiers</li>
+<li class="ul-item">Build learning streaks</li>
+<li class="ul-item">Get real-time AI feedback</li></ul>
+
+<h3>Device Connection</h3>
+<ul><li class="ul-item">Desktop and mobile on same WiFi</li>
+<li class="ul-item">Desktop shows QR code for mobile</li>
+<li class="ul-item">Automatic device discovery</li>
+<li class="ul-item">Real-time chat and control sharing</li></ul>
+
+<h2>🔧 Technology Stack</h2>
+
+<ul><li class="ul-item"><strong>Frontend</strong>: HTML5 + JavaScript + CSS3</li>
+<li class="ul-item"><strong>Backend</strong>: Node.js + HTTP server</li>
+<li class="ul-item"><strong>AI/ML</strong>: TensorFlow.js + COCO-SSD</li>
+<li class="ul-item"><strong>Mobile</strong>: Responsive design + native camera API</li>
+<li class="ul-item"><strong>QR Codes</strong>: QR Server API (no library needed)</li></ul>
+
+<h2>📋 System Requirements</h2>
+
+<h3>Minimum</h3>
+<ul><li class="ul-item">Node.js 18+</li>
+<li class="ul-item">Modern browser (Chrome, Safari, Firefox)</li>
+<li class="ul-item">WiFi network (for mobile access)</li></ul>
+
+<h3>Optional</h3>
+<ul><li class="ul-item">Arduino for motor control</li>
+<li class="ul-item">USB camera or mobile device</li>
+<li class="ul-item">Gamepad/joystick</li></ul>
+
+<h2>🎨 Customization</h2>
+
+<p>Edit <code class="inline-code">GemBot<em>Control</em>AI.html</code> to customize:</p>
+<ul><li class="ul-item">Colors and themes</li>
+<li class="ul-item">Learning curriculum</li>
+<li class="ul-item">Token rewards</li>
+<li class="ul-item">UI layout</li>
+<li class="ul-item">Hardware settings</li></ul>
+
+<h2>🤝 Contributing</h2>
+
+<p>See CONTRIBUTING.md for guidelines.</p>
+
+<h2>📄 License</h2>
+
+<p>MIT - Free for personal and commercial use</p>
+
+<h2>🆘 Support & Troubleshooting</h2>
+
+<h3>Common Issues</h3>
+
+<p><strong>Slow page load?</strong></p>
+<ul><li class="ul-item">Mobile: No ML models loaded - should be fast</li>
+<li class="ul-item">Desktop: ML loads in background after page renders</li></ul>
+
+<p><strong>QR code not showing?</strong></p>
+<ul><li class="ul-item">Check internet connection (QR generation via API)</li>
+<li class="ul-item">Click "Copy URL" button as alternative</li></ul>
+
+<p><strong>Can't connect mobile?</strong></p>
+<ul><li class="ul-item">Both devices on same WiFi?</li>
+<li class="ul-item">Desktop server running (<code class="inline-code">npm start</code>)?</li>
+<li class="ul-item">Port 8000 accessible?</li></ul>
+
+<p><strong>Merlin not responding?</strong></p>
+<ul><li class="ul-item">Refresh page</li>
+<li class="ul-item">Check browser console (F12)</li>
+<li class="ul-item">Verify server is running</li></ul>
+
+<h2>📊 Performance</h2>
+
+<ul><li class="ul-item">Page load: 1-5 seconds</li>
+<li class="ul-item">QR generation: <200ms  </li>
+<li class="ul-item">AI response: 500ms-2s</li>
+<li class="ul-item">Mobile connection: <1s</li>
+<li class="ul-item">Video: 30 FPS (desktop), unlimited (mobile)</li></ul>
+
+<h2>🌟 Roadmap</h2>
+
+<ul><li class="ul-item">Voice control</li>
+<li class="ul-item">Multi-language support</li>
+<li class="ul-item">User accounts & cloud sync</li>
+<li class="ul-item">Mobile native app</li>
+<li class="ul-item">Advanced ML models</li>
+<li class="ul-item">Educational platform integration</li></ul>
+
+<hr>
+
+<p><strong>Built with ❤️ by barbrickdesign</strong>  </p>
+<p><a href="https://github.com/barbrickdesign/GemBotAiWebControl" target="_blank" rel="noopener">GitHub</a></p>
+
+<hr>
+
+<h2>📝 Changelog</h2>
+
+<h3>December 15, 2025 (Evening Update - Universe Key Launch!)</h3>
+
+<p><strong>NEW: Universe Key System</strong> 🔑</p>
+<ul><li class="ul-item">Created complete physical USB authentication system (11 files, 1,873+ lines)</li>
+<li class="ul-item">Launcher interface: HTML/CSS/JS with animated starfield and 8-button grid</li>
+<li class="ul-item">Auto-launch system: AUTORUN.INF + AUTOLAUNCH.BAT for Windows</li>
+<li class="ul-item">Admin API: Full key generation, activation, and management (400 lines)</li>
+<li class="ul-item">Testing suite: Comprehensive 6-phase testing checklist</li>
+<li class="ul-item">Documentation: 7,000+ words across 4 markdown files</li></ul>
+
+<p><strong>Admin Dashboard Complete</strong> 📊</p>
+<ul><li class="ul-item">Added AI Agents section: Monitor and control all AI agents</li>
+<li class="ul-item">Added Security section: Fraud dashboard with IP tracking and suspicion scores</li>
+<li class="ul-item">Added Wallets section: Complete wallet management with balances and transactions</li>
+<li class="ul-item">320+ lines of JavaScript: refreshAIAgents(), refreshSecurity(), refreshWallets()</li>
+<li class="ul-item">Full CSS styling: Tables, badges, action buttons, search/filter functionality</li></ul>
+
+<p><strong>3D Visualization Fixed</strong> ✨</p>
+<ul><li class="ul-item">Fixed camera distance (250 → 200 units) for better viewing angle</li>
+<li class="ul-item">Increased ambient light (0.6 → 1.0) for proper illumination</li>
+<li class="ul-item">Added forced mesh visibility to all loaded models</li>
+<li class="ul-item">Added diagnostic console logging for debugging</li></ul>
+
+<p><strong>Academy Content Expansion</strong> 📚</p>
+<ul><li class="ul-item">cutting_fundamentals: Added 4 detailed lessons (angles, facet sequence, table size, girdle)</li>
+<li class="ul-item">polishing_mastery: Added 4 lessons (compounds, lap speed, scratch removal, mirror polish)</li>
+<li class="ul-item">advanced_designs: Added 4 lessons (fancy shapes, custom faceting, concave, fantasy cuts)</li>
+<li class="ul-item">All lessons now have complete interactive content, quizzes, and practice exercises</li></ul>
+
+<p><strong>Previous (Morning Update)</strong></p>
+<ul><li class="ul-item">Fixed authentication UI overlay persistence issue</li>
+<li class="ul-item">Removed Three.js and Node.js require() shim (not needed)</li>
+<li class="ul-item">Fixed game integration module timing</li>
+<li class="ul-item">Removed critical error banners for optional modules</li>
+<li class="ul-item">Cleaned up duplicate code blocks causing syntax errors</li></ul>
+
+<h3>December 7, 2025</h3>
+<ul><li class="ul-item">Added AI enhancement features</li>
+<li class="ul-item">Improved mobile UI responsiveness</li>
+<li class="ul-item">Fixed button behavior issues</li></ul>
+
+<hr>
+
+<h2>🔧 Troubleshooting</h2>
+
+<h3>Page Not Loading?</h3>
+<ol><li class="ol-item">Check browser console (F12) for errors</li>
+<li class="ol-item">Clear browser cache and reload</li>
+<li class="ol-item">Check that all JS files exist on server</li></ol>
+
+<h3>Auth Not Working?</h3>
+<ol><li class="ol-item">Firebase may be blocked by CSP - uses localStorage fallback</li>
+<li class="ol-item">Check that overlay hides after clicking Login/Register</li></ol>
+
+<h3>Modules Not Found Warnings?</h3>
+<ul><li class="ul-item">These are informational only - optional features</li>
+<li class="ul-item">Core functionality works without them</li></ul>
+
+<hr>
+
+<p><strong>Live Demo</strong>: https://barbrickdesign.github.io/GemBotAiWebControl/GemBot<em>Control</em>AI.html</p>
+
+
+        <div class="generated-notice">
+            🤖 Auto-generated from README.md by GemBot Neural Dashboard Agent<br>
+            Generated: 2025-12-16T13:52:22.972Z
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MERLIN_QUICK_REFERENCE - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        <h1>⚡ MERLIN QUICK REFERENCE CARD</h1>
+
+<h2>🎭 <strong>Merlin AI - At a Glance</strong></h2>
+
+<p><strong>What Changed</strong>: GemBot AI completely reimagined as Merlin, a wise wizard with stone-specific guidance and gender-neutral personality.</p>
+
+<p><strong>Key Features</strong>:</p>
+<ul><li class="ul-item">🧙 Merlin wizard personality throughout</li>
+<li class="ul-item">💎 5 stone types recognized (diamond, ruby, sapphire, emerald, opal)</li>
+<li class="ul-item">🎯 3-phase cutting guidance (roughing, fine, polishing)</li>
+<li class="ul-item">⚖️ Gender-neutral language everywhere</li>
+<li class="ul-item">📚 References User Manual knowledge</li>
+<li class="ul-item">📈 Learning and growth narrative</li>
+<li class="ul-item">🎙️ Poetic, mystical tone in all responses</li></ul>
+
+<hr>
+
+<h2>🎤 <strong>Quick Test Script</strong></h2>
+
+<h3>Test 1: Greeting (30 seconds)</h3>
+<ol><li class="ol-item">Load page</li>
+<li class="ol-item"><strong>See</strong>: Merlin greeting appears</li>
+<li class="ol-item"><strong>Check</strong>: Mentions "seeker", "User Manual", "learning"</li></ol>
+
+<h3>Test 2: Identity (30 seconds)</h3>
+<ol><li class="ol-item">Ask: "Who are you?"</li>
+<li class="ol-item"><strong>Hear</strong>: Merlin introduction with wisdom</li>
+<li class="ol-item"><strong>Check</strong>: Poetic language, no sir/madam</li></ol>
+
+<h3>Test 3: Stone Detection (1 minute)</h3>
+<ol><li class="ol-item">Ask: "I'm cutting a diamond today"</li>
+<li class="ol-item"><strong>See</strong>: Diamond guidance appears</li>
+<li class="ol-item"><strong>Check</strong>: Specific speeds (4-5, 2-3, 1-2), phase guidance</li></ol>
+
+<h3>Test 4: Phase Guidance (1 minute)</h3>
+<ol><li class="ol-item">Ask: "How do I fine cut?"</li>
+<li class="ol-item"><strong>See</strong>: Phase-specific guidance</li>
+<li class="ol-item"><strong>Check</strong>: Speed 2-3, STEP mode, "approach angles with care"</li></ol>
+
+<h3>Test 5: All Stones (3 minutes)</h3>
+<ul><li class="ul-item">Diamond: "Hard, unforgiving, requires patience"</li>
+<li class="ul-item">Ruby: "Inner fire, heat-sensitive"</li>
+<li class="ul-item">Sapphire: "Diverse, responds to patience"</li>
+<li class="ul-item">Emerald: "Brittle, light pressure"</li>
+<li class="ul-item">Opal: "Ethereal, gentlest touch"</li></ul>
+
+<hr>
+
+<h2>🎙️ <strong>Key Phrases to Hear</strong></h2>
+
+<p>✅ <strong>Merlin Wisdom</strong>:</p>
+<ul><li class="ul-item">"Greetings, seeker of brilliance"</li>
+<li class="ul-item">"Wisdom flows through our work"</li>
+<li class="ul-item">"Two paths diverge before you"</li>
+<li class="ul-item">"The way of the master"</li>
+<li class="ul-item">"The lap does the work. You are merely the guide."</li></ul>
+
+<p>✅ <strong>Gender Neutral</strong> (NOT these):</p>
+<ul><li class="ul-item">❌ NO "sir"</li>
+<li class="ul-item">❌ NO "madam"</li>
+<li class="ul-item">✅ YES "seeker", "you", "apprentice"</li></ul>
+
+<p>✅ <strong>Stone Knowledge</strong>:</p>
+<ul><li class="ul-item">Diamond: "Hard. Unforgiving."</li>
+<li class="ul-item">Ruby: "Inner fire. Heat-sensitive."</li>
+<li class="ul-item">Sapphire: "Diverse palette. Patient technique."</li>
+<li class="ul-item">Emerald: "Brittle. Light pressure."</li>
+<li class="ul-item">Opal: "Ethereal. Fragile as dreams."</li></ul>
+
+<p>✅ <strong>Phase Guidance</strong>:</p>
+<ul><li class="ul-item">Roughing: "Speed 4-5. CONTINUOUS. Aggression."</li>
+<li class="ul-item">Fine: "Speed 2-3. STEP. Deliberate."</li>
+<li class="ul-item">Polish: "Speed 1-2. STEP. Gentle touches."</li></ul>
+
+<hr>
+
+<h2>📊 <strong>Score Card</strong></h2>
+
+<p>| Check | Result |</p>
+<p>|-------|--------|</p>
+<p>| Merlin greeting? | ✅ Pass if mentions "seeker" |</p>
+<p>| Poetic language? | ✅ Pass if includes metaphors |</p>
+<p>| Gender neutral? | ✅ Pass if no sir/madam |</p>
+<p>| Stone detected? | ✅ Pass if recognizes stone name |</p>
+<p>| Phase guidance? | ✅ Pass if gives speeds + mode |</p>
+<p>| Manual knowledge? | ✅ Pass if mentioned |</p>
+<p>| Learning narrative? | ✅ Pass if growth mentioned |</p>
+<p>| Voice speaks? | ✅ Pass if responds audibly |</p>
+<p>| No errors? | ✅ Pass if page loads smoothly |</p>
+
+<hr>
+
+<h2>🚀 <strong>Quick Commands</strong></h2>
+
+<p><strong>Ask Merlin These</strong>:</p>
+<ul><li class="ul-item">"Who are you?" → Introduction</li>
+<li class="ul-item">"What stone should I cut?" → Stone guidance</li>
+<li class="ul-item">"I'm cutting a diamond" → Diamond-specific guidance</li>
+<li class="ul-item">"How do I rough cut?" → Roughing phase guidance</li>
+<li class="ul-item">"Tell me about fine cutting" → Fine cutting guidance</li>
+<li class="ul-item">"What about polishing?" → Polishing phase guidance</li>
+<li class="ul-item">"My motor is stuck" → Problem guidance</li>
+<li class="ul-item">"What's the emergency stop?" → Safety guidance</li>
+<li class="ul-item">"Tell me about speed 3" → Speed explanation</li>
+<li class="ul-item">"How do I switch stones?" → Switching procedure</li></ul>
+
+<hr>
+
+<h2>🧙 <strong>Merlin's Voice</strong></h2>
+
+<p><strong>How Merlin Sounds</strong>:</p>
+<ul><li class="ul-item">✨ Grand and all-knowing</li>
+<li class="ul-item">📖 Poetic and wise</li>
+<li class="ul-item">🎭 Mystical and encouraging</li>
+<li class="ul-item">🎯 Authoritative and specific</li>
+<li class="ul-item">💎 Respectful of the craft</li></ul>
+
+<p><strong>How to Optimize</strong>:</p>
+<ul><li class="ul-item">Speech rate: 0.7 (slower)</li>
+<li class="ul-item">Pitch: 0.75 (deeper)</li>
+<li class="ul-item">Volume: 1.0 (clear)</li></ul>
+
+<hr>
+
+<h2>💡 <strong>Success Indicators</strong></h2>
+
+<p>✅ <strong>You'll Know It's Working When</strong>:</p>
+
+<ol><li class="ol-item"><strong>Greeting appears</strong> with "Merlin" and "seeker"</li>
+<li class="ol-item"><strong>Stone names are recognized</strong> (diamond, ruby, etc.)</li>
+<li class="ol-item"><strong>Speeds are specific</strong> (not vague like "medium")</li>
+<li class="ol-item"><strong>Language is poetic</strong> (not robotic or generic)</li>
+<li class="ol-item"><strong>No gender language</strong> appears (no sir/madam)</li>
+<li class="ol-item"><strong>Manual knowledge is referenced</strong></li>
+<li class="ol-item"><strong>Phases are explained</strong> (roughing → fine → polish)</li>
+<li class="ol-item"><strong>Responses are varied</strong> (not same answer twice)</li>
+<li class="ol-item"><strong>Voice speaks wisely</strong> (not rushed)</li>
+<li class="ol-item"><strong>Learning mentioned</strong> (growth and improvement)</li></ol>
+
+<hr>
+
+<h2>🐛 <strong>Quick Troubleshooting</strong></h2>
+
+<p>| Problem | Solution |</p>
+<p>|---------|----------|</p>
+<p>| No greeting | Reload page (Ctrl+Shift+R) |</p>
+<p>| Generic answers | Check file line count is 3,350+ |</p>
+<p>| No stone detection | Try exact: "diamond", "ruby", etc. |</p>
+<p>| No voice | Check browser speaker permissions |</p>
+<p>| Says "sir/madam" | File may need re-saving |</p>
+<p>| No poetic language | Verify GemBotAI methods exist |</p>
+
+<hr>
+
+<h2>📱 <strong>Mobile Optimization</strong></h2>
+
+<ul><li class="ul-item">✅ Works on phones/tablets</li>
+<li class="ul-item">✅ Voice works with device mic</li>
+<li class="ul-item">✅ Merlin personality intact</li>
+<li class="ul-item">✅ Touch buttons functional</li></ul>
+
+<hr>
+
+<h2>🎓 <strong>What's New vs Old</strong></h2>
+
+<p>| What | Old | New |</p>
+<p>|-----|-----|-----|</p>
+<p>| Name | Jarvis | Merlin |</p>
+<p>| Personality | Butler | Wizard |</p>
+<p>| Stones | 0 types | 5 types |</p>
+<p>| Phases | Not tracked | 3 phases |</p>
+<p>| Knowledge | 3 categories | 6 categories |</p>
+<p>| Gender | sir/madam | Neutral |</p>
+<p>| Context | 10 queries | 20 queries |</p>
+<p>| Help | 4-5 topics | 10 topics |</p>
+
+<hr>
+
+<h2>⏱️ <strong>Testing Timeline</strong></h2>
+
+<ul><li class="ul-item"><strong>Quick Test</strong>: 5 minutes (greeting + stone detection)</li>
+<li class="ul-item"><strong>Standard Test</strong>: 15 minutes (all stones, all phases)</li>
+<li class="ul-item"><strong>Comprehensive Test</strong>: 30 minutes (all scenarios in guide)</li>
+<li class="ul-item"><strong>Full Certification</strong>: 1 hour (complete testing guide)</li></ul>
+
+<hr>
+
+<h2>📞 <strong>Need Help?</strong></h2>
+
+<ol><li class="ol-item">Read: <code class="inline-code">MERLIN<em>TESTING</em>COMPLETE_GUIDE.md</code> (detailed tests)</li>
+<li class="ol-item">Check: <code class="inline-code">MERLIN<em>FINAL</em>SUMMARY.md</code> (full documentation)</li>
+<li class="ol-item">Review: <code class="inline-code">SESSION<em>14</em>MERLIN_COMPLETE.md</code> (technical details)</li></ol>
+
+<hr>
+
+<h2>🎉 <strong>You're All Set!</strong></h2>
+
+<p>Your Merlin AI is ready to guide your precision gemstone cutting with wisdom, grace, and poetic eloquence.</p>
+
+<p><strong>Status</strong>: ✅ <strong>COMPLETE & TESTED</strong></p>
+
+<p><em>The wizard awaits your next question, seeker of brilliance.</em></p>
+
+<p>🧙✨</p>
+
+
+        <div class="generated-notice">
+            🤖 Auto-generated from MERLIN_QUICK_REFERENCE.md by GemBot Neural Dashboard Agent<br>
+            Generated: 2025-12-16T13:52:16.501Z
+        </div>
+    </div>
+</body>
+</html>

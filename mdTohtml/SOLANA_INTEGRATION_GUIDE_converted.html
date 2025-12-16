@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOLANA_INTEGRATION_GUIDE - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        <h1>Integrating Solana Token with GemBot<em>Control</em>AI.html</h1>
+
+<h2>Quick Start (5 minutes)</h2>
+
+<h3>Step 1: Add Script Reference</h3>
+
+<p>In <code class="inline-code">GemBot<em>Control</em>AI.html</code>, add this line in the <code class="inline-code"><head></code> section:</p>
+
+<pre class="code-block html" data-lang="html"><code>&lt;script src=&quot;GEMBOT&lt;em&gt;SOLANA&lt;/em&gt;INTEGRATION.js&quot;&gt;&lt;/script&gt;</code></pre>
+
+<h3>Step 2: Connect UI to Token System</h3>
+
+<p>Replace your existing session start button with:</p>
+
+<pre class="code-block html" data-lang="html"><code>&lt;button id=&quot;startSessionBtn&quot; onclick=&quot;initializeGemBotSession()&quot; class=&quot;btn-primary&quot;&gt;
+<p>    🚀 Start Cutting Session (Token: DPHc...pump)</p>
+<p>&lt;/button&gt;</p>
+<p>&lt;button id=&quot;stopSessionBtn&quot; onclick=&quot;endGemBotSession()&quot; class=&quot;btn-primary&quot; disabled&gt;</p>
+<p>    ⏹️ End Session</p>
+<p>&lt;/button&gt;</p>
+<p>&lt;button id=&quot;emergencyBtn&quot; onclick=&quot;gemBotController.emergencyStop()&quot; class=&quot;btn-danger&quot;&gt;</p>
+<p>    🛑 EMERGENCY STOP</p>
+<p>&lt;/button&gt;</code></pre></p>
+
+<h3>Step 3: Add Session Control JavaScript</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>async function initializeGemBotSession() {
+<p>    console.log(&#039;🎬 Initializing GemBot session with Solana integration...&#039;);</p>
+    
+<p>    // Verify Phantom wallet is connected</p>
+<p>    if (!window.solana) {</p>
+<p>        alert(&#039;❌ Please install Phantom wallet first&#039;);</p>
+<p>        return;</p>
+<p>    }</p>
+    
+<p>    try {</p>
+<p>        // Start the cutting session</p>
+<p>        await window.gemBotController.startCuttingSession();</p>
+        
+<p>        // Update UI</p>
+<p>        document.getElementById(&#039;startSessionBtn&#039;).disabled = true;</p>
+<p>        document.getElementById(&#039;stopSessionBtn&#039;).disabled = false;</p>
+        
+<p>        // Show transaction waiting message</p>
+<p>        displayMessage(</p>
+<p>            &#039;🎧 Listening for transactions...\n&#039; +</p>
+<p>            &#039;Send gems to: &#039; + window.gemBotController.VAULT_WALLET + &#039;\n&#039; +</p>
+<p>            &#039;Each gem amount = different command&#039;,</p>
+<p>            &#039;info&#039;</p>
+<p>        );</p>
+        
+<p>    } catch (error) {</p>
+<p>        console.error(&#039;Session initialization failed:&#039;, error);</p>
+<p>        alert(&#039;Failed to start session: &#039; + error.message);</p>
+<p>    }</p>
+<p>}</p>
+
+<p>function endGemBotSession() {</p>
+<p>    const reward = window.gemBotController.endSession();</p>
+    
+<p>    // Update UI</p>
+<p>    document.getElementById(&#039;startSessionBtn&#039;).disabled = false;</p>
+<p>    document.getElementById(&#039;stopSessionBtn&#039;).disabled = true;</p>
+    
+<p>    // Show session summary</p>
+<p>    displaySessionReward(reward);</p>
+<p>}</p>
+
+<p>function displaySessionReward(reward) {</p>
+<p>    const message = <code class="inline-code"></p>
+<p>        🏆 SESSION COMPLETE! 🏆</p>
+        
+<p>        ⏱️  Duration: ${reward.duration.toFixed(1)} minutes</p>
+<p>        💎 Gems Earned: ${reward.gemsEarned}</p>
+<p>        ✨ Cut Quality: ${reward.quality.toFixed(1)}%</p>
+<p>        💰 Revenue Generated: $${reward.revenue.toFixed(2)}</p>
+        
+<p>        Your vault: ${window.gemBotController.VAULT_WALLET}</p>
+<p>        Token: ${window.gemBotController.TOKEN_ADDRESS}</p>
+<p>    </code>;</p>
+    
+<p>    displayMessage(message, &#039;success&#039;);</p>
+<p>}</p>
+
+<p>function displayMessage(text, type = &#039;info&#039;) {</p>
+<p>    const msgDiv = document.createElement(&#039;div&#039;);</p>
+<p>    msgDiv.className = <code class="inline-code">message message-${type}</code>;</p>
+<p>    msgDiv.textContent = text;</p>
+<p>    msgDiv.style.cssText = <code class="inline-code"></p>
+<p>        position: fixed;</p>
+<p>        top: 20px;</p>
+<p>        right: 20px;</p>
+<p>        background: ${type === &#039;success&#039; ? &#039;#4CAF50&#039; : type === &#039;error&#039; ? &#039;#f44336&#039; : &#039;#2196F3&#039;};</p>
+<p>        color: white;</p>
+<p>        padding: 20px;</p>
+<p>        border-radius: 5px;</p>
+<p>        z-index: 10000;</p>
+<p>        max-width: 400px;</p>
+<p>        font-family: monospace;</p>
+<p>        white-space: pre-wrap;</p>
+<p>    </code>;</p>
+    
+<p>    document.body.appendChild(msgDiv);</p>
+    
+<p>    setTimeout(() =&gt; msgDiv.remove(), 5000);</p>
+<p>}</code></pre></p>
+
+<hr>
+
+<h2>Command Mapping Reference</h2>
+
+<p>When users send tokens to the vault, different amounts trigger different commands:</p>
+
+<pre class="code-block " data-lang="text"><code>1 Gem  → Y Axis Down        (Cost: 1 gem,  Tier: Apprentice)
+<p>2 Gems → Y Axis Up          (Cost: 1 gem,  Tier: Apprentice)</p>
+<p>3 Gems → X Axis Left        (Cost: 1 gem,  Tier: Apprentice)</p>
+<p>4 Gems → X Axis Right       (Cost: 1 gem,  Tier: Apprentice)</p>
+<p>5 Gems → Spindle +1000 RPM  (Cost: 5 gems, Tier: Apprentice)</p>
+<p>6 Gems → Spindle -1000 RPM  (Cost: 5 gems, Tier: Apprentice)</p>
+<p>10 Gems → Precision Mode    (Cost: 10 gems, Tier: Journeyman)</p>
+<p>11 Gems → Speed Boost       (Cost: 10 gems, Tier: Journeyman)</p>
+<p>20 Gems → AI Assisted Cut   (Cost: 20 gems, Tier: Artisan)</code></pre></p>
+
+<hr>
+
+<h2>Integration with Existing Merlin AI</h2>
+
+<p>Add this to your Merlin AI class to support token queries:</p>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// In your Merlin AI class, add this method:
+
+<p>async handleTokenQuery(query) {</p>
+<p>    if (query.includes(&#039;token&#039;) || query.includes(&#039;send&#039;) || query.includes(&#039;transaction&#039;)) {</p>
+<p>        return <code class="inline-code"></p>
+<p>            💎 TOKEN CONTROL SYSTEM</p>
+            
+<p>            Token Address: ${window.gemBotController.TOKEN_ADDRESS}</p>
+            
+<p>            ✅ TO CONTROL THE MACHINE:</p>
+<p>            1. Open Phantom wallet</p>
+<p>            2. Send gems to: ${window.gemBotController.VAULT_WALLET}</p>
+<p>            3. The amount you send = command executed:</p>
+<p>               - 1 gem = Move Y axis down</p>
+<p>               - 2 gems = Move Y axis up</p>
+<p>               - 3 gems = Move X axis left</p>
+<p>               - 4 gems = Move X axis right</p>
+<p>               - 5 gems = Spindle +1000 RPM</p>
+<p>               - etc.</p>
+            
+<p>            💡 TIPS:</p>
+<p>            - Each command must match your certification tier</p>
+<p>            - Transaction confirms within 3 seconds</p>
+<p>            - Failed commands automatically refund</p>
+<p>            - Beautiful cuts earn +5 bonus gems</p>
+            
+<p>            🔗 Trade Token: ${this.gemBotController.PUMP&lt;em&gt;FUN&lt;/em&gt;URL}</p>
+<p>            📊 View on Explorer: ${this.gemBotController.SOLSCAN_URL}</p>
+<p>        </code>;</p>
+<p>    }</p>
+<p>}</code></pre></p>
+
+<hr>
+
+<h2>Live Feed Integration</h2>
+
+<p>Add this HTML structure for the live feed:</p>
+
+<pre class="code-block html" data-lang="html"><code>&lt;div id=&quot;liveStreamContainer&quot; style=&quot;display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;&quot;&gt;
+    
+<p>    &lt;!-- Video Feed --&gt;</p>
+<p>    &lt;div style=&quot;position: relative;&quot;&gt;</p>
+<p>        &lt;video id=&quot;livestream&quot; </p>
+<p>               style=&quot;width: 100%; border: 2px solid #FFD700; border-radius: 10px;&quot; </p>
+<p>               autoplay playsinline&gt;</p>
+<p>        &lt;/video&gt;</p>
+<p>        &lt;div id=&quot;overlay&quot; style=&quot;position: absolute; top: 0; left: 0; width: 100%; height: 100%; color: white; font-family: monospace; pointer-events: none;&quot;&gt;&lt;/div&gt;</p>
+<p>    &lt;/div&gt;</p>
+    
+<p>    &lt;!-- Stats Panel --&gt;</p>
+<p>    &lt;div id=&quot;statsPanel&quot; style=&quot;background: #1a1a1a; border: 2px solid #FFD700; border-radius: 10px; padding: 20px; overflow-y: auto;&quot;&gt;</p>
+<p>        &lt;h3&gt;📊 Session Stats&lt;/h3&gt;</p>
+<p>        &lt;div id=&quot;sessionStats&quot; style=&quot;font-family: monospace; line-height: 1.8;&quot;&gt;</p>
+<p>            &lt;div&gt;⏱️  Duration: &lt;span id=&quot;duration&quot;&gt;0:00&lt;/span&gt;&lt;/div&gt;</p>
+<p>            &lt;div&gt;💎 Commands: &lt;span id=&quot;commandCount&quot;&gt;0&lt;/span&gt;&lt;/div&gt;</p>
+<p>            &lt;div&gt;💰 Revenue: $&lt;span id=&quot;revenue&quot;&gt;0.00&lt;/span&gt;&lt;/div&gt;</p>
+<p>            &lt;div&gt;✨ Quality: &lt;span id=&quot;quality&quot;&gt;0%&lt;/span&gt;&lt;/div&gt;</p>
+<p>            &lt;div&gt;🌡️  Temp: &lt;span id=&quot;temperature&quot;&gt;0°C&lt;/span&gt;&lt;/div&gt;</p>
+<p>            &lt;div&gt;⚙️  Spindle: &lt;span id=&quot;spindle&quot;&gt;0 RPM&lt;/span&gt;&lt;/div&gt;</p>
+<p>            &lt;div&gt;📍 Position: X:&lt;span id=&quot;posX&quot;&gt;0&lt;/span&gt; Y:&lt;span id=&quot;posY&quot;&gt;0&lt;/span&gt;&lt;/div&gt;</p>
+<p>        &lt;/div&gt;</p>
+        
+<p>        &lt;h3 style=&quot;margin-top: 20px;&quot;&gt;🎯 Recent Commands&lt;/h3&gt;</p>
+<p>        &lt;div id=&quot;commandLog&quot; style=&quot;max-height: 200px; overflow-y: auto; font-size: 0.9em;&quot;&gt;</p>
+<p>            &lt;!-- Commands logged here --&gt;</p>
+<p>        &lt;/div&gt;</p>
+<p>    &lt;/div&gt;</p>
+<p>&lt;/div&gt;</code></pre></p>
+
+<p>Update stats in real-time:</p>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Add this to your session loop
+<p>setInterval(() =&gt; {</p>
+<p>    if (!window.gemBotController.sessionActive) return;</p>
+    
+<p>    const duration = (Date.now() - window.gemBotController.sessionData.startTime) / 1000;</p>
+<p>    const minutes = Math.floor(duration / 60);</p>
+<p>    const seconds = Math.floor(duration % 60);</p>
+    
+<p>    document.getElementById(&#039;duration&#039;).textContent = <code class="inline-code">${minutes}:${seconds.toString().padStart(2, &#039;0&#039;)}</code>;</p>
+<p>    document.getElementById(&#039;commandCount&#039;).textContent = window.gemBotController.sessionData.commandCount;</p>
+<p>    document.getElementById(&#039;temperature&#039;).textContent = window.gemBotController.machineStatus.temperature?.toFixed(1) || &#039;0&#039;;</p>
+<p>    document.getElementById(&#039;spindle&#039;).textContent = Math.round(window.gemBotController.machineStatus.spindle_rpm || 0);</p>
+<p>    document.getElementById(&#039;posX&#039;).textContent = window.gemBotController.machineStatus.x_position?.toFixed(1) || &#039;0&#039;;</p>
+<p>    document.getElementById(&#039;posY&#039;).textContent = window.gemBotController.machineStatus.y_position?.toFixed(1) || &#039;0&#039;;</p>
+<p>}, 100);</code></pre></p>
+
+<hr>
+
+<h2>Connecting to Arduino SerialPort</h2>
+
+<p>The integration automatically connects to your Arduino:</p>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// In GemBot&lt;em&gt;Control&lt;/em&gt;AI.html, add to your Arduino initialization:
+
+<p>async function initializeArduinoWithToken() {</p>
+<p>    try {</p>
+<p>        // Get port</p>
+<p>        const port = await navigator.serial.requestPort();</p>
+<p>        await port.open({ baudRate: 9600 });</p>
+        
+<p>        // Connect to GemBot controller</p>
+<p>        window.gemBotController.serialPort = port;</p>
+        
+<p>        console.log(&#039;✅ Arduino connected to token system&#039;);</p>
+<p>    } catch (error) {</p>
+<p>        console.error(&#039;Failed to initialize Arduino:&#039;, error);</p>
+<p>    }</p>
+<p>}</p>
+
+<p>// Call this before starting session</p>
+<p>await initializeArduinoWithToken();</code></pre></p>
+
+<hr>
+
+<h2>Testing the Integration</h2>
+
+<h3>1. Test Transaction Listening</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>// In browser console:
+<p>gemBotController.startTransactionListener();</p>
+<p>// Now send a test transaction from Phantom wallet</code></pre></p>
+
+<h3>2. Test Command Execution</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>// Simulate a command:
+<p>const testCommand = gemBotController.commandMapping[5];</p>
+<p>await gemBotController.executeCommand(testCommand, &#039;test&lt;em&gt;tx&lt;/em&gt;signature&#039;);</code></pre></p>
+
+<h3>3. Test Emergency Stop</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>// Trigger emergency stop:
+<p>await gemBotController.emergencyStop();</code></pre></p>
+
+<h3>4. View Live Status</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>// Check machine status:
+<p>console.log(gemBotController.machineStatus);</p>
+
+<p>// Check transaction history:</p>
+<p>console.log(gemBotController.transactionHistory);</p>
+
+<p>// Check session data:</p>
+<p>console.log(gemBotController.sessionData);</code></pre></p>
+
+<hr>
+
+<h2>Production Checklist</h2>
+
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Install Phantom wallet extension</li>
+<li class="checkbox"><input type="checkbox" disabled> Add GEMBOT<em>SOLANA</em>INTEGRATION.js to project</li>
+<li class="checkbox"><input type="checkbox" disabled> Update HTML with token buttons and live feed UI</li>
+<li class="checkbox"><input type="checkbox" disabled> Test transaction listening on Solana devnet</li>
+<li class="checkbox"><input type="checkbox" disabled> Connect Arduino SerialPort</li>
+<li class="checkbox"><input type="checkbox" disabled> Test all command mappings</li>
+<li class="checkbox"><input type="checkbox" disabled> Test emergency stop procedures</li>
+<li class="checkbox"><input type="checkbox" disabled> Add error logging and monitoring</li>
+<li class="checkbox"><input type="checkbox" disabled> Configure vault wallet for production</li>
+<li class="checkbox"><input type="checkbox" disabled> Set up transaction monitoring dashboard</li></ul>
+
+<hr>
+
+<h2>Token Economics</h2>
+
+<p><strong>Platform Revenue Model:</strong></p>
+<pre class="code-block " data-lang="text"><code>User pays X gems → Machine executes command
+<p>    ↓</p>
+<p>60% to machine owner</p>
+<p>40% to investor pool</p>
+<p>    ↓</p>
+<p>Platform fee: 5% (goes to vault wallet)</p>
+<p>    ↓</p>
+<p>Revenue flows back to:</p>
+<p>    - Merlin AI improvements</p>
+<p>    - Sora 2 video generation</p>
+<p>    - New feature development</p>
+<p>    - Community incentives</code></pre></p>
+
+<p><strong>Example Session:</strong></p>
+<pre class="code-block " data-lang="text"><code>User sends 5 gems to vault
+<p>↓</p>
+<p>Executed: Spindle +1000 RPM</p>
+<p>↓</p>
+<p>Revenue generated: $2.50</p>
+<p>↓</p>
+<p>Machine owner: $1.50</p>
+<p>Investors: $1.00</p>
+<p>Platform: $0.25</code></pre></p>
+
+<hr>
+
+<h2>Support & Monitoring</h2>
+
+<h3>Monitor Transaction Status</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>// Check for stuck transactions
+<p>setInterval(() =&gt; {</p>
+<p>    const pending = gemBotController.pendingTransactions;</p>
+<p>    if (pending.length &gt; 10) {</p>
+<p>        console.warn(&#039;⚠️  Many pending transactions. Check network.&#039;);</p>
+<p>    }</p>
+<p>}, 5000);</code></pre></p>
+
+<h3>Error Tracking</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>// Log all errors to dashboard
+<p>window.addEventListener(&#039;error&#039;, (event) =&gt; {</p>
+<p>    console.error(&#039;Application error:&#039;, event.error);</p>
+<p>    // Send to error tracking service</p>
+<p>});</code></pre></p>
+
+<h3>User Support Links</h3>
+<ul><li class="ul-item"><strong>Trade Token:</strong> https://pump.fun/coin/DPHcbu7wJEbcrnCYjXC8vHBkM39kT9xZg4mYayvrpump</li>
+<li class="ul-item"><strong>View Explorer:</strong> https://solscan.io/token/DPHcbu7wJEbcrnCYjXC8vHBkM39kT9xZg4mYayvrpump</li>
+<li class="ul-item"><strong>Vault Wallet:</strong> 6HTjfgWZYMbENnMAJJFhxWR2VZDxdze3qV7zznSAsfk</li></ul>
+
+<hr>
+
+<h2>Next Steps</h2>
+
+<ol><li class="ol-item">✅ Copy <code class="inline-code">GEMBOT<em>SOLANA</em>INTEGRATION.js</code> to your project</li>
+<li class="ol-item">✅ Update <code class="inline-code">GemBot<em>Control</em>AI.html</code> with token buttons</li>
+<li class="ol-item">✅ Test on Solana devnet (free transactions)</li>
+<li class="ol-item">✅ Train beta users on token control system</li>
+<li class="ol-item">✅ Deploy to production with mainnet-beta</li>
+<li class="ol-item">✅ Monitor transaction throughput and errors</li></ol>
+
+<p><strong>You're now ready to control GemBot machines with Solana tokens!</strong> 🚀💎</p>
+
+        <div class="generated-notice">
+            🤖 Auto-generated from SOLANA_INTEGRATION_GUIDE.md by GemBot Neural Dashboard Agent<br>
+            Generated: 2025-12-16T13:52:25.805Z
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WEBCAM_INTEGRATION_ADDED - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        <h1>GemBot Webcam & Motion Diagnostics System - Integration Complete ✅</h1>
+
+<h2>What Was Added</h2>
+
+<h3>1. <strong>UI Panel (HTML)</strong> - Lines 708-805</h3>
+<p>New webcam and motion diagnostics panel added to the interface with four main sections:</p>
+
+<h4>A. Live Video Feed</h4>
+<ul><li class="ul-item"><code class="inline-code"><video id="webcamVideo"></code> - Captures webcam stream</li>
+<li class="ul-item"><code class="inline-code"><canvas id="webcamCanvas"></code> - Displays video with motion highlighting</li>
+<li class="ul-item">Status indicator showing "🟢 Live" or "🔴 Offline"</li>
+<li class="ul-item">Start/Stop camera buttons</li></ul>
+
+<h4>B. Motion Analytics Dashboard</h4>
+<ul><li class="ul-item"><strong>Motion Detection</strong> - Real-time status</li>
+<li class="ul-item"><strong>Frame Rate</strong> - FPS counter (updates every second)</li>
+<li class="ul-item"><strong>Motion Pixels</strong> - Count and percentage of pixels showing motion</li>
+<li class="ul-item"><strong>Movement Detected</strong> - YES/NO indicator with color feedback</li>
+<li class="ul-item"><strong>Expected Motion</strong> - Shows current test status or "None"</li></ul>
+
+<h4>C. Motion Verification Controls</h4>
+<p>Four test buttons to verify each axis moves correctly:</p>
+<ul><li class="ul-item">📍 Test X - Verifies X-axis LEFT motion</li>
+<li class="ul-item">📍 Test Y - Verifies Y-axis UP motion</li>
+<li class="ul-item">📍 Test P - Verifies P-axis CCW motion</li>
+<li class="ul-item">📍 Test Index - Verifies Index DEC motion</li></ul>
+
+<p>Results logged with timestamps and motion detection confirmation</p>
+
+<h4>D. Machine State Visualization</h4>
+<ul><li class="ul-item">Canvas showing simplified 3D representation of machine:</li></ul>
+<p>  - Grid background for reference</p>
+<p>  - Orange wheel (top) - grinding wheel</p>
+<p>  - Blue gem (center) - gem position</p>
+<p>  - Real-time position updates for X, Y, P, and Index axes</p>
+
+<h3>2. <strong>JavaScript Class Initialization</strong></h3>
+<p>Added to GemBotController constructor (lines 848-850):</p>
+<pre class="code-block javascript" data-lang="javascript"><code>// Webcam &amp; Motion tracking
+<p>this.webcamStream = null;</p>
+<p>this.webcamActive = false;</p>
+<p>this.motionTestInProgress = false;</code></pre></p>
+
+<h3>3. <strong>Event Listener Setup</strong> (line 951)</h3>
+<p>Added webcam control initialization:</p>
+<pre class="code-block javascript" data-lang="javascript"><code>this.setupWebcamControls();</code></pre>
+
+<h3>4. <strong>Machine State Drawing</strong> (line 841)</h3>
+<p>Initialize visualization on startup:</p>
+<pre class="code-block javascript" data-lang="javascript"><code>this.drawMachineState();</code></pre>
+
+<h3>5. <strong>JavaScript Methods</strong> - Lines 1009-1324</h3>
+
+<h4><code class="inline-code">setupWebcamControls()</code></h4>
+<ul><li class="ul-item">Attaches click listeners to all camera and test buttons</li>
+<li class="ul-item">Enables/disables controls based on camera state</li></ul>
+
+<h4><code class="inline-code">startWebcam()</code></h4>
+<ul><li class="ul-item">Requests camera access via <code class="inline-code">getUserMedia</code> API</li>
+<li class="ul-item">Handles permission errors gracefully</li>
+<li class="ul-item">Shows troubleshooting steps if camera not found</li>
+<li class="ul-item">Updates UI to show "Live" status</li>
+<li class="ul-item">Starts motion detection loop</li></ul>
+
+<h4><code class="inline-code">stopWebcam()</code></h4>
+<ul><li class="ul-item">Safely stops all video tracks</li>
+<li class="ul-item">Updates UI to show "Offline" status</li>
+<li class="ul-item">Cleans up resources</li></ul>
+
+<h4><code class="inline-code">startMotionDetection()</code></h4>
+<ul><li class="ul-item">Runs continuous frame analysis loop</li>
+<li class="ul-item">Compares current frame to previous frame</li>
+<li class="ul-item">Detects motion by pixel difference (threshold: 30)</li>
+<li class="ul-item">Updates motion analytics in real-time:</li></ul>
+<p>  - Motion pixel count & percentage</p>
+<p>  - Motion threshold detection (>5%)</p>
+<p>  - FPS counter</p>
+<ul><li class="ul-item">Overlays red highlights on areas with motion</li></ul>
+
+<h4><code class="inline-code">testMotionAxis(axis)</code></h4>
+<ul><li class="ul-item">Tests a specific motor axis for actual motion</li>
+<li class="ul-item">Sends command to Arduino via <code class="inline-code">sendToDevice()</code></li>
+<li class="ul-item">Monitors for 2 seconds whether motion is detected</li>
+<li class="ul-item">Sends reset command after test</li>
+<li class="ul-item">Logs results with motion detection confirmation:</li></ul>
+<p>  - Shows if motion was DETECTED ✅ or NOT DETECTED ❌</p>
+<p>  - Shows time until motion started</p>
+
+<h4><code class="inline-code">drawMachineState()</code></h4>
+<ul><li class="ul-item">Draws simplified 2D visualization of machine layout</li>
+<li class="ul-item">Grid background (50px cells)</li>
+<li class="ul-item">Machine frame</li>
+<li class="ul-item">Wheel position (top)</li>
+<li class="ul-item">Gem position (center)</li>
+<li class="ul-item">Axes labels</li></ul>
+
+<h4><code class="inline-code">sendToDevice(cmd)</code></h4>
+<ul><li class="ul-item">Helper method that routes commands to appropriate connection method</li>
+<li class="ul-item">Works with both Browser Serial API and WebSocket modes</li>
+<li class="ul-item">Updated <code class="inline-code">sendSerialCommand()</code> to accept command parameter for testing</li></ul>
+
+<h3>6. <strong>Enhanced sendSerialCommand()</strong> (line 1671)</h3>
+<p>Now accepts optional command parameter for programmatic use:</p>
+<pre class="code-block javascript" data-lang="javascript"><code>async sendSerialCommand(cmdOverride = null)</code></pre>
+
+<hr>
+
+<h2>How It Works</h2>
+
+<h3>Camera Connection Flow:</h3>
+<ol><li class="ol-item">User clicks "📷 Start Camera"</li>
+<li class="ol-item">Browser requests camera permission</li>
+<li class="ol-item">Video stream displays in canvas</li>
+<li class="ol-item">Motion detection begins running at 60 FPS</li></ol>
+
+<h3>Motion Detection Algorithm:</h3>
+<ol><li class="ol-item">Captures current frame from video</li>
+<li class="ol-item">Compares each pixel against previous frame</li>
+<li class="ol-item">If RGB difference > 90 (threshold × 3), marks as motion pixel</li>
+<li class="ol-item">Calculates motion percentage</li>
+<li class="ol-item">If motion % > 5%, sets "Movement Detected: YES"</li>
+<li class="ol-item">Renders red overlay on motion areas for visual feedback</li></ol>
+
+<h3>Motion Verification Flow:</h3>
+<ol><li class="ol-item">User clicks "Test X" (or Y, P, Index)</li>
+<li class="ol-item">System sends motor command to Arduino</li>
+<li class="ol-item">Motion detection monitors for 2 seconds</li>
+<li class="ol-item">Logs if motion was detected</li>
+<li class="ol-item">Sends reset command to stop motor</li>
+<li class="ol-item">Displays pass/fail result</li></ol>
+
+<h3>3D Visualization:</h3>
+<ul><li class="ul-item">Always shows machine layout</li>
+<li class="ul-item">Helps visualize where gem is relative to wheel</li>
+<li class="ul-item">Provides reference frame for motion diagnostics</li>
+<li class="ul-item">Shows current position readings for each axis</li></ul>
+
+<hr>
+
+<h2>Features & Capabilities</h2>
+
+<p>✅ <strong>Real-Time Webcam Feed</strong></p>
+<ul><li class="ul-item">640×480 resolution</li>
+<li class="ul-item">Motion highlighting overlay</li>
+<li class="ul-item">Status indicator</li>
+<li class="ul-item">Graceful error handling</li></ul>
+
+<p>✅ <strong>Motion Analytics</strong></p>
+<ul><li class="ul-item">Pixel-level motion detection</li>
+<li class="ul-item">FPS counter</li>
+<li class="ul-item">Motion threshold detection</li>
+<li class="ul-item">Motion percentage display</li></ul>
+
+<p>✅ <strong>Automated Motion Testing</strong></p>
+<ul><li class="ul-item">Test X-axis motion</li>
+<li class="ul-item">Test Y-axis motion</li>
+<li class="ul-item">Test P-axis motion</li>
+<li class="ul-item">Test Index motor motion</li>
+<li class="ul-item">Pass/fail logging</li></ul>
+
+<p>✅ <strong>3D Machine Visualization</strong></p>
+<ul><li class="ul-item">Machine layout diagram</li>
+<li class="ul-item">Real-time axis position display</li>
+<li class="ul-item">Grid reference system</li>
+<li class="ul-item">Component labels</li></ul>
+
+<p>✅ <strong>Dual Connection Support</strong></p>
+<ul><li class="ul-item">Works with Browser Serial API</li>
+<li class="ul-item">Works with WebSocket Server mode</li>
+<li class="ul-item">Automatic connection detection</li></ul>
+
+<hr>
+
+<h2>Browser Requirements</h2>
+
+<ul><li class="ul-item"><strong>Camera</strong>: USB webcam connected and accessible</li>
+<li class="ul-item"><strong>Permissions</strong>: Must grant camera access when prompted</li>
+<li class="ul-item"><strong>API Support</strong>: <code class="inline-code">getUserMedia</code> API (modern browsers)</li>
+<li class="ul-item"><strong>Canvas</strong>: 2D canvas context (all modern browsers)</li></ul>
+
+<p><strong>Supported Browsers:</strong></p>
+<ul><li class="ul-item">Chrome 89+</li>
+<li class="ul-item">Edge 89+</li>
+<li class="ul-item">Firefox 55+</li>
+<li class="ul-item">Safari 14.1+</li>
+<li class="ul-item">Opera 75+</li></ul>
+
+<hr>
+
+<h2>Usage Instructions</h2>
+
+<h3>Starting Camera:</h3>
+<ol><li class="ol-item">Scroll to "Webcam & Motion Diagnostics" panel</li>
+<li class="ol-item">Click "📷 Start Camera"</li>
+<li class="ol-item">Grant permission when browser asks</li>
+<li class="ol-item">Video feed should appear with "🟢 Live" status</li></ol>
+
+<h3>Testing Motor Motion:</h3>
+<ol><li class="ol-item">Start camera first</li>
+<li class="ol-item">Use motor control buttons (X LEFT, Y UP, etc.)</li>
+<li class="ol-item">Click corresponding test button in Motion Verification</li>
+<li class="ol-item">System records if motion was detected</li>
+<li class="ol-item">Results appear in verification log</li></ol>
+
+<h3>Interpreting Results:</h3>
+<ul><li class="ul-item">🟢 Live = Camera is active</li>
+<li class="ul-item">✅ YES = Motion detected in current frame</li>
+<li class="ul-item">❌ No = No motion detected</li>
+<li class="ul-item">Motion % > 5% = Significant motion detected</li>
+<li class="ul-item">Test: "DETECTED ✅" = Motor working correctly</li>
+<li class="ul-item">Test: "NOT DETECTED ❌" = Motor may have issue</li></ul>
+
+<hr>
+
+<h2>Troubleshooting</h2>
+
+<p>| Issue | Solution |</p>
+<p>|-------|----------|</p>
+<p>| Camera won't start | Check USB connection, browser permissions, no other app using camera |</p>
+<p>| No motion detected | Ensure lens is pointed at machine, adjust lighting, check motion threshold |</p>
+<p>| Low FPS | Reduce video resolution, close other apps, check browser performance |</p>
+<p>| Test fails | Verify motor is powered, check serial connection, review Arduino logs |</p>
+<p>| Video freezes | Restart camera, refresh browser, check USB stability |</p>
+
+<hr>
+
+<h2>Integration Notes</h2>
+
+<ul><li class="ul-item"><strong>No breaking changes</strong> - All existing functionality preserved</li>
+<li class="ul-item"><strong>Modular design</strong> - Webcam system independent of motor control</li>
+<li class="ul-item"><strong>Cross-mode compatible</strong> - Works with both Serial API and WebSocket</li>
+<li class="ul-item"><strong>Error resilient</strong> - Graceful fallbacks for all camera errors</li>
+<li class="ul-item"><strong>Performance optimized</strong> - Motion detection at 60 FPS with minimal overhead</li></ul>
+
+<hr>
+
+<h2>Next Steps (Optional Enhancements)</h2>
+
+<p>Possible future additions:</p>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Gem position tracking (edge detection)</li>
+<li class="checkbox"><input type="checkbox" disabled> Automatic grinding wheel speed adjustment</li>
+<li class="checkbox"><input type="checkbox" disabled> Motion calibration (set expected motion baseline)</li>
+<li class="checkbox"><input type="checkbox" disabled> Video recording for diagnostics</li>
+<li class="checkbox"><input type="checkbox" disabled> AI-based defect detection</li>
+<li class="checkbox"><input type="checkbox" disabled> Real-time motion trending</li>
+<li class="checkbox"><input type="checkbox" disabled> Historical motion logs</li>
+<li class="checkbox"><input type="checkbox" disabled> Automatic motion correction triggers</li></ul>
+
+<hr>
+
+<h2>Files Modified</h2>
+
+<ul><li class="ul-item"><code class="inline-code">GemBot<em>Web</em>Control_DualMode.html</code> - Added 600+ lines of HTML, CSS, and JavaScript</li></ul>
+
+<h2>Testing Checklist</h2>
+
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Camera starts without errors</li>
+<li class="checkbox"><input type="checkbox" disabled> Motion detection shows real-time updates</li>
+<li class="checkbox"><input type="checkbox" disabled> FPS counter updates every second</li>
+<li class="checkbox"><input type="checkbox" disabled> Motion highlighting works on canvas</li>
+<li class="checkbox"><input type="checkbox" disabled> Test X button sends command</li>
+<li class="checkbox"><input type="checkbox" disabled> Test Y button sends command</li>
+<li class="checkbox"><input type="checkbox" disabled> Test P button sends command</li>
+<li class="checkbox"><input type="checkbox" disabled> Test Index button sends command</li>
+<li class="checkbox"><input type="checkbox" disabled> Motion verification logs results</li>
+<li class="checkbox"><input type="checkbox" disabled> Machine state visualization draws</li>
+<li class="checkbox"><input type="checkbox" disabled> Stop camera works properly</li>
+<li class="checkbox"><input type="checkbox" disabled> Works in both Serial and WebSocket modes</li></ul>
+
+<hr>
+
+<p><strong>Version</strong>: 1.0 - December 6, 2025  </p>
+<p><strong>Status</strong>: ✅ Ready for Testing</p>
+
+        <div class="generated-notice">
+            🤖 Auto-generated from WEBCAM_INTEGRATION_ADDED.md by GemBot Neural Dashboard Agent<br>
+            Generated: 2025-12-16T13:52:32.499Z
+        </div>
+    </div>
+</body>
+</html>

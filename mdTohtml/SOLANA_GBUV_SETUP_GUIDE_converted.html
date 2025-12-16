@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOLANA_GBUV_SETUP_GUIDE - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        <h1>🔐 GemBot Solana & GBUV Token Integration - Complete Setup Guide</h1>
+
+<p><strong>Created by Ryan Barbrick / Barbrick Design</strong>  </p>
+<p><strong>Contact: BarbrickDesign@gmail.com</strong>  </p>
+<p><strong>Date: December 15, 2025</strong></p>
+
+<hr>
+
+<h2>⚠️ CRITICAL SECURITY WARNING</h2>
+
+<p>This system handles <strong>REAL CRYPTOCURRENCY</strong>. Follow these security protocols:</p>
+
+<h3>🔴 NEVER DO THIS:</h3>
+<ul><li class="ul-item">❌ Store private keys in localStorage (production)</li>
+<li class="ul-item">❌ Commit private keys to GitHub</li>
+<li class="ul-item">❌ Share private keys in chat/email</li>
+<li class="ul-item">❌ Use test wallets on mainnet</li>
+<li class="ul-item">❌ Skip transaction confirmations</li>
+<li class="ul-item">❌ Ignore error messages</li></ul>
+
+<h3>✅ ALWAYS DO THIS:</h3>
+<ul><li class="ul-item">✅ Use hardware wallets for large amounts</li>
+<li class="ul-item">✅ Enable 2FA on all accounts</li>
+<li class="ul-item">✅ Test on devnet first</li>
+<li class="ul-item">✅ Keep cold wallet backups</li>
+<li class="ul-item">✅ Regularly audit transactions</li>
+<li class="ul-item">✅ Use environment variables for keys</li>
+<li class="ul-item">✅ Implement rate limiting</li>
+<li class="ul-item">✅ Monitor for suspicious activity</li></ul>
+
+<hr>
+
+<h2>📋 Table of Contents</h2>
+
+<ol><li class="ol-item"><a href="#system-overview" target="_blank" rel="noopener">System Overview</a></li>
+<li class="ol-item"><a href="#critical-wallet-address-you-need" target="_blank" rel="noopener"><strong>CRITICAL: Wallet Address You Need</strong></a></li>
+<li class="ol-item"><a href="#prerequisites" target="_blank" rel="noopener">Prerequisites</a></li>
+<li class="ol-item"><a href="#initial-setup" target="_blank" rel="noopener">Initial Setup</a></li>
+<li class="ol-item"><a href="#testing-workflow" target="_blank" rel="noopener">Testing Workflow</a></li>
+<li class="ol-item"><a href="#production-deployment" target="_blank" rel="noopener">Production Deployment</a></li>
+<li class="ol-item"><a href="#ai-agent-trading" target="_blank" rel="noopener">AI Agent Trading</a></li>
+<li class="ol-item"><a href="#creator-rewards" target="_blank" rel="noopener">Creator Rewards</a></li>
+<li class="ol-item"><a href="#admin-dashboard" target="_blank" rel="noopener">Admin Dashboard</a></li>
+<li class="ol-item"><a href="#troubleshooting" target="_blank" rel="noopener">Troubleshooting</a></li>
+<li class="ol-item"><a href="#daily-operations" target="_blank" rel="noopener">Daily Operations</a></li>
+<li class="ol-item"><a href="#emergency-procedures" target="_blank" rel="noopener">Emergency Procedures</a></li></ol>
+
+<hr>
+
+<h2>🎯 System Overview</h2>
+
+<p>The GemBot Solana integration includes:</p>
+
+<h3>1. <strong>Wallet Management</strong> (<code class="inline-code">solana-wallet-system.js</code>)</h3>
+<ul><li class="ul-item">Generate new Solana wallets</li>
+<li class="ul-item">Import existing wallets</li>
+<li class="ul-item">Check SOL and GBUV balances</li>
+<li class="ul-item">Send SOL and GBUV tokens</li>
+<li class="ul-item">Transaction logging</li></ul>
+
+<h3>2. <strong>Distribution System</strong> (<code class="inline-code">gbuv-distribution-trading.js</code>)</h3>
+<ul><li class="ul-item">Distribute GBUV to AI agents</li>
+<li class="ul-item">Distribute welcome bonuses to players</li>
+<li class="ul-item">Batch transfer capabilities</li>
+<li class="ul-item">Distribution history tracking</li></ul>
+
+<h3>3. <strong>AI Agent Trading</strong> (<code class="inline-code">gbuv-distribution-trading.js</code>)</h3>
+<ul><li class="ul-item">Automated trading on pump.fun</li>
+<li class="ul-item">Multiple trading strategies (conservative, moderate, aggressive)</li>
+<li class="ul-item">Performance analytics</li>
+<li class="ul-item">Trade history logging</li></ul>
+
+<h3>4. <strong>Creator Rewards</strong> (<code class="inline-code">gbuv-distribution-trading.js</code>)</h3>
+<ul><li class="ul-item">Gameplay rewards (10 GBUV/hour)</li>
+<li class="ul-item">Trading rewards (5 GBUV/trade)</li>
+<li class="ul-item">Content creation rewards (100 GBUV/post)</li>
+<li class="ul-item">Referral rewards (1000 GBUV) - <em>existing system</em></li>
+<li class="ul-item">Achievement rewards (50 GBUV)</li></ul>
+
+<hr>
+
+<h2>🔑 CRITICAL: Wallet Address You Need</h2>
+
+<h3>For Test Transaction (Devnet):</h3>
+
+<p><strong>You need to create a devnet wallet first:</strong></p>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// 1. Open GemBot in browser
+<p>// 2. Press F12 → Console</p>
+<p>// 3. Run this command:</p>
+
+<p>const adminWallet = generateWallet(&#039;admin-main&#039;);</p>
+<p>console.log(&#039;📍 Send test GBUV to this address:&#039;);</p>
+<p>console.log(adminWallet.publicKey);</code></pre></p>
+
+<p><strong>Copy that public key and use it for your test transaction.</strong></p>
+
+<h3>For Production (Mainnet):</h3>
+
+<p><strong>⚠️ DO NOT create mainnet wallet in browser localStorage!</strong></p>
+
+<p>Instead, use one of these secure methods:</p>
+
+<h4>Option 1: Hardware Wallet (RECOMMENDED)</h4>
+<ul><li class="ul-item">Use Ledger or Trezor</li>
+<li class="ul-item">Connect via Phantom/Solflare wallet</li>
+<li class="ul-item">Import public key only into system</li></ul>
+
+<h4>Option 2: Phantom Wallet</h4>
+<ol><li class="ol-item">Install Phantom browser extension</li>
+<li class="ol-item">Create new wallet (save seed phrase offline!)</li>
+<li class="ol-item">Get your wallet address from Phantom</li>
+<li class="ol-item">Use that address as ADMIN_WALLET in code</li></ol>
+
+<h4>Option 3: Solana CLI (Advanced)</h4>
+<pre class="code-block bash" data-lang="bash"><code>&lt;h1&gt;Install Solana CLI&lt;/h1&gt;
+<p>sh -c &quot;$(curl -sSfL https://release.solana.com/stable/install)&quot;</p>
+
+<p>&lt;h1&gt;Generate new keypair&lt;/h1&gt;</p>
+<p>solana-keygen new --outfile ~/gembot-admin-wallet.json</p>
+
+<p>&lt;h1&gt;Get public key&lt;/h1&gt;</p>
+<p>solana-keygen pubkey ~/gembot-admin-wallet.json</code></pre></p>
+
+<h3>What to Send:</h3>
+
+<p><strong>Test Transaction (Devnet):</strong></p>
+<ul><li class="ul-item">Amount: 100-1000 GBUV (test amount)</li>
+<li class="ul-item">Purpose: Verify system works</li>
+<li class="ul-item">Network: Solana Devnet</li></ul>
+
+<p><strong>Production Transaction (Mainnet):</strong></p>
+<ul><li class="ul-item">Amount: <strong>TBD</strong> - Calculate based on:</li></ul>
+<p>  - Number of AI agents × initial distribution</p>
+<p>  - Expected player onboarding × welcome bonus</p>
+<p>  - Creator rewards pool</p>
+<p>  - Trading capital for agents</p>
+<ul><li class="ul-item">Recommended: Start with 50,000 GBUV, scale up as needed</li>
+<li class="ul-item">Network: Solana Mainnet-Beta</li></ul>
+
+<hr>
+
+<h2>📦 Prerequisites</h2>
+
+<h3>1. Browser Requirements</h3>
+<ul><li class="ul-item">Chrome or Edge (89+)</li>
+<li class="ul-item">JavaScript enabled</li>
+<li class="ul-item">localStorage available (5MB+ free)</li></ul>
+
+<h3>2. Network Access</h3>
+<ul><li class="ul-item">Internet connection</li>
+<li class="ul-item">Access to Solana RPC nodes</li>
+<li class="ul-item">No firewall blocking blockchain APIs</li></ul>
+
+<h3>3. GBUV Token Information</h3>
+<p>You need to know:</p>
+<ul><li class="ul-item"><strong>GBUV Token Mint Address</strong> - The token contract address</li>
+<li class="ul-item"><strong>Your wallet address</strong> - Where you'll send GBUV from</li>
+<li class="ul-item"><strong>Network</strong> - Devnet (testing) or Mainnet-Beta (production)</li></ul>
+
+<h3>4. Software Dependencies</h3>
+<pre class="code-block html" data-lang="html"><code>&lt;!-- Add to GemBot&lt;em&gt;Control&lt;/em&gt;AI.html &lt;head&gt; section --&gt;
+<p>&lt;script src=&quot;https://cdn.jsdelivr.net/npm/@solana/web3.js@latest/lib/index.iife.min.js&quot;&gt;&lt;/script&gt;</code></pre></p>
+
+<hr>
+
+<h2>🚀 Initial Setup</h2>
+
+<h3>Step 1: Update Configuration</h3>
+
+<p>Edit <code class="inline-code">solana-wallet-system.js</code> lines 22-26:</p>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// BEFORE (default):
+<p>this.GBUV&lt;em&gt;MINT = &#039;YOUR&lt;/em&gt;GBUV&lt;em&gt;TOKEN&lt;/em&gt;MINT&lt;em&gt;ADDRESS&lt;/em&gt;HERE&#039;;</p>
+<p>this.ADMIN&lt;em&gt;WALLET = &#039;YOUR&lt;/em&gt;ADMIN&lt;em&gt;WALLET&lt;/em&gt;ADDRESS_HERE&#039;;</p>
+
+<p>// AFTER (your actual values):</p>
+<p>this.GBUV_MINT = &#039;DYourActualGBUVMintAddressHere123456789&#039;;</p>
+<p>this.ADMIN_WALLET = &#039;YourActualAdminWalletPublicKeyHere123456789&#039;;</code></pre></p>
+
+<h3>Step 2: Choose Network</h3>
+
+<p>Edit <code class="inline-code">solana-wallet-system.js</code> line 16:</p>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// For testing (SAFE):
+<p>this.network = &#039;devnet&#039;;</p>
+
+<p>// For production (REAL MONEY):</p>
+<p>this.network = &#039;mainnet-beta&#039;;</code></pre></p>
+
+<h3>Step 3: Add Scripts to HTML</h3>
+
+<p>Add to <code class="inline-code">GemBot<em>Control</em>AI.html</code> before closing <code class="inline-code"></head></code>:</p>
+
+<pre class="code-block html" data-lang="html"><code>&lt;!-- Solana Web3.js --&gt;
+<p>&lt;script src=&quot;https://cdn.jsdelivr.net/npm/@solana/web3.js@latest/lib/index.iife.min.js&quot;&gt;&lt;/script&gt;</p>
+
+<p>&lt;!-- GemBot Solana Systems --&gt;</p>
+<p>&lt;script src=&quot;./solana-wallet-system.js&quot;&gt;&lt;/script&gt;</p>
+<p>&lt;script src=&quot;./gbuv-distribution-trading.js&quot;&gt;&lt;/script&gt;</code></pre></p>
+
+<h3>Step 4: Verify Installation</h3>
+
+<ol><li class="ol-item">Open <code class="inline-code">GemBot<em>Control</em>AI.html</code> in browser</li>
+<li class="ol-item">Press F12 → Console</li>
+<li class="ol-item">Look for these messages:</li></ol>
+<p>   <pre class="code-block " data-lang="text"><code>🔗 GemBot Solana Wallet System initialized (devnet)</p>
+<p>   💎 GBUV Distribution System initialized</p>
+<p>   📈 AI Agent Trading System initialized</p>
+<p>   🎁 Creator Rewards System initialized</code></pre></p>
+
+<ol><li class="ol-item">Test basic function:</li></ol>
+<p>   <pre class="code-block javascript" data-lang="javascript"><code>listWallets(); // Should return []</code></pre></p>
+
+<hr>
+
+<h2>🧪 Testing Workflow</h2>
+
+<h3>Phase 1: Create Test Wallets (Devnet)</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// 1. Create admin wallet
+<p>const admin = generateWallet(&#039;admin-test&#039;);</p>
+<p>console.log(&#039;Admin wallet:&#039;, admin.publicKey);</p>
+
+<p>// 2. Create agent wallets</p>
+<p>const agents = generateAgentWallets(10);</p>
+<p>console.log(&#039;Created 10 agent wallets&#039;);</p>
+
+<p>// 3. Create player test wallet</p>
+<p>const player = generateWallet(&#039;player-test&#039;);</p>
+<p>console.log(&#039;Player wallet:&#039;, player.publicKey);</p>
+
+<p>// 4. List all wallets</p>
+<p>const allWallets = listWallets();</p>
+<p>console.log(<code class="inline-code">Total wallets: ${allWallets.length}</code>);</code></pre></p>
+
+<h3>Phase 2: Fund Admin Wallet</h3>
+
+<p><strong>Option A: Airdrop (Devnet Only)</strong></p>
+<pre class="code-block javascript" data-lang="javascript"><code>// Request SOL airdrop for gas fees
+<p>const adminWallet = listWallets().find(w =&gt; w.label === &#039;admin-test&#039;);</p>
+<p>// Go to: https://faucet.solana.com</p>
+<p>// Enter admin wallet public key</p>
+<p>// Request 2 SOL</code></pre></p>
+
+<p><strong>Option B: Manual Transfer</strong></p>
+<pre class="code-block javascript" data-lang="javascript"><code>// From your existing wallet:
+<p>// 1. Send 0.1 SOL to admin wallet (for gas)</p>
+<p>// 2. Send 10,000 GBUV to admin wallet (for distribution)</code></pre></p>
+
+<h3>Phase 3: Test Distribution</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// 1. Check admin balance
+<p>const adminKey = listWallets().find(w =&gt; w.label === &#039;admin-test&#039;).publicKey;</p>
+<p>await getWalletInfo(adminKey);</p>
+
+<p>// 2. Distribute to agents</p>
+<p>const distribution = await distributeToAgents(adminKey, 100);</p>
+<p>console.log(<code class="inline-code">Distribution result:</code>, distribution);</p>
+
+<p>// 3. Wait 30 seconds, then check agent balances</p>
+<p>await new Promise(r =&gt; setTimeout(r, 30000));</p>
+
+<p>const agents = listWallets().filter(w =&gt; w.label.startsWith(&#039;agent-&#039;));</p>
+<p>for (const agent of agents) {</p>
+<p>    const info = await getWalletInfo(agent.publicKey);</p>
+<p>    console.log(<code class="inline-code">${agent.label}: ${info.gbuvBalance} GBUV</code>);</p>
+<p>}</code></pre></p>
+
+<h3>Phase 4: Test Trading</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// 1. Register agents for trading
+<p>const agents = listWallets().filter(w =&gt; w.label.startsWith(&#039;agent-&#039;));</p>
+<p>const strategies = [&#039;conservative&#039;, &#039;moderate&#039;, &#039;aggressive&#039;];</p>
+
+<p>agents.forEach((agent, i) =&gt; {</p>
+<p>    const strategy = strategies[i % 3];</p>
+<p>    agentTrading.registerAgent(agent.label, agent.publicKey, strategy);</p>
+<p>    console.log(<code class="inline-code">Registered ${agent.label} with ${strategy} strategy</code>);</p>
+<p>});</p>
+
+<p>// 2. Start trading</p>
+<p>agents.forEach(agent =&gt; {</p>
+<p>    startAgentTrading(agent.label);</p>
+<p>});</p>
+
+<p>// 3. Wait 2 minutes, then check stats</p>
+<p>await new Promise(r =&gt; setTimeout(r, 120000));</p>
+
+<p>const stats = getTradingStats();</p>
+<p>console.table(stats);</p>
+
+<p>// 4. Stop trading</p>
+<p>agents.forEach(agent =&gt; {</p>
+<p>    stopAgentTrading(agent.label);</p>
+<p>});</code></pre></p>
+
+<h3>Phase 5: Test Rewards</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// 1. Award gameplay reward
+<p>const playerKey = listWallets().find(w =&gt; w.label === &#039;player-test&#039;).publicKey;</p>
+<p>await creatorRewards.awardGameplayReward(playerKey, 2.5); // 2.5 hours</p>
+
+<p>// 2. Award trading reward</p>
+<p>await creatorRewards.awardTradingReward(playerKey, 10); // 10 successful trades</p>
+
+<p>// 3. Check pending rewards</p>
+<p>const pending = creatorRewards.getPendingTotal();</p>
+<p>console.log(<code class="inline-code">Pending rewards: ${pending.count} totaling ${pending.total} GBUV</code>);</p>
+
+<p>// 4. Process rewards</p>
+<p>const adminKey = listWallets().find(w =&gt; w.label === &#039;admin-test&#039;).publicKey;</p>
+<p>const results = await processPendingRewards(adminKey);</p>
+<p>console.log(<code class="inline-code">Distributed ${results.filter(r =&gt; r.success).length} rewards</code>);</p>
+
+<p>// 5. Verify player balance</p>
+<p>await getWalletInfo(playerKey);</code></pre></p>
+
+<h3>Phase 6: Verify Everything</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// 1. Transaction history
+<p>const txHistory = getTransactionHistory();</p>
+<p>console.log(<code class="inline-code">Total transactions: ${txHistory.length}</code>);</p>
+<p>console.table(txHistory.slice(0, 10));</p>
+
+<p>// 2. Distribution history</p>
+<p>const distHistory = gbuvDistribution.getDistributionHistory();</p>
+<p>console.log(<code class="inline-code">Total distributions: ${distHistory.length}</code>);</p>
+
+<p>// 3. Trading history</p>
+<p>const tradeHistory = agentTrading.getTradingHistory();</p>
+<p>console.log(<code class="inline-code">Total trades: ${tradeHistory.length}</code>);</p>
+
+<p>// 4. Reward history</p>
+<p>const rewardHistory = creatorRewards.getRewardHistory();</p>
+<p>console.log(<code class="inline-code">Total rewards: ${rewardHistory.length}</code>);</code></pre></p>
+
+<hr>
+
+<h2>🚢 Production Deployment</h2>
+
+<h3>Pre-Deployment Checklist</h3>
+
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> All tests passed on devnet</li>
+<li class="checkbox"><input type="checkbox" disabled> Updated GBUV_MINT address</li>
+<li class="checkbox"><input type="checkbox" disabled> Updated ADMIN_WALLET address</li>
+<li class="checkbox"><input type="checkbox" disabled> Changed network to 'mainnet-beta'</li>
+<li class="checkbox"><input type="checkbox" disabled> Removed private keys from localStorage code</li>
+<li class="checkbox"><input type="checkbox" disabled> Set up hardware wallet or secure key management</li>
+<li class="checkbox"><input type="checkbox" disabled> Configured rate limiting</li>
+<li class="checkbox"><input type="checkbox" disabled> Set up transaction monitoring</li>
+<li class="checkbox"><input type="checkbox" disabled> Prepared cold wallet backup</li>
+<li class="checkbox"><input type="checkbox" disabled> Enabled 2FA on all accounts</li>
+<li class="checkbox"><input type="checkbox" disabled> Documented emergency procedures</li>
+<li class="checkbox"><input type="checkbox" disabled> Notified team of deployment</li></ul>
+
+<h3>Deployment Steps</h3>
+
+<p><strong>⚠️ DO NOT rush this. Real money is at stake.</strong></p>
+
+<ol><li class="ol-item"><strong>Update Configuration:</strong></li></ol>
+<p>   <pre class="code-block javascript" data-lang="javascript"><code>// solana-wallet-system.js</p>
+<p>   this.network = &#039;mainnet-beta&#039;;</p>
+<p>   this.GBUV&lt;em&gt;MINT = &#039;YOUR&lt;/em&gt;REAL&lt;em&gt;MINT&lt;/em&gt;ADDRESS&#039;;</p>
+<p>   this.ADMIN&lt;em&gt;WALLET = &#039;YOUR&lt;/em&gt;REAL&lt;em&gt;ADMIN&lt;/em&gt;WALLET&#039;;</code></pre></p>
+
+<ol><li class="ol-item"><strong>Remove localStorage Private Key Storage:</strong></li></ol>
+<p>   <pre class="code-block javascript" data-lang="javascript"><code>// Comment out or remove these lines in generateWallet():</p>
+<p>   // secretKey: secretKey,  // ⚠️ REMOVE FOR PRODUCTION</p>
+   
+<p>   // Never save private keys in production:</p>
+<p>   // this.saveWallet(wallet); // ⚠️ MODIFY FOR PRODUCTION</code></pre></p>
+
+<ol><li class="ol-item"><strong>Implement Secure Key Management:</strong></li></ol>
+<p>   - Use hardware wallet</p>
+<p>   - Or use Phantom/Solflare wallet connect</p>
+<p>   - Or use server-side key management (HSM)</p>
+
+<ol><li class="ol-item"><strong>Deploy to Server:</strong></li></ol>
+<p>   <pre class="code-block bash" data-lang="bash"><code># Upload files</p>
+<p>   scp solana-wallet-system.js your-server:/var/www/gembot/</p>
+<p>   scp gbuv-distribution-trading.js your-server:/var/www/gembot/</p>
+<p>   scp GemBot&lt;em&gt;Control&lt;/em&gt;AI.html your-server:/var/www/gembot/</p>
+   
+<p>   # Set permissions</p>
+<p>   ssh your-server</p>
+<p>   chmod 644 /var/www/gembot/*.js</p>
+<p>   chmod 644 /var/www/gembot/*.html</code></pre></p>
+
+<ol><li class="ol-item"><strong>Test Production:</strong></li></ol>
+<p>   - Send small test transaction (10 GBUV)</p>
+<p>   - Verify it appears in system</p>
+<p>   - Test distribution to 1 agent</p>
+<p>   - Confirm transaction on Solana Explorer</p>
+<p>   - If all works, proceed with full deployment</p>
+
+<ol><li class="ol-item"><strong>Fund Admin Wallet:</strong></li></ol>
+<p>   - Send calculated amount of GBUV</p>
+<p>   - Keep transaction signature</p>
+<p>   - Verify balance in system</p>
+
+<ol><li class="ol-item"><strong>Monitor First 24 Hours:</strong></li></ol>
+<p>   - Check every hour</p>
+<p>   - Watch for errors</p>
+<p>   - Monitor transaction success rate</p>
+<p>   - Be ready to pause if issues arise</p>
+
+<hr>
+
+<h2>📈 AI Agent Trading</h2>
+
+<h3>Trading Strategies</h3>
+
+<p><strong>Conservative:</strong></p>
+<ul><li class="ul-item">Trade frequency: 30%</li>
+<li class="ul-item">Max trade size: 10% of balance</li>
+<li class="ul-item">Target profit: 5%</li>
+<li class="ul-item">Stop loss: 3%</li>
+<li class="ul-item">Best for: Stable, low-risk trading</li></ul>
+
+<p><strong>Moderate:</strong></p>
+<ul><li class="ul-item">Trade frequency: 60%</li>
+<li class="ul-item">Max trade size: 20% of balance</li>
+<li class="ul-item">Target profit: 10%</li>
+<li class="ul-item">Stop loss: 5%</li>
+<li class="ul-item">Best for: Balanced risk/reward</li></ul>
+
+<p><strong>Aggressive:</strong></p>
+<ul><li class="ul-item">Trade frequency: 90%</li>
+<li class="ul-item">Max trade size: 30% of balance</li>
+<li class="ul-item">Target profit: 20%</li>
+<li class="ul-item">Stop loss: 10%</li>
+<li class="ul-item">Best for: High risk, high reward</li></ul>
+
+<h3>Setting Up Agent Trading</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// 1. Ensure agents have GBUV
+<p>await distributeToAgents(adminWallet, 1000);</p>
+
+<p>// 2. Register agents</p>
+<p>const agents = listWallets().filter(w =&gt; w.label.startsWith(&#039;agent-&#039;));</p>
+<p>agents.forEach(agent =&gt; {</p>
+<p>    // Assign strategy based on personality</p>
+<p>    let strategy = &#039;moderate&#039;;</p>
+<p>    if (agent.label.includes(&#039;casual&#039;)) strategy = &#039;conservative&#039;;</p>
+<p>    if (agent.label.includes(&#039;hardcore&#039;)) strategy = &#039;aggressive&#039;;</p>
+    
+<p>    agentTrading.registerAgent(agent.label, agent.publicKey, strategy);</p>
+<p>});</p>
+
+<p>// 3. Start trading</p>
+<p>agents.forEach(agent =&gt; startAgentTrading(agent.label));</p>
+
+<p>// 4. Monitor</p>
+<p>setInterval(() =&gt; {</p>
+<p>    const stats = getTradingStats();</p>
+<p>    console.table(stats);</p>
+<p>}, 60000); // Every minute</code></pre></p>
+
+<h3>Trading Performance Metrics</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Get individual agent stats
+<p>const stats = agentTrading.getAgentStats(&#039;agent-hardcore-1&#039;);</p>
+<p>console.log(<code class="inline-code"></p>
+<p>Agent: ${stats.id}</p>
+<p>Strategy: ${stats.strategyName}</p>
+<p>Total Trades: ${stats.totalTrades}</p>
+<p>Successful: ${stats.successfulTrades}</p>
+<p>Success Rate: ${stats.successRate}</p>
+<p>Total Profit: ${stats.totalProfit.toFixed(2)} GBUV</p>
+<p>Avg Profit: ${stats.avgProfit} GBUV</p>
+</code>);
+
+<p>// Get all agent stats</p>
+<p>const allStats = getTradingStats();</p>
+<p>console.table(allStats);</p>
+
+<p>// Get trading history</p>
+<p>const trades = agentTrading.getTradingHistory(&#039;agent-hardcore-1&#039;, 50);</p>
+<p>console.table(trades);</code></pre></p>
+
+<hr>
+
+<h2>🎁 Creator Rewards</h2>
+
+<h3>Reward Types & Rates</h3>
+
+<p>| Type | Rate | Trigger |</p>
+<p>|------|------|---------|</p>
+<p>| Gameplay | 10 GBUV/hour | Active gameplay time |</p>
+<p>| Trading | 5 GBUV/trade | Successful trade completion |</p>
+<p>| Referral | 1000 GBUV | New player signup (existing) |</p>
+<p>| Content | 100 GBUV | Social media post/video |</p>
+<p>| Achievement | 50 GBUV | Achievement unlock |</p>
+
+<h3>Awarding Rewards</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Gameplay rewards
+<p>await creatorRewards.awardGameplayReward(playerWallet, 3.5); // 3.5 hours = 35 GBUV</p>
+
+<p>// Trading rewards</p>
+<p>await creatorRewards.awardTradingReward(playerWallet, 20); // 20 trades = 100 GBUV</p>
+
+<p>// Content rewards</p>
+<p>await creatorRewards.awardContentReward(playerWallet, &#039;youtube-video&#039;);</p>
+
+<p>// Check pending</p>
+<p>const pending = creatorRewards.getPendingTotal();</p>
+<p>console.log(<code class="inline-code">Pending: ${pending.count} rewards = ${pending.total} GBUV</code>);</p>
+
+<p>// Process all pending</p>
+<p>await processPendingRewards(adminWallet);</code></pre></p>
+
+<h3>Automated Reward Distribution</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Set up automatic reward processing (every hour)
+<p>setInterval(async () =&gt; {</p>
+<p>    const pending = creatorRewards.getPendingTotal();</p>
+    
+<p>    if (pending.count &gt; 0) {</p>
+<p>        console.log(<code class="inline-code">Processing ${pending.count} pending rewards...</code>);</p>
+<p>        await processPendingRewards(adminWallet);</p>
+<p>    }</p>
+<p>}, 3600000); // Every hour</code></pre></p>
+
+<hr>
+
+<h2>🎛️ Admin Dashboard</h2>
+
+<h3>Dashboard Features</h3>
+
+<ol><li class="ol-item"><strong>Wallet Overview</strong></li></ol>
+<p>   - Total GBUV in system</p>
+<p>   - Distribution by wallet type</p>
+<p>   - Active agents count</p>
+<p>   - Player count</p>
+
+<ol><li class="ol-item"><strong>Transaction Monitoring</strong></li></ol>
+<p>   - Real-time transaction feed</p>
+<p>   - Success/failure rates</p>
+<p>   - Gas fee tracking</p>
+<p>   - Error alerts</p>
+
+<ol><li class="ol-item"><strong>Trading Analytics</strong></li></ol>
+<p>   - Agent performance leaderboard</p>
+<p>   - Total profit/loss</p>
+<p>   - Trade volume</p>
+<p>   - Strategy comparison</p>
+
+<ol><li class="ol-item"><strong>Reward Management</strong></li></ol>
+<p>   - Pending rewards queue</p>
+<p>   - Distribution history</p>
+<p>   - Reward type breakdown</p>
+<p>   - Player rankings by rewards</p>
+
+<ol><li class="ol-item"><strong>System Health</strong></li></ol>
+<p>   - RPC node status</p>
+<p>   - API response times</p>
+<p>   - Error log</p>
+<p>   - Balance alerts</p>
+
+<h3>Dashboard Implementation</h3>
+
+<p><em>(This will be added to <code class="inline-code">admin-dashboard.html</code> in next phase)</em></p>
+
+<hr>
+
+<h2>🔧 Troubleshooting</h2>
+
+<h3>Issue: "solanaWeb3 is not defined"</h3>
+
+<p><strong>Cause:</strong> Solana Web3.js not loaded</p>
+
+<p><strong>Fix:</strong></p>
+<pre class="code-block html" data-lang="html"><code>&lt;!-- Add to HTML &lt;head&gt; --&gt;
+<p>&lt;script src=&quot;https://cdn.jsdelivr.net/npm/@solana/web3.js@latest/lib/index.iife.min.js&quot;&gt;&lt;/script&gt;</code></pre></p>
+
+<h3>Issue: "Invalid public key"</h3>
+
+<p><strong>Cause:</strong> Wallet address format incorrect</p>
+
+<p><strong>Fix:</strong></p>
+<ul><li class="ul-item">Solana addresses are 32-44 characters</li>
+<li class="ul-item">Base58 encoded</li>
+<li class="ul-item">Example: <code class="inline-code">DYw8jCT...7GqjDQw</code></li>
+<li class="ul-item">Check for typos</li></ul>
+
+<h3>Issue: "Insufficient balance"</h3>
+
+<p><strong>Cause:</strong> Not enough SOL for gas or GBUV for transfer</p>
+
+<p><strong>Fix:</strong></p>
+<pre class="code-block javascript" data-lang="javascript"><code>// Check balances
+<p>await getWalletInfo(walletAddress);</p>
+
+<p>// Need SOL for gas (0.00001-0.0001 SOL per transaction)</p>
+<p>// Need GBUV for transfers</code></pre></p>
+
+<h3>Issue: "Transaction timeout"</h3>
+
+<p><strong>Cause:</strong> Network congestion or RPC node issues</p>
+
+<p><strong>Fix:</strong></p>
+<pre class="code-block javascript" data-lang="javascript"><code>// Retry transaction
+<p>// Or switch RPC node</p>
+<p>// Or increase timeout</code></pre></p>
+
+<h3>Issue: "Private key not found"</h3>
+
+<p><strong>Cause:</strong> Wallet not saved or localStorage cleared</p>
+
+<p><strong>Fix:</strong></p>
+<pre class="code-block javascript" data-lang="javascript"><code>// Check if wallet exists
+<p>const wallet = getWallet(publicKey);</p>
+<p>if (!wallet) {</p>
+<p>    console.log(&#039;Wallet not found. Import or generate new one.&#039;);</p>
+<p>}</code></pre></p>
+
+<hr>
+
+<h2>📅 Daily Operations</h2>
+
+<h3>Morning Checklist (9 AM)</h3>
+
+<ol><li class="ol-item"><strong>Check System Status</strong></li></ol>
+<p>   <pre class="code-block javascript" data-lang="javascript"><code>// Verify all systems online</p>
+<p>   console.log(&#039;Wallet system:&#039;, window.solanaWallet ? &#039;✅&#039; : &#039;❌&#039;);</p>
+<p>   console.log(&#039;Distribution:&#039;, window.gbuvDistribution ? &#039;✅&#039; : &#039;❌&#039;);</p>
+<p>   console.log(&#039;Trading:&#039;, window.agentTrading ? &#039;✅&#039; : &#039;❌&#039;);</p>
+<p>   console.log(&#039;Rewards:&#039;, window.creatorRewards ? &#039;✅&#039; : &#039;❌&#039;);</code></pre></p>
+
+<ol><li class="ol-item"><strong>Review Overnight Activity</strong></li></ol>
+<p>   <pre class="code-block javascript" data-lang="javascript"><code>// Last 24 hours transactions</p>
+<p>   const txHistory = getTransactionHistory(100);</p>
+<p>   const last24h = txHistory.filter(tx =&gt; {</p>
+<p>       const age = Date.now() - new Date(tx.timestamp).getTime();</p>
+<p>       return age &lt; 86400000; // 24 hours</p>
+<p>   });</p>
+<p>   console.log(<code class="inline-code">Last 24h transactions: ${last24h.length}</code>);</p>
+<p>   console.table(last24h.slice(0, 10));</code></pre></p>
+
+<ol><li class="ol-item"><strong>Check Balances</strong></li></ol>
+<p>   <pre class="code-block javascript" data-lang="javascript"><code>const wallets = listWallets();</p>
+<p>   for (const wallet of wallets) {</p>
+<p>       const info = await getWalletInfo(wallet.publicKey);</p>
+<p>       console.log(<code class="inline-code">${wallet.label}: ${info.gbuvBalance} GBUV</code>);</p>
+<p>   }</code></pre></p>
+
+<ol><li class="ol-item"><strong>Process Pending Rewards</strong></li></ol>
+<p>   <pre class="code-block javascript" data-lang="javascript"><code>await processPendingRewards(adminWallet);</code></pre></p>
+
+<h3>Afternoon Check (2 PM)</h3>
+
+<ol><li class="ol-item"><strong>Trading Performance</strong></li></ol>
+<p>   <pre class="code-block javascript" data-lang="javascript"><code>const stats = getTradingStats();</p>
+<p>   console.table(stats);</code></pre></p>
+
+<ol><li class="ol-item"><strong>Refill Agent Wallets (if needed)</strong></li></ol>
+<p>   <pre class="code-block javascript" data-lang="javascript"><code>const agents = listWallets().filter(w =&gt; w.label.startsWith(&#039;agent-&#039;));</p>
+<p>   const lowBalance = [];</p>
+   
+<p>   for (const agent of agents) {</p>
+<p>       const info = await getWalletInfo(agent.publicKey);</p>
+<p>       if (info.gbuvBalance &lt; 100) {</p>
+<p>           lowBalance.push(agent.publicKey);</p>
+<p>       }</p>
+<p>   }</p>
+   
+<p>   if (lowBalance.length &gt; 0) {</p>
+<p>       await distributeGBUV(adminWallet, lowBalance, 500);</p>
+<p>   }</code></pre></p>
+
+<h3>Evening Wrap-Up (6 PM)</h3>
+
+<ol><li class="ol-item"><strong>Generate Daily Report</strong></li></ol>
+<p>   <pre class="code-block javascript" data-lang="javascript"><code>const report = {</p>
+<p>       date: new Date().toISOString().split(&#039;T&#039;)[0],</p>
+<p>       transactions: getTransactionHistory(1000).length,</p>
+<p>       distributions: gbuvDistribution.getDistributionHistory().length,</p>
+<p>       trades: agentTrading.getTradingHistory().length,</p>
+<p>       rewards: creatorRewards.getRewardHistory().length,</p>
+<p>       activeAgents: getTradingStats().filter(a =&gt; a.isActive).length,</p>
+<p>       totalProfit: getTradingStats().reduce((sum, a) =&gt; sum + a.totalProfit, 0)</p>
+<p>   };</p>
+   
+<p>   console.log(&#039;📊 Daily Report:&#039;, report);</code></pre></p>
+
+<ol><li class="ol-item"><strong>Backup Data</strong></li></ol>
+<p>   <pre class="code-block javascript" data-lang="javascript"><code>// Export critical data</p>
+<p>   const backup = {</p>
+<p>       wallets: listWallets(),</p>
+<p>       transactions: getTransactionHistory(10000),</p>
+<p>       distributions: gbuvDistribution.getDistributionHistory(1000),</p>
+<p>       trades: agentTrading.getTradingHistory(null, 10000),</p>
+<p>       rewards: creatorRewards.getRewardHistory(null, 1000),</p>
+<p>       timestamp: new Date().toISOString()</p>
+<p>   };</p>
+   
+<p>   // Save to file</p>
+<p>   const blob = new Blob([JSON.stringify(backup, null, 2)], {type: &#039;application/json&#039;});</p>
+<p>   const url = URL.createObjectURL(blob);</p>
+<p>   const a = document.createElement(&#039;a&#039;);</p>
+<p>   a.href = url;</p>
+<p>   a.download = <code class="inline-code">gembot-backup-${backup.timestamp.split(&#039;T&#039;)[0]}.json</code>;</p>
+<p>   a.click();</code></pre></p>
+
+<hr>
+
+<h2>🚨 Emergency Procedures</h2>
+
+<h3>Emergency Contact</h3>
+
+<p><strong>Developer:</strong> Ryan Barbrick  </p>
+<p><strong>Email:</strong> BarbrickDesign@gmail.com  </p>
+<p><strong>Phone:</strong> [Add your phone number]</p>
+
+<h3>Procedure 1: Pause All Activity</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Stop all trading
+<p>const agents = getTradingStats();</p>
+<p>agents.forEach(agent =&gt; stopAgentTrading(agent.id));</p>
+
+<p>// Stop all distributions (flag in code)</p>
+<p>window.EMERGENCY_PAUSE = true;</p>
+
+<p>console.log(&#039;🚨 EMERGENCY: All activity paused&#039;);</code></pre></p>
+
+<h3>Procedure 2: Suspicious Transaction</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Get transaction details
+<p>const tx = getTransactionHistory().find(t =&gt; t.signature === &#039;SUSPICIOUS_SIG&#039;);</p>
+<p>console.log(&#039;Suspicious transaction:&#039;, tx);</p>
+
+<p>// Check on Solana Explorer</p>
+<p>const explorerLink = solanaWallet.getExplorerLink(tx.signature);</p>
+<p>console.log(&#039;Verify on explorer:&#039;, explorerLink);</p>
+
+<p>// If confirmed malicious:</p>
+<p>// 1. Pause all activity (see Procedure 1)</p>
+<p>// 2. Contact Solana support</p>
+<p>// 3. File incident report</p>
+<p>// 4. Review security logs</code></pre></p>
+
+<h3>Procedure 3: Loss of Admin Wallet Access</h3>
+
+<p><strong>IF YOU LOSE ADMIN WALLET:</strong></p>
+
+<ol><li class="ol-item"><strong>STOP</strong> - Do not panic</li>
+<li class="ol-item">Check backup seed phrase (you saved it, right?)</li>
+<li class="ol-item">Restore wallet in Phantom/Solflare</li>
+<li class="ol-item">Update system with recovered wallet</li>
+<li class="ol-item">Change all passwords</li>
+<li class="ol-item">Review all recent transactions</li>
+<li class="ol-item">Set up new backup procedures</li></ol>
+
+<h3>Procedure 4: Smart Contract Exploit</h3>
+
+<p><strong>IF GBUV contract is compromised:</strong></p>
+
+<ol><li class="ol-item">Pause all GBUV transactions</li>
+<li class="ol-item">Alert community immediately</li>
+<li class="ol-item">Contact Solana/GBUV developers</li>
+<li class="ol-item">Document exploit details</li>
+<li class="ol-item">Plan migration to new contract</li>
+<li class="ol-item">Execute migration when safe</li></ol>
+
+<h3>Procedure 5: RPC Node Failure</h3>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Switch RPC endpoint
+<p>window.solanaWallet.rpcUrl = &#039;https://backup-rpc-node.com&#039;;</p>
+<p>window.solanaWallet.connection = new solanaWeb3.Connection(</p>
+<p>    window.solanaWallet.rpcUrl,</p>
+<p>    &#039;confirmed&#039;</p>
+<p>);</p>
+
+<p>console.log(&#039;Switched to backup RPC node&#039;);</code></pre></p>
+
+<hr>
+
+<h2>📝 Change Log</h2>
+
+<h3>Version 1.0 - December 15, 2025</h3>
+<ul><li class="ul-item">✅ Initial Solana wallet system</li>
+<li class="ul-item">✅ GBUV distribution system</li>
+<li class="ul-item">✅ AI agent trading system</li>
+<li class="ul-item">✅ Creator rewards system</li>
+<li class="ul-item">✅ Complete documentation</li></ul>
+
+<hr>
+
+<h2>📞 Support</h2>
+
+<p><strong>Creator:</strong> Ryan Barbrick  </p>
+<p><strong>Email:</strong> BarbrickDesign@gmail.com  </p>
+<p><strong>Website:</strong> https://barbrickdesign.com</p>
+
+<hr>
+
+<p><strong>© 2024-2025 Ryan Barbrick / Barbrick Design. All Rights Reserved.</strong></p>
+
+        <div class="generated-notice">
+            🤖 Auto-generated from SOLANA_GBUV_SETUP_GUIDE.md by GemBot Neural Dashboard Agent<br>
+            Generated: 2025-12-16T13:52:25.712Z
+        </div>
+    </div>
+</body>
+</html>

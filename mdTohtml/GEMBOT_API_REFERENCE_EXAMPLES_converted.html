@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GEMBOT_API_REFERENCE_EXAMPLES - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        <h1>GemBot API Reference & Code Examples</h1>
+<p><strong>Quick copy-paste commands for gemstone cutting operations</strong></p>
+
+<hr>
+
+<h2>🎯 Most Useful Commands</h2>
+
+<h3>Change Grinding Wheel</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>// Start with coarse grit (rough shaping)
+<p>virtualMachine.changeGrindingWheel(&#039;coarse&#039;);</p>
+
+<p>// Switch to medium grit (refining)</p>
+<p>virtualMachine.changeGrindingWheel(&#039;medium&#039;);</p>
+
+<p>// Fine grit (pre-polish)</p>
+<p>virtualMachine.changeGrindingWheel(&#039;fine&#039;);</p>
+
+<p>// Polish grit (final shine)</p>
+<p>virtualMachine.changeGrindingWheel(&#039;polish&#039;);</p>
+
+<p>// Check which wheel is loaded</p>
+<p>console.log(&#039;Current wheel:&#039;, virtualMachine.getCurrentWheel());</code></pre></p>
+
+<h3>Move Y-Axis (Height Control)</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>// Lower platform toward wheel (start cutting)
+<p>virtualMachine.moveMotor(&#039;y&#039;, 50);   // Small movement</p>
+<p>virtualMachine.moveMotor(&#039;y&#039;, 100);  // Medium movement</p>
+<p>virtualMachine.moveMotor(&#039;y&#039;, 200);  // Large movement</p>
+
+<p>// Raise platform away from wheel (retract)</p>
+<p>virtualMachine.moveMotor(&#039;y&#039;, -50);   // Small raise</p>
+<p>virtualMachine.moveMotor(&#039;y&#039;, -100);  // Medium raise</p>
+<p>virtualMachine.moveMotor(&#039;y&#039;, -200);  // Large raise</code></pre></p>
+
+<h3>Index Rotation (Facet Positioning)</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>// One facet = ~33 microsteps (3200 steps ÷ 96 positions)
+<p>const FACET_STEPS = 33;</p>
+
+<p>// Rotate to next facet</p>
+<p>virtualMachine.moveMotor(&#039;x&#039;, FACET_STEPS);</p>
+
+<p>// Rotate to specific facet number</p>
+<p>function rotateToFacet(facetNumber) {</p>
+<p>    const targetPosition = facetNumber * FACET_STEPS;</p>
+<p>    virtualMachine.setMotorPosition(&#039;x&#039;, targetPosition);</p>
+<p>}</p>
+
+<p>// Example: Go to facet #15</p>
+<p>rotateToFacet(15);</code></pre></p>
+
+<h3>Check Machine Status</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>// Get all current positions
+<p>const positions = virtualMachine.getMotorPositions();</p>
+<p>console.log(&#039;X (Index):&#039;, positions.x, &#039;microsteps&#039;);</p>
+<p>console.log(&#039;Y (Height):&#039;, positions.y, &#039;microsteps&#039;);</p>
+<p>console.log(&#039;P (Spindle):&#039;, positions.p, &#039;microsteps&#039;);</p>
+
+<p>// Get current wheel</p>
+<p>console.log(&#039;Wheel:&#039;, virtualMachine.getCurrentWheel());</p>
+
+<p>// Check if moving</p>
+<p>console.log(&#039;Is moving:&#039;, virtualMachine.isMoving);</code></pre></p>
+
+<hr>
+
+<h2>💎 Complete Cutting Sequence Example</h2>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// =====================================================
+<p>// GEMSTONE CUTTING SEQUENCE FOR BRILLIANT CUT</p>
+<p>// 57 facets total = 57 × 3 operations</p>
+<p>// =====================================================</p>
+
+<p>const FACET_STEPS = 33;</p>
+<p>const GRIT_SEQUENCE = [</p>
+<p>    { wheel: &#039;coarse&#039;, passes: 1, depth: 150 },  // Rough shaping</p>
+<p>    { wheel: &#039;medium&#039;, passes: 1, depth: 100 },  // Refine</p>
+<p>    { wheel: &#039;fine&#039;, passes: 1, depth: 50 },     // Pre-polish</p>
+<p>    { wheel: &#039;polish&#039;, passes: 1, depth: 25 }    // Final polish</p>
+<p>];</p>
+
+<p>async function cutBrilliantGem() {</p>
+<p>    console.log(&#039;Starting brilliant cut sequence...&#039;);</p>
+    
+<p>    // Home the machine first</p>
+<p>    virtualMachine.homeAllMotors();</p>
+<p>    await sleep(1000);</p>
+    
+<p>    let facetCount = 0;</p>
+    
+<p>    // For each grit stage</p>
+<p>    for (let gritStage of GRIT_SEQUENCE) {</p>
+<p>        console.log(<code class="inline-code">Switching to ${gritStage.wheel} wheel...</code>);</p>
+<p>        virtualMachine.changeGrindingWheel(gritStage.wheel);</p>
+<p>        await sleep(500);</p>
+        
+<p>        // For each facet (simplified - 57 for brilliant cut)</p>
+<p>        for (let facet = 0; facet &lt; 57; facet++) {</p>
+<p>            facetCount++;</p>
+            
+<p>            // Rotate to this facet</p>
+<p>            virtualMachine.moveMotor(&#039;x&#039;, FACET_STEPS);</p>
+<p>            await sleep(200);</p>
+            
+<p>            // Lower onto wheel</p>
+<p>            virtualMachine.moveMotor(&#039;y&#039;, gritStage.depth);</p>
+            
+<p>            // Simulate cutting time (5 seconds per facet)</p>
+<p>            await sleep(5000);</p>
+            
+<p>            // Raise away from wheel</p>
+<p>            virtualMachine.moveMotor(&#039;y&#039;, -gritStage.depth);</p>
+<p>            await sleep(200);</p>
+            
+<p>            console.log(<code class="inline-code">Completed facet ${facet + 1}/57 with ${gritStage.wheel} wheel</code>);</p>
+<p>        }</p>
+<p>    }</p>
+    
+<p>    // Home and complete</p>
+<p>    console.log(&#039;Returning to home position...&#039;);</p>
+<p>    virtualMachine.homeAllMotors();</p>
+<p>    console.log(<code class="inline-code">✨ Brilliant cut complete! ${facetCount} facets processed!</code>);</p>
+<p>}</p>
+
+<p>// Helper function for delays</p>
+<p>function sleep(ms) {</p>
+<p>    return new Promise(resolve =&gt; setTimeout(resolve, ms));</p>
+<p>}</p>
+
+<p>// Run the cutting sequence</p>
+<p>cutBrilliantGem();</code></pre></p>
+
+<hr>
+
+<h2>🔧 Helper Functions</h2>
+
+<h3>Convert Between Units</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>// Convert steps to millimeters (Y-axis example)
+<p>function stepsToMM(steps, mmPerRev = 5, stepsPerRev = 200) {</p>
+<p>    return (steps / stepsPerRev) * mmPerRev;</p>
+<p>}</p>
+
+<p>// Convert degrees to steps (for index motor)</p>
+<p>function degreesToSteps(degrees) {</p>
+<p>    return (degrees / 3.75);  // 3.75° per step on 96-position index</p>
+<p>}</p>
+
+<p>// Get current height in MM</p>
+<p>function getCurrentHeightMM() {</p>
+<p>    const positions = virtualMachine.getMotorPositions();</p>
+<p>    return stepsToMM(positions.y);</p>
+<p>}</p>
+
+<p>// Examples:</p>
+<p>console.log(&#039;100 steps = &#039;, stepsToMM(100), &#039;mm&#039;);</p>
+<p>console.log(&#039;45 degrees = &#039;, degreesToSteps(45), &#039;steps&#039;);</p>
+<p>console.log(&#039;Current height:&#039;, getCurrentHeightMM(), &#039;mm&#039;);</code></pre></p>
+
+<h3>Multi-Facet Cutter</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>/**
+<p> * Cuts multiple facets with same settings</p>
+<p> * @param {number} startFacet - Starting position (0-95)</p>
+<p> * @param {number} numFacets - How many facets to cut</p>
+<p> * @param {string} wheel - Which wheel (&#039;coarse&#039;, &#039;medium&#039;, &#039;fine&#039;, &#039;polish&#039;)</p>
+<p> * @param {number} depth - How far to lower (microsteps)</p>
+<p> * @param {number} cutTime - How long to grind (milliseconds)</p>
+<p> */</p>
+<p>async function cutMultipleFacets(startFacet, numFacets, wheel, depth, cutTime) {</p>
+<p>    virtualMachine.changeGrindingWheel(wheel);</p>
+    
+<p>    for (let i = 0; i &lt; numFacets; i++) {</p>
+<p>        const facet = startFacet + i;</p>
+        
+<p>        // Rotate to facet</p>
+<p>        virtualMachine.moveMotor(&#039;x&#039;, 33);</p>
+<p>        await sleep(200);</p>
+        
+<p>        // Cut</p>
+<p>        virtualMachine.moveMotor(&#039;y&#039;, depth);</p>
+<p>        await sleep(cutTime);</p>
+<p>        virtualMachine.moveMotor(&#039;y&#039;, -depth);</p>
+        
+<p>        console.log(<code class="inline-code">Facet ${facet} done with ${wheel} wheel</code>);</p>
+<p>    }</p>
+<p>}</p>
+
+<p>// Usage:</p>
+<p>cutMultipleFacets(0, 10, &#039;coarse&#039;, 100, 3000);  // First 10 with coarse</code></pre></p>
+
+<h3>Emergency Safety</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>// Immediate stop (for safety)
+<p>function quickStop() {</p>
+<p>    virtualMachine.emergencyStop();</p>
+<p>    console.warn(&#039;EMERGENCY STOP ACTIVATED!&#039;);</p>
+<p>}</p>
+
+<p>// Safe shutdown sequence</p>
+<p>function safeShutdown() {</p>
+<p>    console.log(&#039;Initiating safe shutdown...&#039;);</p>
+<p>    virtualMachine.emergencyStop();        // Stop all movement</p>
+<p>    virtualMachine.homeAllMotors();        // Return to origin</p>
+<p>    console.log(&#039;✓ Machine returned to home position&#039;);</p>
+<p>    console.log(&#039;✓ Safe to power down&#039;);</p>
+<p>}</p>
+
+<p>// Keyboard shortcut for emergency stop</p>
+<p>document.addEventListener(&#039;keydown&#039;, (e) =&gt; {</p>
+<p>    if (e.key === &#039;Escape&#039;) {</p>
+<p>        quickStop();</p>
+<p>    }</p>
+<p>});</code></pre></p>
+
+<hr>
+
+<h2>📊 Status Monitoring</h2>
+
+<h3>Real-Time Dashboard</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>// Create a real-time status display
+<p>function displayMachineStatus() {</p>
+<p>    const positions = virtualMachine.getMotorPositions();</p>
+<p>    const wheel = virtualMachine.getCurrentWheel();</p>
+<p>    const moving = virtualMachine.isMoving ? &#039;YES&#039; : &#039;IDLE&#039;;</p>
+    
+<p>    console.clear();</p>
+<p>    console.log(&#039;╔═══════════════════════════════════════╗&#039;);</p>
+<p>    console.log(&#039;║     GEMBOT MACHINE STATUS              ║&#039;);</p>
+<p>    console.log(&#039;╠═══════════════════════════════════════╣&#039;);</p>
+<p>    console.log(<code class="inline-code">║ Index Position (X):  ${String(positions.x).padEnd(20)} │</code>);</p>
+<p>    console.log(<code class="inline-code">║ Height Position (Y): ${String(positions.y).padEnd(20)} │</code>);</p>
+<p>    console.log(<code class="inline-code">║ Spindle Position (P): ${String(positions.p).padEnd(19)} │</code>);</p>
+<p>    console.log(<code class="inline-code">║ Current Wheel:      ${String(wheel).padEnd(20)} │</code>);</p>
+<p>    console.log(<code class="inline-code">║ Status:            ${String(moving).padEnd(20)} │</code>);</p>
+<p>    console.log(&#039;╚═══════════════════════════════════════╝&#039;);</p>
+<p>}</p>
+
+<p>// Update status every 500ms</p>
+<p>setInterval(displayMachineStatus, 500);</code></pre></p>
+
+<h3>Logging Movements</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>// Log all motor movements to file/console
+<p>const movements = [];</p>
+
+<p>function logMovement(axis, steps, direction) {</p>
+<p>    const timestamp = new Date().toLocaleTimeString();</p>
+<p>    const move = {</p>
+<p>        timestamp,</p>
+<p>        axis,</p>
+<p>        steps,</p>
+<p>        direction,</p>
+<p>        currentPositions: virtualMachine.getMotorPositions()</p>
+<p>    };</p>
+<p>    movements.push(move);</p>
+<p>    console.log(<code class="inline-code">[${timestamp}] ${axis.toUpperCase()} ${direction}: ${steps} steps</code>, move.currentPositions);</p>
+<p>}</p>
+
+<p>// Modified motor control with logging</p>
+<p>const originalMove = virtualMachine.moveMotor;</p>
+<p>virtualMachine.moveMotor = function(axis, steps) {</p>
+<p>    const direction = steps &gt; 0 ? &#039;+&#039; : &#039;-&#039;;</p>
+<p>    logMovement(axis, Math.abs(steps), direction);</p>
+<p>    return originalMove.call(this, axis, steps);</p>
+<p>};</code></pre></p>
+
+<hr>
+
+<h2>🎮 Interactive Control Panel Code</h2>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Simple HTML+JS for manual control
+<p>const controlHTML = <code class="inline-code"></p>
+<p>&lt;div id=&quot;gembotControl&quot; style=&quot;border: 2px solid #667eea; padding: 15px; border-radius: 8px;&quot;&gt;</p>
+<p>    &lt;h3&gt;GemBot Control Panel&lt;/h3&gt;</p>
+    
+<p>    &lt;!-- Wheel Selector --&gt;</p>
+<p>    &lt;label&gt;Grinding Wheel:&lt;/label&gt;</p>
+<p>    &lt;select id=&quot;wheelSelect&quot; onchange=&quot;selectWheel(this.value)&quot;&gt;</p>
+<p>        &lt;option value=&quot;coarse&quot;&gt;Coarse (60-80)&lt;/option&gt;</p>
+<p>        &lt;option value=&quot;medium&quot;&gt;Medium (120)&lt;/option&gt;</p>
+<p>        &lt;option value=&quot;fine&quot;&gt;Fine (220)&lt;/option&gt;</p>
+<p>        &lt;option value=&quot;polish&quot;&gt;Polish (600+)&lt;/option&gt;</p>
+<p>    &lt;/select&gt;</p>
+<p>    &lt;button onclick=&quot;applyWheel()&quot;&gt;Apply&lt;/button&gt;</p>
+    
+<p>    &lt;!-- Height Control --&gt;</p>
+<p>    &lt;label&gt;Height Control:&lt;/label&gt;</p>
+<p>    &lt;button onclick=&quot;virtualMachine.moveMotor(&#039;y&#039;, 50)&quot;&gt;↓ Lower (+50)&lt;/button&gt;</p>
+<p>    &lt;button onclick=&quot;virtualMachine.moveMotor(&#039;y&#039;, -50)&quot;&gt;↑ Raise (-50)&lt;/button&gt;</p>
+<p>    &lt;input type=&quot;range&quot; id=&quot;heightSlider&quot; min=&quot;0&quot; max=&quot;3300&quot; value=&quot;0&quot;&gt;</p>
+    
+<p>    &lt;!-- Index Rotation --&gt;</p>
+<p>    &lt;label&gt;Facet Rotation:&lt;/label&gt;</p>
+<p>    &lt;button onclick=&quot;virtualMachine.moveMotor(&#039;x&#039;, 33)&quot;&gt;→ Next Facet&lt;/button&gt;</p>
+<p>    &lt;input type=&quot;text&quot; placeholder=&quot;Enter facet number (0-95)&quot;&gt;</p>
+<p>    &lt;button onclick=&quot;rotateTo(this.previousElementSibling.value)&quot;&gt;Go To&lt;/button&gt;</p>
+    
+<p>    &lt;!-- Status Display --&gt;</p>
+<p>    &lt;div id=&quot;statusDisplay&quot; style=&quot;background: #f0f0f0; padding: 10px; margin-top: 10px;&quot;&gt;</p>
+<p>        Status: &lt;span id=&quot;statusText&quot;&gt;Idle&lt;/span&gt;</p>
+<p>    &lt;/div&gt;</p>
+<p>&lt;/div&gt;</p>
+
+<p>&lt;script&gt;</p>
+<p>function selectWheel(wheel) {</p>
+<p>    document.getElementById(&#039;wheelSelect&#039;).value = wheel;</p>
+<p>}</p>
+
+<p>function applyWheel() {</p>
+<p>    const wheel = document.getElementById(&#039;wheelSelect&#039;).value;</p>
+<p>    virtualMachine.changeGrindingWheel(wheel);</p>
+<p>    console.log(&#039;Wheel changed to:&#039;, wheel);</p>
+<p>}</p>
+
+<p>function rotateTo(facetNum) {</p>
+<p>    const num = parseInt(facetNum);</p>
+<p>    if (num &gt;= 0 &amp;&amp; num &lt;= 95) {</p>
+<p>        virtualMachine.setMotorPosition(&#039;x&#039;, num * 33);</p>
+<p>        console.log(&#039;Rotated to facet:&#039;, num);</p>
+<p>    }</p>
+<p>}</p>
+
+<p>// Update status display</p>
+<p>setInterval(() =&gt; {</p>
+<p>    const positions = virtualMachine.getMotorPositions();</p>
+<p>    const wheel = virtualMachine.getCurrentWheel();</p>
+<p>    document.getElementById(&#039;statusText&#039;).innerHTML = </p>
+<p>        </code>Wheel: ${wheel} | Index: ${positions.x.toFixed(0)} | Height: ${positions.y.toFixed(0)}<code class="inline-code">;</p>
+<p>}, 500);</p>
+<p>&lt;/script&gt;</p>
+</code>;
+
+<p>// Insert into page</p>
+<p>document.body.insertAdjacentHTML(&#039;beforeend&#039;, controlHTML);</code></pre></p>
+
+<hr>
+
+<h2>🚀 Advanced Examples</h2>
+
+<h3>Automated Diamond Cut Program</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>// Pre-programmed diamond cutting sequence
+<p>const DIAMOND_PROGRAM = {</p>
+<p>    name: &#039;Round Brilliant (57 facets)&#039;,</p>
+<p>    facets: [</p>
+<p>        // Table (top center)</p>
+<p>        { index: 0, grit: &#039;coarse&#039;, depth: 150, time: 3000 },</p>
+<p>        { index: 1, grit: &#039;coarse&#039;, depth: 150, time: 3000 },</p>
+        
+<p>        // Crown facets (8 main)</p>
+<p>        { index: 2, grit: &#039;medium&#039;, depth: 100, time: 4000 },</p>
+<p>        { index: 4, grit: &#039;medium&#039;, depth: 100, time: 4000 },</p>
+<p>        { index: 6, grit: &#039;medium&#039;, depth: 100, time: 4000 },</p>
+<p>        { index: 8, grit: &#039;medium&#039;, depth: 100, time: 4000 },</p>
+<p>        // ... etc for all 57 facets</p>
+        
+<p>        // Final polish all</p>
+<p>        { grit: &#039;polish&#039;, allFacets: true, depth: 25, time: 2000 }</p>
+<p>    ]</p>
+<p>};</p>
+
+<p>async function executeDiamondProgram() {</p>
+<p>    console.log(<code class="inline-code">Starting: ${DIAMOND_PROGRAM.name}</code>);</p>
+    
+<p>    for (let step of DIAMOND_PROGRAM.facets) {</p>
+<p>        if (step.allFacets) {</p>
+<p>            // Polish all facets</p>
+<p>            virtualMachine.changeGrindingWheel(step.grit);</p>
+<p>            for (let i = 0; i &lt; 57; i++) {</p>
+<p>                virtualMachine.moveMotor(&#039;x&#039;, 33);</p>
+<p>                await sleep(200);</p>
+<p>                virtualMachine.moveMotor(&#039;y&#039;, step.depth);</p>
+<p>                await sleep(step.time);</p>
+<p>                virtualMachine.moveMotor(&#039;y&#039;, -step.depth);</p>
+<p>            }</p>
+<p>        } else {</p>
+<p>            // Single facet</p>
+<p>            virtualMachine.changeGrindingWheel(step.grit);</p>
+<p>            virtualMachine.setMotorPosition(&#039;x&#039;, step.index * 33);</p>
+<p>            await sleep(200);</p>
+<p>            virtualMachine.moveMotor(&#039;y&#039;, step.depth);</p>
+<p>            await sleep(step.time);</p>
+<p>            virtualMachine.moveMotor(&#039;y&#039;, -step.depth);</p>
+<p>        }</p>
+<p>    }</p>
+    
+<p>    console.log(&#039;✨ Diamond cutting complete!&#039;);</p>
+<p>}</code></pre></p>
+
+<hr>
+
+<h2>📝 Notes & Tips</h2>
+
+<h3>Command Examples in Console (F12):</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>// Quickest way to test:
+<p>vm = virtualMachine;  // Shorter name</p>
+
+<p>// Change wheel and watch color</p>
+<p>vm.changeGrindingWheel(&#039;polish&#039;);</p>
+
+<p>// Move down 100 units</p>
+<p>vm.moveMotor(&#039;y&#039;, 100);</p>
+
+<p>// Check status</p>
+<p>vm.getMotorPositions();</p>
+
+<p>// Back home</p>
+<p>vm.homeAllMotors();</code></pre></p>
+
+<h3>Converting Units:</h3>
+<ul><li class="ul-item"><strong>Index</strong>: 33 microsteps = 1 facet (on 96-position system)</li>
+<li class="ul-item"><strong>Height</strong>: 1 microstep ≈ 0.006mm (fine control)</li>
+<li class="ul-item"><strong>Degrees</strong>: Each 3.75° = one facet position</li>
+<li class="ul-item"><strong>Time</strong>: 3-10 seconds per facet typical</li></ul>
+
+<hr>
+
+<h2>🎯 Quick Copy-Paste Commands</h2>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Quick coarse grinding
+<p>vm.changeGrindingWheel(&#039;coarse&#039;); vm.moveMotor(&#039;y&#039;, 100); </p>
+
+<p>// Lower platform</p>
+<p>vm.moveMotor(&#039;y&#039;, 50);</p>
+
+<p>// Raise platform</p>
+<p>vm.moveMotor(&#039;y&#039;, -50);</p>
+
+<p>// Next facet</p>
+<p>vm.moveMotor(&#039;x&#039;, 33);</p>
+
+<p>// Check status</p>
+<p>vm.getMotorPositions();</p>
+
+<p>// Polish time</p>
+<p>vm.changeGrindingWheel(&#039;polish&#039;);</p>
+
+<p>// Emergency stop</p>
+<p>vm.emergencyStop();</p>
+
+<p>// Home all</p>
+<p>vm.homeAllMotors();</code></pre></p>
+
+<hr>
+
+<p><strong>Ready to cut some gems! 💎✨</strong></p>
+
+<p><strong>Date</strong>: December 8, 2025  </p>
+<p><strong>Version</strong>: 1.0 API Reference</p>
+
+        <div class="generated-notice">
+            🤖 Auto-generated from GEMBOT_API_REFERENCE_EXAMPLES.md by GemBot Neural Dashboard Agent<br>
+            Generated: 2025-12-16T13:52:09.030Z
+        </div>
+    </div>
+</body>
+</html>

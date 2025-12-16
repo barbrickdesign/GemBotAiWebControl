@@ -1,0 +1,1484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GAMIFIED_TRAINING_ROADMAP - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        <h1>🎮 GemBot Gamified Training System - Complete Implementation Roadmap</h1>
+
+<p><strong>Project Status:</strong> Planning & Architecture  </p>
+<p><strong>Priority:</strong> HIGH - Core user onboarding and engagement system  </p>
+<p><strong>Timeline:</strong> 3 phases (Progressive Implementation)  </p>
+<p><strong>Target Users:</strong> All skill levels (Novice → Expert)</p>
+
+<hr>
+
+<h2>📋 Executive Summary</h2>
+
+<p>Transform the GemBot learning experience into an engaging, gamified system where users progress through structured quests, unlock achievements, compete on leaderboards, and build mastery while learning to cut gemstones from rough to finished product.</p>
+
+<p><strong>Key Outcomes:</strong></p>
+<ul><li class="ul-item">✅ Users understand machine capabilities and limitations</li>
+<li class="ul-item">✅ Users complete structured learning path</li>
+<li class="ul-item">✅ Users successfully cut their first gemstone</li>
+<li class="ul-item">✅ Users compete and collaborate (leaderboard system)</li>
+<li class="ul-item">✅ Users become brand ambassadors</li>
+<li class="ul-item">✅ Foundation laid for crypto rewards (Phase 3)</li></ul>
+
+<hr>
+
+<h2>🎯 Learning Objectives (User Journey)</h2>
+
+<h3>Level 1: Machine Discovery (First 30 minutes)</h3>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Understand what a GemBot is and how it works</li>
+<li class="checkbox"><input type="checkbox" disabled> Learn basic machine capabilities</li>
+<li class="checkbox"><input type="checkbox" disabled> See live demo of cutting process</li>
+<li class="checkbox"><input type="checkbox" disabled> Understand hardware components</li></ul>
+
+<h3>Level 2: Hardware Mastery (1-2 hours)</h3>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Learn about motorized axes (X, Y, Z, Index)</li>
+<li class="checkbox"><input type="checkbox" disabled> Understand index gear importance (96° starting position)</li>
+<li class="checkbox"><input type="checkbox" disabled> Practice home function</li>
+<li class="checkbox"><input type="checkbox" disabled> Run switch test successfully</li>
+<li class="checkbox"><input type="checkbox" disabled> Verify machine state indicators</li></ul>
+
+<h3>Level 3: Shape & Design Selection (2-3 hours)</h3>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Understand gemstone families</li>
+<li class="checkbox"><input type="checkbox" disabled> Learn shape selection criteria</li>
+<li class="checkbox"><input type="checkbox" disabled> Learn design selection for material</li>
+<li class="checkbox"><input type="checkbox" disabled> Match rough material to best design</li>
+<li class="checkbox"><input type="checkbox" disabled> Understand yield vs complexity trade-offs</li></ul>
+
+<h3>Level 4: Stone Preparation (3-4 hours)</h3>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Assess rough material quality</li>
+<li class="checkbox"><input type="checkbox" disabled> Plan cutting approach</li>
+<li class="checkbox"><input type="checkbox" disabled> Prepare stone for GemBot mounting</li>
+<li class="checkbox"><input type="checkbox" disabled> Understand orientation importance</li>
+<li class="checkbox"><input type="checkbox" disabled> Check for fractures/inclusions</li></ul>
+
+<h3>Level 5: Manual Control Mastery (4-6 hours)</h3>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Navigate touch screen menu</li>
+<li class="checkbox"><input type="checkbox" disabled> Understand manual controls</li>
+<li class="checkbox"><input type="checkbox" disabled> Practice X/Y positioning</li>
+<li class="checkbox"><input type="checkbox" disabled> Practice Z depth control</li>
+<li class="checkbox"><input type="checkbox" disabled> Practice index gear rotation</li>
+<li class="checkbox"><input type="checkbox" disabled> Use joystick controls effectively</li></ul>
+
+<h3>Level 6: Automated Cutting (6-10 hours)</h3>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Understand cutting phases (Rough, Fine, Polish)</li>
+<li class="checkbox"><input type="checkbox" disabled> Start automated cutting sequence</li>
+<li class="checkbox"><input type="checkbox" disabled> Monitor cutting progress</li>
+<li class="checkbox"><input type="checkbox" disabled> Understand speed/pressure relationships</li>
+<li class="checkbox"><input type="checkbox" disabled> Handle common issues</li></ul>
+
+<h3>Level 7: Mastery & Excellence (10+ hours)</h3>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Optimize cut quality</li>
+<li class="checkbox"><input type="checkbox" disabled> Achieve polished stone</li>
+<li class="checkbox"><input type="checkbox" disabled> Understand advanced techniques</li>
+<li class="checkbox"><input type="checkbox" disabled> Help other users</li>
+<li class="checkbox"><input type="checkbox" disabled> Experiment with complex designs</li></ul>
+
+<hr>
+
+<h2>🗂️ System Architecture</h2>
+
+<h3>1. Core Data Model</h3>
+
+<h4>User Profile Extension</h4>
+<pre class="code-block javascript" data-lang="javascript"><code>{
+<p>  // Existing Merlin fields...</p>
+  
+<p>  // GAMIFICATION FIELDS</p>
+<p>  gamification: {</p>
+<p>    level: 1,                           // 1-100 progression</p>
+<p>    experience: 0,                      // XP accumulated</p>
+<p>    totalPlayTime: 0,                   // Minutes on machine</p>
+<p>    questsCompleted: [],                // Array of quest IDs</p>
+<p>    quests: {</p>
+<p>      inProgress: [],                   // Current active quests</p>
+<p>      completed: [],                    // Past quests with rewards</p>
+<p>      abandoned: []                     // Quit attempts</p>
+<p>    },</p>
+<p>    achievements: {</p>
+<p>      earned: [],                       // Unlocked achievements</p>
+<p>      progress: {}                      // Track toward achievements</p>
+<p>    },</p>
+<p>    machineTime: {</p>
+<p>      totalMinutes: 0,                  // Total time on machine</p>
+<p>      sessionsCount: 0,                 // Number of sessions</p>
+<p>      longestSession: 0,                // Max single session time</p>
+<p>      averageSessionLength: 0,          // Avg session duration</p>
+<p>      dayStreaks: [],                   // Consecutive play days</p>
+<p>      currentDayStreak: 0               // Current streak count</p>
+<p>    },</p>
+<p>    cutting: {</p>
+<p>      stonesAttempted: 0,               // Stones started</p>
+<p>      stonesCompleted: 0,               // Stones finished</p>
+<p>      perfectCuts: 0,                   // Grade A cuts</p>
+<p>      goodCuts: 0,                      // Grade B cuts</p>
+<p>      avgCutQuality: 0,                 // Average quality score</p>
+<p>      favoriteShapes: [],               // Most cut shapes</p>
+<p>      favoriteGemstones: [],            // Most cut stones</p>
+<p>      cuttingPhasesMastered: []         // Rough, Fine, Polish, etc</p>
+<p>    },</p>
+<p>    leaderboard: {</p>
+<p>      rank: 0,                          // Global rank</p>
+<p>      leaderboardTier: &#039;Bronze&#039;,        // Bronze/Silver/Gold/Platinum</p>
+<p>      competitionScore: 0,              // Score for leaderboards</p>
+<p>      seasonalRank: 0,                  // Current season rank</p>
+<p>      totalAchievementsRank: 0          // Achievement count rank</p>
+<p>    },</p>
+<p>    badges: [],                         // Visual badge system</p>
+<p>    specializations: [],                // Areas of expertise</p>
+<p>    mentorStats: {                      // Once user becomes mentor</p>
+<p>      studentsMentored: 0,</p>
+<p>      studentsCompleted: 0,</p>
+<p>      helpfulVotes: 0,</p>
+<p>      successRate: 0</p>
+<p>    }</p>
+<p>  }</p>
+<p>}</code></pre></p>
+
+<h4>Quest Data Structure</h4>
+<pre class="code-block javascript" data-lang="javascript"><code>{
+<p>  questId: &#039;quest&lt;em&gt;machine&lt;/em&gt;basics_001&#039;,</p>
+<p>  title: &#039;Machine Discovery&#039;,</p>
+<p>  description: &#039;Learn what GemBot is and explore its capabilities&#039;,</p>
+<p>  category: &#039;discovery&#039;,           // discovery, skill, challenge, story</p>
+<p>  difficulty: &#039;easy&#039;,              // easy, medium, hard, legendary</p>
+<p>  minimumLevel: 1,</p>
+<p>  prerequisites: [],               // Other quest IDs</p>
+<p>  estimatedTime: 30,               // Minutes</p>
+  
+<p>  objectives: [</p>
+<p>    {</p>
+<p>      id: &#039;obj_1&#039;,</p>
+<p>      title: &#039;Watch introduction video&#039;,</p>
+<p>      type: &#039;watch_video&#039;,</p>
+<p>      target: &#039;intro&lt;em&gt;gembot&lt;/em&gt;video&#039;,</p>
+<p>      completed: false</p>
+<p>    },</p>
+<p>    {</p>
+<p>      id: &#039;obj_2&#039;,</p>
+<p>      title: &#039;Read machine capabilities&#039;,</p>
+<p>      type: &#039;read_content&#039;,</p>
+<p>      target: &#039;machine&lt;em&gt;capabilities&lt;/em&gt;section&#039;,</p>
+<p>      completed: false</p>
+<p>    },</p>
+<p>    {</p>
+<p>      id: &#039;obj_3&#039;,</p>
+<p>      title: &#039;Answer 3 machine basics questions&#039;,</p>
+<p>      type: &#039;quiz&#039;,</p>
+<p>      target: 3,</p>
+<p>      completed: false,</p>
+<p>      progress: 0</p>
+<p>    }</p>
+<p>  ],</p>
+  
+<p>  rewards: {</p>
+<p>    experience: 150,               // XP granted on completion</p>
+<p>    credits: 25,                   // In-game currency (future)</p>
+<p>    badge: &#039;machine_discoverer&#039;,</p>
+<p>    title: &#039;Curious Cutter&#039;,       // Cosmetic title</p>
+<p>    unlocksContent: [&#039;advanced&lt;em&gt;training&lt;/em&gt;section&#039;]</p>
+<p>  },</p>
+  
+<p>  acceptance: {</p>
+<p>    accepted: false,</p>
+<p>    acceptedDate: null</p>
+<p>  },</p>
+  
+<p>  progress: {</p>
+<p>    objectivesCompleted: 0,</p>
+<p>    totalObjectives: 3,</p>
+<p>    percentComplete: 0,</p>
+<p>    lastUpdate: null</p>
+<p>  }</p>
+<p>}</code></pre></p>
+
+<h4>Achievement System</h4>
+<pre class="code-block javascript" data-lang="javascript"><code>{
+<p>  achievementId: &#039;first_stone&#039;,</p>
+<p>  title: &#039;First Stone Cut&#039;,</p>
+<p>  description: &#039;Successfully complete your first stone from rough to polished&#039;,</p>
+<p>  icon: &#039;gem_icon&#039;,</p>
+<p>  category: &#039;milestones&#039;,          // milestones, skill, speed, quality</p>
+<p>  difficulty: &#039;common&#039;,            // common, rare, epic, legendary</p>
+  
+<p>  criteria: {</p>
+<p>    type: &#039;single_condition&#039;,      // single, multi, cumulative, sequential</p>
+<p>    conditions: [</p>
+<p>      {</p>
+<p>        metric: &#039;stonesCompleted&#039;,</p>
+<p>        operator: &#039;equals&#039;,</p>
+<p>        value: 1</p>
+<p>      }</p>
+<p>    ]</p>
+<p>  },</p>
+  
+<p>  rewards: {</p>
+<p>    experience: 500,</p>
+<p>    badge: &#039;first&lt;em&gt;stone&lt;/em&gt;badge&#039;,</p>
+<p>    title: &#039;Stone Cutter&#039;,</p>
+<p>    specialBenefit: &#039;unlock&lt;em&gt;advanced&lt;/em&gt;designs&#039;</p>
+<p>  },</p>
+  
+<p>  unlockedDate: null,</p>
+<p>  progress: {</p>
+<p>    current: 0,</p>
+<p>    target: 1,</p>
+<p>    percentProgress: 0</p>
+<p>  }</p>
+<p>}</code></pre></p>
+
+<h4>Leaderboard Entry</h4>
+<pre class="code-block javascript" data-lang="javascript"><code>{
+<p>  leaderboardId: &#039;global&lt;em&gt;machine&lt;/em&gt;time&#039;,</p>
+<p>  userId: &#039;user_12345&#039;,</p>
+<p>  username: &#039;CutterMaster92&#039;,</p>
+<p>  score: 15420,                    // Minutes on machine</p>
+<p>  rank: 5,</p>
+<p>  tier: &#039;Platinum&#039;,</p>
+<p>  lastUpdated: timestamp,</p>
+  
+<p>  stats: {</p>
+<p>    totalPlayTime: 257.5,          // Hours</p>
+<p>    sessionsCount: 42,</p>
+<p>    stoneCuts: 18,</p>
+<p>    perfectCuts: 7,</p>
+<p>    avgCutQuality: 87.5,</p>
+<p>    currentStreak: 12,             // Days</p>
+<p>    favoriteStone: &#039;Diamond&#039;,</p>
+<p>    favoriteShape: &#039;Round Brilliant&#039;</p>
+<p>  },</p>
+  
+<p>  badges: [&#039;machine&lt;em&gt;master&#039;, &#039;day&lt;/em&gt;streak&lt;em&gt;7&#039;, &#039;quality&lt;/em&gt;expert&#039;],</p>
+<p>  seasonalPerformance: {</p>
+<p>    currentSeason: 1,</p>
+<p>    seasonScore: 8500,</p>
+<p>    seasonRank: 3</p>
+<p>  }</p>
+<p>}</code></pre></p>
+
+<hr>
+
+<h2>📖 Quest Library (Complete)</h2>
+
+<h3>PHASE 1: DISCOVERY QUESTS (Levels 1-5)</h3>
+
+<h4>Quest 1: Machine Discovery</h4>
+<ul><li class="ul-item"><strong>ID:</strong> <code class="inline-code">quest<em>discovery</em>001</code></li>
+<li class="ul-item"><strong>Title:</strong> What is a GemBot?</li>
+<li class="ul-item"><strong>Duration:</strong> 30 minutes</li>
+<li class="ul-item"><strong>XP Reward:</strong> 150</li>
+<li class="ul-item"><strong>Objectives:</strong></li></ul>
+<p>  1. Watch: "GemBot Overview" video (2 min)</p>
+<p>  2. Read: Machine capabilities section</p>
+<p>  3. Quiz: 3 questions on machine basics</p>
+<p>  4. Interact: Click on machine parts to learn about them</p>
+<ul><li class="ul-item"><strong>Merlin Guidance:</strong> "Greetings! Let me show you the marvel before us..."</li>
+<li class="ul-item"><strong>Unlocks:</strong> Quest 2, Hardware Basics section</li></ul>
+
+<h4>Quest 2: Hardware Mastery</h4>
+<ul><li class="ul-item"><strong>ID:</strong> <code class="inline-code">quest<em>discovery</em>002</code></li>
+<li class="ul-item"><strong>Title:</strong> Understanding the Axes</li>
+<li class="ul-item"><strong>Duration:</strong> 45 minutes</li>
+<li class="ul-item"><strong>XP Reward:</strong> 200</li>
+<li class="ul-item"><strong>Prerequisites:</strong> Quest 1</li>
+<li class="ul-item"><strong>Objectives:</strong></li></ul>
+<p>  1. Learn: X-axis (horizontal movement)</p>
+<p>  2. Learn: Y-axis (vertical movement, forward/backward)</p>
+<p>  3. Learn: Z-axis (depth/pressure control)</p>
+<p>  4. Learn: Index gear (96° starting position criticality)</p>
+<p>  5. Interactive Demo: Watch each axis move on live camera feed</p>
+<p>  6. Quiz: Match axis to its function (4/4 correct)</p>
+<ul><li class="ul-item"><strong>Critical Learning:</strong> Index gear at 96° is the starting point for all automated functions</li>
+<li class="ul-item"><strong>Merlin Guidance:</strong> "The axes are the machine's limbs, and the index... ah, the index is the heartbeat!"</li>
+<li class="ul-item"><strong>Unlocks:</strong> Quest 3, Home Function lesson</li></ul>
+
+<h4>Quest 3: Home Function Mastery</h4>
+<ul><li class="ul-item"><strong>ID:</strong> <code class="inline-code">quest<em>discovery</em>003</code></li>
+<li class="ul-item"><strong>Title:</strong> Returning Home</li>
+<li class="ul-item"><strong>Duration:</strong> 20 minutes</li>
+<li class="ul-item"><strong>XP Reward:</strong> 175</li>
+<li class="ul-item"><strong>Prerequisites:</strong> Quest 2</li>
+<li class="ul-item"><strong>Objectives:</strong></li></ul>
+<p>  1. Learn: Why home function exists</p>
+<p>  2. Learn: What "home" means for each axis</p>
+<p>  3. Learn: Index gear positioning (96° is home)</p>
+<p>  4. Practice: Click "HOME" button (simulated)</p>
+<p>  5. Verify: Status indicators show homed state</p>
+<p>  6. Interactive: Run actual home function if connected</p>
+<ul><li class="ul-item"><strong>Merlin Guidance:</strong> "Home is where the machine knows itself..."</li>
+<li class="ul-item"><strong>Unlocks:</strong> Quest 4, Switch Test lesson</li></ul>
+
+<h4>Quest 4: Switch Test Quest</h4>
+<ul><li class="ul-item"><strong>ID:</strong> <code class="inline-code">quest<em>discovery</em>004</code></li>
+<li class="ul-item"><strong>Title:</strong> Testing the Machine</li>
+<li class="ul-item"><strong>Duration:</strong> 30 minutes</li>
+<li class="ul-item"><strong>XP Reward:</strong> 225</li>
+<li class="ul-item"><strong>Prerequisites:</strong> Quest 3</li>
+<li class="ul-item"><strong>Objectives:</strong></li></ul>
+<p>  1. Learn: What a switch test verifies</p>
+<p>  2. Learn: Importance of all switches</p>
+<p>  3. Learn: What each switch controls</p>
+<p>  4. Interactive: Run switch test (requires Arduino connection)</p>
+<p>  5. Verify: All switches respond correctly</p>
+<p>  6. Understand: What to do if switch fails</p>
+<ul><li class="ul-item"><strong>Success Criteria:</strong> All 4+ switches activate</li>
+<li class="ul-item"><strong>Merlin Guidance:</strong> "A thorough test reveals the truth of the machine..."</li>
+<li class="ul-item"><strong>Unlocks:</strong> Shape & Design quests</li>
+<li class="ul-item"><strong>Achievement Unlock:</strong> "First Connection"</li></ul>
+
+<hr>
+
+<h3>PHASE 2: SKILL QUESTS (Levels 6-15)</h3>
+
+<h4>Quest 5: Shape Selection Mastery</h4>
+<ul><li class="ul-item"><strong>ID:</strong> <code class="inline-code">quest<em>skill</em>005</code></li>
+<li class="ul-item"><strong>Title:</strong> Choosing Your Shape</li>
+<li class="ul-item"><strong>Duration:</strong> 60 minutes</li>
+<li class="ul-item"><strong>XP Reward:</strong> 300</li>
+<li class="ul-item"><strong>Prerequisites:</strong> Quest 4</li>
+<li class="ul-item"><strong>Objectives:</strong></li></ul>
+<p>  1. Learn: 10 basic gemstone shapes (Round, Cushion, Emerald, etc.)</p>
+<p>  2. Learn: Shape selection criteria</p>
+<p>  3. Learn: Yield calculation</p>
+<p>  4. Interactive Quiz: Match shapes to descriptions (10/10)</p>
+<p>  5. Practice: Recommend shape for given material</p>
+<p>  6. Understand: Complexity vs. yield trade-offs</p>
+<ul><li class="ul-item"><strong>Merlin Guidance:</strong> "Each shape tells a story. Choose wisely..."</li>
+<li class="ul-item"><strong>Unlocks:</strong> Design Selection quest</li></ul>
+
+<h4>Quest 6: Design Selection</h4>
+<ul><li class="ul-item"><strong>ID:</strong> <code class="inline-code">quest<em>skill</em>006</code></li>
+<li class="ul-item"><strong>Title:</strong> Designing Your Stone</li>
+<li class="ul-item"><strong>Duration:</strong> 90 minutes</li>
+<li class="ul-item"><strong>XP Reward:</strong> 350</li>
+<li class="ul-item"><strong>Prerequisites:</strong> Quest 5</li>
+<li class="ul-item"><strong>Objectives:</strong></li></ul>
+<p>  1. Learn: 5 classic cutting designs</p>
+<p>  2. Learn: Design selection based on material</p>
+<p>  3. Learn: Quality grades for rough material</p>
+<p>  4. Interactive: Assess rough material samples (5)</p>
+<p>  5. Match: Material + Shape = Best Design</p>
+<p>  6. Quiz: Design selection scenarios (5/5 correct)</p>
+<ul><li class="ul-item"><strong>Merlin Guidance:</strong> "The design must match the stone's nature..."</li>
+<li class="ul-item"><strong>Unlocks:</strong> Stone Preparation quest</li></ul>
+
+<h4>Quest 7: Stone Preparation</h4>
+<ul><li class="ul-item"><strong>ID:</strong> <code class="inline-code">quest<em>skill</em>007</code></li>
+<li class="ul-item"><strong>Title:</strong> Getting Ready to Cut</li>
+<li class="ul-item"><strong>Duration:</strong> 90 minutes</li>
+<li class="ul-item"><strong>XP Reward:</strong> 325</li>
+<li class="ul-item"><strong>Prerequisites:</strong> Quest 6</li>
+<li class="ul-item"><strong>Objectives:</strong></li></ul>
+<p>  1. Learn: Assessing rough material</p>
+<p>  2. Learn: Identifying flaws and inclusions</p>
+<p>  3. Learn: Orientation importance</p>
+<p>  4. Learn: Mounting considerations</p>
+<p>  5. Interactive: Examine 5 sample stones</p>
+<p>  6. Plan: Cutting strategy for material</p>
+<p>  7. Identify: Potential problems</p>
+<ul><li class="ul-item"><strong>Merlin Guidance:</strong> "Preparation is 80% of success..."</li>
+<li class="ul-item"><strong>Unlocks:</strong> Manual Controls quest</li></ul>
+
+<h4>Quest 8: Touch Screen Navigation</h4>
+<ul><li class="ul-item"><strong>ID:</strong> <code class="inline-code">quest<em>skill</em>008</code></li>
+<li class="ul-item"><strong>Title:</strong> Menu Navigation Mastery</li>
+<li class="ul-item"><strong>Duration:</strong> 45 minutes</li>
+<li class="ul-item"><strong>XP Reward:</strong> 250</li>
+<li class="ul-item"><strong>Prerequisites:</strong> Quest 4</li>
+<li class="ul-item"><strong>Objectives:</strong></li></ul>
+<p>  1. Learn: Main menu structure</p>
+<p>  2. Learn: Settings submenu</p>
+<p>  3. Learn: Operation modes</p>
+<p>  4. Interactive Tutorial: Navigate 10 menu paths</p>
+<p>  5. Timed Challenge: Find settings in < 2 min (3x)</p>
+<p>  6. Quiz: Menu locations (8/8 correct)</p>
+<ul><li class="ul-item"><strong>Merlin Guidance:</strong> "The interface is your window to control..."</li>
+<li class="ul-item"><strong>Unlocks:</strong> Manual Controls quest</li></ul>
+
+<h4>Quest 9: Manual Controls Mastery</h4>
+<ul><li class="ul-item"><strong>ID:</strong> <code class="inline-code">quest<em>skill</em>009</code></li>
+<li class="ul-item"><strong>Title:</strong> Hands-On Control</li>
+<li class="ul-item"><strong>Duration:</strong> 120 minutes</li>
+<li class="ul-item"><strong>XP Reward:</strong> 400</li>
+<li class="ul-item"><strong>Prerequisites:</strong> Quests 7, 8</li>
+<li class="ul-item"><strong>Objectives:</strong></li></ul>
+<p>  1. Learn: Joystick operation</p>
+<p>  2. Learn: Speed adjustments</p>
+<p>  3. Learn: Movement modes (continuous vs step)</p>
+<p>  4. Practice: X-axis positioning (5 targets)</p>
+<p>  5. Practice: Y-axis positioning (5 targets)</p>
+<p>  6. Practice: Z-axis depth control (5 increments)</p>
+<p>  7. Practice: Index gear rotation (96° intervals)</p>
+<p>  8. Timed Challenge: Hit 3 targets accurately in < 5 min</p>
+<ul><li class="ul-item"><strong>Merlin Guidance:</strong> "Let your hands learn the dance of control..."</li>
+<li class="ul-item"><strong>Unlocks:</strong> Cutting Phases quests</li>
+<li class="ul-item"><strong>Achievement Unlock:</strong> "Manual Master"</li></ul>
+
+<hr>
+
+<h3>PHASE 3: CHALLENGE QUESTS (Levels 16-30)</h3>
+
+<h4>Quest 10: Cutting Phases Fundamentals</h4>
+<ul><li class="ul-item"><strong>ID:</strong> <code class="inline-code">quest<em>challenge</em>010</code></li>
+<li class="ul-item"><strong>Title:</strong> Understanding Cutting Phases</li>
+<li class="ul-item"><strong>Duration:</strong> 60 minutes</li>
+<li class="ul-item"><strong>XP Reward:</strong> 350</li>
+<li class="ul-item"><strong>Prerequisites:</strong> Quest 9</li>
+<li class="ul-item"><strong>Objectives:</strong></li></ul>
+<p>  1. Learn: Rough cutting phase (removing bulk)</p>
+<p>  2. Learn: Fine cutting phase (creating facets)</p>
+<p>  3. Learn: Polish phase (final brilliance)</p>
+<p>  4. Learn: Speed/pressure relationships per phase</p>
+<p>  5. Interactive: Watch cutting phase demonstration</p>
+<p>  6. Quiz: Phase characteristics (6/6 correct)</p>
+<p>  7. Understand: When to switch phases</p>
+<ul><li class="ul-item"><strong>Merlin Guidance:</strong> "Three phases to perfection. Each essential..."</li>
+<li class="ul-item"><strong>Unlocks:</strong> First automated cut quest</li></ul>
+
+<h4>Quest 11: Your First Automated Cut</h4>
+<ul><li class="ul-item"><strong>ID:</strong> <code class="inline-code">quest<em>challenge</em>011</code></li>
+<li class="ul-item"><strong>Title:</strong> Automated Cutting Adventure</li>
+<li class="ul-item"><strong>Duration:</strong> 180 minutes+ (real machine time)</li>
+<li class="ul-item"><strong>XP Reward:</strong> 750</li>
+<li class="ul-item"><strong>Prerequisites:</strong> Quests 10, 9, 7, 6</li>
+<li class="ul-item"><strong>Objectives:</strong></li></ul>
+<p>  1. Prepare: Material selection</p>
+<p>  2. Prepare: Design selection</p>
+<p>  3. Prepare: Stone mounting</p>
+<p>  4. Setup: Load material into GemBot</p>
+<p>  5. Execute: Start automated cutting sequence</p>
+<p>  6. Monitor: Watch cutting progress (minimum 30 min)</p>
+<p>  7. Complete: Successfully finish cutting</p>
+<p>  8. Assess: Review cut quality</p>
+<p>  9. Polish: Complete polishing phase</p>
+<ul><li class="ul-item"><strong>Success Criteria:</strong> </li></ul>
+<p>  - Stone fully cut and polished</p>
+<p>  - Grade: C or better (not destroyed)</p>
+<p>  - Time to completion logged</p>
+<ul><li class="ul-item"><strong>Merlin Guidance:</strong> "Your first true test begins. I am with you..."</li>
+<li class="ul-item"><strong>Major Milestone Achievement:</strong> "Stone Cutter"</li>
+<li class="ul-item"><strong>Unlocks:</strong> Optimization and expertise quests</li>
+<li class="ul-item"><strong>Rewards:</strong> </li></ul>
+<p>  - XP: 750</p>
+<p>  - Special Title: "Cutter's Journey Begun"</p>
+<p>  - Badge: "First Stone"</p>
+<p>  - Leaderboard debut</p>
+
+<h4>Quest 12: Quality Optimization</h4>
+<ul><li class="ul-item"><strong>ID:</strong> <code class="inline-code">quest<em>challenge</em>012</code></li>
+<li class="ul-item"><strong>Title:</strong> Pursuing Excellence</li>
+<li class="ul-item"><strong>Duration:</strong> 240 minutes+ </li>
+<li class="ul-item"><strong>XP Reward:</strong> 500</li>
+<li class="ul-item"><strong>Prerequisites:</strong> Quest 11 (completed 2 stones)</li>
+<li class="ul-item"><strong>Objectives:</strong></li></ul>
+<p>  1. Analysis: Review first cut quality</p>
+<p>  2. Learning: Understand quality factors</p>
+<p>  3. Practice: Adjust parameters for better results</p>
+<p>  4. Execute: Cut second stone with optimizations</p>
+<p>  5. Compare: Measure quality improvement</p>
+<p>  6. Target: Achieve Grade B (Good Cut)</p>
+<ul><li class="ul-item"><strong>Merlin Guidance:</strong> "Excellence is not an accident. It is a choice..."</li>
+<li class="ul-item"><strong>Unlocks:</strong> Advanced techniques quest</li></ul>
+
+<h4>Quest 13: Advanced Material Knowledge</h4>
+<ul><li class="ul-item"><strong>ID:</strong> <code class="inline-code">quest<em>challenge</em>013</code></li>
+<li class="ul-item"><strong>Title:</strong> Stone Expertise</li>
+<li class="ul-item"><strong>Duration:</strong> 90 minutes</li>
+<li class="ul-item"><strong>XP Reward:</strong> 300</li>
+<li class="ul-item"><strong>Prerequisites:</strong> Quest 11</li>
+<li class="ul-item"><strong>Objectives:</strong></li></ul>
+<p>  1. Deep Dive: 5 gemstone families (requirements & characteristics)</p>
+<p>  2. Learn: Hardness and cutting implications</p>
+<p>  3. Learn: Optical properties</p>
+<p>  4. Learn: Stress points and fracture risks</p>
+<p>  5. Interactive Quiz: Gemstone identification (10/10)</p>
+<p>  6. Advanced Scenario: Troubleshoot cut issues for material</p>
+<ul><li class="ul-item"><strong>Merlin Guidance:</strong> "Each stone has its nature. Learn to read it..."</li>
+<li class="ul-item"><strong>Unlocks:</strong> Material-specific optimization quests</li>
+<li class="ul-item"><strong>Achievement Unlock:</strong> "Gemologist"</li></ul>
+
+<h4>Quest 14: Shape Mastery I (5 Shapes)</h4>
+<ul><li class="ul-item"><strong>ID:</strong> <code class="inline-code">quest<em>challenge</em>014</code></li>
+<li class="ul-item"><strong>Title:</strong> Mastering Classic Shapes</li>
+<li class="ul-item"><strong>Duration:</strong> 300 minutes+</li>
+<li class="ul-item"><strong>XP Reward:</strong> 600</li>
+<li class="ul-item"><strong>Prerequisites:</strong> Quest 12</li>
+<li class="ul-item"><strong>Objectives:</strong></li></ul>
+<p>  1. Cut: Round brilliant</p>
+<p>  2. Cut: Cushion</p>
+<p>  3. Cut: Emerald</p>
+<p>  4. Cut: Pear</p>
+<p>  5. Cut: Oval</p>
+<ul><li class="ul-item"><strong>Success Criteria:</strong> All 5 shapes at Grade B or better</li>
+<li class="ul-item"><strong>Merlin Guidance:</strong> "Five forms to master. Each a new language..."</li>
+<li class="ul-item"><strong>Achievement Unlock:</strong> "Shape Master"</li>
+<li class="ul-item"><strong>Unlocks:</strong> Speed Challenge quests</li></ul>
+
+<h4>Quest 15: Advanced Techniques</h4>
+<ul><li class="ul-item"><strong>ID:</strong> <code class="inline-code">quest<em>challenge</em>015</code></li>
+<li class="ul-item"><strong>Title:</strong> Pushing the Boundaries</li>
+<li class="ul-item"><strong>Duration:</strong> 180 minutes+</li>
+<li class="ul-item"><strong>XP Reward:</strong> 400</li>
+<li class="ul-item"><strong>Prerequisites:</strong> Quest 13, Quest 12</li>
+<li class="ul-item"><strong>Objectives:</strong></li></ul>
+<p>  1. Learn: Complex design modifications</p>
+<p>  2. Learn: Pressure optimization techniques</p>
+<p>  3. Learn: Temperature management</p>
+<p>  4. Learn: Advanced problem-solving</p>
+<p>  5. Practice: Execute optimization technique</p>
+<p>  6. Execute: Complex design cut</p>
+<ul><li class="ul-item"><strong>Merlin Guidance:</strong> "Now we venture beyond the familiar..."</li>
+<li class="ul-item"><strong>Unlocks:</strong> Expert path and specialization quests</li></ul>
+
+<hr>
+
+<h3>PHASE 4: MASTERY QUESTS (Levels 31+)</h3>
+
+<h4>Quest 16: Speed Challenge - 90 Minutes</h4>
+<ul><li class="ul-item"><strong>ID:</strong> <code class="inline-code">quest<em>mastery</em>016</code></li>
+<li class="ul-item"><strong>Title:</strong> Racing Against Time</li>
+<li class="ul-item"><strong>Duration:</strong> 90+ minutes</li>
+<li class="ul-item"><strong>XP Reward:</strong> 400</li>
+<li class="ul-item"><strong>Prerequisites:</strong> Quest 14</li>
+<li class="ul-item"><strong>Objectives:</strong></li></ul>
+<p>  1. Select: Design of choice</p>
+<p>  2. Execute: Complete cut in < 90 minutes</p>
+<p>  3. Success: Grade B or better</p>
+<ul><li class="ul-item"><strong>Merlin Guidance:</strong> "Can you do more with less? Prove yourself..."</li>
+<li class="ul-item"><strong>Achievement Unlock:</strong> "Speed Cutter" (if < 75 min)</li></ul>
+
+<h4>Quest 17: Precision Challenge - Grade A</h4>
+<ul><li class="ul-item"><strong>ID:</strong> <code class="inline-code">quest<em>mastery</em>017</code></li>
+<li class="ul-item"><strong>Title:</strong> Perfect Cut Achievement</li>
+<li class="ul-item"><strong>Duration:</strong> Time unlimited</li>
+<li class="ul-item"><strong>XP Reward:</strong> 500</li>
+<li class="ul-item"><strong>Prerequisites:</strong> Quest 14</li>
+<li class="ul-item"><strong>Objectives:</strong></li></ul>
+<p>  1. Execute: Perfect grade cut (Grade A)</p>
+<p>  2. Meet: All quality standards</p>
+<ul><li class="ul-item"><strong>Merlin Guidance:</strong> "Perfection is rare. Pursue it relentlessly..."</li>
+<li class="ul-item"><strong>Major Achievement Unlock:</strong> "Master Cutter"</li></ul>
+
+<h4>Quest 18: Mentorship Path</h4>
+<ul><li class="ul-item"><strong>ID:</strong> <code class="inline-code">quest<em>mastery</em>018</code></li>
+<li class="ul-item"><strong>Title:</strong> Teaching Others</li>
+<li class="ul-item"><strong>Duration:</strong> Ongoing</li>
+<li class="ul-item"><strong>XP Reward:</strong> 50 per mentee session</li>
+<li class="ul-item"><strong>Prerequisites:</strong> Quest 14 completed</li>
+<li class="ul-item"><strong>Objectives:</strong></li></ul>
+<p>  1. Mentor: New user (help complete Quest 11)</p>
+<p>  2. Mentor: 3 users total through first cut</p>
+<p>  3. Receive: Positive feedback (3+ votes)</p>
+<p>  4. Impact: 2+ mentees complete successfully</p>
+<ul><li class="ul-item"><strong>Merlin Guidance:</strong> "The master teaches. Help them find their path..."</li>
+<li class="ul-item"><strong>Unlocks:</strong> Master tier perks and exclusive content</li>
+<li class="ul-item"><strong>Special Title:</strong> "Merlin's Apprentice" (at 5 successful mentees)</li></ul>
+
+<h4>Quest 19: 10-Stone Challenge</h4>
+<ul><li class="ul-item"><strong>ID:</strong> <code class="inline-code">quest<em>mastery</em>019</code></li>
+<li class="ul-item"><strong>Title:</strong> The Artisan</li>
+<li class="ul-item"><strong>Duration:</strong> Ongoing</li>
+<li class="ul-item"><strong>XP Reward:</strong> 1000 on completion</li>
+<li class="ul-item"><strong>Prerequisites:</strong> Quest 14</li>
+<li class="ul-item"><strong>Objectives:</strong></li></ul>
+<p>  1. Cut: 10 stones total</p>
+<p>  2. Variety: At least 5 different shapes</p>
+<p>  3. Variety: At least 3 different gemstones</p>
+<p>  4. Quality: Average Grade B or better</p>
+<ul><li class="ul-item"><strong>Merlin Guidance:</strong> "Volume builds mastery. Keep cutting..."</li>
+<li class="ul-item"><strong>Achievement Unlock:</strong> "The Artisan"</li>
+<li class="ul-item"><strong>Leaderboard:</strong> Added to global leaderboard</li></ul>
+
+<h4>Quest 20: 100-Hour Journey</h4>
+<ul><li class="ul-item"><strong>ID:</strong> <code class="inline-code">quest<em>mastery</em>020</code></li>
+<li class="ul-item"><strong>Title:</strong> Lifetime on Machine</li>
+<li class="ul-item"><strong>Duration:</strong> Ongoing</li>
+<li class="ul-item"><strong>XP Reward:</strong> 500 on each milestone (25h, 50h, 75h, 100h)</li>
+<li class="ul-item"><strong>Objectives:</strong></li></ul>
+<p>  1. Achieve: 25 hours machine time</p>
+<p>  2. Achieve: 50 hours machine time</p>
+<p>  3. Achieve: 75 hours machine time</p>
+<p>  4. Achieve: 100 hours machine time</p>
+<ul><li class="ul-item"><strong>Merlin Guidance:</strong> "Time reveals the depths of mastery..."</li>
+<li class="ul-item"><strong>Achievements:</strong> Unlocks at each milestone</li>
+<li class="ul-item"><strong>Leaderboard:</strong> Heavy weighting on total time</li></ul>
+
+<hr>
+
+<h2>🏆 Achievement System</h2>
+
+<h3>Tier 1: Common Achievements (Easy to Earn)</h3>
+
+<ol><li class="ol-item"><strong>Curious Explorer</strong></li></ol>
+<p>   - Complete Quest 1</p>
+<p>   - Reward: 100 XP, Badge</p>
+
+<ol><li class="ol-item"><strong>Hardware Scholar</strong></li></ol>
+<p>   - Complete Quest 2</p>
+<p>   - Reward: 150 XP, Badge</p>
+
+<ol><li class="ol-item"><strong>Persistent Learner</strong></li></ol>
+<p>   - Complete 3 quests</p>
+<p>   - Reward: 200 XP, Badge</p>
+
+<ol><li class="ol-item"><strong>First Connection</strong></li></ol>
+<p>   - Successfully connect to Arduino</p>
+<p>   - Reward: 250 XP, Badge, Title: "Connected"</p>
+
+<ol><li class="ol-item"><strong>Touch Screen Navigator</strong></li></ol>
+<p>   - Complete Quest 8</p>
+<p>   - Reward: 200 XP, Badge</p>
+
+<h3>Tier 2: Rare Achievements (Challenging)</h3>
+
+<ol><li class="ol-item"><strong>Stone Cutter</strong></li></ol>
+<p>   - Complete first automated cut</p>
+<p>   - Reward: 500 XP, Badge, Title: "Stone Cutter"</p>
+<p>   - Special benefit: Unlock advanced training</p>
+
+<ol><li class="ol-item"><strong>Manual Master</strong></li></ol>
+<p>   - Perfect all manual control challenges</p>
+<p>   - Reward: 300 XP, Badge, Title: "Control Master"</p>
+
+<ol><li class="ol-item"><strong>Shape Master</strong></li></ol>
+<p>   - Cut 5 different shapes successfully</p>
+<p>   - Reward: 400 XP, Badge, Title: "Shape Expert"</p>
+
+<ol><li class="ol-item"><strong>Gemologist</strong></li></ol>
+<p>   - Complete material knowledge quest</p>
+<p>   - Reward: 300 XP, Badge, Title: "Gem Scholar"</p>
+
+<ol><li class="ol-item"><strong>Speed Cutter</strong></li></ol>
+<p>   - Complete cut in < 75 minutes</p>
+<p>   - Reward: 350 XP, Badge, Title: "Speed Demon"</p>
+
+<h3>Tier 3: Epic Achievements (Very Challenging)</h3>
+
+<ol><li class="ol-item"><strong>Master Cutter</strong></li></ol>
+<p>   - Achieve Grade A (Perfect) cut</p>
+<p>   - Reward: 500 XP, Badge, Title: "Master Cutter"</p>
+<p>   - Special: Unlock expert-only quests</p>
+
+<ol><li class="ol-item"><strong>The Artisan</strong></li></ol>
+<p>   - Cut 10 stones with average Grade B</p>
+<p>   - Reward: 600 XP, Badge, Title: "The Artisan"</p>
+<p>   - Special: Appear on leaderboard</p>
+
+<ol><li class="ol-item"><strong>Day Streak - 7 Days</strong></li></ol>
+<p>   - Use machine 7 consecutive days</p>
+<p>   - Reward: 250 XP, Badge</p>
+<p>   - Note: Resets on missed day</p>
+
+<ol><li class="ol-item"><strong>Consistency Champion</strong></li></ol>
+<p>   - 30 day total machine time</p>
+<p>   - Reward: 400 XP, Badge, Title: "Consistent"</p>
+
+<ol><li class="ol-item"><strong>Mentorship Hero</strong></li></ol>
+<p>   - Successfully mentor 5 users</p>
+<p>   - Reward: 500 XP, Badge, Title: "Merlin's Apprentice"</p>
+
+<h3>Tier 4: Legendary Achievements (Extreme Challenge)</h3>
+
+<ol><li class="ol-item"><strong>Perfect Craftsman</strong></li></ol>
+<p>   - 5 Grade A cuts</p>
+<p>   - Reward: 1000 XP, Exclusive Badge</p>
+<p>   - Title: "Master of Gems"</p>
+<p>   - Special: VIP status, early access to features</p>
+
+<ol><li class="ol-item"><strong>Century Club</strong></li></ol>
+<p>   - 100+ hours on machine</p>
+<p>   - Reward: 750 XP, Exclusive Badge</p>
+<p>   - Leaderboard: Permanent top-tier position</p>
+
+<ol><li class="ol-item"><strong>Global Leader</strong></li></ol>
+<p>   - Rank #1 on any leaderboard</p>
+<p>   - Reward: 500 XP, Exclusive Badge</p>
+<p>   - Title: "Champion"</p>
+
+<ol><li class="ol-item"><strong>Teacher's Glory</strong></li></ol>
+<p>   - 10 successful mentees</p>
+<p>   - Reward: 600 XP, Badge</p>
+<p>   - Title: "Master Teacher"</p>
+<p>   - Special: Can host community events</p>
+
+<hr>
+
+<h2>📊 Leaderboard Systems</h2>
+
+<h3>Leaderboard 1: Total Machine Time</h3>
+<ul><li class="ul-item"><strong>Metric:</strong> Hours spent on machine</li>
+<li class="ul-item"><strong>Frequency:</strong> Updated in real-time</li>
+<li class="ul-item"><strong>Reset:</strong> Annual (Jan 1)</li>
+<li class="ul-item"><strong>Tiers:</strong> Bronze (0-10h), Silver (10-25h), Gold (25-50h), Platinum (50h+)</li>
+<li class="ul-item"><strong>Display:</strong> Top 100 globally, top 10 per tier</li>
+<li class="ul-item"><strong>Rewards:</strong> </li></ul>
+<p>  - Weekly: Top 3 get 100 XP bonus</p>
+<p>  - Monthly: Top 10 get special badge</p>
+<p>  - Annual: Top 50 get exclusive title</p>
+
+<h3>Leaderboard 2: Stones Completed</h3>
+<ul><li class="ul-item"><strong>Metric:</strong> Number of completed cuts</li>
+<li class="ul-item"><strong>Frequency:</strong> Real-time</li>
+<li class="ul-item"><strong>Reset:</strong> Annual</li>
+<li class="ul-item"><strong>Categories:</strong> All-time, Monthly, Weekly</li>
+<li class="ul-item"><strong>Display:</strong> Top 100, filtered by gemstone type</li>
+<li class="ul-item"><strong>Rewards:</strong></li></ul>
+<p>  - 50 stones: "Productivity Badge"</p>
+<p>  - 100 stones: "Cutting Master Badge"</p>
+
+<h3>Leaderboard 3: Cut Quality (Aggregate)</h3>
+<ul><li class="ul-item"><strong>Metric:</strong> Average cut grade across all stones</li>
+<li class="ul-item"><strong>Frequency:</strong> Updated after each cut</li>
+<li class="ul-item"><strong>Minimum:</strong> 5 cuts required for ranking</li>
+<li class="ul-item"><strong>Reset:</strong> Annual</li>
+<li class="ul-item"><strong>Display:</strong> Top 100 quality cutters</li>
+<li class="ul-item"><strong>Rewards:</strong></li></ul>
+<p>  - 90%+ average: "Quality Expert"</p>
+<p>  - 95%+ average: "Perfect Craftsman"</p>
+
+<h3>Leaderboard 4: Day Streak</h3>
+<ul><li class="ul-item"><strong>Metric:</strong> Consecutive days using machine</li>
+<li class="ul-item"><strong>Frequency:</strong> Real-time daily reset</li>
+<li class="ul-item">**Current Streak vs. Best Streak</li>
+<li class="ul-item"><strong>Display:</strong> Top 50 current, Top 50 best all-time</li>
+<li class="ul-item"><strong>Rewards:</strong></li></ul>
+<p>  - 7 day: "Consistency Badge"</p>
+<p>  - 30 day: "Dedicated Cutter"</p>
+<p>  - 100 day: "Legendary Streak"</p>
+
+<h3>Leaderboard 5: Weekly Challenge (Rotating)</h3>
+<ul><li class="ul-item"><strong>Theme:</strong> Changes weekly (Speed, Quality, Variety, etc.)</li>
+<li class="ul-item"><strong>Reset:</strong> Every Sunday</li>
+<li class="ul-item"><strong>Dynamic Scoring:</strong> Based on weekly theme</li>
+<li class="ul-item"><strong>Rewards:</strong></li></ul>
+<p>  - Weekly winner: 500 XP + special badge</p>
+<p>  - Top 5: Certificate in chat</p>
+<p>  - All participants: 50 XP</p>
+
+<h3>Leaderboard 6: Mentorship</h3>
+<ul><li class="ul-item"><strong>Metric:</strong> Successful mentees + helpful votes</li>
+<li class="ul-item"><strong>Calculation:</strong> (Mentees × 100) + (Votes × 5)</li>
+<li class="ul-item"><strong>Display:</strong> Top 50 mentors</li>
+<li class="ul-item"><strong>Rewards:</strong></li></ul>
+<p>  - 5 mentees: "Mentor Badge"</p>
+<p>  - 10 mentees: "Master Teacher"</p>
+<p>  - 50+ votes: "Beloved Mentor"</p>
+
+<hr>
+
+<h2>🎮 Gamification Mechanics</h2>
+
+<h3>Experience Points (XP) System</h3>
+
+<h4>XP Awards</h4>
+<ul><li class="ul-item">Complete quest: 150-750 XP (based on difficulty/length)</li>
+<li class="ul-item">Achievement unlocked: 100-500 XP (based on rarity)</li>
+<li class="ul-item">Help another user: 50 XP per session</li>
+<li class="ul-item">First cut of day: 25 XP bonus</li>
+<li class="ul-item">Day streak maintained: 10 XP per day</li>
+<li class="ul-item">Complete leaderboard challenge: 100 XP</li>
+<li class="ul-item">Receive helpful vote: 5 XP</li></ul>
+
+<h4>Level Progression</h4>
+<pre class="code-block " data-lang="text"><code>Level 1: 0 XP
+<p>Level 2: 500 XP (500 total)</p>
+<p>Level 3: 800 XP (1,300 total)</p>
+<p>Level 4: 1,200 XP (2,500 total)</p>
+<p>Level 5: 1,500 XP (4,000 total)</p>
+<p>...</p>
+<p>Level 100: 50,000 XP (total ~2,500,000 XP)</code></pre></p>
+
+<h3>Progress Tracking</h3>
+
+<h4>Dashboard UI Component</h4>
+<pre class="code-block " data-lang="text"><code>┌─────────────────────────────────────────┐
+<p>│ LEVEL 5 - Scholar                       │</p>
+<p>│ ████████░░░░░░░░░░░░ 45% to Level 6     │</p>
+<p>│ 3,240 / 4,000 XP                        │</p>
+<p>├─────────────────────────────────────────┤</p>
+<p>│ CURRENT QUESTS          │ YOUR STATS     │</p>
+<p>│ • Automation Quest [75%]│ Stones Cut: 3  │</p>
+<p>│ • Shape Master [40%]    │ Machine Hrs: 8 │</p>
+<p>│ • Manual Control [100%] │ Rank: #47      │</p>
+<p>│                         │ Streak: 5 days │</p>
+<p>├─────────────────────────────────────────┤</p>
+<p>│ UPCOMING ACHIEVEMENTS   │ LEADERBOARD    │</p>
+<p>│ ⭐ Speed Cutter (3 cuts)│ 1. Master92 #1 │</p>
+<p>│ ⭐ Quality Expert (100%)│ 2. Cutter88 #2 │</p>
+<p>│ ⭐ 25 Hour Journey      │ 3. Expert_Sam  │</p>
+<p>└─────────────────────────────────────────┘</code></pre></p>
+
+<h3>Gamification UI Elements</h3>
+
+<h4>Quest Card Display</h4>
+<pre class="code-block " data-lang="text"><code>┌─────────────────────────────────────────┐
+<p>│ QUEST: Cutting Phases Fundamentals      │</p>
+<p>│ Difficulty: ●●●◯◯ (Intermediate)        │</p>
+<p>│ Time: ~60 minutes                       │</p>
+<p>│ Prerequisites: ✓ Quest 9                │</p>
+<p>├─────────────────────────────────────────┤</p>
+<p>│ Progress: ███████░░░░░░░░░░░░ 45%       │</p>
+<p>│ • Learn: Rough cutting phase [✓]        │</p>
+<p>│ • Learn: Fine cutting phase [ ]         │</p>
+<p>│ • Learn: Polish phase       [ ]         │</p>
+<p>│ • Interactive demo          [ ]         │</p>
+<p>│ • Quiz (6/6)                [ ]         │</p>
+<p>├─────────────────────────────────────────┤</p>
+<p>│ REWARDS: 350 XP | Achievement: &quot;Expert&quot; │</p>
+<p>│                                         │</p>
+<p>│ [CONTINUE] [PAUSE] [MORE INFO]          │</p>
+<p>└─────────────────────────────────────────┘</code></pre></p>
+
+<h4>Achievement Notification</h4>
+<pre class="code-block " data-lang="text"><code>🏆 ACHIEVEMENT UNLOCKED! 🏆
+
+<p>&quot;Stone Cutter&quot;</p>
+<p>Successfully completed your first automated cut!</p>
+
+<p>+500 XP earned</p>
+<p>Title Unlocked: &quot;Stone Cutter&quot;</p>
+<p>New Content Unlocked: Advanced Training</p>
+
+<p>[COLLECT REWARD] [VIEW PROFILE]</code></pre></p>
+
+<hr>
+
+<h2>📱 UI/UX Enhancements</h2>
+
+<h3>New Dashboard Section</h3>
+<ul><li class="ul-item">Quest progress overview</li>
+<li class="ul-item">Current active quests</li>
+<li class="ul-item">Upcoming quests (prereqs met)</li>
+<li class="ul-item">Achievement showcase (earned 12)</li>
+<li class="ul-item">Achievement progress (working toward 8)</li>
+<li class="ul-item">Quick access to leaderboards</li>
+<li class="ul-item">Daily challenge notification</li>
+<li class="ul-item">Streak counter</li></ul>
+
+<h3>Quest Navigation Panel</h3>
+<ul><li class="ul-item">Expandable left sidebar with quest tree</li>
+<li class="ul-item">Visual progression indicators</li>
+<li class="ul-item">Recommended next quest based on progress</li>
+<li class="ul-item">Reset/abandon quest options</li>
+<li class="ul-item">Search and filter quests</li>
+<li class="ul-item">Favorite/bookmark quests</li></ul>
+
+<h3>Leaderboard Views</h3>
+<ul><li class="ul-item">Global rankings (horizontal scroll)</li>
+<li class="ul-item">Tier-based rankings</li>
+<li class="ul-item">Friend rankings (future)</li>
+<li class="ul-item">Seasonal rankings</li>
+<li class="ul-item">Personal ranking card (highlighted)</li>
+<li class="ul-item">Comparison view vs. rank above/below</li>
+<li class="ul-item">Historical ranking trends</li></ul>
+
+<h3>Achievement Gallery</h3>
+<ul><li class="ul-item">All achievements displayed</li>
+<li class="ul-item">Locked achievements visible with hints</li>
+<li class="ul-item">Progress bars toward earned achievements</li>
+<li class="ul-item">Rarity tier color coding</li>
+<li class="ul-item">Share achievement button</li>
+<li class="ul-item">Achievement unlock animations</li></ul>
+
+<hr>
+
+<h2>🔧 Technical Implementation Details</h2>
+
+<h3>Database/Storage Schema</h3>
+
+<h4>Quests Collection</h4>
+<ul><li class="ul-item">questId (string, primary key)</li>
+<li class="ul-item">title, description, category, difficulty</li>
+<li class="ul-item">objectives[] (with completion state)</li>
+<li class="ul-item">rewards{} (xp, badge, title, unlocks)</li>
+<li class="ul-item">metadata{} (createdDate, version, deprecated)</li></ul>
+
+<h4>Achievements Collection</h4>
+<ul><li class="ul-item">achievementId (string, primary key)</li>
+<li class="ul-item">title, description, icon, category</li>
+<li class="ul-item">criteria{} (conditions for unlock)</li>
+<li class="ul-item">rewards{} (xp, badge, title)</li>
+<li class="ul-item">metadata{} (created, updated, rarity)</li></ul>
+
+<h4>UserGameification Collection</h4>
+<ul><li class="ul-item">userId (foreign key)</li>
+<li class="ul-item">level, experience, totalPlayTime</li>
+<li class="ul-item">questsCompleted[], achievementsEarned[]</li>
+<li class="ul-item">leaderboardEntries[]</li>
+<li class="ul-item">dayStreaks[]</li>
+<li class="ul-item">machineTimeTracking{}</li></ul>
+
+<h4>LeaderboardEntry Collection</h4>
+<ul><li class="ul-item">leaderboardId</li>
+<li class="ul-item">userId, score, rank, tier</li>
+<li class="ul-item">lastUpdated, seasonalData</li>
+<li class="ul-item">badges[], stats{}</li></ul>
+
+<h3>Local Storage Structure</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>localStorage[&#039;gembot&lt;em&gt;user&lt;/em&gt;gamification&#039;] = {
+<p>  level: 5,</p>
+<p>  xp: 3240,</p>
+<p>  quests: { ... },</p>
+<p>  achievements: { ... },</p>
+<p>  playTime: { ... },</p>
+<p>  leaderboards: { ... }</p>
+<p>}</code></pre></p>
+
+<h3>API Endpoints (Future Backend)</h3>
+
+<h4>Quest Management</h4>
+<ul><li class="ul-item"><code class="inline-code">GET /api/quests</code> - All quests</li>
+<li class="ul-item"><code class="inline-code">GET /api/quests/:id</code> - Specific quest</li>
+<li class="ul-item"><code class="inline-code">POST /api/quests/:id/accept</code> - Accept quest</li>
+<li class="ul-item"><code class="inline-code">PATCH /api/quests/:id/progress</code> - Update progress</li>
+<li class="ul-item"><code class="inline-code">POST /api/quests/:id/complete</code> - Mark complete</li></ul>
+
+<h4>Achievements</h4>
+<ul><li class="ul-item"><code class="inline-code">GET /api/achievements</code> - All achievements</li>
+<li class="ul-item"><code class="inline-code">GET /api/achievements/user</code> - User's achievements</li>
+<li class="ul-item"><code class="inline-code">POST /api/achievements/:id/check</code> - Check criteria</li></ul>
+
+<h4>Leaderboards</h4>
+<ul><li class="ul-item"><code class="inline-code">GET /api/leaderboards/:type</code> - Get leaderboard</li>
+<li class="ul-item"><code class="inline-code">GET /api/leaderboards/:type/user</code> - User position</li>
+<li class="ul-item"><code class="inline-code">POST /api/leaderboard-entries</code> - Submit score</li></ul>
+
+<h4>User Progress</h4>
+<ul><li class="ul-item"><code class="inline-code">GET /api/users/:id/progress</code> - Full profile</li>
+<li class="ul-item"><code class="inline-code">PATCH /api/users/:id/level</code> - Update after XP</li>
+<li class="ul-item"><code class="inline-code">POST /api/users/:id/quests/complete</code> - Award XP</li></ul>
+
+<hr>
+
+<h2>🎯 Implementation Phases</h2>
+
+<h3>PHASE 1: Core System (Weeks 1-3)</h3>
+<p><strong>Focus:</strong> Build foundation for all gamification</p>
+
+<h4>Week 1: Data Model & Storage</h4>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Design complete gamification data model</li>
+<li class="checkbox"><input type="checkbox" disabled> Extend user profile with gamification fields</li>
+<li class="checkbox"><input type="checkbox" disabled> Implement localStorage persistence</li>
+<li class="checkbox"><input type="checkbox" disabled> Create IndexedDB schema for quests/achievements</li>
+<li class="checkbox"><input type="checkbox" disabled> Write JSON quest library (20 quests)</li>
+<li class="checkbox"><input type="checkbox" disabled> Write JSON achievement library (30 achievements)</li></ul>
+
+<h4>Week 2: Quest System</h4>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Build quest display component</li>
+<li class="checkbox"><input type="checkbox" disabled> Implement quest progress tracking</li>
+<li class="checkbox"><input type="checkbox" disabled> Create quest prerequisites checking</li>
+<li class="checkbox"><input type="checkbox" disabled> Build quest acceptance/completion logic</li>
+<li class="checkbox"><input type="checkbox" disabled> Implement objective tracking</li>
+<li class="checkbox"><input type="checkbox" disabled> Create XP award system</li>
+<li class="checkbox"><input type="checkbox" disabled> Build quest search/filter UI</li></ul>
+
+<h4>Week 3: Achievement System</h4>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Build achievement display gallery</li>
+<li class="checkbox"><input type="checkbox" disabled> Implement achievement unlock detection</li>
+<li class="checkbox"><input type="checkbox" disabled> Create progress tracking toward achievements</li>
+<li class="checkbox"><input type="checkbox" disabled> Build achievement notification system</li>
+<li class="checkbox"><input type="checkbox" disabled> Implement achievement rewards</li>
+<li class="checkbox"><input type="checkbox" disabled> Create lock/unlock state management</li></ul>
+
+<p><strong>Deliverables:</strong> </p>
+<ul><li class="ul-item">Functional quest system (20 quests, no content)</li>
+<li class="ul-item">Achievement system (30 achievements, no content)</li>
+<li class="ul-item">XP tracking and leveling</li>
+<li class="ul-item">LocalStorage persistence</li></ul>
+
+<h3>PHASE 2: Leaderboards & Engagement (Weeks 4-6)</h3>
+<p><strong>Focus:</strong> Add competition and progress tracking</p>
+
+<h4>Week 4: Leaderboard System</h4>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Design 6 leaderboard types</li>
+<li class="checkbox"><input type="checkbox" disabled> Implement leaderboard calculation logic</li>
+<li class="checkbox"><input type="checkbox" disabled> Build leaderboard display components</li>
+<li class="checkbox"><input type="checkbox" disabled> Implement real-time score updates</li>
+<li class="checkbox"><input type="checkbox" disabled> Create tier system</li>
+<li class="checkbox"><input type="checkbox" disabled> Add weekly challenge system</li>
+<li class="checkbox"><input type="checkbox" disabled> Implement filtering and sorting</li></ul>
+
+<h4>Week 5: Progress Dashboard</h4>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Design comprehensive dashboard</li>
+<li class="checkbox"><input type="checkbox" disabled> Implement quest progress visualization</li>
+<li class="checkbox"><input type="checkbox" disabled> Build achievement progress display</li>
+<li class="checkbox"><input type="checkbox" disabled> Add leaderboard rank display</li>
+<li class="checkbox"><input type="checkbox" disabled> Create streak counter</li>
+<li class="checkbox"><input type="checkbox" disabled> Add daily challenge widget</li>
+<li class="checkbox"><input type="checkbox" disabled> Implement goal-setting UI</li></ul>
+
+<h4>Week 6: Notifications & Feedback</h4>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Build notification system</li>
+<li class="checkbox"><input type="checkbox" disabled> Achievement unlock animations</li>
+<li class="checkbox"><input type="checkbox" disabled> Level-up notifications</li>
+<li class="checkbox"><input type="checkbox" disabled> Leaderboard rank change alerts</li>
+<li class="checkbox"><input type="checkbox" disabled> Daily challenge reminders</li>
+<li class="checkbox"><input type="checkbox" disabled> Quest completion confirmations</li>
+<li class="checkbox"><input type="checkbox" disabled> Streak milestone celebrations</li></ul>
+
+<p><strong>Deliverables:</strong></p>
+<ul><li class="ul-item">6 working leaderboards</li>
+<li class="ul-item">Complete progress dashboard</li>
+<li class="ul-item">Notification system</li>
+<li class="ul-item">Visual feedback system</li></ul>
+
+<h3>PHASE 3: Content & Integration (Weeks 7-10)</h3>
+<p><strong>Focus:</strong> Add quest content and integrate with machine</p>
+
+<h4>Week 7: Discovery Quests</h4>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Create "What is GemBot?" interactive content</li>
+<li class="checkbox"><input type="checkbox" disabled> Create "Understanding the Axes" lesson</li>
+<li class="checkbox"><input type="checkbox" disabled> Create "Home Function" tutorial</li>
+<li class="checkbox"><input type="checkbox" disabled> Create "Switch Test" interactive</li>
+<li class="checkbox"><input type="checkbox" disabled> Implement video integration (YouTube embeds)</li>
+<li class="checkbox"><input type="checkbox" disabled> Create quiz system</li>
+<li class="checkbox"><input type="checkbox" disabled> Add Merlin narrative to each quest</li></ul>
+
+<h4>Week 8: Skill Quests</h4>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Create "Shape Selection" lesson</li>
+<li class="checkbox"><input type="checkbox" disabled> Create "Design Selection" lesson</li>
+<li class="checkbox"><input type="checkbox" disabled> Create "Stone Preparation" lesson</li>
+<li class="checkbox"><input type="checkbox" disabled> Create "Touch Screen Navigation" tutorial</li>
+<li class="checkbox"><input type="checkbox" disabled> Create "Manual Controls" practice system</li>
+<li class="checkbox"><input type="checkbox" disabled> Implement interactive simulations</li>
+<li class="checkbox"><input type="checkbox" disabled> Add progress checkpoints</li></ul>
+
+<h4>Week 9: Integration with Machine Controls</h4>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Link quests to actual machine functions</li>
+<li class="checkbox"><input type="checkbox" disabled> Auto-track machine time</li>
+<li class="checkbox"><input type="checkbox" disabled> Log stone cuts with metadata</li>
+<li class="checkbox"><input type="checkbox" disabled> Track quality scores</li>
+<li class="checkbox"><input type="checkbox" disabled> Auto-complete quest objectives</li>
+<li class="checkbox"><input type="checkbox" disabled> Detect hardware switches</li>
+<li class="checkbox"><input type="checkbox" disabled> Integrate with Arduino connection status</li></ul>
+
+<h4>Week 10: Refinement & Balancing</h4>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> XP balance across quests</li>
+<li class="checkbox"><input type="checkbox" disabled> Achievement difficulty review</li>
+<li class="checkbox"><input type="checkbox" disabled> UI polish and animations</li>
+<li class="checkbox"><input type="checkbox" disabled> Performance optimization</li>
+<li class="checkbox"><input type="checkbox" disabled> Accessibility review</li>
+<li class="checkbox"><input type="checkbox" disabled> Mobile responsiveness</li>
+<li class="checkbox"><input type="checkbox" disabled> Merlin personality integration</li></ul>
+
+<p><strong>Deliverables:</strong></p>
+<ul><li class="ul-item">15+ quests with full content</li>
+<li class="ul-item">Interactive tutorials and lessons</li>
+<li class="ul-item">Machine integration complete</li>
+<li class="ul-item">Merlin guides users through quests</li></ul>
+
+<h3>PHASE 4: Advanced Features (Weeks 11-14)</h3>
+<p><strong>Focus:</strong> Mentorship, specializations, advanced gamification</p>
+
+<h4>Week 11: Mentorship System</h4>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Create mentor profile system</li>
+<li class="checkbox"><input type="checkbox" disabled> Implement mentee pairing</li>
+<li class="checkbox"><input type="checkbox" disabled> Build mentee progress tracking</li>
+<li class="checkbox"><input type="checkbox" disabled> Create mentorship feedback system</li>
+<li class="checkbox"><input type="checkbox" disabled> Implement helpful voting</li>
+<li class="checkbox"><input type="checkbox" disabled> Build mentor rewards</li>
+<li class="checkbox"><input type="checkbox" disabled> Add mentor-only quests</li></ul>
+
+<h4>Week 12: Specializations</h4>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Design specialization system</li>
+<li class="checkbox"><input type="checkbox" disabled> Create "Gemologist" specialization path</li>
+<li class="checkbox"><input type="checkbox" disabled> Create "Speed Cutter" specialization path</li>
+<li class="checkbox"><input type="checkbox" disabled> Create "Quality Expert" specialization path</li>
+<li class="checkbox"><input type="checkbox" disabled> Create "Teacher" specialization path</li>
+<li class="checkbox"><input type="checkbox" disabled> Build specialization-specific quests</li>
+<li class="checkbox"><input type="checkbox" disabled> Add specialization badges</li></ul>
+
+<h4>Week 13: Advanced Quests</h4>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Create Challenge Quests (Quest 11-15)</li>
+<li class="checkbox"><input type="checkbox" disabled> Create Mastery Quests (Quest 16-20)</li>
+<li class="checkbox"><input type="checkbox" disabled> Implement 100-hour journey</li>
+<li class="checkbox"><input type="checkbox" disabled> Create expert-only quests</li>
+<li class="checkbox"><input type="checkbox" disabled> Add seasonal quests (rotating)</li>
+<li class="checkbox"><input type="checkbox" disabled> Create limited-time events</li>
+<li class="checkbox"><input type="checkbox" disabled> Add legendary quests</li></ul>
+
+<h4>Week 14: Social & Analytics</h4>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Friend comparison system (scaffolding)</li>
+<li class="checkbox"><input type="checkbox" disabled> Guild/team system (scaffolding)</li>
+<li class="checkbox"><input type="checkbox" disabled> Analytics dashboard (admin)</li>
+<li class="checkbox"><input type="checkbox" disabled> Player journey analytics</li>
+<li class="checkbox"><input type="checkbox" disabled> Retention metrics</li>
+<li class="checkbox"><input type="checkbox" disabled> Engagement scoring</li>
+<li class="checkbox"><input type="checkbox" disabled> Export/sharing features</li></ul>
+
+<p><strong>Deliverables:</strong></p>
+<ul><li class="ul-item">Mentorship system</li>
+<li class="ul-item">4 specialization paths</li>
+<li class="ul-item">20+ total quests</li>
+<li class="ul-item">Advanced features foundation</li></ul>
+
+<h3>PHASE 5: Backend Integration (Weeks 15+)</h3>
+<p><strong>Focus:</strong> Server-side persistence and multiplayer</p>
+
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Design REST API for quests/achievements</li>
+<li class="checkbox"><input type="checkbox" disabled> Create backend leaderboard service</li>
+<li class="checkbox"><input type="checkbox" disabled> Implement user progress sync</li>
+<li class="checkbox"><input type="checkbox" disabled> Build admin quest management</li>
+<li class="checkbox"><input type="checkbox" disabled> Create analytics dashboard</li>
+<li class="checkbox"><input type="checkbox" disabled> Implement fraud prevention</li>
+<li class="checkbox"><input type="checkbox" disabled> Add real-time leaderboard updates</li>
+<li class="checkbox"><input type="checkbox" disabled> Create seasonal competition engine</li>
+<li class="checkbox"><input type="checkbox" disabled> Build user feedback collection</li>
+<li class="checkbox"><input type="checkbox" disabled> Implement content moderation</li></ul>
+
+<hr>
+
+<h2>💡 Gamification Psychology</h2>
+
+<h3>Motivation Hooks</h3>
+
+<p><strong>1. Progress Visualization</strong></p>
+<ul><li class="ul-item">Clear level progression (1-100)</li>
+<li class="ul-item">Visual XP bars</li>
+<li class="ul-item">Achievement galleries</li>
+<li class="ul-item">Unlocked content showcase</li>
+<li class="ul-item">Streak counters</li>
+<li class="ul-item"><strong>Why it works:</strong> Humans are motivated by visible progress</li></ul>
+
+<p><strong>2. Challenge Scaling</strong></p>
+<ul><li class="ul-item">Quests increase in difficulty</li>
+<li class="ul-item">New challenges as skills improve</li>
+<li class="ul-item">Speed challenges after mastery</li>
+<li class="ul-item">Quality challenges for experts</li>
+<li class="ul-item"><strong>Why it works:</strong> "Flow state" - challenges match skill level</li></ul>
+
+<p><strong>3. Reward Variety</strong></p>
+<ul><li class="ul-item">Immediate rewards (XP, badges)</li>
+<li class="ul-item">Long-term rewards (titles, ranks)</li>
+<li class="ul-item">Social rewards (leaderboard standing)</li>
+<li class="ul-item">Functional rewards (content unlock)</li>
+<li class="ul-item"><strong>Why it works:</strong> Different reward types appeal to different motivations</li></ul>
+
+<p><strong>4. Community Competition</strong></p>
+<ul><li class="ul-item">Global leaderboards</li>
+<li class="ul-item">Weekly challenges</li>
+<li class="ul-item">Mentorship rankings</li>
+<li class="ul-item">Seasonal competitions</li>
+<li class="ul-item"><strong>Why it works:</strong> Social comparison is powerful motivator</li></ul>
+
+<p><strong>5. Achievement Rarity</strong></p>
+<ul><li class="ul-item">Common achievements (easy, frequent)</li>
+<li class="ul-item">Rare achievements (challenging, rare)</li>
+<li class="ul-item">Epic achievements (very rare)</li>
+<li class="ul-item">Legendary achievements (extremely rare)</li>
+<li class="ul-item"><strong>Why it works:</strong> Rarity increases perceived value</li></ul>
+
+<p><strong>6. Narrative & Identity</strong></p>
+<ul><li class="ul-item">User roles (Cutter, Scholar, Master)</li>
+<li class="ul-item">Evolving titles</li>
+<li class="ul-item">Specialization identity</li>
+<li class="ul-item">Mentor status</li>
+<li class="ul-item"><strong>Why it works:</strong> People like having roles/identities</li></ul>
+
+<h3>Engagement Loop</h3>
+
+<pre class="code-block " data-lang="text"><code>User Takes Action (Cut stone)
+<p>         ↓</p>
+<p>System Tracks Progress (Auto-log)</p>
+<p>         ↓</p>
+<p>Instant Feedback (XP +50)</p>
+<p>         ↓</p>
+<p>Progress Visible (Level bar updates)</p>
+<p>         ↓</p>
+<p>Milestone Achieved (New badge)</p>
+<p>         ↓</p>
+<p>Celebration (Notification, animation)</p>
+<p>         ↓</p>
+<p>New Goal Available (Next achievement)</p>
+<p>         ↓</p>
+<p>User Motivated to Continue</p>
+<p>         ↓</p>
+<p>[LOOP REPEATS]</code></pre></p>
+
+<hr>
+
+<h2>🚀 Future Enhancements (Phase 3 & Beyond)</h2>
+
+<h3>Live Streaming Integration (Pump.fun)</h3>
+<ul><li class="ul-item">Broadcast cuts to audience</li>
+<li class="ul-item">Real-time viewer engagement</li>
+<li class="ul-item">Crypto tipping system</li>
+<li class="ul-item">Audience challenges</li>
+<li class="ul-item">Competition events</li>
+<li class="ul-item">VIP viewer perks</li></ul>
+
+<h3>Crypto Rewards System</h3>
+<ul><li class="ul-item">Earn cryptocurrency for machine use</li>
+<li class="ul-item">Token rewards for achievements</li>
+<li class="ul-item">Leaderboard prize pool</li>
+<li class="ul-item">Mentorship compensation</li>
+<li class="ul-item">Event prize distributions</li>
+<li class="ul-item">Reward marketplace</li></ul>
+
+<h3>AI-Powered Content</h3>
+<ul><li class="ul-item">Personalized quest recommendations</li>
+<li class="ul-item">Difficulty scaling based on skill</li>
+<li class="ul-item">Learning pace adaptation</li>
+<li class="ul-item">Knowledge gap detection</li>
+<li class="ul-item">Automated coaching</li>
+<li class="ul-item">Predictive achievement suggestions</li></ul>
+
+<h3>Social Features</h3>
+<ul><li class="ul-item">Guild/team formation</li>
+<li class="ul-item">Friend competition</li>
+<li class="ul-item">Message board</li>
+<li class="ul-item">Stream sharing</li>
+<li class="ul-item">Achievement showcase</li>
+<li class="ul-item">Mentorship network</li></ul>
+
+<hr>
+
+<h2>📊 Success Metrics</h2>
+
+<h3>Engagement Metrics</h3>
+<ul><li class="ul-item">Daily active users (DAU)</li>
+<li class="ul-item">Weekly active users (WAU)</li>
+<li class="ul-item">Average session length</li>
+<li class="ul-item">Quests started vs. completed ratio</li>
+<li class="ul-item">Leaderboard checking frequency</li>
+<li class="ul-item">Achievement unlock rate</li></ul>
+
+<h3>Learning Metrics</h3>
+<ul><li class="ul-item">Time to first cut (hours)</li>
+<li class="ul-item">Completion rate (quest finish %)</li>
+<li class="ul-item">Learning path adherence</li>
+<li class="ul-item">Topic understanding (quiz scores)</li>
+<li class="ul-item">Retention rate (return visits)</li></ul>
+
+<h3>Machine Metrics</h3>
+<ul><li class="ul-item">Total machine hours logged</li>
+<li class="ul-item">Cuts completed</li>
+<li class="ul-item">Quality average</li>
+<li class="ul-item">Specialization distribution</li>
+<li class="ul-item">Mentorship impact (mentee success rate)</li></ul>
+
+<h3>Business Metrics</h3>
+<ul><li class="ul-item">User lifetime value</li>
+<li class="ul-item">Crypto transaction volume (future)</li>
+<li class="ul-item">Stream viewership (future)</li>
+<li class="ul-item">Community growth rate</li>
+<li class="ul-item">User satisfaction (NPS)</li></ul>
+
+<hr>
+
+<h2>✅ Detailed Implementation TODO</h2>
+
+<p>See companion document: <strong>GAMIFIED<em>TRAINING</em>IMPLEMENTATION_TODO.md</strong> for detailed task breakdown with:</p>
+<ul><li class="ul-item">Sprint planning</li>
+<li class="ul-item">Estimated effort (story points)</li>
+<li class="ul-item">Dependencies</li>
+<li class="ul-item">Testing requirements</li>
+<li class="ul-item">Acceptance criteria</li></ul>
+
+<hr>
+
+<h2>🎬 Get Started</h2>
+
+<h3>Next Steps:</h3>
+<ol><li class="ol-item">✅ Review this roadmap with stakeholder</li>
+<li class="ol-item">⏳ Finalize quest library content</li>
+<li class="ol-item">⏳ Design dashboard UI mockups</li>
+<li class="ol-item">⏳ Create quest content materials</li>
+<li class="ol-item">⏳ Set up development environment</li>
+<li class="ol-item">⏳ Begin Phase 1 implementation</li></ol>
+
+<h3>Files to Create:</h3>
+<ul><li class="ul-item"><code class="inline-code">GAMIFIED<em>TRAINING</em>IMPLEMENTATION_TODO.md</code> - Detailed sprint tasks</li>
+<li class="ul-item"><code class="inline-code">QUEST<em>CONTENT</em>LIBRARY.json</code> - All 20+ quests</li>
+<li class="ul-item"><code class="inline-code">ACHIEVEMENT_DEFINITIONS.json</code> - All 30+ achievements</li>
+<li class="ul-item"><code class="inline-code">LEADERBOARD_CONFIG.json</code> - Scoring rules</li>
+<li class="ul-item"><code class="inline-code">UI_MOCKUPS.md</code> - Dashboard and quest designs</li>
+<li class="ul-item"><code class="inline-code">GAMIFICATION<em>DATA</em>SCHEMA.js</code> - Complete data model</li></ul>
+
+<hr>
+
+<p><strong>Document Version:</strong> 1.0  </p>
+<p><strong>Last Updated:</strong> December 7, 2025  </p>
+<p><strong>Status:</strong> Ready for Implementation Planning</p>
+
+        <div class="generated-notice">
+            🤖 Auto-generated from GAMIFIED_TRAINING_ROADMAP.md by GemBot Neural Dashboard Agent<br>
+            Generated: 2025-12-16T13:52:08.716Z
+        </div>
+    </div>
+</body>
+</html>

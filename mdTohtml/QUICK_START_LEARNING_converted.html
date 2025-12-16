@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QUICK_START_LEARNING - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        <h1>GemBot AI Learning - Quick Start Guide</h1>
+
+<h2>Ask Merlin to Teach You</h2>
+
+<p>Simply type any of these in the chat:</p>
+
+<pre class="code-block " data-lang="text"><code>&quot;Can you teach me?&quot;
+<p>&quot;Help me learn&quot;</p>
+<p>&quot;Show me how to use this&quot;</p>
+<p>&quot;I&#039;m a beginner&quot;</p>
+<p>&quot;Guide me&quot;</p>
+<p>&quot;Tutorial please&quot;</p>
+<p>&quot;What should I learn?&quot;</p>
+<p>&quot;Teach me the basics&quot;</code></pre></p>
+
+<hr>
+
+<h2>What You'll Learn (In Order)</h2>
+
+<h3>🧭 Lesson 1: Touch Screen Menu Structure</h3>
+<p><strong>Understand the Nextion menu hierarchy</strong></p>
+<ul><li class="ul-item">Main Menu (5 options)</li>
+<li class="ul-item">Design Menu (8 cutting phases)</li>
+<li class="ul-item">Manual Control</li>
+<li class="ul-item">Settings</li>
+<li class="ul-item">Switch Test</li></ul>
+
+<p><strong>Learn</strong>: How the touch screen is organized and what each section does</p>
+
+<hr>
+
+<h3>🎯 Lesson 2: Web Menu Control</h3>
+<p><strong>Use the web buttons to navigate touch screen menus</strong></p>
+<ul><li class="ul-item"><strong>◀ LEFT button</strong> (Command 1) - Go back/up</li>
+<li class="ul-item"><strong>✓ ENTER button</strong> (Command 0) - Select/confirm</li>
+<li class="ul-item"><strong>▶ RIGHT button</strong> (Command 3) - Go forward/down</li>
+<li class="ul-item"><strong>SYNC button</strong> - Update from touch screen</li></ul>
+
+<p><strong>Learn</strong>: How to navigate the touch screen from your web browser</p>
+
+<hr>
+
+<h3>🎮 Lesson 3: Motion Control (D-PAD)</h3>
+<p><strong>Move the machine using directional buttons</strong></p>
+<ul><li class="ul-item"><strong>⬆ UP</strong> - Move toward the lap</li>
+<li class="ul-item"><strong>⬇ DOWN</strong> - Move away from lap</li>
+<li class="ul-item"><strong>◀ LEFT</strong> - Rotate counter-clockwise</li>
+<li class="ul-item"><strong>▶ RIGHT</strong> - Rotate clockwise</li>
+<li class="ul-item"><strong>STEP vs CONTINUOUS</strong> mode difference</li></ul>
+
+<p><strong>Learn</strong>: How to position the stone using the web interface</p>
+
+<hr>
+
+<h3>⚙️ Lesson 4: Mode & Speed Control</h3>
+<p><strong>Control how fast and precise the machine moves</strong></p>
+<ul><li class="ul-item"><strong>STEP MODE</strong>: Click once = move once (precision)</li>
+<li class="ul-item"><strong>CONTINUOUS MODE</strong>: Hold = smooth motion (flow)</li>
+<li class="ul-item"><strong>Speed 1-2</strong>: Polishing (slow & precise)</li>
+<li class="ul-item"><strong>Speed 3</strong>: Balanced work</li>
+<li class="ul-item"><strong>Speed 4-5</strong>: Roughing (fast & aggressive)</li></ul>
+
+<p><strong>Learn</strong>: When to use each speed and mode for different tasks</p>
+
+<hr>
+
+<h3>📚 After Mastering Fundamentals</h3>
+<p>You'll be ready for:</p>
+<ul><li class="ul-item">Cutting phase techniques</li>
+<li class="ul-item">Stone-specific properties</li>
+<li class="ul-item">Advanced positioning strategies</li>
+<li class="ul-item">Emergency procedures</li></ul>
+
+<hr>
+
+<h2>Web Control Feature Overview</h2>
+
+<h3>Menu Navigation Buttons (Left Panel)</h3>
+<pre class="code-block " data-lang="text"><code>┌─────────────┐
+<p>│  ◀ ENTER ▶  │  Menu Control</p>
+<p>│             │</p>
+<p>│   SYNC BTN  │  Update state</p>
+<p>└─────────────┘</code></pre></p>
+
+<h3>Motion Control (D-PAD)</h3>
+<pre class="code-block " data-lang="text"><code>↑
+<p>    ← * →</p>
+<p>      ↓</code></pre></p>
+
+<h3>Mode & Speed Control</h3>
+<pre class="code-block " data-lang="text"><code>┌──────────────────┐
+<p>│ CONTINUOUS/STEP  │  Mode toggle</p>
+<p>│ [====○====] 1-5  │  Speed control</p>
+<p>└──────────────────┘</code></pre></p>
+
+<hr>
+
+<h2>Your Learning Path</h2>
+
+<pre class="code-block " data-lang="text"><code>START HERE
+<p>    ↓</p>
+<p>Lesson 1: Menu Structure (5 min)</p>
+<p>    ↓</p>
+<p>Lesson 2: Menu Navigation (5 min)</p>
+<p>    ↓</p>
+<p>Lesson 3: Motion Control (5 min)</p>
+<p>    ↓</p>
+<p>Lesson 4: Mode &amp; Speed (5 min)</p>
+<p>    ↓</p>
+<p>FUNDAMENTALS MASTERED ✓</p>
+<p>    ↓</p>
+<p>Ready for Advanced Topics</code></pre></p>
+
+<hr>
+
+<h2>Remember!</h2>
+
+<p>✨ <strong>Merlin remembers what you've learned</strong> - Complete lessons won't be repeated</p>
+<p>✨ <strong>Ask for any specific topic anytime</strong> - Don't have to follow order</p>
+<p>✨ <strong>All lessons use examples</strong> - Visual diagrams and step-by-step instructions</p>
+<p>✨ <strong>Web controls highlighted</strong> - See how to do everything from your browser</p>
+
+<hr>
+
+<h2>Start Now!</h2>
+
+<p>Type in the chat below:</p>
+<pre class="code-block " data-lang="text"><code>&quot;Can you teach me?&quot;</code></pre>
+
+<p>And Merlin will begin guiding you through mastering GemBot! 🧙✨</p>
+
+        <div class="generated-notice">
+            🤖 Auto-generated from QUICK_START_LEARNING.md by GemBot Neural Dashboard Agent<br>
+            Generated: 2025-12-16T13:52:22.262Z
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MOBILE_CAMERA_INTEGRATION - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        <h1>Mobile Camera Integration - Complete Guide</h1>
+
+<h2>Overview</h2>
+<p>The GemBot system now fully supports mobile device cameras (iPhone, iPad, Android) for video feed and microphone audio. This provides superior image quality compared to traditional webcams and enables audio recording on mobile devices.</p>
+
+<h2>Features Added</h2>
+
+<h3>1. <strong>Camera Source Selector</strong></h3>
+<ul><li class="ul-item"><strong>Location:</strong> Top camera controls, next to START CAMERA button</li>
+<li class="ul-item"><strong>Options:</strong></li></ul>
+<p>  - 📱 <strong>Auto Select Camera</strong> - Automatically chooses best camera for device</p>
+<p>  - 🖥️ <strong>Rear/External Camera</strong> - High-quality rear camera (best for viewing machine)</p>
+<p>  - 😊 <strong>Front Camera</strong> - Selfie/user-facing camera</p>
+
+<h3>2. <strong>Mobile Device Detection</strong></h3>
+<ul><li class="ul-item"><strong>Automatic Detection:</strong> System detects iPhone, iPad, Android, and other mobile devices</li>
+<li class="ul-item"><strong>Auto-Selection:</strong> On mobile, rear camera used by default (better for viewing the cutting machine)</li>
+<li class="ul-item"><strong>Desktop Fallback:</strong> On desktop/laptop, uses external webcam</li></ul>
+
+<h3>3. <strong>Microphone Audio Support</strong></h3>
+<ul><li class="ul-item"><strong>Enabled on Mobile:</strong> When camera is started on mobile device, microphone is automatically enabled</li>
+<li class="ul-item"><strong>Audio Recording:</strong> Can record cutting process with ambient sound and machine noise</li>
+<li class="ul-item"><strong>Status Display:</strong> Shows 📱 + 🎤 indicator when microphone is active</li></ul>
+
+<h3>4. <strong>Device Enumeration</strong></h3>
+<ul><li class="ul-item"><strong>Automatic Detection:</strong> System scans available cameras and microphones on page load</li>
+<li class="ul-item"><strong>Smart UI:</strong> Disables unavailable camera options (e.g., if device has no front camera)</li>
+<li class="ul-item"><strong>Console Logging:</strong> Detailed device information logged for debugging</li></ul>
+
+<h2>How to Use</h2>
+
+<h3>On Desktop Computer</h3>
+<ol><li class="ol-item">Open http://localhost:8000 on your browser</li>
+<li class="ol-item">Click <strong>📷 START CAMERA</strong> to use your webcam</li>
+<li class="ol-item">Adjust brightness/contrast/saturation as needed</li>
+<li class="ol-item">Camera selector shows "Auto Select Camera" (uses default webcam)</li></ol>
+
+<h3>On iPhone</h3>
+<ol><li class="ol-item">Open http://localhost:8000 on Safari (or any mobile browser)</li>
+<li class="ol-item"><strong>Camera source is auto-selected</strong> (rear camera for best machine view)</li>
+<li class="ol-item">Click <strong>📷 START CAMERA</strong></li>
+<li class="ol-item"><strong>Allow camera and microphone permissions</strong> when prompted</li>
+<li class="ol-item">Can manually switch to front camera using the selector if needed</li>
+<li class="ol-item">Status will show: "📷 Camera: [device name] (🎤 + Microphone)"</li></ol>
+
+<h3>On Android Phone</h3>
+<ol><li class="ol-item">Open http://localhost:8000 on Chrome, Firefox, or other browser</li>
+<li class="ol-item"><strong>Camera source is auto-selected</strong> (rear camera)</li>
+<li class="ol-item">Click <strong>📷 START CAMERA</strong></li>
+<li class="ol-item"><strong>Grant camera and microphone permissions</strong> when asked</li>
+<li class="ol-item">Use selector to switch between cameras if multiple available</li>
+<li class="ol-item">Front camera available if device has it</li></ol>
+
+<h2>Technical Implementation</h2>
+
+<h3>Code Changes</h3>
+
+<p><strong>1. Enhanced startCamera() Function</strong></p>
+<pre class="code-block javascript" data-lang="javascript"><code>const constraints = {
+<p>    video: {</p>
+<p>        facingMode: facingMode,</p>
+<p>        width: { ideal: 1280 },</p>
+<p>        height: { ideal: 720 }</p>
+<p>    },</p>
+<p>    audio: true // Enable microphone</p>
+<p>};</code></pre></p>
+
+<p><strong>2. Device Enumeration</strong></p>
+<pre class="code-block javascript" data-lang="javascript"><code>async function enumerateDevices() {
+<p>    const devices = await navigator.mediaDevices.enumerateDevices();</p>
+<p>    const videoDevices = devices.filter(device =&gt; device.kind === &#039;videoinput&#039;);</p>
+<p>    const audioDevices = devices.filter(device =&gt; device.kind === &#039;audioinput&#039;);</p>
+<p>}</code></pre></p>
+
+<p><strong>3. Camera Source Selector</strong></p>
+<pre class="code-block html" data-lang="html"><code>&lt;select id=&quot;cameraSourceSelect&quot;&gt;
+<p>    &lt;option value=&quot;auto&quot;&gt;📱 Auto Select Camera&lt;/option&gt;</p>
+<p>    &lt;option value=&quot;environment&quot;&gt;🖥️ Rear/External Camera&lt;/option&gt;</p>
+<p>    &lt;option value=&quot;user&quot;&gt;😊 Front Camera&lt;/option&gt;</p>
+<p>&lt;/select&gt;</code></pre></p>
+
+<p><strong>4. Mobile Detection</strong></p>
+<pre class="code-block javascript" data-lang="javascript"><code>const isMobile = /iPhone|iPad|iPod|Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+<p>facingMode = isMobile ? &#039;environment&#039; : &#039;user&#039;;</code></pre></p>
+
+<h3>Performance Optimization</h3>
+<ul><li class="ul-item"><strong>Video Resolution:</strong> Optimized to 1280x720 (HD quality)</li>
+<li class="ul-item"><strong>Constraints:</strong> Ideal constraints used to let browser optimize for available hardware</li>
+<li class="ul-item"><strong>Auto Adjustment:</strong> Image brightness/contrast/saturation adjustable via sliders</li>
+<li class="ul-item"><strong>ML Processing:</strong> Camera feed automatically analyzed by ML model for cutting guidance</li></ul>
+
+<h2>User Permissions</h2>
+
+<h3>iOS (iPhone/iPad)</h3>
+<ul><li class="ul-item"><strong>First-time use:</strong> Safari/browser shows permission request</li>
+<li class="ul-item"><strong>Permissions needed:</strong></li></ul>
+<p>  - Camera access</p>
+<p>  - Microphone access</p>
+<ul><li class="ul-item"><strong>Grant:</strong> Tap "Allow"</li>
+<li class="ul-item"><strong>Change later:</strong> Settings → Safari → Websites → GemBot</li></ul>
+
+<h3>Android</h3>
+<ul><li class="ul-item"><strong>First-time use:</strong> Chrome/Firefox shows permission dialog</li>
+<li class="ul-item"><strong>Permissions needed:</strong></li></ul>
+<p>  - Camera</p>
+<p>  - Microphone</p>
+<ul><li class="ul-item"><strong>Grant:</strong> Tap "Allow" or "While using the app"</li>
+<li class="ul-item"><strong>Change later:</strong> Settings → Apps → [Browser] → Permissions</li></ul>
+
+<h2>Benefits</h2>
+
+<h3>Image Quality</h3>
+<ul><li class="ul-item"><strong>Professional cameras:</strong> iPhone/Android cameras are 12+ megapixels</li>
+<li class="ul-item"><strong>Better lighting:</strong> Mobile cameras have advanced auto-focus and exposure</li>
+<li class="ul-item"><strong>Superior to webcams:</strong> Most laptop/desktop webcams are 2-3 MP</li></ul>
+
+<h3>Audio Recording</h3>
+<ul><li class="ul-item"><strong>Machine sound:</strong> Captures motor noise for diagnostic analysis</li>
+<li class="ul-item"><strong>Ambient feedback:</strong> Records cutting sounds (helpful for learning)</li>
+<li class="ul-item"><strong>Audio playback:</strong> Can review session recordings with full audio</li></ul>
+
+<h3>Flexibility</h3>
+<ul><li class="ul-item"><strong>Switch cameras on-the-fly:</strong> Change from rear to front without restart</li>
+<li class="ul-item"><strong>Multiple devices:</strong> Can use different devices for different angles</li>
+<li class="ul-item"><strong>Network independent:</strong> Works over local WiFi, no internet required</li></ul>
+
+<h2>Troubleshooting</h2>
+
+<h3>"Camera permission denied"</h3>
+<ul><li class="ul-item"><strong>Solution:</strong> Check browser settings for camera/microphone permissions</li>
+<li class="ul-item"><strong>iOS:</strong> Settings → Safari → Websites → GemBot</li>
+<li class="ul-item"><strong>Android:</strong> Settings → Apps → [Browser] → Permissions</li></ul>
+
+<h3>"Camera not starting"</h3>
+<ul><li class="ul-item"><strong>Check:</strong> Are you on a secure connection (HTTPS or localhost)?</li>
+<li class="ul-item"><strong>Note:</strong> getUserMedia requires secure context</li>
+<li class="ul-item"><strong>Solution:</strong> Use localhost:8000 (localhost is considered secure)</li></ul>
+
+<h3>"Only front camera available"</h3>
+<ul><li class="ul-item"><strong>Cause:</strong> Some Android devices report only one camera</li>
+<li class="ul-item"><strong>Workaround:</strong> Try rotating device orientation</li>
+<li class="ul-item"><strong>Alternative:</strong> Use rear camera selector option</li></ul>
+
+<h3>"Microphone not recording"</h3>
+<ul><li class="ul-item"><strong>Check:</strong> Audio permission was granted</li>
+<li class="ul-item"><strong>Verify:</strong> Device has working microphone</li>
+<li class="ul-item"><strong>Test:</strong> Try different browser or app</li></ul>
+
+<h3>"Switching cameras hangs"</h3>
+<ul><li class="ul-item"><strong>Cause:</strong> Camera resource not released quickly</li>
+<li class="ul-item"><strong>Solution:</strong> Wait 1 second between stop/start</li>
+<li class="ul-item"><strong>Implemented:</strong> Auto-delay in camera source selector</li></ul>
+
+<h2>API Reference</h2>
+
+<h3>startCamera()</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>async function startCamera()</code></pre>
+<ul><li class="ul-item"><strong>Triggers:</strong> When START CAMERA button clicked</li>
+<li class="ul-item"><strong>Behavior:</strong> Gets camera stream based on selector value</li>
+<li class="ul-item"><strong>Returns:</strong> None (updates video element)</li>
+<li class="ul-item"><strong>Errors:</strong> Logged to console and displayed in chat</li></ul>
+
+<h3>stopCamera()</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>async function stopCamera()</code></pre>
+<ul><li class="ul-item"><strong>Stops:</strong> All camera and microphone streams</li>
+<li class="ul-item"><strong>Releases:</strong> Hardware resources</li>
+<li class="ul-item"><strong>Safe:</strong> Can be called multiple times</li></ul>
+
+<h3>enumerateDevices()</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>async function enumerateDevices()</code></pre>
+<ul><li class="ul-item"><strong>Runs:</strong> On page load automatically</li>
+<li class="ul-item"><strong>Logs:</strong> Available cameras and microphones</li>
+<li class="ul-item"><strong>Updates:</strong> UI (disables unavailable options)</li></ul>
+
+<h2>Statistics</h2>
+
+<h3>Code Additions</h3>
+<ul><li class="ul-item"><strong>Lines Added:</strong> ~150 lines of new camera code</li>
+<li class="ul-item"><strong>Functions Added:</strong> enumerateDevices(), enhanced startCamera()</li>
+<li class="ul-item"><strong>UI Elements:</strong> Camera source selector + device detection message</li>
+<li class="ul-item"><strong>Constraints:</strong> HD resolution (1280x720) + microphone audio</li></ul>
+
+<h3>Browser Support</h3>
+<p>| Device | Support | Notes |</p>
+<p>|--------|---------|-------|</p>
+<p>| iPhone/iPad | ✅ Full | Safari, Chrome, Firefox |</p>
+<p>| Android | ✅ Full | Chrome, Firefox, Edge |</p>
+<p>| Desktop | ✅ Full | Webcam works as fallback |</p>
+<p>| Laptop | ✅ Full | Built-in or external camera |</p>
+
+<h2>Future Enhancements</h2>
+
+<h3>Planned Features</h3>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Custom camera device selection (for multi-camera setups)</li>
+<li class="checkbox"><input type="checkbox" disabled> Picture-in-Picture (PiP) for monitoring while cutting</li>
+<li class="checkbox"><input type="checkbox" disabled> Screen sharing for remote guidance</li>
+<li class="checkbox"><input type="checkbox" disabled> Video quality presets (low/medium/high)</li></ul>
+
+<h3>Possible Additions</h3>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Stream to file or cloud storage</li>
+<li class="checkbox"><input type="checkbox" disabled> Multi-camera synchronized recording</li>
+<li class="checkbox"><input type="checkbox" disabled> AR overlay for positioning guidance</li>
+<li class="checkbox"><input type="checkbox" disabled> Bluetooth camera support</li></ul>
+
+<h2>Testing Checklist</h2>
+
+<ul class="checklist"><li class="checkbox checked"><input type="checkbox" checked disabled> Mobile device camera detection works</li>
+<li class="checkbox checked"><input type="checkbox" checked disabled> Camera source selector switches cameras</li>
+<li class="checkbox checked"><input type="checkbox" checked disabled> Microphone enabled on mobile devices</li>
+<li class="checkbox checked"><input type="checkbox" checked disabled> Desktop fallback to webcam works</li>
+<li class="checkbox checked"><input type="checkbox" checked disabled> Permissions prompt shows correctly</li>
+<li class="checkbox checked"><input type="checkbox" checked disabled> Device enumeration runs without errors</li>
+<li class="checkbox checked"><input type="checkbox" checked disabled> ML model processes mobile camera feed</li>
+<li class="checkbox checked"><input type="checkbox" checked disabled> Image adjustments work with mobile camera</li>
+<li class="checkbox checked"><input type="checkbox" checked disabled> Camera switching doesn't crash system</li>
+<li class="checkbox checked"><input type="checkbox" checked disabled> Audio is recorded in sessions</li></ul>
+
+<hr>
+
+<p><strong>Last Updated:</strong> December 8, 2025</p>
+<p><strong>Version:</strong> 1.0</p>
+<p><strong>Status:</strong> ✅ Production Ready</p>
+
+        <div class="generated-notice">
+            🤖 Auto-generated from MOBILE_CAMERA_INTEGRATION.md by GemBot Neural Dashboard Agent<br>
+            Generated: 2025-12-16T13:52:17.974Z
+        </div>
+    </div>
+</body>
+</html>

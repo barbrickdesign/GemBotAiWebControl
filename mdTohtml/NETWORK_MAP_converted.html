@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NETWORK_MAP - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        <h1>🌐 GemBot Multi-Domain Network Map</h1>
+
+<pre class="code-block " data-lang="text"><code>╔═══════════════════════════════════╗
+<p>                           ║   CENTRAL GEMBOT HUB (GitHub)    ║</p>
+<p>                           ║  barbrickdesign.github.io        ║</p>
+<p>                           ║  • Main Control Center           ║</p>
+<p>                           ║  • Shared Code Repository        ║</p>
+<p>                           ║  • Solana Wallet System          ║</p>
+<p>                           ║  • $GBUV Token Distribution      ║</p>
+<p>                           ╚═══════════════╦═══════════════════╝</p>
+<p>                                           ║</p>
+<p>                         ╔═════════════════╩═════════════════╗</p>
+<p>                         ║   BLOCKCHAIN LAYER (Solana)      ║</p>
+<p>                         ║   • Wallet: 6HTjfgWZ...          ║</p>
+<p>                         ║   • Token: DPHcbu7...            ║</p>
+<p>                         ║   • pump.fun Integration         ║</p>
+<p>                         ╚═════════════════╦═════════════════╝</p>
+<p>                                           ║</p>
+<p>        ╔══════════════════════════════════╩══════════════════════════════════╗</p>
+<p>        ║                                                                     ║</p>
+<p>┌───────┴────────┐  ┌──────────────┐  ┌──────────────┐  ┌─────────────────┐</p>
+<p>│  📚 KNOWLEDGE  │  │  ✈️ AVIATION  │  │  🔮 ESOTERIC │  │  🛡️ DEFENSE     │</p>
+<p>│  betterbook    │  │  electrical   │  │  hermetic    │  │  madein         │</p>
+<p>│  .co.uk        │  │  -airplane    │  │  micro.com   │  │  natoalliance   │</p>
+<p>│  [HUB-001]     │  │  .com         │  │  [HUB-003]   │  │  .org           │</p>
+<p>│                │  │  [HUB-002]    │  │              │  │  [HUB-004]      │</p>
+<p>│  Agents: 4     │  │               │  │  Agents: 4   │  │                 │</p>
+<p>│  • BookWorm    │  │  Agents: 4    │  │  • HermesSage│  │  Agents: 4      │</p>
+<p>│  • PageTurner  │  │  • SkyPilot   │  │  • AlchemyBot│  │  • DefenseCore  │</p>
+<p>│  • InkMaster   │  │  • VoltWing   │  │  • OracleNode│  │  • SentryBot    │</p>
+<p>│  • TaleSpin    │  │  • CloudRider │  │  • CipherMage│  │  • TacticNet    │</p>
+<p>│                │  │  • PropMaster │  │              │  │  • AllyLink     │</p>
+<p>└────────────────┘  └──────────────┘  └──────────────┘  └─────────────────┘</p>
+
+<p>┌────────────────┐  ┌──────────────┐  ┌──────────────┐  ┌─────────────────┐</p>
+<p>│  🌌 SPACE      │  │  🏢 CORPORATE│  │  ⚔️ MILITARY │  │  🏰 MAGIC EDU   │</p>
+<p>│  messier-45    │  │  oc-tc.com   │  │  orion       │  │  realhogwarts   │</p>
+<p>│  .com          │  │  [HUB-006]   │  │  crusader    │  │  .com           │</p>
+<p>│  [HUB-005]     │  │              │  │  .com        │  │  [HUB-008]      │</p>
+<p>│                │  │  Agents: 4   │  │  [HUB-007]   │  │                 │</p>
+<p>│  Agents: 4     │  │  • BizBot    │  │              │  │  Agents: 4      │</p>
+<p>│  • StarGazer   │  │  • TradeLink │  │  Agents: 4   │  │  • ProfessorBot │</p>
+<p>│  • CosmoBot    │  │  • CorporateAI│  │  • Crusader1 │  │  • SpellCraft   │</p>
+<p>│  • NebulaNet   │  │  • DealMaker │  │  • BattleMind│  │  • RuneMaster   │</p>
+<p>│  • OrbitTrack  │  │              │  │  • ForceMulti│  │  • PotionAI     │</p>
+<p>│                │  │              │  │  • VictorySeek│ │                 │</p>
+<p>└────────────────┘  └──────────────┘  └──────────────┘  └─────────────────┘</p>
+
+<p>┌────────────────┐  ┌──────────────┐  ┌──────────────┐  ┌─────────────────┐</p>
+<p>│  👤 PERSONAL   │  │  🤖 ROBOTICS │  │  🚗 LUXURY   │  │  🔺 ELITE       │</p>
+<p>│  robertc       │  │  the-autobots│  │  theduesenberg│ │  topofthe      │</p>
+<p>│  robertson     │  │  .com        │  │  .com        │  │  pyramid.org    │</p>
+<p>│  iii.com       │  │  [HUB-010]   │  │  [HUB-011]   │  │  [HUB-012]      │</p>
+<p>│  [HUB-009]     │  │              │  │              │  │                 │</p>
+<p>│                │  │  Agents: 4   │  │  Agents: 4   │  │  Agents: 4      │</p>
+<p>│  Agents: 4     │  │  • OptimusPrime│ │  • LuxuryBot │  │  • ApexLeader   │</p>
+<p>│  • BrandBot    │  │  • BumbleBee │  │  • CraftMaster│ │  • EliteNet     │</p>
+<p>│  • PortfolioAI │  │  • IronHide  │  │  • HeritageAI│  │  • SummitAI     │</p>
+<p>│  • NetworkNode │  │  • Ratchet   │  │  • PrestigeNode│ │  • PinnacleBot  │</p>
+<p>│  • LegacyKeeper│  │              │  │              │  │                 │</p>
+<p>└────────────────┘  └──────────────┘  └──────────────┘  └─────────────────┘</p>
+
+<p>┌────────────────┐  ┌──────────────┐  ┌──────────────┐</p>
+<p>│  💰 FINANCE    │  │  💻 TECH     │  │  🕉️ SPIRITUAL│</p>
+<p>│  trismegistus  │  │  trismegistus│  │  truetemple  │</p>
+<p>│  -capital.com  │  │  tech.com    │  │  .org        │</p>
+<p>│  [HUB-013]     │  │  [HUB-014]   │  │  [HUB-015]   │</p>
+<p>│                │  │              │  │              │</p>
+<p>│  Agents: 4     │  │  Agents: 4   │  │  Agents: 4   │</p>
+<p>│  • CapitalBot  │  │  • DevMaster │  │  • TemplKeeper│</p>
+<p>│  • MarketMind  │  │  • TechOracle│  │  • WisdomAI  │</p>
+<p>│  • WealthAI    │  │  • SystemAI  │  │  • CommunityBot│</p>
+<p>│  • FundFlow    │  │  • CodeBot   │  │  • EnlightenNet│</p>
+<p>└────────────────┘  └──────────────┘  └──────────────┘</p>
+
+<p>═══════════════════════════════════════════════════════════════════════════</p>
+
+<p>                        NETWORK STATISTICS</p>
+
+<p>    Total Domains: 15              Total Agents: 60</p>
+<p>    Squarespace Sites: 15          Agent Types: 15 unique sets</p>
+<p>    Active Themes: 15              Code Files: 45+ per domain</p>
+<p>    Deploy Time: 3 weeks           Revenue Target: $1M+ annually</p>
+
+<p>═══════════════════════════════════════════════════════════════════════════</p>
+
+<p>                      CROSS-DOMAIN FEATURES</p>
+
+<p>    ✅ Shared Solana Wallet        ✅ Global Leaderboard</p>
+<p>    ✅ $GBUV Token Network-wide    ✅ Cross-Domain Trading</p>
+<p>    ✅ Unified User Accounts       ✅ Network Achievements</p>
+<p>    ✅ Inter-Domain Messaging      ✅ Shared Marketplace</p>
+
+<p>═══════════════════════════════════════════════════════════════════════════</p>
+
+<p>                      DEPLOYMENT PHASES</p>
+
+<p>    Phase 1 (Week 1): 3 Pilot Domains</p>
+<p>    • the-autobots.com</p>
+<p>    • realhogwarts.com  </p>
+<p>    • trismegistustech.com</p>
+
+<p>    Phase 2 (Week 2): 6 More Domains</p>
+<p>    • messier-45.com, hermeticmicro.com, orioncrusader.com</p>
+<p>    • theduesenberg.com, betterbook.co.uk, trismegistus-capital.com</p>
+
+<p>    Phase 3 (Week 3): Final 6 Domains</p>
+<p>    • electrical-airplane.com, madeinnatoalliance.org, oc-tc.com</p>
+<p>    • robertcrobertsoniii.com, topofthepyramid.org, truetemple.org</p>
+
+<p>═══════════════════════════════════════════════════════════════════════════</code></pre></p>
+
+<h2>🔗 Network Communication Flow</h2>
+
+<pre class="code-block " data-lang="text"><code>User Visits Domain → Loads GemBot → Connects to Central Hub
+<p>         ↓</p>
+<p>    Initializes Wallet → Connects to Solana Blockchain</p>
+<p>         ↓</p>
+<p>    Spawns 4 Agents → Begin Activity Logging</p>
+<p>         ↓</p>
+<p>    Enables Cross-Domain Features:</p>
+<p>    • Trade with other domains</p>
+<p>    • View global leaderboard</p>
+<p>    • Transfer items</p>
+<p>    • Unlock network achievements</p>
+<p>    • Communicate with agents on other domains</code></pre></p>
+
+<h2>📊 Agent Distribution</h2>
+
+<p>| Domain Type | Count | Agents Per | Total |</p>
+<p>|-------------|-------|------------|-------|</p>
+<p>| Tech/Innovation | 3 | 4 | 12 |</p>
+<p>| Military/Defense | 3 | 4 | 12 |</p>
+<p>| Luxury/Elite | 3 | 4 | 12 |</p>
+<p>| Knowledge/Education | 2 | 4 | 8 |</p>
+<p>| Spiritual/Mystical | 2 | 4 | 8 |</p>
+<p>| Transportation | 2 | 4 | 8 |</p>
+<p>| <strong>TOTAL</strong> | <strong>15</strong> | <strong>4</strong> | <strong>60</strong> |</p>
+
+<h2>🎨 Color Scheme Distribution</h2>
+
+<ul><li class="ul-item"><strong>Red/Warm:</strong> 4 domains (crusader, autobots, hogwarts, duesenberg)</li>
+<li class="ul-item"><strong>Blue/Cool:</strong> 5 domains (aviation, space, corporate, NATO, tech)</li>
+<li class="ul-item"><strong>Purple/Mystical:</strong> 2 domains (hermetic, spiritual)</li>
+<li class="ul-item"><strong>Gold/Elite:</strong> 2 domains (pyramid, temple)</li>
+<li class="ul-item"><strong>Green/Finance:</strong> 1 domain (capital)</li>
+<li class="ul-item"><strong>Brown/Knowledge:</strong> 1 domain (betterbook)</li></ul>
+
+<hr>
+
+<p><strong>Created by:</strong> Ryan Barbrick / Barbrick Design  </p>
+<p><strong>Network:</strong> GemBot Multi-Domain AI System  </p>
+<p><strong>Signature:</strong> GBOT-RB-2025-7X9K2M4P-BARBRICK</p>
+
+        <div class="generated-notice">
+            🤖 Auto-generated from NETWORK_MAP.md by GemBot Neural Dashboard Agent<br>
+            Generated: 2025-12-16T13:52:18.782Z
+        </div>
+    </div>
+</body>
+</html>

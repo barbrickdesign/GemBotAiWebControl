@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TESTING_GUIDE_20251207 - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        <h1>GemBot Motor Control - Testing Guide</h1>
+<p><strong>Date:</strong> 2025-12-07  </p>
+<p><strong>Status:</strong> Ready for Hardware Testing  </p>
+<p><strong>Previous Session:</strong> Timeout fix, speed/mode/step framework implementation  </p>
+<p><strong>Current Session:</strong> Web UI controls added, command mappings fixed  </p>
+
+<hr>
+
+<h2>🎯 What Was Just Fixed</h2>
+
+<h3>1. ✅ Motor Timeout (CRITICAL FIX)</h3>
+<ul><li class="ul-item"><strong>Before:</strong> 5000ms (5 seconds) - Motors would stop after 5 seconds during continuous operation</li>
+<li class="ul-item"><strong>After:</strong> 60000ms (60 seconds) - Allows 60+ seconds of continuous motion</li>
+<li class="ul-item"><strong>File:</strong> <code class="inline-code">joystickRevert<em>copy</em>20251206152907.ino</code> line 176</li>
+<li class="ul-item"><strong>Impact:</strong> Continuous mode now works without interruption</li></ul>
+
+<h3>2. ✅ Speed Control Framework</h3>
+<ul><li class="ul-item"><strong>What:</strong> Added variable speed 1-5 levels with motorSpeedMultiplier</li>
+<li class="ul-item"><strong>How:</strong> Slider in web interface sends <code class="inline-code">s1</code>, <code class="inline-code">s2</code>, <code class="inline-code">s3</code>, <code class="inline-code">s4</code>, <code class="inline-code">s5</code> commands</li>
+<li class="ul-item"><strong>Arduino Response:</strong> Multiplies all motor step counts by the speed level</li>
+<li class="ul-item"><strong>File:</strong> Web UI has new speed slider (lines 671-678)</li>
+<li class="ul-item"><strong>Impact:</strong> Slow=1 step per cycle, Fast=5 steps per cycle</li></ul>
+
+<h3>3. ✅ Mode Toggle (STEP vs CONTINUOUS)</h3>
+<ul><li class="ul-item"><strong>What:</strong> Added stepModeEnabled boolean for selecting control mode</li>
+<li class="ul-item"><strong>How:</strong> Web buttons send <code class="inline-code">y</code> command to toggle between modes</li>
+<li class="ul-item"><strong>Current Mode:</strong> Defaults to CONTINUOUS (hold button = motion)</li>
+<li class="ul-item"><strong>File:</strong> Mode toggle buttons now send <code class="inline-code">y</code> command</li>
+<li class="ul-item"><strong>Impact:</strong> Can switch between continuous hold and step-by-step control</li></ul>
+
+<h3>4. ✅ Step Size Control</h3>
+<ul><li class="ul-item"><strong>What:</strong> Added stepCount variable (1-70 steps per command)</li>
+<li class="ul-item"><strong>How:</strong> Slider in web interface sends <code class="inline-code">n1</code> through <code class="inline-code">n70</code> commands</li>
+<li class="ul-item"><strong>File:</strong> Web UI step slider sends <code class="inline-code">n</code> + value (lines 703-708)</li>
+<li class="ul-item"><strong>Impact:</strong> Can control how many steps each button press executes</li></ul>
+
+<h3>5. ✅ Direction Mapping Fix</h3>
+<ul><li class="ul-item"><strong>What:</strong> X LEFT/RIGHT were backwards in web interface</li>
+<li class="ul-item"><strong>Fixed:</strong> </li></ul>
+<p>  - btnXLeft now sends 'a' (was 'd') ← X LEFT</p>
+<p>  - btnXRight now sends 'd' (was 'a') ← X RIGHT</p>
+<ul><li class="ul-item"><strong>File:</strong> Lines 2153-2156 and HTML buttons fixed</li>
+<li class="ul-item"><strong>Impact:</strong> Directions now match Arduino expectations</li></ul>
+
+<h3>6. ✅ Web UI Controls Complete</h3>
+<ul><li class="ul-item">Added speed slider (1-5 with labels: Slowest/Slow/Normal/Fast/Fastest)</li>
+<li class="ul-item">Mode toggle buttons now send <code class="inline-code">y</code> command to Arduino</li>
+<li class="ul-item">Step size slider now sends <code class="inline-code">n</code> + value command to Arduino</li>
+<li class="ul-item">All controls properly integrated with command sending</li></ul>
+
+<hr>
+
+<h2>📋 Testing Checklist</h2>
+
+<h3>PHASE 1: Web Interface Testing (Before Hardware)</h3>
+<pre class="code-block " data-lang="text"><code>□ Open GemBot&lt;em&gt;Web&lt;/em&gt;Control_DualMode.html in browser
+<p>□ Connect to Arduino serial server (if applicable)</p>
+<p>□ Check that all UI elements appear correctly:</p>
+<p>  □ Speed slider (1-5) visible</p>
+<p>  □ Mode buttons (CONTINUOUS/STEP) visible</p>
+<p>  □ Step size slider (1-70) visible</p>
+<p>  □ Direction buttons present</code></pre></p>
+
+<h3>PHASE 2: Serial Command Verification</h3>
+<p>Open Arduino Serial Monitor (Tools > Serial Monitor) at 115200 baud:</p>
+
+<pre class="code-block " data-lang="text"><code>Test: Adjust speed slider to different levels
+<p>Expected Serial Output:</p>
+<p>  [SPEED] Motor speed multiplier set to: 1</p>
+<p>  [SPEED] Motor speed multiplier set to: 2</p>
+<p>  [SPEED] Motor speed multiplier set to: 3</p>
+<p>  ... etc</p>
+
+<p>Test: Click mode toggle button (STEP mode)</p>
+<p>Expected Serial Output:</p>
+<p>  [MODE] STEP mode enabled - Click for N steps</p>
+  
+<p>Test: Click mode toggle button (CONTINUOUS mode)  </p>
+<p>Expected Serial Output:</p>
+<p>  [MODE] CONTINUOUS mode enabled - Hold for motion</p>
+
+<p>Test: Adjust step size slider</p>
+<p>Expected Serial Output:</p>
+<p>  [MOTOR CONTROL] Step size set to: 5</p>
+<p>  [MOTOR CONTROL] Step size set to: 20</p>
+<p>  ... etc</code></pre></p>
+
+<h3>PHASE 3: Continuous Mode Testing</h3>
+<p><strong>Prerequisites:</strong> Motor timeout is now 60 seconds (was 5 seconds)</p>
+
+<ol><li class="ol-item"><strong>Test: Hold X RIGHT button for 3+ seconds</strong></li></ol>
+<p>   - Expected: Smooth continuous rightward motion</p>
+<p>   - Expected: NO timeout interruption</p>
+<p>   - Release button</p>
+<p>   - Expected: Motors stop immediately</p>
+<p>   - ✓ If works: Note "CONTINUOUS MODE WORKING"</p>
+
+<ol><li class="ol-item"><strong>Test: Hold Y UP button for 2+ seconds</strong></li></ol>
+<p>   - Expected: Smooth continuous upward motion</p>
+<p>   - Expected: Motors engaged for full hold duration</p>
+<p>   - Release button</p>
+<p>   - Expected: Motors stop immediately</p>
+<p>   - ✓ If works: Note "Y AXIS CONTINUOUS WORKING"</p>
+
+<ol><li class="ol-item"><strong>Test: Hold P CW button for 2+ seconds</strong></li></ol>
+<p>   - Expected: Smooth continuous rotation</p>
+<p>   - Expected: Motors engaged (no 5-sec timeout)</p>
+<p>   - Release button</p>
+<p>   - Expected: Motors stop immediately</p>
+<p>   - ✓ If works: Note "P AXIS CONTINUOUS WORKING"</p>
+
+<ol><li class="ol-item"><strong>Test: All 6 directions for continuous mode</strong></li></ol>
+<p>   - X LEFT, X RIGHT, Y UP, Y DOWN, P CW, P CCW</p>
+<p>   - Each: Hold 2+ seconds, verify smooth motion, verify stop on release</p>
+<p>   - ✓ All 6 passing?</p>
+
+<h3>PHASE 4: Speed Control Testing</h3>
+<p><strong>Setup:</strong> Put system in CONTINUOUS mode</p>
+
+<ol><li class="ol-item"><strong>Test: Speed Level 1 (Slowest)</strong></li></ol>
+<p>   - Set speed slider to 1</p>
+<p>   - Hold X RIGHT for 2 seconds</p>
+<p>   - Expected: Very slow rightward motion (1 step per 50ms = slowest)</p>
+<p>   - ✓ Noticeably slow?</p>
+
+<ol><li class="ol-item"><strong>Test: Speed Level 5 (Fastest)</strong></li></ol>
+<p>   - Set speed slider to 5</p>
+<p>   - Hold X RIGHT for 2 seconds</p>
+<p>   - Expected: Fast rightward motion (5 steps per 50ms = 5x faster)</p>
+<p>   - ✓ Noticeably faster than level 1?</p>
+
+<ol><li class="ol-item"><strong>Test: Speed progression 1→5</strong></li></ol>
+<p>   - Set speed to 1: Hold button, estimate motion rate</p>
+<p>   - Set speed to 2: Hold button, should be ~2x faster</p>
+<p>   - Set speed to 3: Hold button, should be ~3x faster</p>
+<p>   - Set speed to 4: Hold button, should be ~4x faster</p>
+<p>   - Set speed to 5: Hold button, should be ~5x faster (fastest)</p>
+<p>   - ✓ Linear speed increase?</p>
+
+<ol><li class="ol-item"><strong>Test: Speed in all directions</strong></li></ol>
+<p>   - Y UP, Y DOWN, P CW, P CCW with different speed levels</p>
+<p>   - ✓ All respond to speed changes?</p>
+
+<h3>PHASE 5: Step Mode Testing</h3>
+<p><strong>Setup:</strong> Switch to STEP mode in web interface</p>
+
+<ol><li class="ol-item"><strong>Test: Single step (Step=1)</strong></li></ol>
+<p>   - Set step slider to 1</p>
+<p>   - Click X RIGHT button once</p>
+<p>   - Expected: Motors move exactly 1 step, then stop</p>
+<p>   - Expected: NOT continuous motion</p>
+<p>   - Expected: NOT multi-step movement</p>
+<p>   - ✓ Exactly 1 step?</p>
+
+<ol><li class="ol-item"><strong>Test: Multi-step (Step=5)</strong></li></ol>
+<p>   - Set step slider to 5</p>
+<p>   - Click X RIGHT button once</p>
+<p>   - Expected: Motors move exactly 5 steps, then stop automatically</p>
+<p>   - Expected: Smooth execution (100ms per step pattern)</p>
+<p>   - ✓ Exactly 5 steps?</p>
+
+<ol><li class="ol-item"><strong>Test: Step size progression</strong></li></ol>
+<p>   - Set step=1: Click, count steps (should be 1)</p>
+<p>   - Set step=3: Click, count steps (should be 3)</p>
+<p>   - Set step=10: Click, count steps (should be 10)</p>
+<p>   - Set step=20: Click, count steps (should be 20)</p>
+<p>   - Set step=70: Click, count steps (should be 70)</p>
+<p>   - ✓ All accurate?</p>
+
+<ol><li class="ol-item"><strong>Test: Step mode with speed control</strong></li></ol>
+<p>   - Set step=5, speed=1 (slow)</p>
+<p>   - Click X RIGHT: Should move 5 steps slowly</p>
+<p>   - Set speed=5 (fast)</p>
+<p>   - Click X RIGHT: Should move 5 steps quickly</p>
+<p>   - ✓ Speed affects step mode?</p>
+
+<ol><li class="ol-item"><strong>Test: All directions in step mode</strong></li></ol>
+<p>   - Test each of 6 directions (X LEFT/RIGHT, Y UP/DOWN, P CW/CCW)</p>
+<p>   - Each direction with different step counts (1, 5, 10)</p>
+<p>   - ✓ All 6 directions working in step mode?</p>
+
+<h3>PHASE 6: Mode Switching Under Motion</h3>
+<ol><li class="ol-item"><strong>Test: Switch from CONTINUOUS to STEP during motion</strong></li></ol>
+<p>   - Hold X RIGHT button (in CONTINUOUS mode)</p>
+<p>   - While motor is moving, click STEP mode button</p>
+<p>   - Expected: Motor continues, then stops when button released</p>
+<p>   - Expected: No glitching or erratic behavior</p>
+<p>   - ✓ Clean transition?</p>
+
+<ol><li class="ol-item"><strong>Test: Switch from STEP to CONTINUOUS</strong></li></ol>
+<p>   - Do a step sequence (e.g., 5 steps)</p>
+<p>   - While stepping completes, switch to CONTINUOUS</p>
+<p>   - Expected: Mode switches cleanly</p>
+<p>   - ✓ No errors?</p>
+
+<h3>PHASE 7: Emergency Stop Testing</h3>
+<ol><li class="ol-item"><strong>Test: E-STOP during continuous motion</strong></li></ol>
+<p>   - Start continuous motion (hold button)</p>
+<p>   - Click E-STOP button</p>
+<p>   - Expected: Motors stop immediately</p>
+<p>   - Expected: Command 'u' sent to Arduino</p>
+<p>   - ✓ Stops immediately?</p>
+
+<ol><li class="ol-item"><strong>Test: E-STOP during step sequence</strong></li></ol>
+<p>   - Start a long step sequence (e.g., 50 steps)</p>
+<p>   - Click E-STOP mid-sequence</p>
+<p>   - Expected: Motors stop immediately</p>
+<p>   - Expected: Step sequence aborts</p>
+<p>   - ✓ Clean abort?</p>
+
+<hr>
+
+<h2>📊 Test Results Template</h2>
+
+<pre class="code-block " data-lang="text"><code>═══════════════════════════════════════════════════════════
+<p>GemBot Motor Control Test Results - 2025-12-07</p>
+<p>═══════════════════════════════════════════════════════════</p>
+
+<p>CONTINUOUS MODE:</p>
+<p>  X LEFT (hold 3 sec)    [PASS] [FAIL]  Smooth? Y/N</p>
+<p>  X RIGHT (hold 3 sec)   [PASS] [FAIL]  Smooth? Y/N</p>
+<p>  Y UP (hold 3 sec)      [PASS] [FAIL]  Smooth? Y/N</p>
+<p>  Y DOWN (hold 3 sec)    [PASS] [FAIL]  Smooth? Y/N</p>
+<p>  P CW (hold 3 sec)      [PASS] [FAIL]  Smooth? Y/N</p>
+<p>  P CCW (hold 3 sec)     [PASS] [FAIL]  Smooth? Y/N</p>
+
+<p>SPEED CONTROL (CONTINUOUS):</p>
+<p>  Speed 1 (slowest)      [PASS] [FAIL]  Slow enough? Y/N</p>
+<p>  Speed 2                [PASS] [FAIL]  2x speed? Y/N</p>
+<p>  Speed 3                [PASS] [FAIL]  3x speed? Y/N</p>
+<p>  Speed 4                [PASS] [FAIL]  4x speed? Y/N</p>
+<p>  Speed 5 (fastest)      [PASS] [FAIL]  Fast enough? Y/N</p>
+
+<p>STEP MODE:</p>
+<p>  Step=1, click          [PASS] [FAIL]  Exact 1 step? Y/N</p>
+<p>  Step=5, click          [PASS] [FAIL]  Exact 5 steps? Y/N</p>
+<p>  Step=10, click         [PASS] [FAIL]  Exact 10 steps? Y/N</p>
+<p>  Step=20, click         [PASS] [FAIL]  Exact 20 steps? Y/N</p>
+<p>  Step=50, click         [PASS] [FAIL]  Exact 50 steps? Y/N</p>
+
+<p>STEP MODE SPEED:</p>
+<p>  Step=5, Speed=1        [PASS] [FAIL]  Slow steps? Y/N</p>
+<p>  Step=5, Speed=5        [PASS] [FAIL]  Fast steps? Y/N</p>
+
+<p>EMERGENCY STOP:</p>
+<p>  E-STOP during motion   [PASS] [FAIL]  Immediate stop? Y/N</p>
+<p>  E-STOP during steps    [PASS] [FAIL]  Clean abort? Y/N</p>
+
+<p>ISSUES FOUND:</p>
+<ol><li class="ol-item">&lt;strong&gt;&lt;em&gt;&lt;em&gt;&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;&lt;em&gt;&lt;/em&gt;&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;&lt;em&gt;&lt;em&gt;&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;&lt;em&gt;&lt;/em&gt;&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;&lt;em&gt;&lt;em&gt;&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;&lt;em&gt;&lt;/em&gt;&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;_&lt;/strong&gt;</li>
+<li class="ol-item">&lt;strong&gt;&lt;em&gt;&lt;em&gt;&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;&lt;em&gt;&lt;/em&gt;&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;&lt;em&gt;&lt;em&gt;&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;&lt;em&gt;&lt;/em&gt;&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;&lt;em&gt;&lt;em&gt;&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;&lt;em&gt;&lt;/em&gt;&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;_&lt;/strong&gt;</li>
+<li class="ol-item">&lt;strong&gt;&lt;em&gt;&lt;em&gt;&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;&lt;em&gt;&lt;/em&gt;&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;&lt;em&gt;&lt;em&gt;&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;&lt;em&gt;&lt;/em&gt;&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;&lt;em&gt;&lt;em&gt;&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;&lt;em&gt;&lt;/em&gt;&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;_&lt;/strong&gt;</li></ol>
+
+<p>NEXT STEPS:</p>
+<p>&lt;strong&gt;&lt;em&gt;&lt;em&gt;&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;&lt;em&gt;&lt;/em&gt;&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;&lt;em&gt;&lt;em&gt;&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;&lt;em&gt;&lt;/em&gt;&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;&lt;em&gt;&lt;em&gt;&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;&lt;em&gt;&lt;/em&gt;&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;_&lt;/strong&gt;</p>
+<p>&lt;strong&gt;&lt;em&gt;&lt;em&gt;&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;&lt;em&gt;&lt;/em&gt;&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;&lt;em&gt;&lt;em&gt;&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;&lt;em&gt;&lt;/em&gt;&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;&lt;em&gt;&lt;em&gt;&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;&lt;em&gt;&lt;/em&gt;&lt;/em&gt;&lt;/strong&gt;&lt;strong&gt;_&lt;/strong&gt;</code></pre></p>
+
+<hr>
+
+<h2>🔧 Expected Arduino Serial Messages</h2>
+
+<h3>At Startup</h3>
+<pre class="code-block " data-lang="text"><code>[SYSTEM] GemBot Motor Control System Initialized
+<p>[MOTOR TIMEOUT] Set to: 60000 ms</p>
+<p>[SYSTEM] Waiting for commands...</code></pre></p>
+
+<h3>Speed Control</h3>
+<pre class="code-block " data-lang="text"><code>[SPEED] Motor speed multiplier set to: 1
+<p>[SPEED] Motor speed multiplier set to: 2</p>
+<p>[SPEED] Motor speed multiplier set to: 3</p>
+<p>[SPEED] Motor speed multiplier set to: 4</p>
+<p>[SPEED] Motor speed multiplier set to: 5</code></pre></p>
+
+<h3>Mode Toggle</h3>
+<pre class="code-block " data-lang="text"><code>[MODE] CONTINUOUS mode enabled - Hold for motion
+<p>[MODE] STEP mode enabled - Click for N steps</code></pre></p>
+
+<h3>Step Size</h3>
+<pre class="code-block " data-lang="text"><code>[MOTOR CONTROL] Step size set to: 1
+<p>[MOTOR CONTROL] Step size set to: 5</p>
+<p>[MOTOR CONTROL] Step size set to: 10</p>
+<p>[MOTOR CONTROL] Step size set to: 20</p>
+<p>[MOTOR CONTROL] Step size set to: 70</code></pre></p>
+
+<h3>Motor Movement</h3>
+<pre class="code-block " data-lang="text"><code>[MOTOR START] Motors engaged
+<p>[MOTOR COMMAND] X axis moving LEFT</p>
+<p>[MOTOR COMMAND] Y axis moving UP</p>
+<p>[MOTOR COMMAND] P axis rotating CW</p>
+<p>[MOTOR STOP] All motors stopped (STOP command)</code></pre></p>
+
+<hr>
+
+<h2>🛠️ If Tests Fail</h2>
+
+<h3>Symptom: "No serial messages appearing"</h3>
+<ol><li class="ol-item">Check Arduino serial connection (baud 115200)</li>
+<li class="ol-item">Check that Arduino code was uploaded successfully</li>
+<li class="ol-item">Look for [ERROR] messages in serial monitor</li></ol>
+
+<h3>Symptom: "Motors don't move when button pressed"</h3>
+<ol><li class="ol-item">Check motor connections (power, stepper driver)</li>
+<li class="ol-item">Verify Arduino received command in serial monitor</li>
+<li class="ol-item">Check MOTOR_TIMEOUT value (should be 60000, not 5000)</li>
+<li class="ol-item">Verify motor flag variables are working</li></ol>
+
+<h3>Symptom: "Speed changes don't affect motion"</h3>
+<ol><li class="ol-item">Verify speed slider sends 's' commands to Arduino</li>
+<li class="ol-item">Check serial monitor for [SPEED] messages</li>
+<li class="ol-item">Verify motorSpeedMultiplier is being applied in motor loop</li>
+<li class="ol-item">Check that motor steps use: <code class="inline-code">motorSpeed * motorSpeedMultiplier</code></li></ol>
+
+<h3>Symptom: "Step mode moves wrong number of steps"</h3>
+<ol><li class="ol-item">Verify step slider sends 'n' commands to Arduino</li>
+<li class="ol-item">Check stepCount value in Arduino</li>
+<li class="ol-item">Verify HTML code sends correct format: <code class="inline-code">'n' + stepCount</code></li>
+<li class="ol-item">Look for [MOTOR CONTROL] Step size messages</li></ol>
+
+<h3>Symptom: "Mode toggle not working"</h3>
+<ol><li class="ol-item">Verify mode buttons send 'y' command</li>
+<li class="ol-item">Check stepModeEnabled variable in Arduino</li>
+<li class="ol-item">Verify motor loop checks this flag</li>
+<li class="ol-item">Look for [MODE] messages in serial monitor</li></ol>
+
+<h3>Symptom: "Directions are wrong (left goes right, etc.)"</h3>
+<ol><li class="ol-item"><strong>FIXED IN THIS SESSION:</strong> Check command mappings</li></ol>
+<p>   - 'a' = X LEFT (was wrong in previous version)</p>
+<p>   - 'd' = X RIGHT (was wrong in previous version)</p>
+<ol><li class="ol-item">Verify buttons sending correct characters</li>
+<li class="ol-item">Check Arduino case statements match commands</li></ol>
+
+<h3>Symptom: "Continuous motion stops after ~5 seconds"</h3>
+<ol><li class="ol-item"><strong>THIS WAS THE CRITICAL BUG - NOW FIXED</strong></li>
+<li class="ol-item">Verify MOTOR_TIMEOUT = 60000 in Arduino (not 5000)</li>
+<li class="ol-item">Check that motor loop doesn't have additional timeout logic</li>
+<li class="ol-item">Verify timeout only applies to emergency scenarios</li></ol>
+
+<hr>
+
+<h2>📝 Next Steps After Testing</h2>
+
+<p><strong>If All Tests Pass:</strong></p>
+<ol><li class="ol-item">Proceed to Nextion integration testing</li>
+<li class="ol-item">Diagnose character mapping issue from Nextion (d→a, f→expected, q→j)</li>
+<li class="ol-item">Integrate Nextion touch screen display with web controls</li>
+<li class="ol-item">Validate full system with both web and Nextion interfaces</li></ol>
+
+<p><strong>If Some Tests Fail:</strong></p>
+<ol><li class="ol-item">Document which tests failed specifically</li>
+<li class="ol-item">Provide serial monitor output showing failure</li>
+<li class="ol-item">Identify pattern (all directions fail? speed only? step mode only?)</li>
+<li class="ol-item">Create focused fix for identified issue</li></ol>
+
+<p><strong>Known Issues Still to Address:</strong></p>
+<ol><li class="ol-item">⚠️ Nextion character mapping problem (receiving wrong characters)</li>
+<li class="ol-item">⚠️ Step mode motor loop logic may need refinement (auto-clear on count)</li>
+<li class="ol-item">⚠️ Index axis controls need separate testing (uses different driver)</li></ol>
+
+<hr>
+
+<h2>🎓 Technical Reference</h2>
+
+<p><strong>Arduino Variables (Updated):</strong></p>
+<ul><li class="ul-item"><code class="inline-code">MOTOR_TIMEOUT = 60000</code> - Timeout in milliseconds (60 seconds)</li>
+<li class="ul-item"><code class="inline-code">motorSpeedMultiplier</code> - Speed level 1-5</li>
+<li class="ul-item"><code class="inline-code">stepModeEnabled</code> - Boolean for step vs continuous mode</li>
+<li class="ul-item"><code class="inline-code">stepCount</code> - Number of steps (1-70) per command</li></ul>
+
+<p><strong>Serial Commands (Complete Set):</strong></p>
+<pre class="code-block " data-lang="text"><code>Motor Commands:
+<p>  &#039;a&#039; = X axis LEFT</p>
+<p>  &#039;d&#039; = X axis RIGHT</p>
+<p>  &#039;w&#039; = Y axis UP</p>
+<p>  &#039;z&#039; = Y axis DOWN</p>
+<p>  &#039;e&#039; = P axis CW</p>
+<p>  &#039;j&#039; = P axis CCW</p>
+<p>  &#039;u&#039; = STOP all motors</p>
+
+<p>Index/Precision:</p>
+<p>  &#039;c&#039; = Index axis INC</p>
+<p>  &#039;i&#039; = Index axis DEC</p>
+
+<p>NEW Controls:</p>
+<p>  &#039;s&#039; + digit (1-5) = Set speed (s1 through s5)</p>
+<p>  &#039;y&#039; = Toggle STEP/CONTINUOUS mode</p>
+<p>  &#039;n&#039; + digits (1-70) = Set step count (n1 through n70)</code></pre></p>
+
+<p><strong>Motor Timing:</strong></p>
+<ul><li class="ul-item">Motor loop: 50ms update interval</li>
+<li class="ul-item">Speed multiplier: Applied per 50ms cycle</li>
+<li class="ul-item">Continuous mode: Flag stays true while button held</li>
+<li class="ul-item">Step mode: Flag true for ~100ms, then 'u' stop sent</li></ul>
+
+<hr>
+
+<p><strong>Ready to test? Connect hardware and start with PHASE 2: Serial Command Verification!</strong></p>
+
+        <div class="generated-notice">
+            🤖 Auto-generated from TESTING_GUIDE_20251207.md by GemBot Neural Dashboard Agent<br>
+            Generated: 2025-12-16T13:52:29.423Z
+        </div>
+    </div>
+</body>
+</html>

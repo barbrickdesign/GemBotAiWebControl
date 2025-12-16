@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GEMBOT_GAME_SYSTEMS - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        <h1>💎 GemBot Game Systems Documentation</h1>
+
+<h2>Quick Start Guide</h2>
+<p><strong>Last Updated</strong>: December 9, 2025</p>
+
+<hr>
+
+<h2>📦 Module Overview</h2>
+
+<p>| Module | File | Purpose | Status |</p>
+<p>|--------|------|---------|--------|</p>
+<p>| Parts Database | <code class="inline-code">gembot-parts-database.js</code> | Complete machine parts inventory | ✅ Complete |</p>
+<p>| Faceting Designs | <code class="inline-code">gembot-faceting-designs.js</code> | 40+ gem cutting patterns | ✅ Complete |</p>
+<p>| STL Catalog | <code class="inline-code">gembot-stl-catalog.js</code> | 70+ 3D printable parts | ✅ Complete |</p>
+<p>| Game Cards | <code class="inline-code">gembot-game-cards.js</code> | RPG card system with packs | ✅ Complete |</p>
+<p>| 3D Printing | <code class="inline-code">gembot-3d-printing.js</code> | Virtual print queue & marketplace | ✅ Complete |</p>
+<p>| Troubleshooting | <code class="inline-code">gembot-troubleshooting.js</code> | Failures & diagnostic mini-games | ✅ Complete |</p>
+<p>| Game Master | <code class="inline-code">gembot-game-master.js</code> | Central integration & progression | ✅ Complete |</p>
+
+<hr>
+
+<h2>🎮 Game Economy</h2>
+
+<h3>Currency</h3>
+<ul><li class="ul-item"><strong>Gold (🪙)</strong>: Primary currency, earned through printing/selling parts</li>
+<li class="ul-item"><strong>Gems (💎)</strong>: Premium currency for special items</li>
+<li class="ul-item"><strong>XP</strong>: Experience points for level progression</li></ul>
+
+<h3>Starting Values</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>gold: 500    // Starting gold
+<p>gems: 0      // Premium currency</p>
+<p>level: 1     // Starting level</p>
+<p>xp: 0        // Current XP</code></pre></p>
+
+<hr>
+
+<h2>🏆 Progression System</h2>
+
+<h3>Level Requirements</h3>
+<p>| Level | XP Required | Unlocks |</p>
+<p>|-------|-------------|---------|</p>
+<p>| 1 | 0 | Basic printer, PLA material |</p>
+<p>| 2 | 100 | - |</p>
+<p>| 3 | 250 | PETG material |</p>
+<p>| 5 | 1,000 | ABS material, Standard printer |</p>
+<p>| 10 | 7,500 | Professional printer |</p>
+<p>| 15 | 25,000 | Industrial printer, Nylon |</p>
+<p>| 20 | 60,000 | Master Lapidary title |</p>
+
+<h3>Achievements (17 total)</h3>
+<ul><li class="ul-item"><strong>Beginner</strong>: First Sparkle, Layer by Layer, Handy Worker</li>
+<li class="ul-item"><strong>Milestone</strong>: Gem Collector, Print Master, Gold Digger</li>
+<li class="ul-item"><strong>Skill</strong>: Precision Master, Perfect Print, Diagnostic Genius</li>
+<li class="ul-item"><strong>Collection</strong>: Round Collector, Rare Finder</li>
+<li class="ul-item"><strong>Real World</strong>: Going Physical, Master Builder</li></ul>
+
+<hr>
+
+<h2>🖨️ 3D Printing System</h2>
+
+<h3>Printer Tiers</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>basic: {
+<p>    cost: 500,</p>
+<p>    unlockLevel: 1,</p>
+<p>    speedMultiplier: 1.0,</p>
+<p>    failureRate: 1.0,</p>
+<p>    materials: [&quot;PLA&quot;, &quot;PETG&quot;]</p>
+<p>}</p>
+
+<p>professional: {</p>
+<p>    cost: 5,000,</p>
+<p>    unlockLevel: 10,</p>
+<p>    speedMultiplier: 1.8,</p>
+<p>    failureRate: 0.5,</p>
+<p>    materials: [&quot;PLA&quot;, &quot;PETG&quot;, &quot;ABS&quot;, &quot;Nylon&quot;]</p>
+<p>}</code></pre></p>
+
+<h3>Materials</h3>
+<p>| Material | Cost/gram | Unlock Level | Strength |</p>
+<p>|----------|-----------|--------------|----------|</p>
+<p>| PLA | $0.02 | 1 | 60 |</p>
+<p>| PETG | $0.025 | 3 | 80 |</p>
+<p>| ABS | $0.03 | 5 | 85 |</p>
+<p>| Nylon | $0.05 | 8 | 95 |</p>
+<p>| TPU | $0.04 | 6 | 70 |</p>
+
+<h3>Print Quality Grades</h3>
+<ul><li class="ul-item"><strong>A+ (Perfect)</strong>: 10% chance, 1.3x sell value</li>
+<li class="ul-item"><strong>A (Excellent)</strong>: 25% chance, 1.15x sell value</li>
+<li class="ul-item"><strong>B (Good)</strong>: 40% chance, 1.0x sell value</li>
+<li class="ul-item"><strong>C (Acceptable)</strong>: 20% chance, 0.85x sell value</li>
+<li class="ul-item"><strong>D (Poor)</strong>: 5% chance, 0.6x sell value</li></ul>
+
+<h3>Failure Types (7)</h3>
+<ul><li class="ul-item">Bed Adhesion (5%)</li>
+<li class="ul-item">Layer Shift (3%)</li>
+<li class="ul-item">Spaghetti Monster (4%)</li>
+<li class="ul-item">Nozzle Clog (2%)</li>
+<li class="ul-item">Stringing (8%)</li>
+<li class="ul-item">Warping (6%)</li>
+<li class="ul-item">Under-Extrusion (4%)</li></ul>
+
+<hr>
+
+<h2>🔧 Troubleshooting System</h2>
+
+<h3>Component Failure Categories</h3>
+<ul><li class="ul-item"><strong>Motion System</strong>: Stepper motor, belt slip, bearing wear</li>
+<li class="ul-item"><strong>Electronics</strong>: Arduino, touch screen, power supply</li>
+<li class="ul-item"><strong>Mechanical</strong>: Index gear, mast alignment</li>
+<li class="ul-item"><strong>Sensors</strong>: Limit switch, potentiometer</li>
+<li class="ul-item"><strong>Consumables</strong>: Lap wear, dop wax</li></ul>
+
+<h3>Technician Levels</h3>
+<p>| Level | Name | XP Required | Repair Speed | Failure Reduction |</p>
+<p>|-------|------|-------------|--------------|-------------------|</p>
+<p>| 1 | Novice | 0 | 100% | 0% |</p>
+<p>| 2 | Apprentice | 500 | 90% | 10% |</p>
+<p>| 3 | Journeyman | 1,500 | 80% | 20% |</p>
+<p>| 4 | Expert | 4,000 | 70% | 30% |</p>
+<p>| 5 | Master | 10,000 | 50% | 40% |</p>
+
+<h3>Diagnostic Mini-Games (12)</h3>
+<ol><li class="ol-item">Waveform Analysis</li>
+<li class="ol-item">Belt Tension Test</li>
+<li class="ol-item">Runout Measurement</li>
+<li class="ol-item">Serial Debug Challenge</li>
+<li class="ol-item">Touch Calibration</li>
+<li class="ol-item">Voltage Reading</li>
+<li class="ol-item">Gear Tooth Inspection</li>
+<li class="ol-item">Laser Alignment</li>
+<li class="ol-item">Switch Continuity</li>
+<li class="ol-item">Signal Quality Check</li>
+<li class="ol-item">Visual Inspection</li>
+<li class="ol-item">Bond Strength Test</li></ol>
+
+<hr>
+
+<h2>🃏 Card System</h2>
+
+<h3>Rarity Distribution</h3>
+<p>| Rarity | Drop Rate | Border Color |</p>
+<p>|--------|-----------|--------------|</p>
+<p>| Common | 50% | Gray |</p>
+<p>| Uncommon | 30% | Green |</p>
+<p>| Rare | 15% | Blue |</p>
+<p>| Epic | 4% | Purple |</p>
+<p>| Legendary | 1% | Gold (animated) |</p>
+
+<h3>Card Packs</h3>
+<ul><li class="ul-item"><strong>Basic Pack</strong> (3 cards): 100 gold</li>
+<li class="ul-item"><strong>Standard Pack</strong> (5 cards): 200 gold</li>
+<li class="ul-item"><strong>Premium Pack</strong> (5 cards, guaranteed rare+): 500 gold</li>
+<li class="ul-item"><strong>Legendary Pack</strong> (5 cards, guaranteed epic+): 1000 gold</li></ul>
+
+<hr>
+
+<h2>💰 Real-World Integration</h2>
+
+<h3>Build Costs</h3>
+<ul><li class="ul-item"><strong>Basic Build</strong>: $564 (essential components only)</li>
+<li class="ul-item"><strong>Complete Build</strong>: $4,200 (including 3D printed parts)</li></ul>
+
+<h3>Amazon Affiliate Integration</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>amazonAffiliateTag: &quot;gembot-20&quot;
+<p>generateAmazonLink(asin) // Returns affiliate URL</code></pre></p>
+
+<h3>STL File Pricing</h3>
+<ul><li class="ul-item"><strong>Single STL</strong>: $2.99</li>
+<li class="ul-item"><strong>Category Bundle</strong>: $9.99</li>
+<li class="ul-item"><strong>Complete Collection</strong>: $49.99</li></ul>
+
+<hr>
+
+<h2>🔗 Module Integration</h2>
+
+<h3>Loading All Modules (Browser)</h3>
+<pre class="code-block html" data-lang="html"><code>&lt;script src=&quot;gembot-parts-database.js&quot;&gt;&lt;/script&gt;
+<p>&lt;script src=&quot;gembot-faceting-designs.js&quot;&gt;&lt;/script&gt;</p>
+<p>&lt;script src=&quot;gembot-stl-catalog.js&quot;&gt;&lt;/script&gt;</p>
+<p>&lt;script src=&quot;gembot-game-cards.js&quot;&gt;&lt;/script&gt;</p>
+<p>&lt;script src=&quot;gembot-3d-printing.js&quot;&gt;&lt;/script&gt;</p>
+<p>&lt;script src=&quot;gembot-troubleshooting.js&quot;&gt;&lt;/script&gt;</p>
+<p>&lt;script src=&quot;gembot-game-master.js&quot;&gt;&lt;/script&gt;</p>
+
+<p>&lt;script&gt;</p>
+<p>    // Initialize game state</p>
+<p>    const gameState = GemBotGameMaster.createGameState();</p>
+<p>    gameState.printing = GemBot3DPrinting.createPlayerPrintingState();</p>
+<p>    gameState.troubleshooting = GemBotTroubleshooting.createPlayerTroubleshootingState();</p>
+<p>&lt;/script&gt;</code></pre></p>
+
+<h3>Loading All Modules (Node.js)</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>const GemBotPartsDatabase = require(&#039;./gembot-parts-database.js&#039;);
+<p>const GemBotFacetingDesigns = require(&#039;./gembot-faceting-designs.js&#039;);</p>
+<p>const GemBotSTLCatalog = require(&#039;./gembot-stl-catalog.js&#039;);</p>
+<p>const GemBotGameCards = require(&#039;./gembot-game-cards.js&#039;);</p>
+<p>const GemBot3DPrinting = require(&#039;./gembot-3d-printing.js&#039;);</p>
+<p>const GemBotTroubleshooting = require(&#039;./gembot-troubleshooting.js&#039;);</p>
+<p>const GemBotGameMaster = require(&#039;./gembot-game-master.js&#039;);</code></pre></p>
+
+<hr>
+
+<h2>📊 API Quick Reference</h2>
+
+<h3>GemBot3DPrinting</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>// Create player state
+<p>const printState = GemBot3DPrinting.createPlayerPrintingState();</p>
+
+<p>// Start a print</p>
+<p>GemBot3DPrinting.startPrint(printState, partData, &quot;PLA&quot;, &quot;medium&quot;);</p>
+
+<p>// Check print queue</p>
+<p>GemBot3DPrinting.updatePrintQueue(printState);</p>
+
+<p>// Purchase material</p>
+<p>GemBot3DPrinting.purchaseMaterial(printState, &quot;PETG&quot;, 2);</code></pre></p>
+
+<h3>GemBotTroubleshooting</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>// Create troubleshooting state
+<p>const troubleState = GemBotTroubleshooting.createPlayerTroubleshootingState();</p>
+
+<p>// Roll for random failure</p>
+<p>GemBotTroubleshooting.rollForFailure(troubleState, &quot;heavyLoad&quot;);</p>
+
+<p>// Start diagnostic</p>
+<p>GemBotTroubleshooting.startDiagnostic(troubleState, failureId);</p>
+
+<p>// Complete repair</p>
+<p>GemBotTroubleshooting.attemptRepair(troubleState, failureId);</code></pre></p>
+
+<h3>GemBotGameMaster</h3>
+<pre class="code-block javascript" data-lang="javascript"><code>// Create full game state
+<p>const gameState = GemBotGameMaster.createGameState();</p>
+
+<p>// Add XP</p>
+<p>GemBotGameMaster.addXP(gameState, 100, &quot;print completed&quot;);</p>
+
+<p>// Check achievement</p>
+<p>GemBotGameMaster.checkAchievement(gameState, &quot;firstPrint&quot;);</p>
+
+<p>// Generate daily challenge</p>
+<p>GemBotGameMaster.generateDailyChallenge(gameState);</p>
+
+<p>// Generate Amazon link</p>
+<p>GemBotGameMaster.generateAmazonLink(&quot;B07SDCX8H1&quot;);</code></pre></p>
+
+<hr>
+
+<h2>📁 Project Structure</h2>
+
+<pre class="code-block " data-lang="text"><code>GemBotMemory2025/
+<p>├── gembot-parts-database.js     # 30+ parts with Amazon links</p>
+<p>├── gembot-faceting-designs.js   # 40+ shape categories</p>
+<p>├── gembot-stl-catalog.js        # 70+ STL files cataloged</p>
+<p>├── gembot-game-cards.js         # RPG card system</p>
+<p>├── gembot-3d-printing.js        # Print queue &amp; marketplace</p>
+<p>├── gembot-troubleshooting.js    # Failures &amp; diagnostics</p>
+<p>├── gembot-game-master.js        # Central integration</p>
+<p>├── GEMBOT&lt;em&gt;GAME&lt;/em&gt;SYSTEMS.md       # This documentation</p>
+<p>├── allShapesAndDesigns/         # Source faceting patterns</p>
+<p>├── STL_Previews/                # 200+ part images</p>
+<p>└── sdcard0/                     # Touch screen data files</code></pre></p>
+
+<hr>
+
+<h2>🚀 Next Steps</h2>
+
+<ol><li class="ol-item"><strong>Web Integration</strong>: Add these modules to GemBot<em>Control</em>AI.html</li>
+<li class="ol-item"><strong>State Persistence</strong>: Add localStorage/database save/load</li>
+<li class="ol-item"><strong>Multiplayer</strong>: Marketplace trading between players</li>
+<li class="ol-item"><strong>Tutorials</strong>: Guided first-time user experience</li>
+<li class="ol-item"><strong>Mobile</strong>: Responsive design for tablet operation</li></ol>
+
+<hr>
+
+<p><em>💎 GemBot Game Systems v1.0.0 - Built for makers who dream of gemstones</em></p>
+
+        <div class="generated-notice">
+            🤖 Auto-generated from GEMBOT_GAME_SYSTEMS.md by GemBot Neural Dashboard Agent<br>
+            Generated: 2025-12-16T13:52:09.285Z
+        </div>
+    </div>
+</body>
+</html>

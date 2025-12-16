@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STATE_SYNC_INTEGRATION_GUIDE - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        <h1>State Synchronization Implementation - Integration Guide</h1>
+
+<h2>Quick Start</h2>
+
+<h3>Step 1: Add State Sync Code to GemBot<em>Control</em>AI.html</h3>
+
+<p><strong>Location</strong>: Before the <code class="inline-code">class GemBotAI {</code> declaration (around line 1610)</p>
+
+<p><strong>Code</strong>: Copy the entire content from <code class="inline-code">MACHINE<em>STATE</em>SYNC_CODE.js</code> and paste it into the HTML file's <code class="inline-code"><script></code> section.</p>
+
+<p><strong>Result</strong>: All functions will be available globally and AI can access <code class="inline-code">machineGlobalState</code> directly.</p>
+
+<hr>
+
+<h2>Integration Points</h2>
+
+<h3>1. Serial Input Handler Integration</h3>
+
+<p><strong>Location in GemBot<em>Control</em>AI.html</strong>: Lines 1100-1150 (where you parse serial messages)</p>
+
+<p><strong>BEFORE</strong>:</p>
+<pre class="code-block javascript" data-lang="javascript"><code>if (line.includes(&#039;pX:&#039;)) {
+<p>    const xMatch = line.match(/pX:(\d+)/);</p>
+<p>    if (xMatch) {</p>
+<p>        x = parseInt(xMatch[1]);</p>
+<p>        updateStatusBox(&#039;X&#039;, x);</p>
+<p>    }</p>
+<p>}</code></pre></p>
+
+<p><strong>AFTER</strong>:</p>
+<pre class="code-block javascript" data-lang="javascript"><code>if (line.includes(&#039;pX:&#039;) || line.includes(&#039;[DATA]&#039;)) {
+<p>    // Update hardware state in global system</p>
+<p>    updateHardwareStateFromArduino(line);  // NEW LINE</p>
+    
+<p>    // Keep existing parsing for backward compatibility</p>
+<p>    const xMatch = line.match(/pX:(\d+)/);</p>
+<p>    if (xMatch) {</p>
+<p>        x = parseInt(xMatch[1]);</p>
+<p>        updateStatusBox(&#039;X&#039;, x);</p>
+<p>    }</p>
+<p>}</code></pre></p>
+
+<p><strong>Result</strong>: Every time Arduino sends position, global state updates automatically.</p>
+
+<hr>
+
+<h3>2. Speed Slider Integration</h3>
+
+<p><strong>Location</strong>: Where speed slider change event fires (search for <code class="inline-code">speedSlider.addEventListener</code>)</p>
+
+<p><strong>BEFORE</strong>:</p>
+<pre class="code-block javascript" data-lang="javascript"><code>speedSlider.addEventListener(&#039;input&#039;, (e) =&gt; {
+<p>    motorSpeed = parseInt(e.target.value);</p>
+<p>    speedDisplay.textContent = motorSpeed;</p>
+<p>    // ... rest of code</p>
+<p>});</code></pre></p>
+
+<p><strong>AFTER</strong>:</p>
+<pre class="code-block javascript" data-lang="javascript"><code>speedSlider.addEventListener(&#039;input&#039;, (e) =&gt; {
+<p>    motorSpeed = parseInt(e.target.value);</p>
+<p>    machineGlobalState.hardware.motorSpeed = motorSpeed;  // NEW LINE - Sync state</p>
+<p>    speedDisplay.textContent = motorSpeed;</p>
+<p>    updateGuidanceState();  // NEW LINE - Update AI context</p>
+<p>    // ... rest of code</p>
+<p>});</code></pre></p>
+
+<p><strong>Result</strong>: When user changes speed, AI knows about it instantly.</p>
+
+<hr>
+
+<h3>3. Mode Toggle Integration</h3>
+
+<p><strong>Location</strong>: Where mode buttons change event fires (search for <code class="inline-code">btnModeStep.addEventListener</code>)</p>
+
+<p><strong>BEFORE</strong>:</p>
+<pre class="code-block javascript" data-lang="javascript"><code>btnModeStep.addEventListener(&#039;click&#039;, () =&gt; {
+<p>    motorControlMode = &#039;step&#039;;</p>
+<p>    // ... styling code</p>
+<p>});</code></pre></p>
+
+<p><strong>AFTER</strong>:</p>
+<pre class="code-block javascript" data-lang="javascript"><code>btnModeStep.addEventListener(&#039;click&#039;, () =&gt; {
+<p>    motorControlMode = &#039;step&#039;;</p>
+<p>    machineGlobalState.hardware.motorMode = &#039;step&#039;;  // NEW LINE - Sync state</p>
+<p>    updateGuidanceState();  // NEW LINE - Update AI context</p>
+<p>    // ... styling code</p>
+<p>});</code></pre></p>
+
+<p><strong>Result</strong>: When user toggles mode, AI guidance adapts.</p>
+
+<hr>
+
+<h3>4. AI Response Integration</h3>
+
+<p><strong>Location in GemBot<em>Control</em>AI.html</strong>: In <code class="inline-code">getSmartContextResponse()</code> method (around line 2250)</p>
+
+<p><strong>REPLACE the entire method with this</strong>:</p>
+
+<pre class="code-block javascript" data-lang="javascript"><code>getSmartContextResponse(query, speed, mode, posX, posY) {
+<p>    const lowerQuery = query.toLowerCase();</p>
+    
+<p>    // Get current context from global state (NOT from parameters)</p>
+<p>    const context = getAIContextObject();</p>
+    
+<p>    // Connection/Arduino questions</p>
+<p>    if (/connect|arduino|port|scan|usb/.test(lowerQuery)) {</p>
+<p>        return <code class="inline-code">Connection: (1) Plug Arduino via USB. (2) Click SCAN to find ports. (3) Select correct port. (4) Click CONNECT. Machine will recover previous position automatically.</code>;</p>
+<p>    }</p>
+    
+<p>    // Speed-related questions</p>
+<p>    if (/speed|fast|slow|quick|adjust|increase|decrease/.test(lowerQuery)) {</p>
+<p>        const speedText = context.currentSpeed === 1 ? &#039;slowest&#039; :</p>
+<p>                         context.currentSpeed === 2 ? &#039;slow&#039; :</p>
+<p>                         context.currentSpeed === 3 ? &#039;normal&#039; :</p>
+<p>                         context.currentSpeed === 4 ? &#039;fast&#039; : &#039;fastest&#039;;</p>
+        
+<p>        return <code class="inline-code">SPEED CONTROL: Level 1-2 = Polishing (precise, gentle). Level 3 = Balanced work. Level 4-5 = Roughing (aggressive). </p>
+<p>                &lt;strong&gt;Current speed: ${context.currentSpeed}/5 (${speedText})&lt;/strong&gt;.</p>
+<p>                Phase: ${context.currentPhase || &#039;None selected&#039;}</p>
+<p>                Lap: ${context.lapType || &#039;Not set&#039;} (${context.gritGrade || &#039;N/A&#039;} grit)</p>
+<p>                Higher speed = faster material removal but LESS CONTROL. Start slow when learning!</code>;</p>
+<p>    }</p>
+    
+<p>    // Mode questions (Step vs Continuous)</p>
+<p>    if (/mode|step|continuous|click|hold/.test(lowerQuery)) {</p>
+<p>        return <code class="inline-code">TWO MODES: </p>
+<p>                • CONTINUOUS (hold button → smooth movement) = rough work, flowing cuts</p>
+<p>                • STEP (press → single move) = precision work, control</p>
+<p>                &lt;strong&gt;Current mode: ${context.currentMode.toUpperCase()}&lt;/strong&gt;</p>
+<p>                Phase: ${context.currentPhase || &#039;None selected&#039;}</p>
+<p>                ${context.currentMode === &#039;step&#039; ? &#039;Perfect for accuracy.&#039; : &#039;Good for sweeping cuts.&#039;}</code>;</p>
+<p>    }</p>
+    
+<p>    // Position/Movement questions</p>
+<p>    if (/position|where|move|axis|x-axis|y-axis|location|coordinate/.test(lowerQuery)) {</p>
+<p>        return <code class="inline-code">POSITIONING: GemBot has 4 axes:</p>
+<p>                • X (left-right rotation)</p>
+<p>                • Y (forward-back to lap)</p>
+<p>                • Rotation (spin stone)</p>
+<p>                • Index (switch laps)</p>
+                
+<p>                &lt;strong&gt;Current position: X=${context.position.x}, Y=${context.position.y}, Rotation=${context.position.rotation}°, Index=${context.position.index}&lt;/strong&gt;</p>
+<p>                Use buttons to move step-by-step or hold for continuous movement.</code>;</p>
+<p>    }</p>
+    
+<p>    // Cutting phase/progress questions</p>
+<p>    if (/progress|remaining|how many|facet|cut|cutting|phase|rough|polish|fine/.test(lowerQuery)) {</p>
+<p>        if (context.totalFacets &gt; 0) {</p>
+<p>            return <code class="inline-code">CUTTING PROGRESS:</p>
+<p>                    • Current facet: ${context.currentFacet} of ${context.totalFacets}</p>
+<p>                    • Remaining: ${context.facetsRemaining} facets</p>
+<p>                    • Phase: ${context.currentPhase || &#039;Not selected&#039;}</p>
+<p>                    • Estimated time: ${context.estimatedTimeRemaining}</p>
+<p>                    • Stone: ${context.stoneType || &#039;Not selected&#039;}</p>
+<p>                    • Lap: ${context.lapType || &#039;Not set&#039;} (${context.gritGrade || &#039;N/A&#039;} grit)</code>;</p>
+<p>        } else {</p>
+<p>            return <code class="inline-code">CUTTING PHASES: (1) ROUGHING = Speed 4-5, CONTINUOUS, shape the form. </p>
+<p>                    (2) FINE CUTTING = Speed 2-3, STEP, refine angles. </p>
+<p>                    (3) POLISHING = Speed 1-2, STEP only, light touches. </p>
+<p>                    &lt;strong&gt;Current speed ${context.currentSpeed}, mode ${context.currentMode}. What phase are you in?&lt;/strong&gt;</code>;</p>
+<p>        }</p>
+<p>    }</p>
+    
+<p>    // Stone-related questions</p>
+<p>    if (/stone|diamond|ruby|sapphire|emerald|opal|lap|cutting stone|grit|wheel/.test(lowerQuery)) {</p>
+<p>        if (context.stoneType) {</p>
+<p>            const stone = stoneDatabase[context.stoneType.toLowerCase()];</p>
+<p>            return <code class="inline-code">STONE: ${context.stoneType.toUpperCase()}</p>
+<p>                    • Hardness: Mohs ${context.stoneHardness}</p>
+<p>                    • Characteristics: ${context.stoneCharacteristics}</p>
+<p>                    • Special handling: ${stone.requiresWater ? &#039;Requires water cooling&#039; : &#039;Standard dry cutting&#039;}</p>
+<p>                    • Lap type: ${context.lapType || &#039;Not set&#039;}</p>
+<p>                    • Grit grade: ${context.gritGrade || &#039;Not set&#039;}</code>;</p>
+<p>        } else {</p>
+<p>            return <code class="inline-code">STONES: Different stones need different speeds &amp; techniques. Diamond = fastest. Ruby/Sapphire = medium. Softer stones = slower speeds. Tell me your stone TYPE and I&#039;ll guide the correct cutting phases &amp; speeds.</code>;</p>
+<p>        }</p>
+<p>    }</p>
+    
+<p>    // &quot;How&quot; questions (procedural)</p>
+<p>    if (/how|teach|guide|help|process|procedure|steps/.test(lowerQuery)) {</p>
+<p>        if (/change.*stone|switch|replace|new stone/.test(lowerQuery)) {</p>
+<p>            return <code class="inline-code">CHANGING STONE: (1) Click HOME to reset position. (2) Carefully remove current stone. (3) Position new stone on lap. (4) Use STEP mode, speed 1-3. (5) Fine-tune the position. (6) Proceed with appropriate cutting phase.</code>;</p>
+<p>        } else if (/start|begin|first/.test(lowerQuery)) {</p>
+<p>            return <code class="inline-code">GETTING STARTED: (1) CONNECT Arduino via USB. (2) Tell me your stone type. (3) Click HOME. (4) Use STEP mode with speed 1-3. (5) Practice positioning carefully. (6) Watch camera feed for guidance.</code>;</p>
+<p>        } else {</p>
+<p>            return <code class="inline-code">Tell me specifically: Are you asking about positioning? Cutting? Changing stones? Connecting? Speed control? Phase selection? I&#039;ll give detailed step-by-step guidance.</code>;</p>
+<p>        }</p>
+<p>    }</p>
+    
+<p>    // &quot;Why&quot; or explanation questions</p>
+<p>    if (/why|explain|reason|because/.test(lowerQuery)) {</p>
+<p>        if (/speed|slow/.test(lowerQuery)) {</p>
+<p>            return <code class="inline-code">WHY SPEED MATTERS: </p>
+<p>                    • Lower speeds (1-2) = more control, precision, gentle</p>
+<p>                    • Higher speeds (4-5) = faster material removal, less control, aggressive</p>
+<p>                    • Soft stones = slower speeds</p>
+<p>                    • Hard stones = can use higher speeds</p>
+<p>                    • &lt;strong&gt;Current speed: ${context.currentSpeed}&lt;/strong&gt; (${context.currentSpeed &lt;= 2 ? &#039;precision work&#039; : context.currentSpeed === 3 ? &#039;balanced work&#039; : &#039;aggressive work&#039;})</code>;</p>
+<p>        } else if (/home|reset/.test(lowerQuery)) {</p>
+<p>            return <code class="inline-code">WHY HOME MATTERS: HOME resets to origin (0,0,0). Prevents position drift. Establishes reference point. Essential before major changes. Always HOME when: connecting, changing stones, or powering down.</code>;</p>
+<p>        } else if (/step|mode/.test(lowerQuery)) {</p>
+<p>            return <code class="inline-code">WHY MODES MATTER: STEP = precision (each press = one move). CONTINUOUS = flowing (hold = smooth movement). STEP for accuracy. CONTINUOUS for rough work. &lt;strong&gt;You&#039;re in ${context.currentMode} mode.&lt;/strong&gt;</code>;</p>
+<p>        } else {</p>
+<p>            return <code class="inline-code">I understand you&#039;re asking why. Tell me the specific topic and I&#039;ll explain the reasoning.</code>;</p>
+<p>        }</p>
+<p>    }</p>
+    
+<p>    // Catch remaining unmatched queries with contextual guidance</p>
+<p>    if (query.length &gt; 2) {</p>
+<p>        return <code class="inline-code">I want to help! Could you clarify: Are you asking about (1) SPEED control? (2) MODES (step/continuous)? (3) POSITIONING? (4) CUTTING phases? (5) CONNECTING? (6) Your current STONE? (7) A specific PROBLEM? Tell me more!</code>;</p>
+<p>    }</p>
+    
+<p>    return &#039;&#039;;  // Only empty for very short or nonsense</p>
+<p>}</code></pre></p>
+
+<p><strong>Result</strong>: Every AI response now uses ACTUAL machine state, not defaults.</p>
+
+<hr>
+
+<h3>5. Initialize State When Connecting</h3>
+
+<p><strong>Location</strong>: After successful Arduino connection (search for when connection status turns green)</p>
+
+<p><strong>ADD these lines</strong>:</p>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// After successful Arduino connection
+<p>machineGlobalState.hardware.connectionStatus = &#039;connected&#039;;</p>
+<p>machineGlobalState.hardware.lastUpdate = Date.now();</p>
+<p>console.log(&#039;✓ Machine state initialized - ready for AI guidance&#039;);</p>
+<p>logMachineState();  // Log for debugging</code></pre></p>
+
+<p><strong>Result</strong>: State system knows connection is active.</p>
+
+<hr>
+
+<h3>6. User Sets Stone Type</h3>
+
+<p><strong>Location</strong>: When user selects a stone (design mode or before cutting)</p>
+
+<p><strong>ADD these lines</strong> when selection is made:</p>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Example: User clicks &quot;Diamond&quot; button
+<p>function onStoneTypeSelected(stoneType) {</p>
+<p>    machineGlobalState.touchScreen.stoneSelected = stoneType;</p>
+<p>    updateGuidanceState();</p>
+<p>    console.log(&#039;Stone selected:&#039;, stoneType);</p>
+    
+<p>    // AI can now give stone-specific guidance</p>
+<p>    const aiContext = getAIContextObject();</p>
+<p>    console.log(&#039;AI Context:&#039;, aiContext);</p>
+<p>}</code></pre></p>
+
+<p><strong>Result</strong>: AI gives stone-specific speed/mode/lap recommendations.</p>
+
+<hr>
+
+<h3>7. User Sets Lap Type</h3>
+
+<p><strong>Location</strong>: When user changes lap or grit</p>
+
+<p><strong>ADD these lines</strong>:</p>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Example: User puts in 220 grit lap
+<p>function onLapTypeChanged(lapType, gritGrade) {</p>
+<p>    machineGlobalState.touchScreen.lapType = lapType;</p>
+<p>    machineGlobalState.touchScreen.gritGrade = gritGrade;</p>
+<p>    updateGuidanceState();</p>
+<p>    console.log(&#039;Lap changed:&#039;, lapType, &#039;Grit:&#039;, gritGrade);</p>
+<p>}</code></pre></p>
+
+<p><strong>Result</strong>: AI references correct lap type in guidance.</p>
+
+<hr>
+
+<h3>8. User Completes Facet</h3>
+
+<p><strong>Location</strong>: When detecting facet completion or user clicks "Next Facet" button</p>
+
+<p><strong>ADD these lines</strong>:</p>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Example: User finishes first facet
+<p>function onFacetFinished() {</p>
+<p>    markFacetComplete();</p>
+<p>    const remaining = machineGlobalState.touchScreen.facetsRemaining;</p>
+<p>    const timeLeft = formatTimeEstimate(machineGlobalState.touchScreen.estimatedTimeRemaining);</p>
+    
+<p>    console.log(<code class="inline-code">Facet complete! ${remaining} remaining. Est. time: ${timeLeft}</code>);</p>
+    
+<p>    // AI can now mention progress</p>
+<p>    addMessage(<code class="inline-code">Great! You&#039;ve completed facet ${machineGlobalState.touchScreen.currentFacet - 1}. ${remaining} facets remaining. Estimated time: ${timeLeft}</code>, &#039;assistant&#039;);</p>
+<p>}</code></pre></p>
+
+<p><strong>Result</strong>: AI tracks and celebrates progress.</p>
+
+<hr>
+
+<h2>Testing Checklist</h2>
+
+<h3>Test 1: State Sync on Startup</h3>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Page loads</li>
+<li class="checkbox"><input type="checkbox" disabled> Run <code class="inline-code">logMachineState()</code> in console</li>
+<li class="checkbox"><input type="checkbox" disabled> Shows default values (speed: 1, mode: continuous, position: 0,0)</li></ul>
+
+<h3>Test 2: Arduino Position Sync</h3>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Connect Arduino</li>
+<li class="checkbox"><input type="checkbox" disabled> Move stone in any axis (physical buttons on Nextion)</li>
+<li class="checkbox"><input type="checkbox" disabled> Run <code class="inline-code">console.log(machineGlobalState.hardware.position)</code></li>
+<li class="checkbox"><input type="checkbox" disabled> Position matches Arduino display</li></ul>
+
+<h3>Test 3: Speed Sync</h3>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Change speed slider to 4</li>
+<li class="checkbox"><input type="checkbox" disabled> Run <code class="inline-code">console.log(machineGlobalState.hardware.motorSpeed)</code></li>
+<li class="checkbox"><input type="checkbox" disabled> Shows 4</li></ul>
+
+<h3>Test 4: Mode Sync</h3>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Click Step mode button</li>
+<li class="checkbox"><input type="checkbox" disabled> Run <code class="inline-code">console.log(machineGlobalState.hardware.motorMode)</code></li>
+<li class="checkbox"><input type="checkbox" disabled> Shows 'step'</li></ul>
+
+<h3>Test 5: AI Uses Real State</h3>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Connect Arduino</li>
+<li class="checkbox"><input type="checkbox" disabled> Set speed to 4, mode to continuous</li>
+<li class="checkbox"><input type="checkbox" disabled> Ask AI: "What speed am I using?"</li>
+<li class="checkbox"><input type="checkbox" disabled> AI responds: "Current speed: 4/5 (fastest)"</li>
+<li class="checkbox"><input type="checkbox" disabled> NOT: "Current speed: 1/5" (default)</li></ul>
+
+<h3>Test 6: Stone Type Tracking</h3>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Select diamond as stone type</li>
+<li class="checkbox"><input type="checkbox" disabled> Ask AI: "What stone am I cutting?"</li>
+<li class="checkbox"><input type="checkbox" disabled> AI responds: "Stone: DIAMOND" with properties</li>
+<li class="checkbox"><input type="checkbox" disabled> Change to emerald</li>
+<li class="checkbox"><input type="checkbox" disabled> Ask again</li>
+<li class="checkbox"><input type="checkbox" disabled> AI responds: "Stone: EMERALD" with properties</li></ul>
+
+<h3>Test 7: Facet Progress</h3>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Initialize design (Standard Round Brilliant = 58 facets)</li>
+<li class="checkbox"><input type="checkbox" disabled> Complete first facet</li>
+<li class="checkbox"><input type="checkbox" disabled> Ask AI: "How many facets left?"</li>
+<li class="checkbox"><input type="checkbox" disabled> AI responds: "Remaining: 57 facets. Est. time: 2h 45m"</li></ul>
+
+<h3>Test 8: Phase-Aware Guidance</h3>
+<ul class="checklist"><li class="checkbox"><input type="checkbox" disabled> Set speed 4, mode continuous</li>
+<li class="checkbox"><input type="checkbox" disabled> Ask AI: "What lap should I use?"</li>
+<li class="checkbox"><input type="checkbox" disabled> AI responds: "Use rough lap (60 grit)" (roughing phase detected)</li>
+<li class="checkbox"><input type="checkbox" disabled> Set speed 2, mode step</li>
+<li class="checkbox"><input type="checkbox" disabled> Ask same question</li>
+<li class="checkbox"><input type="checkbox" disabled> AI responds: "Use fine lap (600 grit)" (fine cutting detected)</li></ul>
+
+<hr>
+
+<h2>Arduino Code Changes Required</h2>
+
+<p>For <strong>full synchronization</strong>, Arduino needs to send state every 100ms:</p>
+
+<p><strong>Add to Arduino loop() function</strong>:</p>
+
+<pre class="code-block cpp" data-lang="cpp"><code>void broadcastMachineState() {
+<p>    static unsigned long lastBroadcast = 0;</p>
+<p>    if (millis() - lastBroadcast &gt;= 100) {  // Every 100ms</p>
+<p>        lastBroadcast = millis();</p>
+        
+<p>        // Send current position and settings</p>
+<p>        Serial.print(&quot;[DATA] pX:&quot;);</p>
+<p>        Serial.print(countX);</p>
+<p>        Serial.print(&quot; pY:&quot;);</p>
+<p>        Serial.print(countY);</p>
+<p>        Serial.print(&quot; pA:&quot;);</p>
+<p>        Serial.print(angle);</p>
+<p>        Serial.print(&quot; pI:&quot;);</p>
+<p>        Serial.print(indexPosition);</p>
+<p>        Serial.print(&quot; spd:&quot;);</p>
+<p>        Serial.print(motorSpeedMultiplier);</p>
+<p>        Serial.print(&quot; mod:&quot;);</p>
+<p>        Serial.println(stepModeEnabled ? &quot;step&quot; : &quot;continuous&quot;);</p>
+<p>    }</p>
+<p>}</p>
+
+<p>// Call in loop():</p>
+<p>void loop() {</p>
+<p>    // ... existing code ...</p>
+<p>    broadcastMachineState();  // Add this line</p>
+<p>    // ... rest of loop ...</p>
+<p>}</code></pre></p>
+
+<hr>
+
+<h2>Files to Modify</h2>
+
+<ol><li class="ol-item"><strong>GemBot<em>Control</em>AI.html</strong> - Main integration</li></ol>
+<p>   - Add MACHINE<em>STATE</em>SYNC_CODE.js content</p>
+<p>   - Update serial parser</p>
+<p>   - Update speed/mode handlers</p>
+<p>   - Replace getSmartContextResponse()</p>
+
+<ol><li class="ol-item"><strong>Arduino code</strong> - Optional but recommended</li></ol>
+<p>   - Add broadcastMachineState() function</p>
+<p>   - Call in loop()</p>
+
+<hr>
+
+<h2>Benefits After Integration</h2>
+
+<p>✅ <strong>AI knows actual machine state</strong> - Gives contextual responses  </p>
+<p>✅ <strong>AI tracks cutting progress</strong> - Knows facets remaining, time left  </p>
+<p>✅ <strong>AI adapts to stone type</strong> - Different guidance per stone  </p>
+<p>✅ <strong>AI matches phase recommendations</strong> - Speed/mode/lap correct for phase  </p>
+<p>✅ <strong>AI detects phase automatically</strong> - From speed/mode patterns  </p>
+<p>✅ <strong>AI provides estimates</strong> - Time remaining based on actual data  </p>
+<p>✅ <strong>State persists</strong> - Can recover if user refreshes page  </p>
+
+<hr>
+
+<h2>Debugging</h2>
+
+<p><strong>Enable state logging</strong>:</p>
+<pre class="code-block javascript" data-lang="javascript"><code>logMachineState();  // Prints all state to console</code></pre>
+
+<p><strong>Check AI context</strong>:</p>
+<pre class="code-block javascript" data-lang="javascript"><code>console.log(getAIContextObject());  // What AI sees</code></pre>
+
+<p><strong>Monitor updates</strong>:</p>
+<pre class="code-block javascript" data-lang="javascript"><code>// In browser console, set breakpoint
+<p>debugger; updateGuidanceState();</code></pre></p>
+
+<hr>
+
+<p><strong>Status</strong>: Ready to implement  </p>
+<p><strong>Complexity</strong>: Medium (mostly copy-paste)  </p>
+<p><strong>Time estimate</strong>: 2-3 hours  </p>
+<p><strong>Testing time</strong>: 1-2 hours</p>
+
+        <div class="generated-notice">
+            🤖 Auto-generated from STATE_SYNC_INTEGRATION_GUIDE.md by GemBot Neural Dashboard Agent<br>
+            Generated: 2025-12-16T13:52:27.029Z
+        </div>
+    </div>
+</body>
+</html>

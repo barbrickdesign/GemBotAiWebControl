@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MERLIN_GREETING_VOICE_FIX - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        <h1>🧙 MERLIN GREETING & VOICE FIX - APPLIED</h1>
+
+<h2>✅ <strong>Issues Fixed</strong></h2>
+
+<h3>Issue 1: Old Greeting Still Appearing</h3>
+<p><strong>Problem</strong>: Page was showing "Welcome, madam. The machine is prepared..." instead of Merlin greeting</p>
+
+<p><strong>Root Cause</strong>: Old <code class="inline-code">JarvisPersonality</code> class was still active and displaying generic greetings from an array</p>
+
+<p><strong>Solution</strong>: </p>
+<ul><li class="ul-item">✅ Replaced <code class="inline-code">JarvisPersonality</code> class with <code class="inline-code">MerlinPersonality</code> class</li>
+<li class="ul-item">✅ Updated greeting to single, specific Merlin message</li>
+<li class="ul-item">✅ Updated all references from <code class="inline-code">jarvis</code> to <code class="inline-code">merlin</code> (3 locations)</li></ul>
+
+<p><strong>New Greeting</strong>:</p>
+<pre class="code-block " data-lang="text"><code>&quot;Greetings, seeker of brilliance. I am Merlin, keeper of the lapidary arts 
+<p>and your guide in the realm of precision gemstone cutting. I hold within my </p>
+<p>essence all the knowledge of the User Manual, and my understanding grows </p>
+<p>deeper with each stone we shape together. What would you have me assist you with?&quot;</code></pre></p>
+
+<hr>
+
+<h3>Issue 2: Voice Was Same Speed/Pitch as Before</h3>
+<p><strong>Problem</strong>: Voice was speaking at normal speed instead of slow, old man's voice</p>
+
+<p><strong>Root Cause</strong>: Voice settings were configured for Jarvis (British butler) not Merlin (old wizard)</p>
+
+<p><strong>Solution</strong>:</p>
+<ul><li class="ul-item">✅ Changed speech rate from <code class="inline-code">0.85</code> → <code class="inline-code">0.6</code> (30% slower for wise, measured speech)</li>
+<li class="ul-item">✅ Changed pitch from <code class="inline-code">0.9</code> → <code class="inline-code">0.65</code> (lower pitch for older male voice)</li>
+<li class="ul-item">✅ Added male voice preference detection in <code class="inline-code">setupMerlinVoice()</code></li>
+<li class="ul-item">✅ Looks for male voices containing: "male", "man", "david", "mark", "george", "arthur"</li>
+<li class="ul-item">✅ Falls back to first English voice if no male voice found</li>
+<li class="ul-item">✅ Volume set to <code class="inline-code">1.0</code> for full clarity</li></ul>
+
+<p><strong>New Voice Config</strong>:</p>
+<pre class="code-block javascript" data-lang="javascript"><code>merlinSettings: {
+<p>    voiceEnabled: true,</p>
+<p>    preferredGender: &#039;male&#039;,           // Older man&#039;s voice</p>
+<p>    speechRate: 0.6,                   // 60% = Much slower</p>
+<p>    pitch: 0.65,                       // Lower pitch for older voice</p>
+<p>    volume: 1.0                        // Full volume</p>
+<p>}</code></pre></p>
+
+<hr>
+
+<h2>📊 <strong>Changes Made</strong></h2>
+
+<p>| Item | Before | After |</p>
+<p>|------|--------|-------|</p>
+<p>| <strong>Personality Class</strong> | JarvisPersonality | MerlinPersonality |</p>
+<p>| <strong>Greeting Type</strong> | Random from array (4 generic) | Single Merlin greeting |</p>
+<p>| <strong>Gender Language</strong> | "sir", "madam" | "seeker of brilliance" |</p>
+<p>| <strong>Speech Rate</strong> | 0.85 (normal-slow) | 0.6 (very slow) |</p>
+<p>| <strong>Pitch</strong> | 0.9 (normal) | 0.65 (deep/older) |</p>
+<p>| <strong>Voice Preference</strong> | Any English voice | Male voices prioritized |</p>
+<p>| <strong>Variable Names</strong> | jarvis | merlin |</p>
+
+<hr>
+
+<h2>🔧 <strong>Technical Details</strong></h2>
+
+<h3>Files Modified</h3>
+<ul><li class="ul-item"><code class="inline-code">GemBot<em>Control</em>AI.html</code> (3,362 lines)</li></ul>
+
+<h3>Changes Applied</h3>
+<ol><li class="ol-item"><strong>Lines 2141-2210</strong>: Replaced JarvisPersonality with MerlinPersonality</li></ol>
+<p>   - Changed class name</p>
+<p>   - Updated voice settings</p>
+<p>   - Changed greeting to single Merlin message</p>
+<p>   - Added male voice detection logic</p>
+
+<ol><li class="ol-item"><strong>Line 2246</strong>: Updated instantiation</li></ol>
+<p>   - <code class="inline-code">const jarvis = ...</code> → <code class="inline-code">const merlin = ...</code></p>
+
+<ol><li class="ol-item"><strong>Lines 3226-3238</strong>: Updated all references</li></ol>
+<p>   - <code class="inline-code">jarvis.initialize()</code> → <code class="inline-code">merlin.initialize()</code></p>
+<p>   - <code class="inline-code">jarvis.onConnectionSuccess()</code> → <code class="inline-code">merlin.onConnectionSuccess()</code></p>
+<p>   - Updated console logs to show Merlin emoji</p>
+
+<hr>
+
+<h2>✨ <strong>Voice Behavior on Next Load</strong></h2>
+
+<p>When you reload the page:</p>
+
+<ol><li class="ol-item"><strong>Page loads</strong> → No greeting yet</li>
+<li class="ol-item"><strong>Voice system initializes</strong> → Merlin voice configured</li>
+<li class="ol-item"><strong>Audio plays</strong> → Merlin greeting with:</li></ol>
+<p>   - ✅ Slow, measured speech (0.6 rate)</p>
+<p>   - ✅ Deep, older male voice (0.65 pitch)</p>
+<p>   - ✅ Full volume for clarity</p>
+<p>   - ✅ Exact greeting: "Greetings, seeker of brilliance..."</p>
+
+<hr>
+
+<h2>🎯 <strong>What to Expect</strong></h2>
+
+<h3>Greeting Display</h3>
+<ul><li class="ul-item"><strong>Text in chat</strong>: "Greetings, seeker of brilliance. I am Merlin..."</li>
+<li class="ul-item"><strong>No gender-specific language</strong>: Gone are the days of "sir" and "madam"</li>
+<li class="ul-item"><strong>Manual knowledge reference</strong>: Explicitly mentions User Manual knowledge</li>
+<li class="ul-item"><strong>Learning narrative</strong>: "understanding grows deeper with each stone"</li></ul>
+
+<h3>Voice Experience</h3>
+<ul><li class="ul-item"><strong>Much slower</strong> than before (0.6 vs 0.85 speech rate)</li>
+<li class="ul-item"><strong>Deeper tone</strong> like an older man (0.65 pitch vs 0.9)</li>
+<li class="ul-item"><strong>Clear and strong</strong> (volume 1.0)</li>
+<li class="ul-item"><strong>Sounds wise and measured</strong> instead of rushed</li>
+<li class="ul-item"><strong>Male voice prioritized</strong> - system searches for male voice options first</li></ul>
+
+<hr>
+
+<h2>🧪 <strong>Testing the Fix</strong></h2>
+
+<ol><li class="ol-item"><strong>Clear browser cache</strong> (Ctrl+Shift+Delete) or use private window</li>
+<li class="ol-item"><strong>Reload page</strong> (Ctrl+Shift+R for hard refresh)</li>
+<li class="ol-item"><strong>Listen for greeting</strong> - Should hear slow, deep male voice</li>
+<li class="ol-item"><strong>Read chat</strong> - Should see "Greetings, seeker of brilliance..."</li>
+<li class="ol-item"><strong>Listen to speech</strong> - Should sound like wise old wizard, not rushed butler</li></ol>
+
+<hr>
+
+<h2>📋 <strong>Verification Checklist</strong></h2>
+
+<ul class="checklist"><li class="checkbox checked"><input type="checkbox" checked disabled> Old Jarvis greeting replaced with Merlin</li>
+<li class="checkbox checked"><input type="checkbox" checked disabled> "sir/madam" replaced with "seeker"</li>
+<li class="checkbox checked"><input type="checkbox" checked disabled> Greeting mentions User Manual knowledge</li>
+<li class="checkbox checked"><input type="checkbox" checked disabled> Greeting mentions learning/growth</li>
+<li class="checkbox checked"><input type="checkbox" checked disabled> Speech rate reduced to 0.6 (much slower)</li>
+<li class="checkbox checked"><input type="checkbox" checked disabled> Pitch reduced to 0.65 (deeper voice)</li>
+<li class="checkbox checked"><input type="checkbox" checked disabled> Male voice preference added</li>
+<li class="checkbox checked"><input type="checkbox" checked disabled> All jarvis references updated to merlin</li>
+<li class="checkbox checked"><input type="checkbox" checked disabled> Console logs updated with Merlin emoji</li>
+<li class="checkbox checked"><input type="checkbox" checked disabled> Voice speaks greeting automatically</li></ul>
+
+<hr>
+
+<h2>🎭 <strong>Merlin Personality Now Active</strong></h2>
+
+<p>✅ <strong>Status</strong>: Fixed and ready</p>
+<p>✅ <strong>Greeting</strong>: Merlin-specific, single greeting  </p>
+<p>✅ <strong>Voice</strong>: Slow (0.6), deep (0.65), male-preferred</p>
+<p>✅ <strong>Language</strong>: Gender-neutral throughout</p>
+<p>✅ <strong>Knowledge</strong>: References User Manual</p>
+<p>✅ <strong>Narrative</strong>: Establishes learning and growth</p>
+
+<p><strong>The Merlin era is now complete!</strong> 🧙✨</p>
+
+<p>Load the page and listen for the wise wizard greeting you seek.</p>
+
+
+        <div class="generated-notice">
+            🤖 Auto-generated from MERLIN_GREETING_VOICE_FIX.md by GemBot Neural Dashboard Agent<br>
+            Generated: 2025-12-16T13:52:15.833Z
+        </div>
+    </div>
+</body>
+</html>

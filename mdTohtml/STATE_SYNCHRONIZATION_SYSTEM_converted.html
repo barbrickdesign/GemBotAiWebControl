@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STATE_SYNCHRONIZATION_SYSTEM - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        <h1>GemBot State Synchronization System - Implementation Plan</h1>
+
+<h2>Problem Statement</h2>
+
+<p>Currently, the web interface has <strong>hardcoded defaults</strong> that don't sync with:</p>
+<ul><li class="ul-item">Arduino's actual machine state (position, motor speed, mode)</li>
+<li class="ul-item">Touch screen menu state (current mode: design, cut, polish, manual control)</li>
+<li class="ul-item">Cutting phase progression (preform → rough → fine → polish)</li>
+<li class="ul-item">Actual grit wheel being used (determines lap type)</li>
+<li class="ul-item">Estimated time remaining (based on facets to cut)</li></ul>
+
+<h2>Three-System State Synchronization Architecture</h2>
+
+<pre class="code-block " data-lang="text"><code>┌─────────────────────────────────────────────────────────────────┐
+<p>│                    ARDUINO (Hardware Source of Truth)             │</p>
+<p>│ Variables: motorSpeed, stepModeEnabled, posX, posY, angle, index │</p>
+<p>│ LCD Display: Current mode, phase, position                        │</p>
+<p>└──────────────┬──────────────────────────────────────────────────┘</p>
+<p>               │ Serial Protocol (pX:, pY:, pA:, pI: messages)</p>
+<p>               │</p>
+<p>    ┌──────────┴──────────┬──────────────────────┐</p>
+<p>    │                     │                      │</p>
+<p>    v                     v                      v</p>
+<p>┌─────────────┐  ┌──────────────────┐  ┌──────────────────┐</p>
+<p>│  TOUCH      │  │  WEB INTERFACE   │  │   AI KNOWLEDGE   │</p>
+<p>│  SCREEN     │  │  (This file)     │  │   (GemBot_      │</p>
+<p>│  (Nextion)  │  │                  │  │    Control_AI)  │</p>
+<p>│             │  │ ├─ motorSpeed    │  │                 │</p>
+<p>│ ├─ Current  │  │ ├─ motorMode     │  │ Must fetch from:│</p>
+<p>│   Mode      │  │ ├─ posX, posY    │  │ ├─ machineState │</p>
+<p>│ ├─ Position │  │ ├─ angle, index  │  │ ├─ motorSpeed   │</p>
+<p>│ ├─ Phase    │  │ ├─ currentPhase  │  │ ├─ motorMode    │</p>
+<p>│ ├─ Facet #  │  │ ├─ stoneType     │  │ ├─ currentPhase │</p>
+<p>│ └─ Grit     │  │ ├─ gritGrade     │  │ └─ gritGrade    │</p>
+<p>│   Wheel     │  │ ├─ lapType       │  │                 │</p>
+<p>│             │  │ └─ timeRemaining │  │                 │</p>
+<p>└─────────────┘  └──────────────────┘  └──────────────────┘</code></pre></p>
+
+<h2>Current Issues</h2>
+
+<h3>1. <strong>Hardcoded Values in Web Interface</strong></h3>
+
+<p><strong>BEFORE</strong> (lines 2333-2337):</p>
+<pre class="code-block javascript" data-lang="javascript"><code>const currentSpeed = motorSpeed || 1;                    // Default 1
+<p>const currentMode = motorMode || &#039;continuous&#039;;          // Default continuous</p>
+<p>const posX = machineState?.currentState?.positionX || 0;// Default 0</p>
+<p>const posY = machineState?.currentState?.positionY || 0;// Default 0</code></pre></p>
+
+<p><strong>PROBLEM</strong>: </p>
+<ul><li class="ul-item">If Arduino has speed=4, web shows 1</li>
+<li class="ul-item">If in STEP mode, web shows CONTINUOUS</li>
+<li class="ul-item">Position shows 0,0 even if Arduino is at 100,200</li></ul>
+
+<h3>2. <strong>No Touch Screen Mode Tracking</strong></h3>
+
+<p><strong>Missing Information</strong>:</p>
+<ul><li class="ul-item">Is machine in "Manual Control" mode or "Cut Mode" or "Polish Mode"?</li>
+<li class="ul-item">What cutting PHASE is active? (preform, rough, fine, polish)</li>
+<li class="ul-item">What STAGE in phase? (e.g., Girdle → Pavilion → Crown → Table)</li>
+<li class="ul-item">Is user in "Design" mode selecting cuts?</li></ul>
+
+<h3>3. <strong>No Lap Type / Grit Awareness</strong></h3>
+
+<p><strong>Missing Information</strong>:</p>
+<ul><li class="ul-item">What grit wheel is currently mounted? (60, 220, 600, 1200, 8000, 14000)</li>
+<li class="ul-item">Rough lap, Fine lap, or Polish lap?</li>
+<li class="ul-item">Affects recommended speeds and techniques</li></ul>
+
+<h3>4. <strong>No Facet/Angle Tracking</strong></h3>
+
+<p><strong>Missing Information</strong>:</p>
+<ul><li class="ul-item">How many facets total to cut?</li>
+<li class="ul-item">How many DONE? How many REMAINING?</li>
+<li class="ul-item">Current facet being worked on</li>
+<li class="ul-item">Current target angle</li></ul>
+
+<h3>5. <strong>No Time Estimation</strong></h3>
+
+<p><strong>Missing Information</strong>:</p>
+<ul><li class="ul-item">Estimated time remaining based on:</li></ul>
+<p>  - Number of facets left</p>
+<p>  - Stone type (diamond vs ruby vs emerald = different times)</p>
+<p>  - Current phase (roughing fastest, polishing slowest)</p>
+<p>  - User skill level</p>
+
+<h2>Implementation Plan</h2>
+
+<h3>Phase 1: Core State Variables (Week 1)</h3>
+
+<p>Create a unified state object that pulls from all three sources:</p>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// Global state object - source of truth for all three systems
+<p>const machineGlobalState = {</p>
+<p>    // ===== HARDWARE STATE (FROM ARDUINO) =====</p>
+<p>    hardware: {</p>
+<p>        motorSpeed: 1,              // 1-5 from Arduino</p>
+<p>        motorMode: &#039;continuous&#039;,    // or &#039;step&#039;</p>
+<p>        stepSize: 1,                // 1-70 steps per command</p>
+<p>        position: {</p>
+<p>            x: 0,</p>
+<p>            y: 0,</p>
+<p>            rotation: 0,            // degrees</p>
+<p>            index: 0</p>
+<p>        },</p>
+<p>        motorTimeout: 0,            // seconds since last command</p>
+<p>        emergencyStopActive: false,</p>
+<p>        connectionStatus: &#039;disconnected&#039; // connected/disconnected/error</p>
+<p>    },</p>
+    
+<p>    // ===== TOUCH SCREEN STATE =====</p>
+<p>    touchScreen: {</p>
+<p>        currentMenuMode: &#039;manual&lt;em&gt;control&#039;,  // manual&lt;/em&gt;control, design, preform, cut, polish, settings</p>
+<p>        currentPhase: &#039;roughing&#039;,           // roughing, fine_cutting, polishing, grinding</p>
+<p>        currentStage: &#039;girdle&#039;,             // girdle, pavilion, crown, table (for cut phase)</p>
+<p>        currentFacet: 1,                    // Which facet in sequence</p>
+<p>        totalFacets: 0,                     // Total to cut (0 if not calculated)</p>
+<p>        factetsRemaining: 0,                // How many left</p>
+<p>        lapType: &#039;rough&#039;,                   // rough, fine, polish</p>
+<p>        gritGrade: 60,                      // 60, 220, 600, 1200, 8000, 14000</p>
+<p>        designSelected: null,               // User&#039;s selected cut design</p>
+<p>        shapeSelected: &#039;round&#039;,             // Shape being cut</p>
+<p>        stoneSelected: null,                // Stone type selected</p>
+<p>        estimatedTimeRemaining: 0           // seconds</p>
+<p>    },</p>
+    
+<p>    // ===== WEB INTERFACE STATE =====</p>
+<p>    web: {</p>
+<p>        recordingActive: false,</p>
+<p>        cameraActive: false,</p>
+<p>        mlModelLoaded: false,</p>
+<p>        sessionData: [],</p>
+<p>        debugLogsEnabled: true</p>
+<p>    },</p>
+    
+<p>    // ===== COMPUTED / GUIDANCE STATE =====</p>
+<p>    guidance: {</p>
+<p>        recommendedSpeed: 4,            // Based on phase &amp; stone</p>
+<p>        recommendedMode: &#039;continuous&#039;,  // Based on phase</p>
+<p>        recommendedLap: &#039;rough&#039;,        // Based on phase</p>
+<p>        currentPhaseName: &#039;ROUGHING&#039;,</p>
+<p>        phaseDuration: &#039;30-60%&#039;,</p>
+<p>        phaseTechnique: &#039;Let the lap do the work. Steady pressure, flowing movements.&#039;,</p>
+<p>        stoneName: null,</p>
+<p>        stoneHardness: null,            // Mohs hardness for recommendations</p>
+<p>        stoneCharacteristics: null</p>
+<p>    }</p>
+<p>};</code></pre></p>
+
+<h3>Phase 2: Arduino Communication Protocol (Week 1-2)</h3>
+
+<p><strong>Arduino sends position every 100ms</strong>:</p>
+<pre class="code-block " data-lang="text"><code>[DATA] pX:150 pY:200 pA:45 pI:32 spd:3 mod:step</code></pre>
+
+<p><strong>Web parses and updates</strong>:</p>
+<pre class="code-block javascript" data-lang="javascript"><code>function parseArduinoState(message) {
+<p>    const matches = {</p>
+<p>        x: message.match(/pX:(\d+)/),</p>
+<p>        y: message.match(/pY:(\d+)/),</p>
+<p>        angle: message.match(/pA:(\d+)/),</p>
+<p>        index: message.match(/pI:(\d+)/),</p>
+<p>        speed: message.match(/spd:(\d)/),</p>
+<p>        mode: message.match(/mod:(\w+)/)</p>
+<p>    };</p>
+    
+<p>    if (matches.x) machineGlobalState.hardware.position.x = parseInt(matches.x[1]);</p>
+<p>    if (matches.y) machineGlobalState.hardware.position.y = parseInt(matches.y[1]);</p>
+<p>    if (matches.angle) machineGlobalState.hardware.position.rotation = parseInt(matches.angle[1]);</p>
+<p>    if (matches.index) machineGlobalState.hardware.position.index = parseInt(matches.index[1]);</p>
+<p>    if (matches.speed) machineGlobalState.hardware.motorSpeed = parseInt(matches.speed[1]);</p>
+<p>    if (matches.mode) machineGlobalState.hardware.motorMode = matches.mode[1];</p>
+    
+<p>    updateAllSystems();  // Propagate changes to AI, UI, etc.</p>
+<p>}</code></pre></p>
+
+<h3>Phase 3: Touch Screen Mode Tracking (Week 2)</h3>
+
+<p><strong>Arduino sends menu page changes</strong>:</p>
+<pre class="code-block " data-lang="text"><code>[MENU] page:1 (Settings)
+<p>[MENU] page:14 (Design)</p>
+<p>[MENU] page:16 (Preform)</p>
+<p>[MENU] page:17 (Cut)</p>
+<p>[MENU] page:18 (Polish)</code></pre></p>
+
+<p><strong>Web parses and updates</strong>:</p>
+<pre class="code-block javascript" data-lang="javascript"><code>const menuPageMap = {
+<p>    &#039;1&#039;: { mode: &#039;settings&#039;, phase: null },</p>
+<p>    &#039;10&#039;: { mode: &#039;manual_control&#039;, phase: null },</p>
+<p>    &#039;14&#039;: { mode: &#039;design&#039;, phase: null },</p>
+<p>    &#039;16&#039;: { mode: &#039;preform&#039;, phase: &#039;preforming&#039; },</p>
+<p>    &#039;17&#039;: { mode: &#039;cut&#039;, phase: &#039;roughing&#039; },  // Default, refined by user selections</p>
+<p>    &#039;18&#039;: { mode: &#039;polish&#039;, phase: &#039;polishing&#039; }</p>
+<p>};</code></pre></p>
+
+<h3>Phase 4: Cutting Phase Detection (Week 2-3)</h3>
+
+<p><strong>Based on user menu selections AND speed/mode</strong>:</p>
+
+<pre class="code-block javascript" data-lang="javascript"><code>function detectCuttingPhase() {
+<p>    // If not in cut mode, no phase</p>
+<p>    if (machineGlobalState.touchScreen.currentMenuMode !== &#039;cut&#039;) {</p>
+<p>        return null;</p>
+<p>    }</p>
+    
+<p>    const speed = machineGlobalState.hardware.motorSpeed;</p>
+<p>    const mode = machineGlobalState.hardware.motorMode;</p>
+    
+<p>    // Phase detection from speed/mode patterns</p>
+<p>    if (speed &gt;= 4 &amp;&amp; mode === &#039;continuous&#039;) {</p>
+<p>        return &#039;roughing&#039;;  // Aggressive work</p>
+<p>    } else if (speed &gt;= 2 &amp;&amp; speed &lt;= 3 &amp;&amp; mode === &#039;step&#039;) {</p>
+<p>        return &#039;fine_cutting&#039;;  // Precision work</p>
+<p>    } else if (speed === 1 &amp;&amp; mode === &#039;step&#039;) {</p>
+<p>        return &#039;polishing&#039;;  // Gentle work</p>
+<p>    } else if (speed === 2 &amp;&amp; mode === &#039;step&#039;) {</p>
+<p>        return &#039;grinding&#039;;  // Bridge phase</p>
+<p>    } else if (speed &gt;= 3 &amp;&amp; speed &lt;= 4 &amp;&amp; (mode === &#039;continuous&#039; || mode === &#039;step&#039;)) {</p>
+<p>        return &#039;preforming&#039;;  // Intermediate phase</p>
+<p>    }</p>
+    
+<p>    // Fallback: ask user or default based on menu</p>
+<p>    return &#039;unknown&#039;;</p>
+<p>}</code></pre></p>
+
+<h3>Phase 5: Lap Type / Grit Integration (Week 3)</h3>
+
+<p><strong>User selects grit at start of phase</strong>:</p>
+
+<pre class="code-block javascript" data-lang="javascript"><code>const lapGrits = {
+<p>    &#039;roughing&#039;: {</p>
+<p>        grit: 60,</p>
+<p>        lapType: &#039;rough&#039;,</p>
+<p>        description: &#039;Coarse grit for aggressive material removal&#039;,</p>
+<p>        recommendedSpeeds: &#039;4-5&#039;</p>
+<p>    },</p>
+<p>    &#039;preforming&#039;: {</p>
+<p>        grit: 220,</p>
+<p>        lapType: &#039;fine&#039;,</p>
+<p>        description: &#039;Medium grit for shaping toward angles&#039;,</p>
+<p>        recommendedSpeeds: &#039;3-4&#039;</p>
+<p>    },</p>
+<p>    &#039;fine_cutting&#039;: {</p>
+<p>        grit: 600,</p>
+<p>        lapType: &#039;fine&#039;,</p>
+<p>        description: &#039;Fine grit for precision angle work&#039;,</p>
+<p>        recommendedSpeeds: &#039;2-3&#039;</p>
+<p>    },</p>
+<p>    &#039;grinding&#039;: {</p>
+<p>        grit: 1200,</p>
+<p>        lapType: &#039;fine&#039;,</p>
+<p>        description: &#039;Very fine for edge refinement&#039;,</p>
+<p>        recommendedSpeeds: &#039;2&#039;</p>
+<p>    },</p>
+<p>    &#039;polishing&#039;: {</p>
+<p>        grit: 8000,</p>
+<p>        lapType: &#039;polish&#039;,</p>
+<p>        description: &#039;Polish grit for final shine&#039;,</p>
+<p>        recommendedSpeeds: &#039;1-2&#039;</p>
+<p>    }</p>
+<p>};</code></pre></p>
+
+<h3>Phase 6: Facet Tracking (Week 3-4)</h3>
+
+<p><strong>Based on selected design, calculate facet progression</strong>:</p>
+
+<pre class="code-block javascript" data-lang="javascript"><code>function initializeDesignFacets(designName, shape) {
+<p>    // Load design specifications from user manual</p>
+<p>    const designs = {</p>
+<p>        &#039;standard&lt;em&gt;round&lt;/em&gt;brilliant&#039;: {</p>
+<p>            shape: &#039;round&#039;,</p>
+<p>            totalFacets: 58,  // 1 table + 8 girdle + 8 upper girdle + </p>
+<p>                              // 16 upper pavilion + 1 culet</p>
+<p>            stages: {</p>
+<p>                &#039;girdle&#039;: 8,</p>
+<p>                &#039;pavilion&#039;: 24,</p>
+<p>                &#039;crown&#039;: 32,</p>
+<p>                &#039;table&#039;: 1</p>
+<p>            },</p>
+<p>            estimatedHours: {</p>
+<p>                &#039;rough&#039;: 2,      // Varies by stone</p>
+<p>                &#039;fine&#039;: 3,</p>
+<p>                &#039;polish&#039;: 2</p>
+<p>            }</p>
+<p>        }</p>
+<p>    };</p>
+    
+<p>    machineGlobalState.touchScreen.designSelected = designName;</p>
+<p>    machineGlobalState.touchScreen.totalFacets = designs[designName].totalFacets;</p>
+<p>    machineGlobalState.touchScreen.factetsRemaining = designs[designName].totalFacets;</p>
+<p>}</p>
+
+<p>function markFacetComplete() {</p>
+<p>    if (machineGlobalState.touchScreen.factetsRemaining &gt; 0) {</p>
+<p>        machineGlobalState.touchScreen.factetsRemaining--;</p>
+<p>        machineGlobalState.touchScreen.currentFacet++;</p>
+<p>        updateTimeRemaining();</p>
+<p>    }</p>
+<p>}</code></pre></p>
+
+<h3>Phase 7: Time Estimation (Week 4)</h3>
+
+<p><strong>Calculate based on multiple factors</strong>:</p>
+
+<pre class="code-block javascript" data-lang="javascript"><code>function estimateTimeRemaining() {
+<p>    const factors = {</p>
+<p>        facetsRemaining: machineGlobalState.touchScreen.factetsRemaining,</p>
+<p>        currentPhase: machineGlobalState.touchScreen.currentPhase,</p>
+<p>        stone: machineGlobalState.touchScreen.stoneSelected,</p>
+<p>        userSkillLevel: &#039;intermediate&#039;,  // From user profile</p>
+<p>        currentSpeed: machineGlobalState.hardware.motorSpeed</p>
+<p>    };</p>
+    
+<p>    // Time per facet varies by phase</p>
+<p>    const timePerFacet = {</p>
+<p>        &#039;roughing&#039;: 2,          // 2 min per facet (rough)</p>
+<p>        &#039;fine_cutting&#039;: 5,      // 5 min per facet (precision)</p>
+<p>        &#039;polishing&#039;: 3          // 3 min per facet (polish)</p>
+<p>    };</p>
+    
+<p>    // Stone modifier (some stones cut faster)</p>
+<p>    const stoneModifier = {</p>
+<p>        &#039;diamond&#039;: 1.0,</p>
+<p>        &#039;ruby&#039;: 1.2,            // Slower due to hardness</p>
+<p>        &#039;sapphire&#039;: 1.1,</p>
+<p>        &#039;emerald&#039;: 1.5,         // Much slower, fragile</p>
+<p>        &#039;opal&#039;: 1.4             // Very slow, delicate</p>
+<p>    };</p>
+    
+<p>    const baseTime = timePerFacet[factors.currentPhase] || 3;</p>
+<p>    const modifier = stoneModifier[factors.stone] || 1.0;</p>
+<p>    const totalSeconds = Math.ceil(factors.facetsRemaining &lt;em&gt; baseTime &lt;/em&gt; modifier * 60);</p>
+    
+<p>    machineGlobalState.touchScreen.estimatedTimeRemaining = totalSeconds;</p>
+<p>    return formatTime(totalSeconds);  // Returns &quot;2h 30m&quot;</p>
+<p>}</code></pre></p>
+
+<h3>Phase 8: AI Integration (Week 4-5)</h3>
+
+<p><strong>AI now has accurate context</strong>:</p>
+
+<pre class="code-block javascript" data-lang="javascript"><code>// In GemBotAI.getSmartContextResponse():
+<p>getSmartContextResponse(query, speed, mode, posX, posY) {</p>
+<p>    // NOW we can use ACTUAL state, not defaults</p>
+<p>    const actualState = machineGlobalState;</p>
+    
+<p>    // Example: Speed question</p>
+<p>    if (/speed|fast|slow/.test(query)) {</p>
+<p>        return <code class="inline-code">SPEED CONTROL: Current speed: ${actualState.hardware.motorSpeed}/5.</p>
+<p>                Phase: ${actualState.guidance.currentPhaseName} </p>
+<p>                Lap: ${actualState.touchScreen.lapType} (${actualState.touchScreen.gritGrade} grit)</p>
+<p>                Technique: ${actualState.guidance.phaseTechnique}</code>;</p>
+<p>    }</p>
+    
+<p>    // Example: Mode question</p>
+<p>    if (/mode|step|continuous/.test(query)) {</p>
+<p>        return <code class="inline-code">MODES: Current mode: ${actualState.hardware.motorMode.toUpperCase()}</p>
+<p>                Phase: ${actualState.touchScreen.currentPhase}</p>
+<p>                ${actualState.guidance.currentPhaseRecommendation}</code>;</p>
+<p>    }</p>
+    
+<p>    // Example: Progress question</p>
+<p>    if (/progress|remaining|how many/.test(query)) {</p>
+<p>        return <code class="inline-code">Progress: Facet ${actualState.touchScreen.currentFacet} of ${actualState.touchScreen.totalFacets}</p>
+<p>                Remaining: ${actualState.touchScreen.factetsRemaining} facets</p>
+<p>                Est. time: ${formatTime(actualState.touchScreen.estimatedTimeRemaining)}</p>
+<p>                Stone: ${actualState.touchScreen.stoneSelected}</code>;</p>
+<p>    }</p>
+<p>}</code></pre></p>
+
+<h2>User Manual Integration Points</h2>
+
+<p><strong>From manual, add to knowledge base</strong>:</p>
+
+<ol><li class="ol-item"><strong>Preform Angles</strong> (per stone)</li></ol>
+<p>   - Round: 90° girdle, 52° pavilion</p>
+<p>   - Square: 90° girdle, 43° pavilion</p>
+<p>   - Etc.</p>
+
+<ol><li class="ol-item"><strong>Cutting Angles</strong> (per stone, per facet type)</li></ol>
+<p>   - Crown angles: 34-40° (varies by design)</p>
+<p>   - Pavilion angles: 40-43° (varies by design)</p>
+<p>   - Table size: 50-65% of diameter</p>
+
+<ol><li class="ol-item"><strong>Cutting Times</strong> (per phase, per stone)</li></ol>
+<p>   - Diamond: Fastest</p>
+<p>   - Ruby: Medium</p>
+<p>   - Emerald: Slowest (fragile)</p>
+
+<ol><li class="ol-item"><strong>Grit Selection</strong> (per phase)</li></ol>
+<p>   - Roughing: 60 grit</p>
+<p>   - Preforming: 220 grit</p>
+<p>   - Fine cutting: 600 grit</p>
+<p>   - Grinding: 1200 grit</p>
+<p>   - Polishing: 8000-14000 grit</p>
+
+<ol><li class="ol-item"><strong>Speed Recommendations</strong> (per phase, per stone)</li></ol>
+<p>   - Emerald roughing: Speed 3 (not 4-5, too fragile)</p>
+<p>   - Opal fine cutting: Speed 1-2 only</p>
+<p>   - Diamond polishing: Speed 1-2 with polish compound</p>
+
+<h2>Arduino Code Changes Required</h2>
+
+<p><strong>Add state broadcasting every 100ms</strong>:</p>
+
+<pre class="code-block cpp" data-lang="cpp"><code>// In Arduino loop():
+<p>void broadcastMachineState() {</p>
+<p>    static unsigned long lastBroadcast = 0;</p>
+<p>    if (millis() - lastBroadcast &gt;= 100) {</p>
+<p>        lastBroadcast = millis();</p>
+        
+<p>        // Send current position</p>
+<p>        Serial.print(&quot;[DATA] pX:&quot;);</p>
+<p>        Serial.print(countX);</p>
+<p>        Serial.print(&quot; pY:&quot;);</p>
+<p>        Serial.print(countY);</p>
+<p>        Serial.print(&quot; pA:&quot;);</p>
+<p>        Serial.print(angle);</p>
+<p>        Serial.print(&quot; pI:&quot;);</p>
+<p>        Serial.print(indexPosition);</p>
+<p>        Serial.print(&quot; spd:&quot;);</p>
+<p>        Serial.print(motorSpeedMultiplier);</p>
+<p>        Serial.print(&quot; mod:&quot;);</p>
+<p>        Serial.println(stepModeEnabled ? &quot;step&quot; : &quot;continuous&quot;);</p>
+<p>    }</p>
+<p>}</code></pre></p>
+
+<h2>Summary of Changes</h2>
+
+<p>| Component | Current | New | Benefit |</p>
+<p>|-----------|---------|-----|---------|</p>
+<p>| <strong>Speed</strong> | Default 1 | Real speed from Arduino | AI gives accurate speed context |</p>
+<p>| <strong>Mode</strong> | Default continuous | Real mode from Arduino | AI gives accurate mode guidance |</p>
+<p>| <strong>Position</strong> | Default 0,0 | Real position from Arduino | AI aware of actual location |</p>
+<p>| <strong>Menu Mode</strong> | Unknown | Tracked from Nextion | AI knows if in cut/polish/design |</p>
+<p>| <strong>Phase</strong> | Assumed | Detected from speed/mode | AI matches guidance to phase |</p>
+<p>| <strong>Lap Type</strong> | Unknown | User-selected per phase | AI knows what lap is active |</p>
+<p>| <strong>Grit Grade</strong> | Unknown | Tracked with lap type | AI can reference grit number |</p>
+<p>| <strong>Facets</strong> | Unknown | Calculated from design | AI shows progress |</p>
+<p>| <strong>Time Est.</strong> | Unknown | Calculated dynamically | AI shows time remaining |</p>
+
+<h2>Timeline</h2>
+
+<ul><li class="ul-item"><strong>Week 1-2</strong>: Core state object + Arduino parsing</li>
+<li class="ul-item"><strong>Week 2-3</strong>: Touch screen mode + phase detection</li>
+<li class="ul-item"><strong>Week 3</strong>: Lap type / grit integration</li>
+<li class="ul-item"><strong>Week 4</strong>: Facet tracking + time estimation</li>
+<li class="ul-item"><strong>Week 5</strong>: AI integration + testing</li></ul>
+
+<h2>Testing Protocol</h2>
+
+<ol><li class="ol-item"><strong>State Sync Test</strong>: Arduino sends position → Web updates → Verify match</li>
+<li class="ol-item"><strong>Mode Test</strong>: User selects menu → Web detects → AI uses real mode</li>
+<li class="ol-item"><strong>Phase Test</strong>: Speed/mode change → Phase auto-detects → AI adjusts guidance</li>
+<li class="ol-item"><strong>Time Test</strong>: Run 5 facets → Check remaining estimates → Verify accuracy</li>
+<li class="ol-item"><strong>AI Test</strong>: Ask contextual questions → AI responds with actual values</li></ol>
+
+<hr>
+
+<p><strong>Owner</strong>: GemBot Development  </p>
+<p><strong>Status</strong>: Planned  </p>
+<p><strong>Priority</strong>: CRITICAL - Blocks accurate AI guidance  </p>
+<p><strong>Dependency</strong>: Requires Arduino state broadcasting implementation</p>
+
+        <div class="generated-notice">
+            🤖 Auto-generated from STATE_SYNCHRONIZATION_SYSTEM.md by GemBot Neural Dashboard Agent<br>
+            Generated: 2025-12-16T13:52:26.609Z
+        </div>
+    </div>
+</body>
+</html>
