@@ -767,6 +767,13 @@
     // GITHUB API
     // ═══════════════════════════════════════════════════════════════════════════
     
+    /**
+     * Fetches data from GitHub API
+     * @async
+     * @param {string} endpoint - The API endpoint (e.g., '/repos/{owner}/{repo}/contents')
+     * @returns {Promise<Object>} The JSON response from GitHub API
+     * @throws {Error} If the API request fails
+     */
     async function fetchGitHubAPI(endpoint) {
         const url = `${CONFIG.API_BASE}${endpoint}`;
         const response = await fetch(url, {
@@ -778,6 +785,13 @@
         return await response.json();
     }
     
+    /**
+     * Scans the GitHub repository for HTML files and creates node representations
+     * @async
+     * @description Fetches repository tree, filters HTML files, creates nodes,
+     *              analyzes connections, and updates the UI visualization
+     * @fires render - Triggers canvas re-render after scan completion
+     */
     async function scanRepository() {
         console.log('🔍 Scanning repository...');
         ui.scanRepoBtn.disabled = true;
@@ -824,6 +838,14 @@
         }
     }
     
+    /**
+     * Creates a node object from a GitHub file entry
+     * @async
+     * @param {Object} file - GitHub tree file object
+     * @param {string} file.path - File path in repository
+     * @param {string} file.type - File type ('blob' or 'tree')
+     * @returns {Promise<Object>} Node object with metrics and value calculations
+     */
     async function createNodeFromFile(file) {
         const path = file.path;
         const name = path.split('/').pop().replace('.html', '');
@@ -914,6 +936,24 @@
     // VALUE CALCULATION SYSTEM
     // ═══════════════════════════════════════════════════════════════════════════
     
+    /**
+     * Calculates the monetary value of a node based on code metrics
+     * @param {Object} metrics - Code metrics object
+     * @param {number} metrics.codeLines - Number of lines of code
+     * @param {number} metrics.functions - Number of functions detected
+     * @param {number} metrics.classes - Number of classes detected
+     * @param {number} metrics.complexity - Cyclomatic complexity score
+     * @param {number} metrics.commentLines - Number of comment lines
+     * @param {number} metrics.dependencies - Number of dependencies
+     * @param {string} metrics.status - Status: 'complete', 'testing', or 'incomplete'
+     * @returns {Object} Value calculation results
+     * @returns {number} returns.usdValue - Estimated USD value
+     * @returns {number} returns.devHours - Estimated development hours
+     * @returns {number} returns.baseRate - Hourly rate used ($75)
+     * @returns {number} returns.complexity - Complexity score
+     * @returns {number} returns.qualityScore - Documentation quality (0-100)
+     * @returns {number} returns.statusMultiplier - Status-based multiplier
+     */
     function calculateNodeValue(metrics) {
         // Base hourly rate for development ($75/hour average)
         const DEV_RATE = 75;
@@ -965,6 +1005,11 @@
         };
     }
     
+    /**
+     * Calculates utility scores for all nodes based on their connection graph
+     * @description Utility score = (incoming_connections * 2) + outgoing_connections
+     *              Higher scores indicate more critical/central files in the project
+     */
     function calculateUtilityScores() {
         // Calculate utility score for each node based on connections
         state.nodes.forEach(node => {
