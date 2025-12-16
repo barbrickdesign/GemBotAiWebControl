@@ -237,25 +237,60 @@ class VirtualMachine3D {
             this.modelsLoaded = true;
             
         } catch (error) {
-            console.warn('⚠️ Could not load animated machine, trying static version:', error);
+            console.warn('⚠️ Could not load animated machine, trying base.obj model:', error);
             
-            // Try static machine model
+            // Try base.obj (the exact physical machine model - 499,902 triangles)
             try {
-                const result = await BABYLON.SceneLoader.ImportMeshAsync(
-                    '',
-                    '',
-                    this.modelPaths.machine,
-                    this.scene
-                );
+                // Check if we have the OBJFileLoader plugin
+                if (BABYLON.SceneLoader.IsPluginForExtensionAvailable(".obj")) {
+                    const result = await BABYLON.SceneLoader.ImportMeshAsync(
+                        '',
+                        '',
+                        'base.obj',
+                        this.scene
+                    );
+                    
+                    this.machineModel = result.meshes[0];
+                    
+                    // Apply material to OBJ model
+                    result.meshes.forEach(mesh => {
+                        if (mesh.material) {
+                            const material = new BABYLON.StandardMaterial("baseMaterial", this.scene);
+                            material.diffuseColor = new BABYLON.Color3(0.8, 0.8, 0.9);
+                            material.specularColor = new BABYLON.Color3(0.5, 0.5, 0.5);
+                            material.emissiveColor = new BABYLON.Color3(0.1, 0.1, 0.15);
+                            mesh.material = material;
+                        }
+                    });
+                    
+                    this.positionModel(result.meshes);
+                    this.modelsLoaded = true;
+                    console.log('📦 base.obj model loaded (499,902 triangles)');
+                } else {
+                    throw new Error('OBJ loader not available');
+                }
                 
-                this.machineModel = result.meshes[0];
-                this.positionModel(result.meshes);
-                this.modelsLoaded = true;
-                console.log('📦 Static machine model loaded');
+            } catch (objError) {
+                console.warn('⚠️ base.obj failed, trying GLB fallback:', objError);
                 
-            } catch (staticError) {
-                console.warn('⚠️ Static model also failed:', staticError);
-                throw staticError;
+                // Try GLB static machine model
+                try {
+                    const result = await BABYLON.SceneLoader.ImportMeshAsync(
+                        '',
+                        '',
+                        this.modelPaths.machine,
+                        this.scene
+                    );
+                    
+                    this.machineModel = result.meshes[0];
+                    this.positionModel(result.meshes);
+                    this.modelsLoaded = true;
+                    console.log('📦 Static GLB model loaded');
+                    
+                } catch (staticError) {
+                    console.warn('⚠️ All model formats failed:', staticError);
+                    throw staticError;
+                }
             }
         }
         
