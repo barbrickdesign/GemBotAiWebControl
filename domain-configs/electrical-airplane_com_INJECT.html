@@ -1,0 +1,274 @@
+<!-- 
+═══════════════════════════════════════════════════════════════════════════════
+GEMBOT MULTI-DOMAIN CODE INJECTION - CUSTOMIZABLE TEMPLATE
+═══════════════════════════════════════════════════════════════════════════════
+Copy this entire block and customize for each domain
+Replace electrical-airplane.com, {{THEME_COLOR}}, etc. with actual values
+═══════════════════════════════════════════════════════════════════════════════
+-->
+
+<!-- ═══════ DOMAIN CONFIGURATION ═══════ -->
+<script>
+    // 🔧 CUSTOMIZE THESE VALUES FOR EACH DOMAIN
+    window.GEMBOT_DOMAIN_CONFIG = {
+        // Domain Identity
+        domainName: 'electrical-airplane.com',              // e.g., 'betterbook.co.uk'
+        domainTheme: 'Aviation Hub',            // e.g., 'Knowledge Hub'
+        domainId: 'hub-002',                  // e.g., 'hub-001'
+        
+        // Visual Theme
+        primaryColor: '#4A90E2',          // e.g., '#8B4513' (brown for betterbook)
+        secondaryColor: '#C0C0C0',      // e.g., '#F5DEB3' (cream)
+        accentColor: '#00D4FF',            // e.g., '#FFD700' (gold)
+        
+        // Agent Configuration
+        agentTypes: ['aviator', 'engineer', 'navigator', 'designer'],              // e.g., ['librarian', 'critic', 'publisher', 'storyteller']
+        agentCount: 4,                // e.g., 4
+        agentPrefix: 'Sky',            // e.g., 'Book'
+        
+        // Merlin Personality
+        merlinPersonality: 'Aviation Engineer', // e.g., 'British Scholar'
+        merlinGreeting: 'Cleared for takeoff! Welcome to electric aviation central.',      // e.g., 'Welcome to the library of knowledge!'
+        merlinAvatar: '✈️',          // e.g., '📚'
+        
+        // Features
+        enableMarketplace: true,   // true/false
+        enableWallet: true,             // true/false
+        enable3D: true,                     // true/false
+        enableGame: true,                 // true/false
+        
+        // Network Settings
+        centralHub: 'https://barbrickdesign.github.io/GemBotAiWebControl/',
+        networkEnabled: true,
+        crossDomainTrading: true
+    };
+    
+    // Base URL for GemBot scripts
+    window.GEMBOT_BASE_URL = window.GEMBOT_DOMAIN_CONFIG.centralHub;
+    window.GEMBOT_SQUARESPACE_MODE = true;
+</script>
+
+<!-- ═══════ DOMAIN-SPECIFIC STYLES ═══════ -->
+<style id="gembot-domain-theme">
+    :root {
+        --gembot-primary: #4A90E2;
+        --gembot-secondary: #C0C0C0;
+        --gembot-accent: #00D4FF;
+    }
+    
+    /* Merlin Card - Domain Theme */
+    .merlin-card-container {
+        background: linear-gradient(135deg, 
+            var(--gembot-primary) 0%, 
+            var(--gembot-secondary) 100%) !important;
+    }
+    
+    /* Activity Feed - Domain Theme */
+    #live-activity-feed {
+        border-color: var(--gembot-accent) !important;
+    }
+    
+    /* Domain Branding Badge */
+    #gembot-domain-badge {
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        background: rgba(0, 0, 0, 0.8);
+        color: var(--gembot-accent);
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-family: 'Courier New', monospace;
+        font-size: 11px;
+        z-index: 999997;
+        border: 1px solid var(--gembot-accent);
+        backdrop-filter: blur(10px);
+    }
+    
+    #gembot-domain-badge::before {
+        content: '✈️ ';
+        margin-right: 5px;
+    }
+</style>
+
+<!-- ═══════ DOMAIN BADGE ═══════ -->
+<div id="gembot-domain-badge">
+    electrical-airplane.com Agent Hub
+</div>
+
+<!-- ═══════ STANDARD DEPENDENCIES ═══════ -->
+<script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js';
+    import { getAuth, signInAnonymously } from 'https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js';
+    import { getDatabase } from 'https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js';
+    window.firebaseSDK = { initializeApp, getAuth, signInAnonymously, getDatabase };
+</script>
+
+<script src="https://cdn.babylonjs.com/babylon.js" crossorigin="anonymous"></script>
+<script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.babylonjs.com/cannon.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@latest/lib/index.iife.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" crossorigin="anonymous">
+
+<!-- ═══════ CORE STYLES ═══════ -->
+<style>
+    #gembot-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 999999; }
+    #gembot-container > * { pointer-events: auto; }
+    .merlin-card-container { position: fixed !important; z-index: 1000000 !important; }
+    #live-activity-feed { position: fixed !important; bottom: 20px; right: 20px; z-index: 999998 !important; }
+    
+    #gembot-loading {
+        position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+        background: rgba(26, 31, 58, 0.95); padding: 30px 50px; border-radius: 15px;
+        border: 2px solid var(--gembot-accent, #4affff); z-index: 999999; text-align: center;
+        color: var(--gembot-accent, #4affff); font-family: 'Courier New', monospace;
+    }
+    .loading-spinner {
+        width: 50px; height: 50px; border: 5px solid rgba(74, 255, 255, 0.3);
+        border-top-color: var(--gembot-accent, #4affff); border-radius: 50%;
+        animation: spin 1s linear infinite; margin: 0 auto 15px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    
+    @media (max-width: 768px) {
+        .merlin-card-container { width: 300px !important; height: 500px !important; }
+        #live-activity-feed { width: 280px !important; max-height: 300px !important; }
+        #gembot-domain-badge { font-size: 9px; padding: 6px 12px; }
+    }
+</style>
+
+<!-- ═══════ CONTAINER ═══════ -->
+<div id="gembot-container">
+    <div id="gembot-loading">
+        <div class="loading-spinner"></div>
+        <div style="font-size: 18px; font-weight: bold; margin-bottom: 10px;">
+            ⚡ Loading GemBot: electrical-airplane.com
+        </div>
+        <div style="font-size: 12px; opacity: 0.7;">
+            Initializing Aviation Hub agents...
+        </div>
+    </div>
+</div>
+
+<!-- ═══════ GEMBOT LOADER ═══════ -->
+<script>
+    (function() {
+        const BASE = window.GEMBOT_BASE_URL;
+        const config = window.GEMBOT_DOMAIN_CONFIG;
+        
+        const scripts = [
+            'gembot-api.js', 'virtual-machine-3d.js', 'gembot-3d-init.js', 'gembot-farm-game.js',
+            'gembot-sync-manager.js', 'gembot-sync-ui.js', 'knowledge-loader.js',
+            'merlin-intelligence-system.js', 'merlin-knowledge-integration.js',
+            'merlin-tooltip-system.js', 'knowledge-integration-examples.js',
+            'gembot-parts-database.js', 'gembot-faceting-designs.js', 'gembot-stl-catalog.js',
+            'gembot-game-cards.js', 'gembot-3d-printing.js', 'gembot-troubleshooting.js',
+            'gembot-game-master.js', 'merlin-enhanced-responses.js', 'gembot-game-integration.js',
+            'gembot-marketplace.js', 'gembot-fantasy-marketplace.js', 'arya-intel-system.js',
+            'gembot-3d-world.js', 'quantum-gem-visualizer.js', 'gembot-changelog.js',
+            'merlin-knowledge-base.js', 'comprehensive-test.js', 'gembot-academy.js',
+            'gembot-panel-manager.js', 'gembot-3d-mirror.js', 'gembot-animations.js',
+            'merlin-3d-card-integrated.js', 'GBUV_VAULT_SYSTEM.js', '3d-inventory-system.js',
+            'gembot-testing-agent.js', 'ai-agent-players.js', 'ai-agent-logger.js',
+            'ai-agent-systems.js', 'ai-agent-news-referral.js', 'solana-wallet-system.js',
+            'gbuv-distribution-trading.js', 'live-activity-feed.js'
+        ];
+        
+        const stylesheets = [
+            'gembot-3d-world.css', 'gembot-academy.css', 'merlin-3d-card-integrated.css',
+            '3d-inventory-system.css', 'ai-agent-systems.css'
+        ];
+        
+        let loaded = 0;
+        const total = scripts.length;
+        
+        function loadScript(src) {
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = BASE + src;
+                script.onload = () => { loaded++; updateProgress(); resolve(); };
+                script.onerror = () => { loaded++; updateProgress(); reject(); };
+                document.head.appendChild(script);
+            });
+        }
+        
+        function loadCSS(href) {
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = BASE + href;
+            document.head.appendChild(link);
+        }
+        
+        function updateProgress() {
+            const percent = Math.round((loaded / total) * 100);
+            const el = document.querySelector('#gembot-loading div:last-child');
+            if (el) el.textContent = `Loading... ${percent}% (${loaded}/${total})`;
+        }
+        
+        function init() {
+            console.log(`🚀 Initializing GemBot for ${config.domainName}...`);
+            console.log(`🎨 Theme: ${config.domainTheme}`);
+            console.log(`🤖 Agent Types:`, config.agentTypes);
+            
+            stylesheets.forEach(loadCSS);
+            
+            scripts.reduce((p, s) => p.then(() => loadScript(s)), Promise.resolve())
+                .then(() => {
+                    console.log(`✅ ${config.domainName} GemBot loaded!`);
+                    
+                    setTimeout(() => {
+                        document.getElementById('gembot-loading')?.remove();
+                        
+                        // Domain-specific initialization
+                        if (window.liveActivityFeed) {
+                            window.liveActivityFeed.log('SYSTEM', `${config.domainTheme} online! 🚀`);
+                            window.liveActivityFeed.log('MERLIN', config.merlinGreeting);
+                        }
+                        
+                        // Customize Merlin personality
+                        if (window.merlinCard) {
+                            window.merlinCard.setPersonality(config.merlinPersonality);
+                            window.merlinCard.setGreeting(config.merlinGreeting);
+                        }
+                        
+                        // Configure agents with domain theme
+                        if (window.aiAgentSystem) {
+                            window.aiAgentSystem.setDomainTheme({
+                                name: config.domainName,
+                                types: config.agentTypes,
+                                prefix: config.agentPrefix,
+                                count: config.agentCount
+                            });
+                        }
+                    }, 1000);
+                })
+                .catch(err => {
+                    console.error('❌ Error loading GemBot:', err);
+                    const el = document.getElementById('gembot-loading');
+                    if (el) el.innerHTML = `
+                        <div style="color: #ff6b6b;">
+                            <div style="font-size: 40px;">⚠️</div>
+                            <div>Failed to load GemBot</div>
+                            <div style="font-size: 11px; margin-top: 10px;">Check console</div>
+                        </div>
+                    `;
+                });
+        }
+        
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+    })();
+</script>
+
+<!-- ═══════ DOMAIN SIGNATURE ═══════ -->
+<script>
+    console.log('%c═══════════════════════════════════════════════════', 'color: #4A90E2; font-weight: bold;');
+    console.log('%c  GEMBOT AGENT HUB: electrical-airplane.com', 'color: #4A90E2; font-weight: bold; font-size: 14px;');
+    console.log('%c  Aviation Hub', 'color: #C0C0C0; font-size: 12px;');
+    console.log('%c═══════════════════════════════════════════════════', 'color: #4A90E2; font-weight: bold;');
+    console.log('%c  © 2024-2025 Ryan Barbrick / Barbrick Design', 'color: #9f7aea;');
+    console.log('%c═══════════════════════════════════════════════════', 'color: #4A90E2; font-weight: bold;');
+</script>
