@@ -161,7 +161,27 @@ class VirtualMachine3D {
                 loadingStatus.style.display = 'none';
             }
             
+            // DIAGNOSTIC INFO
             console.log('✅ Virtual Machine 3D initialized successfully!');
+            console.log('📊 Scene Stats:', {
+                meshCount: this.scene.meshes.length,
+                materialCount: this.scene.materials.length,
+                lightCount: this.scene.lights.length,
+                cameraPosition: this.camera.position,
+                cameraTarget: this.camera.target,
+                modelsLoaded: this.modelsLoaded
+            });
+            
+            // Log all visible meshes
+            console.log('👁️ Visible Meshes:');
+            this.scene.meshes.forEach(mesh => {
+                if (mesh.isVisible) {
+                    console.log(`  ✅ ${mesh.name} - visible`);
+                } else {
+                    console.log(`  ❌ ${mesh.name} - HIDDEN`);
+                }
+            });
+            
             return true;
         } catch (error) {
             console.error('❌ Failed to initialize Virtual Machine 3D:', error);
@@ -212,6 +232,10 @@ class VirtualMachine3D {
             result.meshes.forEach(mesh => {
                 const name = mesh.name.toLowerCase();
                 console.log(`  Mesh: ${mesh.name}`);
+                
+                // FORCE VISIBILITY - ensure all meshes render
+                mesh.isVisible = true;
+                mesh.isPickable = true;
                 
                 // Try to identify key parts by name
                 if (name.includes('x') && (name.includes('axis') || name.includes('carriage') || name.includes('gantry'))) {
@@ -506,8 +530,8 @@ class VirtualMachine3D {
             'mainCamera',
             Math.PI * 0.75,    // Alpha - horizontal angle
             Math.PI / 3,       // Beta - vertical angle (60°)
-            250,               // Radius - distance
-            new BABYLON.Vector3(0, 60, 0),  // Target
+            200,               // Radius - distance (REDUCED for better view)
+            new BABYLON.Vector3(0, 50, 0),  // Target
             this.scene
         );
         
@@ -545,9 +569,11 @@ class VirtualMachine3D {
 
         // Ambient hemisphere light (always good for base visibility)
         const ambient = new BABYLON.HemisphericLight('ambient', new BABYLON.Vector3(0, 1, 0), this.scene);
-        ambient.intensity = config.pbr ? 0.3 : 0.6;
+        ambient.intensity = config.pbr ? 0.5 : 1.0; // INCREASED for better visibility
         ambient.diffuse = new BABYLON.Color3(0.9, 0.9, 0.95);
         ambient.groundColor = new BABYLON.Color3(0.2, 0.2, 0.25);
+        
+        console.log('💡 Lighting setup:', { pbr: config.pbr, ambientIntensity: ambient.intensity });
         
         // Key light (Spotlight with shadows)
         const keyLight = new BABYLON.SpotLight("keyLight", 
