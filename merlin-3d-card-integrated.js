@@ -43,7 +43,7 @@ class MerlinAICardIntegrated {
         this.createCard();
         this.attachEventListeners();
         this.initCanvas3D();
-        this.updatePosition();
+        // Don't call updatePosition on init - let CSS handle default positioning
         
         // Auto-connect to existing user profile if available
         if (window.merlin && window.merlin.userProfile) {
@@ -699,6 +699,7 @@ class MerlinAICardIntegrated {
 
     startDrag(e) {
         this.state.isDragging = true;
+        this.state.position.wasDragged = true; // Mark as user-positioned
         const rect = this.card.getBoundingClientRect();
         this.state.dragOffset = {
             x: e.clientX - rect.left,
@@ -723,10 +724,13 @@ class MerlinAICardIntegrated {
     }
 
     updatePosition() {
-        this.card.style.position = 'fixed';
-        this.card.style.left = `${this.state.position.x}px`;
-        this.card.style.top = `${this.state.position.y}px`;
-        this.card.style.zIndex = '10000';
+        // Only update position if dragging (don't override CSS defaults)
+        if (this.state.isDragging || this.state.position.wasDragged) {
+            this.card.style.position = 'fixed';
+            this.card.style.left = `${this.state.position.x}px`;
+            this.card.style.top = `${this.state.position.y}px`;
+        }
+        // Z-index managed by CSS (500 for proper layering)
     }
 
     minimize() {
