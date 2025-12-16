@@ -9151,8 +9151,31 @@
             }
         };
         
-        // Auth UI Controller
-        const authUI = {
+        // Auth UI Controller - Extend window.authUI with helper methods
+        // NOTE: Main authUI is defined in head with wallet creation. These are additions.
+        if (window.authUI) {
+            // Add helper methods to existing window.authUI
+            window.authUI.showError = function(message) {
+                const error = document.getElementById('authError');
+                if (error) {
+                    error.textContent = message;
+                    error.classList.add('show');
+                }
+            };
+            
+            window.authUI.clearError = function() {
+                const error = document.getElementById('authError');
+                if (error) {
+                    error.textContent = '';
+                    error.classList.remove('show');
+                }
+            };
+            
+            console.log('✅ AuthUI extended with helper methods');
+        }
+        
+        // Local reference for backward compatibility
+        const authUI = window.authUI || {
             switchTab(tab) {
                 const loginTab = document.getElementById('loginTab');
                 const registerTab = document.getElementById('registerTab');
@@ -9162,29 +9185,33 @@
                 const linkDeviceForm = document.getElementById('linkDeviceForm');
                 
                 // Remove active from all tabs
-                loginTab.classList.remove('active');
-                registerTab.classList.remove('active');
-                linkDeviceTab.classList.remove('active');
+                loginTab?.classList.remove('active');
+                registerTab?.classList.remove('active');
+                linkDeviceTab?.classList.remove('active');
                 
-                // Hide all forms
-                loginForm.style.display = 'none';
-                registerForm.style.display = 'none';
-                linkDeviceForm.style.display = 'none';
+                // Hide all forms using both methods for compatibility
+                if (loginForm) { loginForm.classList.add('hidden'); loginForm.style.display = 'none'; }
+                if (registerForm) { registerForm.classList.add('hidden'); registerForm.style.display = 'none'; }
+                if (linkDeviceForm) { linkDeviceForm.classList.add('hidden'); linkDeviceForm.style.display = 'none'; }
                 
                 // Show selected tab/form
-                if (tab === 'login') {
+                if (tab === 'login' && loginForm && loginTab) {
                     loginTab.classList.add('active');
+                    loginForm.classList.remove('hidden');
                     loginForm.style.display = 'flex';
-                } else if (tab === 'register') {
+                } else if (tab === 'register' && registerForm && registerTab) {
                     registerTab.classList.add('active');
+                    registerForm.classList.remove('hidden');
                     registerForm.style.display = 'flex';
-                } else if (tab === 'linkDevice') {
+                } else if (tab === 'linkDevice' && linkDeviceForm && linkDeviceTab) {
                     linkDeviceTab.classList.add('active');
+                    linkDeviceForm.classList.remove('hidden');
                     linkDeviceForm.style.display = 'flex';
                 }
-                this.clearError();
+                
+                const error = document.getElementById('authError');
+                if (error) error.textContent = '';
             },
-            
             showError(message) {
                 const error = document.getElementById('authError');
                 if (error) {
@@ -9192,7 +9219,6 @@
                     error.classList.add('show');
                 }
             },
-            
             clearError() {
                 const error = document.getElementById('authError');
                 if (error) error.classList.remove('show');
