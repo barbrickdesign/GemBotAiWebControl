@@ -43,6 +43,41 @@ TESTING:
 - Use TEST_UNIVERSE_KEY.html for quick testing
 - See 00_UNIVERSE_KEY_TESTING_CHECKLIST.md for full test suite
 ═══════════════════════════════════════════════════════════════════════════════
+
+MERLIN AI SYSTEM - GEMINI INTEGRATION 🧙‍♂️
+═══════════════════════════════════════════════════════════════════════════════
+Merlin AI is the intelligent brain behind repository valuation using Google Gemini 1.5 Flash.
+
+CORE FILES:
+- merlin-ai-integration.js - Main AI module with 6 flows
+- MERLIN_AI_TEST_DEMO.html - Interactive test suite
+- MERLIN_AI_INTEGRATION_GUIDE.md - Complete documentation
+
+KEY CAPABILITIES:
+1. analyzeCodeFlow() - Quality assessment (1-10), suggestions, security, performance
+2. summarizeRepositoryFlow() - Full repo analysis with architecture rating
+3. suggestFixFlow() - Actionable fix plans for issues
+4. predictValueImpactFlow() - Estimate value changes from proposed work
+5. compareRepositoriesFlow() - Side-by-side repo comparison
+6. helloFlow() - Test connection
+
+CONFIGURATION:
+- API Key: AIzaSyCKuf5EVZ-ldHErhG3OkIw9Zz6jb_w3nMc
+- Model: gemini-1.5-flash
+- Endpoint: https://generativelanguage.googleapis.com/v1beta
+- Firebase Collection: ai_summaries
+
+INTEGRATION:
+1. Load script: <script src="merlin-ai-integration.js"></script>
+2. Wait for init: window.merlinAI.isInitialized
+3. Call flows: await window.merlinAI.analyzeCodeFlow(data)
+4. Display results in UI
+
+TESTING:
+- Open MERLIN_AI_TEST_DEMO.html for interactive testing
+- Run all 6 tests to verify functionality
+- Check console for initialization status
+═══════════════════════════════════════════════════════════════════════════════
 -->
 
 <!-- Use this file to provide workspace-specific custom instructions to Copilot. For more details, visit https://code.visualstudio.com/docs/copilot/copilot-customization#_use-a-githubcopilotinstructionsmd-file -->
