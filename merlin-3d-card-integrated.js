@@ -36,6 +36,7 @@ class MerlinAICardIntegrated {
             heartProgress: 0,
             starProgress: 0
         };
+        this.currentContext = { topic: '', keywords: [], suggestions: [] };
         this.init();
     }
 
