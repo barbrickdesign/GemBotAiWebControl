@@ -463,6 +463,102 @@
             background: #374151;
             color: white;
         }
+        
+        /* FirebaseUI Dark Theme Overrides */
+        .firebaseui-container {
+            background: transparent !important;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+        }
+        .firebaseui-card-content,
+        .firebaseui-card-footer {
+            padding: 0 !important;
+        }
+        .mdl-card {
+            background: transparent !important;
+            box-shadow: none !important;
+        }
+        .firebaseui-idp-button {
+            background: #1a1f2e !important;
+            border: 1px solid #374151 !important;
+            border-radius: 8px !important;
+            margin-bottom: 10px !important;
+            transition: all 0.3s !important;
+        }
+        .firebaseui-idp-button:hover {
+            background: #2a2f3e !important;
+            border-color: #60a5fa !important;
+            transform: translateY(-2px);
+        }
+        .firebaseui-idp-text {
+            color: #e0e0e0 !important;
+            font-size: 14px !important;
+        }
+        .firebaseui-form-actions {
+            text-align: center !important;
+        }
+        .firebaseui-form-actions .firebaseui-id-submit {
+            background: #3b82f6 !important;
+            border-radius: 8px !important;
+            padding: 14px !important;
+            font-weight: bold !important;
+        }
+        .firebaseui-form-actions .firebaseui-id-submit:hover {
+            background: #2563eb !important;
+        }
+        .firebaseui-form-actions .firebaseui-id-secondary-link {
+            color: #60a5fa !important;
+        }
+        .mdl-textfield__input {
+            background: #0f1419 !important;
+            border: 1px solid #374151 !important;
+            border-radius: 8px !important;
+            color: #e0e0e0 !important;
+            padding: 14px !important;
+        }
+        .mdl-textfield__label {
+            color: #9ca3af !important;
+        }
+        .mdl-textfield--floating-label.is-focused .mdl-textfield__label,
+        .mdl-textfield--floating-label.is-dirty .mdl-textfield__label {
+            color: #60a5fa !important;
+        }
+        .mdl-textfield__input:focus {
+            border-color: #3b82f6 !important;
+        }
+        .firebaseui-tos,
+        .firebaseui-tos-link {
+            color: #9ca3af !important;
+        }
+        .firebaseui-tos-link:hover {
+            color: #60a5fa !important;
+        }
+        .firebaseui-title {
+            color: #60a5fa !important;
+            font-size: 18px !important;
+        }
+        .firebaseui-subtitle {
+            color: #9ca3af !important;
+        }
+        .firebaseui-error-wrapper {
+            background: rgba(239, 68, 68, 0.1) !important;
+            border: 1px solid #ef4444 !important;
+            border-radius: 8px !important;
+            margin: 10px 0 !important;
+        }
+        .firebaseui-error {
+            color: #fca5a5 !important;
+        }
+        .mdl-progress>.bufferbar,
+        .mdl-progress>.auxbar {
+            background: #1a1f2e !important;
+        }
+        .mdl-progress>.progressbar {
+            background: #3b82f6 !important;
+        }
+        .firebaseui-idp-google>.firebaseui-idp-icon-wrapper>.firebaseui-idp-icon {
+            height: 18px !important;
+            width: 18px !important;
+        }
     </style>
 </head>
 <body>
@@ -1688,7 +1784,8 @@
     async function initializeAuth() {
         await waitForFirebase();
         
-        window.firestoreUtils.onAuthStateChanged(window.firebaseAuth, (user) => {
+        // Use Firebase compat API
+        firebase.auth().onAuthStateChanged((user) => {
             if (user) {
                 state.currentUser = user;
                 state.isAuthenticated = true;
@@ -1700,6 +1797,11 @@
                 ui.signInBtn.style.display = 'none';
                 ui.signOutBtn.style.display = 'block';
                 console.log('✅ User authenticated:', user.email);
+                
+                // Close auth modal if open
+                if (authUI && authUI.modal) {
+                    authUI.closeModal();
+                }
                 
                 // Auto-load from Firebase if no data
                 if (state.nodes.length === 0) {
@@ -1728,25 +1830,22 @@
         ui.syncToFirebaseBtn.textContent = '⏳ Syncing...';
         
         try {
-            const { setDoc, doc, serverTimestamp } = window.firestoreUtils;
-            const db = window.firebaseDb;
+            const db = firebase.firestore();
             
             // Save network data
-            const networkDoc = doc(db, 'neural_networks', 'main_network');
-            await setDoc(networkDoc, {
+            await db.collection('neural_networks').doc('main_network').set({
                 nodes: state.nodes,
                 connections: state.connections,
-                updatedAt: serverTimestamp(),
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
                 updatedBy: state.currentUser.uid,
                 version: Date.now()
             });
             
             // Save individual node details
             for (const node of state.nodes) {
-                const nodeDoc = doc(db, 'project_nodes', node.id.replace(/\//g, '_'));
-                await setDoc(nodeDoc, {
+                await db.collection('project_nodes').doc(node.id.replace(/\//g, '_')).set({
                     ...node,
-                    updatedAt: serverTimestamp(),
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
                     updatedBy: state.currentUser.uid
                 });
             }
@@ -1775,14 +1874,12 @@
         ui.loadFromFirebaseBtn.textContent = '⏳ Loading...';
         
         try {
-            const { getDoc, doc } = window.firestoreUtils;
-            const db = window.firebaseDb;
+            const db = firebase.firestore();
             
             // Load network data
-            const networkDoc = doc(db, 'neural_networks', 'main_network');
-            const networkSnap = await getDoc(networkDoc);
+            const networkSnap = await db.collection('neural_networks').doc('main_network').get();
             
-            if (networkSnap.exists()) {
+            if (networkSnap.exists) {
                 const data = networkSnap.data();
                 state.nodes = data.nodes || [];
                 state.connections = data.connections || [];
