@@ -271,10 +271,11 @@ class LiveActivityFeed {
     }
     
     connectToAgentLogger() {
-        // Connect to AI agent logger if available
-        if (window.aiAgentLogger) {
-            const originalLog = window.aiAgentLogger.log.bind(window.aiAgentLogger);
-            window.aiAgentLogger.log = (agentId, entry) => {
+        // Connect to AI agent logger if available (check both naming conventions)
+        const logger = window.AIAgentLogger || window.aiAgentLogger;
+        if (logger) {
+            const originalLog = logger.log.bind(logger);
+            logger.log = (agentId, entry) => {
                 originalLog(agentId, entry);
                 
                 // Show in live feed
