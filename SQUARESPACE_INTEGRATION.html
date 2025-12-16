@@ -1,0 +1,417 @@
+<!-- 
+═══════════════════════════════════════════════════════════════════════════════
+GEMBOT AI CONTROL SYSTEM - SQUARESPACE CODE INJECTION
+═══════════════════════════════════════════════════════════════════════════════
+OWNERSHIP: Ryan Barbrick / Barbrick Design
+CONTACT: BarbrickDesign@gmail.com
+COPYRIGHT: © 2024-2025 Ryan Barbrick. All Rights Reserved.
+
+INSTRUCTIONS:
+1. In Squarespace, go to: Settings → Advanced → Code Injection
+2. Paste this ENTIRE code block into the "Header" section
+3. Click "Save"
+4. Visit your site - GemBot will load automatically
+
+FEATURES INCLUDED:
+- Merlin AI Assistant (Floating Card)
+- Live Activity Feed
+- AI Agent System
+- Solana Wallet Integration
+- Real-time Error Display
+- Game Systems
+- 3D Visualization
+- Marketplace
+
+CONFIGURATION:
+- Update BASE_URL below to your actual GitHub Pages or hosting URL
+- Keep all scripts in order - dependencies matter!
+═══════════════════════════════════════════════════════════════════════════════
+-->
+
+<!-- ═══════ CONFIGURATION ═══════ -->
+<script>
+    // ⚠️ UPDATE THIS URL TO YOUR ACTUAL HOSTING LOCATION
+    window.GEMBOT_BASE_URL = 'https://barbrickdesign.github.io/GemBotAiWebControl/';
+    
+    // Alternative: If hosting on your own domain
+    // window.GEMBOT_BASE_URL = 'https://yourdomain.com/gembot/';
+    
+    // For local testing only (remove for production)
+    // window.GEMBOT_BASE_URL = 'http://localhost:8000/';
+</script>
+
+<!-- ═══════ SQUARESPACE COMPATIBILITY FIXES ═══════ -->
+<script>
+    // Ensure GemBot loads after Squarespace's scripts
+    window.GEMBOT_SQUARESPACE_MODE = true;
+    
+    // Prevent conflicts with Squarespace's jQuery
+    window.GEMBOT_NO_CONFLICT = true;
+</script>
+
+<!-- ═══════ CRITICAL DEPENDENCIES ═══════ -->
+
+<!-- Firebase SDK (v12.6.0) - Authentication & Database -->
+<script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js';
+    import { getAuth, signInAnonymously } from 'https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js';
+    import { getDatabase } from 'https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js';
+    
+    window.firebaseSDK = { initializeApp, getAuth, signInAnonymously, getDatabase };
+    console.log('✅ Firebase SDK loaded for GemBot');
+</script>
+
+<!-- Babylon.js - 3D Engine -->
+<script src="https://cdn.babylonjs.com/babylon.js" crossorigin="anonymous"></script>
+<script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.babylonjs.com/cannon.js" crossorigin="anonymous"></script>
+
+<!-- Solana Web3.js - Blockchain Integration -->
+<script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@latest/lib/index.iife.min.js" crossorigin="anonymous"></script>
+
+<!-- QR Code Library -->
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js" crossorigin="anonymous"></script>
+
+<!-- Animate.css - Animations -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" crossorigin="anonymous">
+
+<!-- ═══════ GEMBOT CORE STYLES ═══════ -->
+<style id="gembot-core-styles">
+    /* Squarespace Compatibility Overrides */
+    #gembot-container * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+    
+    /* Ensure GemBot doesn't interfere with Squarespace */
+    #gembot-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 999999;
+        font-family: 'Courier New', monospace;
+    }
+    
+    /* Allow interaction with GemBot elements only */
+    #gembot-container > * {
+        pointer-events: auto;
+    }
+    
+    /* Merlin Card - Floating AI Assistant */
+    .merlin-card-container {
+        position: fixed !important;
+        z-index: 1000000 !important;
+        pointer-events: auto;
+    }
+    
+    /* Live Activity Feed */
+    #live-activity-feed {
+        position: fixed !important;
+        bottom: 20px;
+        right: 20px;
+        z-index: 999998 !important;
+        pointer-events: auto;
+    }
+    
+    /* Hide on mobile if needed */
+    @media (max-width: 768px) {
+        .merlin-card-container {
+            width: 300px !important;
+            height: 500px !important;
+        }
+        #live-activity-feed {
+            width: 280px !important;
+            max-height: 300px !important;
+        }
+    }
+    
+    /* Loading Indicator */
+    #gembot-loading {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(26, 31, 58, 0.95);
+        padding: 30px 50px;
+        border-radius: 15px;
+        border: 2px solid #4affff;
+        z-index: 999999;
+        text-align: center;
+        color: #4affff;
+        font-family: 'Courier New', monospace;
+        pointer-events: auto;
+    }
+    
+    #gembot-loading.hidden {
+        display: none;
+    }
+    
+    .loading-spinner {
+        width: 50px;
+        height: 50px;
+        border: 5px solid rgba(74, 255, 255, 0.3);
+        border-top-color: #4affff;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 15px;
+    }
+    
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+</style>
+
+<!-- ═══════ GEMBOT CONTAINER ═══════ -->
+<div id="gembot-container">
+    <!-- Loading Indicator -->
+    <div id="gembot-loading">
+        <div class="loading-spinner"></div>
+        <div style="font-size: 18px; font-weight: bold; margin-bottom: 10px;">
+            ⚡ Loading GemBot AI Control System
+        </div>
+        <div style="font-size: 12px; opacity: 0.7;">
+            Initializing Merlin AI Assistant...
+        </div>
+    </div>
+</div>
+
+<!-- ═══════ GEMBOT CORE SCRIPTS ═══════ -->
+<script>
+    (function() {
+        const BASE = window.GEMBOT_BASE_URL || '';
+        let loadedScripts = 0;
+        const totalScripts = 45; // Update this if adding more scripts
+        
+        // Script loading order is critical!
+        const scripts = [
+            // Core API & Logger
+            'gembot-api.js',
+            
+            // 3D Systems
+            'virtual-machine-3d.js',
+            'gembot-3d-init.js',
+            'gembot-farm-game.js',
+            
+            // Sync System
+            'gembot-sync-manager.js',
+            'gembot-sync-ui.js',
+            
+            // Knowledge Base
+            'knowledge-loader.js',
+            'merlin-intelligence-system.js',
+            'merlin-knowledge-integration.js',
+            'merlin-tooltip-system.js',
+            'knowledge-integration-examples.js',
+            
+            // Game Systems
+            'gembot-parts-database.js',
+            'gembot-faceting-designs.js',
+            'gembot-stl-catalog.js',
+            'gembot-game-cards.js',
+            'gembot-3d-printing.js',
+            'gembot-troubleshooting.js',
+            'gembot-game-master.js',
+            'merlin-enhanced-responses.js',
+            'gembot-game-integration.js',
+            'gembot-marketplace.js',
+            'gembot-fantasy-marketplace.js',
+            'arya-intel-system.js',
+            'gembot-3d-world.js',
+            'quantum-gem-visualizer.js',
+            'gembot-changelog.js',
+            'merlin-knowledge-base.js',
+            'comprehensive-test.js',
+            
+            // Academy & Panel Manager
+            'gembot-academy.js',
+            'gembot-panel-manager.js',
+            'gembot-3d-mirror.js',
+            'gembot-animations.js',
+            
+            // Merlin 3D Card
+            'merlin-3d-card-integrated.js',
+            
+            // GBUV Token System
+            'GBUV_VAULT_SYSTEM.js',
+            
+            // 3D Inventory
+            '3d-inventory-system.js',
+            
+            // Testing Agent
+            'gembot-testing-agent.js',
+            
+            // AI Agent Systems (Player Simulation, Logging, Leaderboard)
+            'ai-agent-players.js',
+            'ai-agent-logger.js',
+            'ai-agent-systems.js',
+            'ai-agent-news-referral.js',
+            
+            // Solana Integration
+            'solana-wallet-system.js',
+            'gbuv-distribution-trading.js',
+            
+            // Live Activity Feed (MUST BE LAST)
+            'live-activity-feed.js'
+        ];
+        
+        // CSS files
+        const stylesheets = [
+            'gembot-3d-world.css',
+            'gembot-academy.css',
+            'merlin-3d-card-integrated.css',
+            '3d-inventory-system.css',
+            'ai-agent-systems.css'
+        ];
+        
+        function updateProgress() {
+            loadedScripts++;
+            const percent = Math.round((loadedScripts / totalScripts) * 100);
+            const loading = document.getElementById('gembot-loading');
+            if (loading) {
+                const progressText = loading.querySelector('div:last-child');
+                if (progressText) {
+                    progressText.textContent = `Loading... ${percent}% (${loadedScripts}/${totalScripts})`;
+                }
+            }
+        }
+        
+        function loadScript(src) {
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = BASE + src;
+                script.onload = () => {
+                    console.log('✅ Loaded:', src);
+                    updateProgress();
+                    resolve();
+                };
+                script.onerror = () => {
+                    console.error('❌ Failed to load:', src);
+                    updateProgress();
+                    reject(new Error(`Failed to load ${src}`));
+                };
+                document.head.appendChild(script);
+            });
+        }
+        
+        function loadStylesheet(href) {
+            return new Promise((resolve) => {
+                const link = document.createElement('link');
+                link.rel = 'stylesheet';
+                link.href = BASE + href;
+                link.onload = () => {
+                    console.log('✅ Loaded stylesheet:', href);
+                    resolve();
+                };
+                link.onerror = () => {
+                    console.warn('⚠️ Failed to load stylesheet:', href);
+                    resolve(); // Don't block on CSS failures
+                };
+                document.head.appendChild(link);
+            });
+        }
+        
+        // Load everything when DOM is ready
+        function initGemBot() {
+            console.log('🚀 Initializing GemBot AI Control System on Squarespace...');
+            console.log('📁 Base URL:', BASE);
+            
+            // Load stylesheets first (non-blocking)
+            stylesheets.forEach(css => loadStylesheet(css));
+            
+            // Load scripts in sequence
+            scripts.reduce((promise, script) => {
+                return promise.then(() => loadScript(script));
+            }, Promise.resolve())
+            .then(() => {
+                console.log('✅ All GemBot systems loaded!');
+                
+                // Hide loading indicator
+                setTimeout(() => {
+                    const loading = document.getElementById('gembot-loading');
+                    if (loading) {
+                        loading.classList.add('hidden');
+                        setTimeout(() => loading.remove(), 500);
+                    }
+                }, 1000);
+                
+                // Initialize GemBot
+                if (typeof initializeGemBot === 'function') {
+                    initializeGemBot();
+                }
+                
+                // Show welcome message
+                if (window.liveActivityFeed) {
+                    setTimeout(() => {
+                        window.liveActivityFeed.log('SYSTEM', 'GemBot AI Control System initialized on Squarespace! 🚀');
+                        window.liveActivityFeed.log('MERLIN', 'Merlin AI Assistant ready to help!');
+                    }, 2000);
+                }
+            })
+            .catch(error => {
+                console.error('❌ Error loading GemBot:', error);
+                const loading = document.getElementById('gembot-loading');
+                if (loading) {
+                    loading.innerHTML = `
+                        <div style="color: #ff6b6b;">
+                            <div style="font-size: 40px; margin-bottom: 15px;">⚠️</div>
+                            <div style="font-size: 16px; font-weight: bold; margin-bottom: 10px;">
+                                Failed to Load GemBot
+                            </div>
+                            <div style="font-size: 12px; opacity: 0.8;">
+                                Check console for details<br>
+                                Verify BASE_URL is correct
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+        }
+        
+        // Wait for Squarespace to finish loading
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initGemBot);
+        } else {
+            // Squarespace already loaded, init immediately
+            initGemBot();
+        }
+        
+        // Expose initialization function globally
+        window.initializeGemBot = function() {
+            console.log('🎮 GemBot initialization complete');
+            
+            // Squarespace-specific adjustments
+            if (window.GEMBOT_SQUARESPACE_MODE) {
+                console.log('🏗️ Applying Squarespace compatibility fixes...');
+                
+                // Ensure Merlin card doesn't block Squarespace navigation
+                const merlinCard = document.getElementById('merlin-ai-card-integrated');
+                if (merlinCard) {
+                    merlinCard.style.zIndex = '1000000';
+                }
+                
+                // Position activity feed away from Squarespace elements
+                const activityFeed = document.getElementById('live-activity-feed');
+                if (activityFeed) {
+                    activityFeed.style.zIndex = '999998';
+                }
+            }
+        };
+    })();
+</script>
+
+<!-- ═══════ SQUARESPACE INTEGRATION COMPLETE ═══════ -->
+<script>
+    console.log('%c═══════════════════════════════════════════════════════════', 'color: #4affff; font-weight: bold;');
+    console.log('%c  GEMBOT AI CONTROL SYSTEM - SQUARESPACE EDITION', 'color: #4affff; font-weight: bold; font-size: 14px;');
+    console.log('%c═══════════════════════════════════════════════════════════', 'color: #4affff; font-weight: bold;');
+    console.log('%c  © 2024-2025 Ryan Barbrick / Barbrick Design', 'color: #9f7aea;');
+    console.log('%c  Contact: BarbrickDesign@gmail.com', 'color: #9f7aea;');
+    console.log('%c═══════════════════════════════════════════════════════════', 'color: #4affff; font-weight: bold;');
+    console.log('');
+    console.log('%c🚀 GemBot loading on Squarespace...', 'color: #ffd700; font-size: 12px;');
+    console.log('%c📡 Watch this console for initialization progress', 'color: #4ade80; font-size: 11px;');
+</script>
