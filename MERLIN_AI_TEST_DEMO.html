@@ -223,15 +223,72 @@
 
     <!-- Load Merlin AI Module -->
     <script src="merlin-ai-integration.js"></script>
+    <script src="automated-wallet-system.js"></script>
 
     <script>
+        // TEST WALLET - 1,000 GBUV for demo testing
+        const TEST_USER_WALLET = 'DEMO_TEST_WALLET_PUBLIC_KEY_123456789';
+        
+        // Initialize test wallet
+        function initializeTestWallet() {
+            const testWallet = {
+                username: 'demo_tester',
+                email: 'demo@gembot.test',
+                publicKey: TEST_USER_WALLET,
+                secretKey: [],
+                created: new Date().toISOString(),
+                balance: 0,
+                gbuvBalance: 1000,  // Start with 1,000 GBUV for testing
+                level: 1,
+                gems: 0,
+                welcomeBonus: 1000
+            };
+            
+            // Save to localStorage
+            const wallets = JSON.parse(localStorage.getItem('gembot_wallets') || '{}');
+            wallets[TEST_USER_WALLET] = testWallet;
+            localStorage.setItem('gembot_wallets', JSON.stringify(wallets));
+            localStorage.setItem(`wallet_demo_tester`, TEST_USER_WALLET);
+            
+            console.log('✅ Test wallet initialized with 1,000 GBUV');
+            return testWallet;
+        }
+        
+        // Initialize test wallet on page load
+        window.walletFactory = {
+            getWallet: (publicKey) => {
+                const wallets = JSON.parse(localStorage.getItem('gembot_wallets') || '{}');
+                return wallets[publicKey] || null;
+            },
+            saveWallet: (wallet) => {
+                const wallets = JSON.parse(localStorage.getItem('gembot_wallets') || '{}');
+                wallets[wallet.publicKey] = wallet;
+                localStorage.setItem('gembot_wallets', JSON.stringify(wallets));
+            },
+            transferGBUV: async (fromPublicKey, toPublicKey, amount) => {
+                const fromWallet = window.walletFactory.getWallet(fromPublicKey);
+                if (!fromWallet || fromWallet.gbuvBalance < amount) {
+                    throw new Error('Insufficient balance');
+                }
+                fromWallet.gbuvBalance -= amount;
+                window.walletFactory.saveWallet(fromWallet);
+                console.log(`💸 Transferred ${amount} GBUV from test wallet to treasury`);
+                return true;
+            }
+        };
+        
+        initializeTestWallet();
+        
         // Wait for Merlin AI to initialize
         let initCheckInterval = setInterval(() => {
             if (window.merlinAI && window.merlinAI.isInitialized) {
                 clearInterval(initCheckInterval);
                 document.getElementById('statusPanel').className = 'status online';
-                document.getElementById('statusText').textContent = '✅ Merlin AI Online - All Systems Ready';
+                const wallet = window.walletFactory.getWallet(TEST_USER_WALLET);
+                document.getElementById('statusText').textContent = 
+                    `✅ Merlin AI Online - Test Wallet: ${wallet.gbuvBalance} GBUV`;
                 console.log('✅ Demo ready - Merlin AI initialized');
+                console.log('💰 Test wallet balance:', wallet.gbuvBalance, 'GBUV');
             }
         }, 500);
 
@@ -263,16 +320,24 @@
             if (text) btn.textContent = text;
         }
 
-        // TEST 1: Hello Flow
+        // TEST 1: Hello Flow (1 GBUV)
         async function runTest1() {
             setButtonState('test1Btn', true, '⏳ Testing...');
             try {
-                const response = await window.merlinAI.helloFlow('Test User');
-                showResult(
-                    '🎤 Test 1: Hello Flow Results',
-                    response.text,
-                    { model: response.model, timestamp: response.timestamp, usage: response.usage }
-                );
+                const response = await window.merlinAI.helloFlow('Test User', TEST_USER_WALLET);
+                if (response.error) {
+                    showResult('🚫 Test 1 Failed - Payment Required', 
+                        `${response.message}\nCost: ${response.cost} GBUV\nYour Balance: ${response.balance} GBUV`);
+                } else {
+                    const wallet = window.walletFactory.getWallet(TEST_USER_WALLET);
+                    showResult(
+                        '🎤 Test 1: Hello Flow Results',
+                        response.text + `\n\n💰 Paid: 1 GBUV | Remaining Balance: ${wallet.gbuvBalance} GBUV`,
+                        { model: response.model, timestamp: response.timestamp, usage: response.usage }
+                    );
+                    document.getElementById('statusText').textContent = 
+                        `✅ Merlin AI Online - Test Wallet: ${wallet.gbuvBalance} GBUV`;
+                }
             } catch (error) {
                 showResult('❌ Test 1 Failed', error.message);
             } finally {
@@ -280,7 +345,7 @@
             }
         }
 
-        // TEST 2: Code Analysis Flow
+        // TEST 2: Code Analysis Flow (5 GBUV)
         async function runTest2() {
             setButtonState('test2Btn', true, '🔍 Analyzing...');
             try {
@@ -297,7 +362,16 @@
                     value: 2850
                 };
                 
-                const response = await window.merlinAI.analyzeCodeFlow(sampleNode);
+                const response = await window.merlinAI.analyzeCodeFlow(sampleNode, TEST_USER_WALLET);
+                
+                if (response.error) {
+                    showResult('🚫 Test 2 Failed - Payment Required', 
+                        `${response.message}\nCost: ${response.cost} GBUV\nYour Balance: ${response.balance} GBUV`);
+                    setButtonState('test2Btn', false, 'Analyze Sample Code');
+                    return;
+                }
+                
+                const wallet = window.walletFactory.getWallet(TEST_USER_WALLET);
                 const formatted = `
 Quality Score: ${response.quality}/10
 Reason: ${response.qualityReason}
@@ -313,6 +387,8 @@ ${response.security?.length > 0 ? response.security.map(s => `- ${s}`).join('\n'
 
 ⚡ Performance Optimizations:
 ${response.performance?.length > 0 ? response.performance.map(s => `- ${s}`).join('\n') : '- None suggested'}
+
+💰 Paid: 5 GBUV | Remaining Balance: ${wallet.gbuvBalance} GBUV
 
 ⏱️ Estimated Refactor Time: ${response.refactorHours} hours
 
@@ -347,9 +423,19 @@ ${response.performance?.length > 0 ? response.performance.map(s => `- ${s}`).joi
                     ]
                 };
                 
-                const response = await window.merlinAI.summarizeRepositoryFlow(sampleRepo);
-                showResult('📊 Test 3: Repository Summary', response.text,
-                    { model: response.model, timestamp: response.timestamp, usage: response.usage });
+                const response = await window.merlinAI.summarizeRepositoryFlow(sampleRepo, TEST_USER_WALLET);
+                
+                if (response.error) {
+                    showResult('🚫 Test 3 Failed - Payment Required', 
+                        `${response.message}\nCost: ${response.cost} GBUV\nYour Balance: ${response.balance} GBUV`);
+                } else {
+                    const wallet = window.walletFactory.getWallet(TEST_USER_WALLET);
+                    showResult('📊 Test 3: Repository Summary', 
+                        response.text + `\n\n💰 Paid: 25 GBUV | Remaining Balance: ${wallet.gbuvBalance} GBUV`,
+                        { model: response.model, timestamp: response.timestamp, usage: response.usage });
+                    document.getElementById('statusText').textContent = 
+                        `✅ Merlin AI Online - Test Wallet: ${wallet.gbuvBalance} GBUV`;
+                }
             } catch (error) {
                 showResult('❌ Test 3 Failed', error.message);
             } finally {
@@ -373,9 +459,19 @@ ${response.performance?.length > 0 ? response.performance.map(s => `- ${s}`).joi
                     }
                 };
                 
-                const response = await window.merlinAI.suggestFixFlow(sampleIssue);
-                showResult('🔧 Test 4: Fix Suggestion', response.text,
-                    { model: response.model, timestamp: response.timestamp, usage: response.usage });
+                const response = await window.merlinAI.suggestFixFlow(sampleIssue, TEST_USER_WALLET);
+                
+                if (response.error) {
+                    showResult('🚫 Test 4 Failed - Payment Required', 
+                        `${response.message}\nCost: ${response.cost} GBUV\nYour Balance: ${response.balance} GBUV`);
+                } else {
+                    const wallet = window.walletFactory.getWallet(TEST_USER_WALLET);
+                    showResult('🔧 Test 4: Fix Suggestion', 
+                        response.text + `\n\n💰 Paid: 10 GBUV | Remaining Balance: ${wallet.gbuvBalance} GBUV`,
+                        { model: response.model, timestamp: response.timestamp, usage: response.usage });
+                    document.getElementById('statusText').textContent = 
+                        `✅ Merlin AI Online - Test Wallet: ${wallet.gbuvBalance} GBUV`;
+                }
             } catch (error) {
                 showResult('❌ Test 4 Failed', error.message);
             } finally {
@@ -400,9 +496,19 @@ ${response.performance?.length > 0 ? response.performance.map(s => `- ${s}`).joi
                     { description: 'Optimize database queries', estimatedHours: 6 }
                 ];
                 
-                const response = await window.merlinAI.predictValueImpactFlow(currentRepo, proposedChanges);
-                showResult('💎 Test 5: Value Prediction', response.text,
-                    { model: response.model, timestamp: response.timestamp, usage: response.usage });
+                const response = await window.merlinAI.predictValueImpactFlow(currentRepo, proposedChanges, TEST_USER_WALLET);
+                
+                if (response.error) {
+                    showResult('🚫 Test 5 Failed - Payment Required', 
+                        `${response.message}\nCost: ${response.cost} GBUV\nYour Balance: ${response.balance} GBUV`);
+                } else {
+                    const wallet = window.walletFactory.getWallet(TEST_USER_WALLET);
+                    showResult('💎 Test 5: Value Prediction', 
+                        response.text + `\n\n💰 Paid: 15 GBUV | Remaining Balance: ${wallet.gbuvBalance} GBUV`,
+                        { model: response.model, timestamp: response.timestamp, usage: response.usage });
+                    document.getElementById('statusText').textContent = 
+                        `✅ Merlin AI Online - Test Wallet: ${wallet.gbuvBalance} GBUV`;
+                }
             } catch (error) {
                 showResult('❌ Test 5 Failed', error.message);
             } finally {
@@ -430,9 +536,19 @@ ${response.performance?.length > 0 ? response.performance.map(s => `- ${s}`).joi
                     avgComplexity: 52.1
                 };
                 
-                const response = await window.merlinAI.compareRepositoriesFlow(repo1, repo2);
-                showResult('⚖️ Test 6: Repository Comparison', response.text,
-                    { model: response.model, timestamp: response.timestamp, usage: response.usage });
+                const response = await window.merlinAI.compareRepositoriesFlow(repo1, repo2, TEST_USER_WALLET);
+                
+                if (response.error) {
+                    showResult('🚫 Test 6 Failed - Payment Required', 
+                        `${response.message}\nCost: ${response.cost} GBUV\nYour Balance: ${response.balance} GBUV`);
+                } else {
+                    const wallet = window.walletFactory.getWallet(TEST_USER_WALLET);
+                    showResult('⚖️ Test 6: Repository Comparison', 
+                        response.text + `\n\n💰 Paid: 20 GBUV | Remaining Balance: ${wallet.gbuvBalance} GBUV`,
+                        { model: response.model, timestamp: response.timestamp, usage: response.usage });
+                    document.getElementById('statusText').textContent = 
+                        `✅ Merlin AI Online - Test Wallet: ${wallet.gbuvBalance} GBUV`;
+                }
             } catch (error) {
                 showResult('❌ Test 6 Failed', error.message);
             } finally {

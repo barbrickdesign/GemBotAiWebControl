@@ -420,7 +420,24 @@ window.merlinAI.telemetry.enabled = true;
 ✅ **Export functionality ready**  
 ✅ **All flows instrumented**  
 ✅ **Browser-compatible (no npm needed)**  
+✅ **GBUV payment system integrated**  
 
 **🎉 TELEMETRY IS OPERATIONAL! 🎉**
 
 Every Merlin AI call is now tracked and logged to Firebase! 📊
+
+---
+
+## 💰 NEW: PAYMENT TRACKING
+
+All AI operations now require GBUV tokens! Telemetry tracks both usage AND payments.
+
+### Payment Metrics:
+- Cost per flow
+- Total GBUV collected
+- Payment success/failure rates
+- User spending patterns
+
+See [MERLIN_AI_PAYMENT_SYSTEM.md](MERLIN_AI_PAYMENT_SYSTEM.md) for complete payment documentation.
+
+**Treasury Wallet:** `6HTjfgWZYMbENnMAJJFhxWR2VZDxdze3qV7zznSAsfk`
