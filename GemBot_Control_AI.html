@@ -91,8 +91,8 @@
         <!-- Firebase Modular SDK v12.6.0 -->
         <script type="module">
             import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-            import { getAuth } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
-            import { getFirestore } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+            import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+            import { getFirestore, doc, setDoc, getDoc, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
             import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-analytics.js";
 
             const firebaseConfig = {
@@ -110,8 +110,27 @@
             window.firebaseAuth = getAuth(window.firebaseApp);
             window.firebaseDb = getFirestore(window.firebaseApp);
             window.firebaseAnalytics = getAnalytics(window.firebaseApp);
+            
+            // Expose modular SDK functions globally for auth system
+            window.firebaseAuthFunctions = {
+                createUserWithEmailAndPassword: (email, password) => createUserWithEmailAndPassword(window.firebaseAuth, email, password),
+                signInWithEmailAndPassword: (email, password) => signInWithEmailAndPassword(window.firebaseAuth, email, password),
+                signOut: () => signOut(window.firebaseAuth),
+                onAuthStateChanged: (callback) => onAuthStateChanged(window.firebaseAuth, callback)
+            };
+            
+            // Expose modular SDK Firestore functions globally
+            window.firebaseDbFunctions = {
+                doc: (path, ...pathSegments) => doc(window.firebaseDb, path, ...pathSegments),
+                setDoc: setDoc,
+                getDoc: getDoc,
+                collection: (path) => collection(window.firebaseDb, path),
+                addDoc: addDoc,
+                serverTimestamp: serverTimestamp
+            };
+            
             window.firebaseInitialized = true;
-            console.log('🔥 Firebase modular SDK initialized');
+            console.log('🔥 Firebase modular SDK initialized with auth & firestore functions');
         </script>
     
     <!-- PROPRIETARY OWNERSHIP VERIFICATION - DO NOT REMOVE -->
