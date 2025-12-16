@@ -773,22 +773,51 @@ class MerlinAICardIntegrated {
         const wasGuided = this.analyzeAndGuide(message);
 
         if (!wasGuided) {
-            // Connect to actual Merlin AI system
-            if (typeof sendMessage === 'function') {
-                // Use main Merlin AI function
-                sendMessage(message).then(response => {
-                    this.addMessage('merlin', response);
-                    this.animateWizard({ intensity: 2, color: '#3b82f6' });
-                    
-                    if (window.liveActivityFeed) {
-                        window.liveActivityFeed.log('MERLIN', `Response sent`);
-                    }
-                }).catch(err => {
-                    console.error('Merlin AI error:', err);
-                    this.addMessage('merlin', 'I\'m having trouble connecting. Let me try to help anyway...');
-                });
+            // Show typing indicator
+            this.addMessage('merlin', '✨ Thinking...');
+            
+            // Connect to Merlin AI system (window.merlinAI.generate)
+            if (window.merlinAI && window.merlinAI.isInitialized && typeof window.merlinAI.generate === 'function') {
+                // Use Merlin AI Gemini integration
+                const prompt = `You are Merlin, a wise and friendly AI wizard assistant for GemBot - a gemstone faceting automation system. 
+                You help users with:
+                - Gemstone faceting and cutting techniques
+                - GemBot machine controls and calibration
+                - The GemBot game, marketplace, and GBUV token economy
+                - General questions about gems, minerals, and lapidary
+                
+                Be helpful, magical, and concise. Add occasional wizard flair (✨🔮⚗️).
+                
+                User question: ${message}`;
+                
+                window.merlinAI.generate(prompt, { temperature: 0.8, maxTokens: 500 })
+                    .then(result => {
+                        // Remove typing indicator
+                        this.removeLastMessage();
+                        
+                        if (result.text) {
+                            this.addMessage('merlin', result.text);
+                            this.animateWizard({ intensity: 2, color: '#3b82f6' });
+                        } else if (result.error) {
+                            this.addMessage('merlin', `🔮 My crystal ball is cloudy... ${result.error}`);
+                        }
+                        
+                        if (window.liveActivityFeed) {
+                            window.liveActivityFeed.log('MERLIN', `Response sent`);
+                        }
+                    })
+                    .catch(err => {
+                        console.error('Merlin AI error:', err);
+                        this.removeLastMessage();
+                        this.addMessage('merlin', '🔮 My magic is temporarily disrupted. Let me try a simpler response...');
+                        setTimeout(() => {
+                            const fallbackResponse = this.generateIntelligentResponse(message);
+                            this.addMessage('merlin', fallbackResponse);
+                        }, 500);
+                    });
             } else if (window.merlin && typeof window.merlin.respond === 'function') {
-                // Alternative Merlin connection
+                // Alternative Merlin connection (legacy)
+                this.removeLastMessage();
                 const response = window.merlin.respond(message);
                 setTimeout(() => {
                     this.addMessage('merlin', response);
@@ -796,12 +825,21 @@ class MerlinAICardIntegrated {
                 }, 500);
             } else {
                 // Fallback intelligent response
+                console.warn('⚠️ Merlin AI not available, using fallback responses');
+                this.removeLastMessage();
                 setTimeout(() => {
                     const response = this.generateIntelligentResponse(message);
                     this.addMessage('merlin', response);
                     this.animateWizard({ intensity: 2, color: '#3b82f6' });
                 }, 500);
             }
+        }
+    }
+    
+    removeLastMessage() {
+        const messagesContainer = this.card.querySelector('#merlinMessages');
+        if (messagesContainer && messagesContainer.lastChild) {
+            messagesContainer.removeChild(messagesContainer.lastChild);
         }
     }
 
