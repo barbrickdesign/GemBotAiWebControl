@@ -341,6 +341,15 @@ class MerlinAICardIntegrated {
             });
         }
 
+        // Voice input button
+        const voiceBtn = this.card.querySelector('#merlinVoiceBtn');
+        if (voiceBtn) {
+            voiceBtn.addEventListener('click', () => this.toggleVoiceInput());
+        }
+        
+        // Initialize voice systems
+        this.initVoiceSystems();
+
         // Settings
         const gemColorPicker = this.card.querySelector('#gemColorPicker');
         if (gemColorPicker) {
@@ -358,6 +367,161 @@ class MerlinAICardIntegrated {
 
         // Gem dragging
         this.setupGemDragging();
+    }
+    
+    // ═══════════════════════════════════════════════════════════════════════════
+    // VOICE INPUT/OUTPUT SYSTEM
+    // ═══════════════════════════════════════════════════════════════════════════
+    
+    initVoiceSystems() {
+        // Initialize Speech Recognition (Voice Input)
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (SpeechRecognition) {
+            this.recognition = new SpeechRecognition();
+            this.recognition.continuous = false;
+            this.recognition.interimResults = true;
+            this.recognition.lang = 'en-US';
+            
+            this.recognition.onstart = () => {
+                this.isListening = true;
+                const voiceBtn = this.card.querySelector('#merlinVoiceBtn');
+                const voiceStatus = this.card.querySelector('#merlinVoiceStatus');
+                if (voiceBtn) {
+                    voiceBtn.classList.add('listening');
+                    voiceBtn.style.background = '#ff6b6b';
+                }
+                if (voiceStatus) voiceStatus.style.display = 'flex';
+                console.log('🎤 Merlin listening...');
+            };
+            
+            this.recognition.onresult = (event) => {
+                let transcript = '';
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    transcript += event.results[i][0].transcript;
+                }
+                
+                const input = this.card.querySelector('#merlinInput');
+                if (input) {
+                    input.value = transcript;
+                    input.style.opacity = event.results[event.results.length - 1].isFinal ? '1' : '0.6';
+                }
+            };
+            
+            this.recognition.onend = () => {
+                this.isListening = false;
+                const voiceBtn = this.card.querySelector('#merlinVoiceBtn');
+                const voiceStatus = this.card.querySelector('#merlinVoiceStatus');
+                if (voiceBtn) {
+                    voiceBtn.classList.remove('listening');
+                    voiceBtn.style.background = '';
+                }
+                if (voiceStatus) voiceStatus.style.display = 'none';
+                
+                // Auto-send if we have text
+                const input = this.card.querySelector('#merlinInput');
+                if (input && input.value.trim()) {
+                    setTimeout(() => this.sendMessage(), 300);
+                }
+            };
+            
+            this.recognition.onerror = (e) => {
+                console.error('🎤 Voice error:', e.error);
+                this.isListening = false;
+                const voiceBtn = this.card.querySelector('#merlinVoiceBtn');
+                if (voiceBtn) {
+                    voiceBtn.classList.remove('listening');
+                    voiceBtn.style.background = '';
+                }
+            };
+            
+            console.log('✅ Merlin Voice Input initialized');
+        } else {
+            console.warn('⚠️ Speech Recognition not supported');
+        }
+        
+        // Initialize Speech Synthesis (Voice Output)
+        this.voiceEnabled = true;
+        this.selectedVoice = null;
+        this.loadVoices();
+        
+        if (window.speechSynthesis) {
+            window.speechSynthesis.onvoiceschanged = () => this.loadVoices();
+        }
+    }
+    
+    loadVoices() {
+        if (!window.speechSynthesis) return;
+        
+        const voices = window.speechSynthesis.getVoices();
+        // Prefer British English or similar wizardly voices
+        this.selectedVoice = voices.find(v => 
+            v.name.includes('Daniel') || 
+            v.name.includes('UK') || 
+            v.name.includes('British') ||
+            v.lang === 'en-GB'
+        ) || voices.find(v => v.lang.startsWith('en')) || voices[0];
+        
+        if (this.selectedVoice) {
+            console.log('🔊 Merlin voice:', this.selectedVoice.name);
+        }
+    }
+    
+    toggleVoiceInput() {
+        if (!this.recognition) {
+            this.addMessage('🎤 Voice input not supported in this browser. Try Chrome or Edge!', 'system');
+            return;
+        }
+        
+        if (this.isListening) {
+            this.recognition.stop();
+        } else {
+            try {
+                this.recognition.start();
+            } catch (e) {
+                console.error('Voice start error:', e);
+            }
+        }
+    }
+    
+    speak(text) {
+        if (!this.voiceEnabled || !window.speechSynthesis) return;
+        
+        // Cancel any ongoing speech
+        window.speechSynthesis.cancel();
+        
+        // Clean text for speech
+        const cleanText = text
+            .replace(/[*_~`#]/g, '')
+            .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+            .replace(/[^\w\s!?.,\-']/g, '')
+            .trim();
+        
+        if (!cleanText) return;
+        
+        const utterance = new SpeechSynthesisUtterance(cleanText);
+        utterance.voice = this.selectedVoice;
+        utterance.rate = 1.0;
+        utterance.pitch = 0.9; // Slightly deeper for wizard effect
+        utterance.volume = 0.9;
+        
+        utterance.onstart = () => {
+            this.animateWizard({ intensity: 2, color: '#9333ea' });
+            const avatar = this.card.querySelector('.merlin-avatar');
+            if (avatar) avatar.classList.add('speaking');
+        };
+        
+        utterance.onend = () => {
+            const avatar = this.card.querySelector('.merlin-avatar');
+            if (avatar) avatar.classList.remove('speaking');
+        };
+        
+        window.speechSynthesis.speak(utterance);
+        console.log('🔊 Merlin speaks:', cleanText.substring(0, 50) + '...');
+    }
+    
+    toggleVoice() {
+        this.voiceEnabled = !this.voiceEnabled;
+        this.addMessage(this.voiceEnabled ? '🔊 Voice output enabled' : '🔇 Voice output disabled', 'system');
     }
 
     initCanvas3D() {
@@ -805,6 +969,8 @@ class MerlinAICardIntegrated {
                         if (result.text) {
                             this.addMessage('merlin', result.text);
                             this.animateWizard({ intensity: 2, color: '#3b82f6' });
+                            // Speak the response
+                            this.speak(result.text);
                         } else if (result.error) {
                             this.addMessage('merlin', `🔮 My crystal ball is cloudy... ${result.error}`);
                         }
@@ -820,6 +986,7 @@ class MerlinAICardIntegrated {
                         setTimeout(() => {
                             const fallbackResponse = this.generateIntelligentResponse(message);
                             this.addMessage('merlin', fallbackResponse);
+                            this.speak(fallbackResponse);
                         }, 500);
                     });
             } else if (window.merlin && typeof window.merlin.respond === 'function') {
@@ -829,6 +996,7 @@ class MerlinAICardIntegrated {
                 setTimeout(() => {
                     this.addMessage('merlin', response);
                     this.animateWizard({ intensity: 2, color: '#3b82f6' });
+                    this.speak(response);
                 }, 500);
             } else {
                 // Fallback intelligent response
@@ -838,6 +1006,7 @@ class MerlinAICardIntegrated {
                     const response = this.generateIntelligentResponse(message);
                     this.addMessage('merlin', response);
                     this.animateWizard({ intensity: 2, color: '#3b82f6' });
+                    this.speak(response);
                 }, 500);
             }
         }
