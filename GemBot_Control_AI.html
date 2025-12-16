@@ -240,6 +240,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@latest/lib/index.iife.min.js"></script>
     <script src="./solana-wallet-system.js"></script>
     <script src="./automated-wallet-system.js"></script>
+    <script src="./anti-fraud-system.js"></script>
     <script src="./gbuv-distribution-trading.js"></script>
     
     <!-- Live Activity Feed - Real-time site activity display -->
@@ -418,7 +419,8 @@
                         <div style="background: rgba(0,0,0,0.3); padding: 20px; border-radius: 10px; margin: 20px 0;">
                             <div style="margin-bottom: 15px;">
                                 <strong style="color: #ffd700;">💰 Welcome Bonus:</strong>
-                                <span style="color: #4affff; font-size: 24px; margin-left: 10px;">100 GBUV</span>
+                                <span style="color: #4affff; font-size: 24px; margin-left: 10px;">${wallet.welcomeBonus || 100} GBUV</span>
+                                ${(wallet.security?.flagged || wallet.security?.reducedBonus) ? '<div style="color: #ffeb3b; font-size: 12px; margin-top: 5px;">⚠️ Account under security review - reduced bonus</div>' : ''}
                             </div>
                             <div style="margin-bottom: 15px;">
                                 <strong style="color: #ffd700;">📍 Your Wallet Address:</strong>

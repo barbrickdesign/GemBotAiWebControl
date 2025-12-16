@@ -32,6 +32,22 @@ class GemBotWalletFactory {
         console.log(`🔨 Creating wallet for ${username}...`);
         
         try {
+            // 🛡️ SECURITY CHECK - Run anti-fraud analysis
+            const securityCheck = await window.securitySystem.checkRegistrationSecurity(username, email);
+            console.log(`🔍 Security Score: ${securityCheck.score}/100`);
+            
+            // Block if security threshold exceeded
+            if (!securityCheck.allowed) {
+                throw new Error(securityCheck.reason);
+            }
+            
+            // Determine welcome bonus based on security score
+            let welcomeBonus = 100; // Standard bonus
+            if (securityCheck.flagged || securityCheck.reducedBonus) {
+                welcomeBonus = 10; // Reduced bonus for suspicious accounts
+                console.warn(`⚠️ Account flagged - reduced bonus: ${welcomeBonus} GBUV`);
+            }
+            
             // Generate new keypair
             const keypair = solanaWeb3.Keypair.generate();
             const publicKey = keypair.publicKey.toString();
@@ -47,22 +63,32 @@ class GemBotWalletFactory {
                 balance: 0,
                 gbuvBalance: 0,
                 level: 1,
-                gems: 0
+                gems: 0,
+                security: {
+                    score: securityCheck.score,
+                    flagged: securityCheck.flagged || false,
+                    reducedBonus: securityCheck.reducedBonus || false
+                },
+                welcomeBonus: welcomeBonus
             };
             
             // Save to storage
             this.saveWallet(wallet);
             
-            // Fund with starter GBUV (100 GBUV welcome bonus)
-            await this.fundNewWallet(publicKey, 100);
+            // Fund with starter GBUV (100 GBUV or 10 GBUV if flagged)
+            await this.fundNewWallet(publicKey, welcomeBonus);
             
             console.log(`✅ Wallet created: ${publicKey}`);
-            console.log(`💎 Funded with 100 GBUV starter bonus`);
+            console.log(`💎 Funded with ${welcomeBonus} GBUV starter bonus`);
             
             // Log to activity feed
             if (window.liveActivityFeed) {
-                window.liveActivityFeed.log('SYSTEM', `New user ${username} joined! Wallet created.`);
-                window.liveActivityFeed.log('SYSTEM', `Welcome bonus: 100 GBUV sent to ${username}`);
+                if (securityCheck.flagged) {
+                    window.liveActivityFeed.log('SECURITY', `⚠️ Flagged account ${username} created (${welcomeBonus} GBUV)`);
+                } else {
+                    window.liveActivityFeed.log('SYSTEM', `New user ${username} joined! Wallet created.`);
+                    window.liveActivityFeed.log('SYSTEM', `Welcome bonus: ${welcomeBonus} GBUV sent to ${username}`);
+                }
             }
             
             return wallet;
