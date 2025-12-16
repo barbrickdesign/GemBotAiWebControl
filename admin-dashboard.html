@@ -1261,6 +1261,119 @@
             cursor: pointer;
             font-size: 18px;
         }
+        
+        /* Admin Dashboard New Sections */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        
+        .data-table thead {
+            background: var(--bg-card);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .data-table th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--accent-cyan);
+            border-bottom: 2px solid var(--border-color);
+        }
+        
+        .data-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .data-table tr:hover {
+            background: rgba(0, 255, 255, 0.05);
+        }
+        
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .status-badge.active {
+            background: rgba(0, 255, 136, 0.2);
+            color: var(--accent-green);
+        }
+        
+        .status-badge.inactive {
+            background: rgba(255, 200, 0, 0.2);
+            color: var(--accent-yellow);
+        }
+        
+        .score-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .score-badge.green {
+            background: rgba(0, 255, 136, 0.2);
+            color: var(--accent-green);
+        }
+        
+        .score-badge.yellow {
+            background: rgba(255, 200, 0, 0.2);
+            color: var(--accent-yellow);
+        }
+        
+        .score-badge.red {
+            background: rgba(255, 0, 136, 0.2);
+            color: var(--accent-magenta);
+        }
+        
+        .balance-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            background: rgba(0, 255, 255, 0.2);
+            color: var(--accent-cyan);
+        }
+        
+        .btn-action {
+            padding: 6px 12px;
+            margin: 0 2px;
+            border: none;
+            border-radius: 6px;
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        .btn-action:hover {
+            background: var(--accent-cyan);
+            color: var(--bg-dark);
+            transform: translateY(-2px);
+        }
+        
+        .search-input {
+            padding: 8px 15px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 14px;
+            width: 250px;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 0 3px rgba(0, 255, 255, 0.1);
+        }
     </style>
 </head>
 <body>
@@ -1283,6 +1396,8 @@
                 <nav class="header-nav">
                     <button class="nav-btn active" onclick="showSection('overview')">📊 Overview</button>
                     <button class="nav-btn" onclick="showSection('ai-agents')">🤖 AI Agents</button>
+                    <button class="nav-btn" onclick="showSection('security')">🛡️ Security</button>
+                    <button class="nav-btn" onclick="showSection('wallets')">💎 Wallets</button>
                     <button class="nav-btn" onclick="showSection('editor')">💻 Code Editor</button>
                     <button class="nav-btn" onclick="showSection('visual')">🎨 Visual Editor</button>
                     <button class="nav-btn" onclick="showSection('users')">👥 Users</button>
@@ -1344,6 +1459,191 @@
                         <div class="activity-log" id="activityLog">
                             <!-- Log entries populated by JS -->
                         </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- AI Agents Section -->
+            <section id="section-ai-agents" class="section">
+                <h2 style="margin-bottom: 20px;">🤖 AI Agent Management</h2>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Total Agents</h3>
+                        <div class="stat-value cyan" id="statTotalAgents">0</div>
+                        <div class="stat-change">System-wide</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Active Agents</h3>
+                        <div class="stat-value green" id="statActiveAgents">0</div>
+                        <div class="stat-change">Currently running</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Stopped Agents</h3>
+                        <div class="stat-value yellow" id="statStoppedAgents">0</div>
+                        <div class="stat-change">Inactive</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Tasks</h3>
+                        <div class="stat-value magenta" id="statTotalTasks">0</div>
+                        <div class="stat-change">Completed</div>
+                    </div>
+                </div>
+                
+                <div class="quick-actions">
+                    <button class="action-btn" onclick="refreshAIAgents()">🔄 Refresh Agents</button>
+                    <button class="action-btn" onclick="spawnNewAgent()">➕ Spawn Agent</button>
+                    <button class="action-btn" onclick="stopAllAgents()">⏸️ Stop All</button>
+                    <button class="action-btn danger" onclick="clearAllAgents()">🗑️ Clear All</button>
+                </div>
+                
+                <div class="panel">
+                    <div class="panel-header">
+                        <h3 class="panel-title">🤖 Active AI Agents</h3>
+                        <input type="text" class="search-input" placeholder="Search agents..." onkeyup="filterAgents(this.value)">
+                    </div>
+                    <div class="panel-body">
+                        <table class="data-table" id="agentsTable">
+                            <thead>
+                                <tr>
+                                    <th>Agent ID</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th>Tasks Completed</th>
+                                    <th>Uptime</th>
+                                    <th>Last Active</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="agentsTableBody">
+                                <tr><td colspan="7" style="text-align:center;">Loading agents...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Security Section -->
+            <section id="section-security" class="section">
+                <h2 style="margin-bottom: 20px;">🛡️ Security Dashboard</h2>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Total Registrations</h3>
+                        <div class="stat-value cyan" id="statTotalReg">0</div>
+                        <div class="stat-change">All accounts</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Safe Accounts</h3>
+                        <div class="stat-value green" id="statSafeAccounts">0</div>
+                        <div class="stat-change">✅ Verified</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Flagged Accounts</h3>
+                        <div class="stat-value yellow" id="statFlaggedAccounts">0</div>
+                        <div class="stat-change">⚠️ Suspicious</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Avg Suspicion Score</h3>
+                        <div class="stat-value" id="statAvgScore">0</div>
+                        <div class="stat-change">0-100 scale</div>
+                    </div>
+                </div>
+                
+                <div class="quick-actions">
+                    <button class="action-btn" onclick="refreshSecurity()">🔄 Refresh Security</button>
+                    <button class="action-btn" onclick="viewIPTracking()">📍 IP Tracking</button>
+                    <button class="action-btn" onclick="exportSecurityLog()">📥 Export Log</button>
+                    <button class="action-btn danger" onclick="resetSecurityData()">🔄 Reset Data</button>
+                </div>
+                
+                <div class="panel">
+                    <div class="panel-header">
+                        <h3 class="panel-title">🛡️ Security Flags</h3>
+                        <select class="search-input" onchange="filterSecurity(this.value)">
+                            <option value="all">All Accounts</option>
+                            <option value="safe">Safe Only</option>
+                            <option value="flagged">Flagged Only</option>
+                            <option value="high">High Risk Only</option>
+                        </select>
+                    </div>
+                    <div class="panel-body">
+                        <table class="data-table" id="securityTable">
+                            <thead>
+                                <tr>
+                                    <th>Username</th>
+                                    <th>Email</th>
+                                    <th>IP Address</th>
+                                    <th>Score</th>
+                                    <th>Status</th>
+                                    <th>Registered</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="securityTableBody">
+                                <tr><td colspan="7" style="text-align:center;">Loading security data...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Wallets Section -->
+            <section id="section-wallets" class="section">
+                <h2 style="margin-bottom: 20px;">💎 Wallet Management</h2>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Total Wallets</h3>
+                        <div class="stat-value cyan" id="statTotalWallets">0</div>
+                        <div class="stat-change">Created</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total GBUV</h3>
+                        <div class="stat-value green" id="statTotalGBUV">0</div>
+                        <div class="stat-change">In circulation</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Average Balance</h3>
+                        <div class="stat-value yellow" id="statAvgBalance">0</div>
+                        <div class="stat-change">Per wallet</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Bonuses Distributed</h3>
+                        <div class="stat-value magenta" id="statBonusesGiven">0</div>
+                        <div class="stat-change">Total GBUV</div>
+                    </div>
+                </div>
+                
+                <div class="quick-actions">
+                    <button class="action-btn" onclick="refreshWallets()">🔄 Refresh Wallets</button>
+                    <button class="action-btn" onclick="createNewWallet()">➕ Create Wallet</button>
+                    <button class="action-btn" onclick="airdropGBUV()">🎁 Airdrop GBUV</button>
+                    <button class="action-btn" onclick="exportWallets()">📥 Export Wallets</button>
+                </div>
+                
+                <div class="panel">
+                    <div class="panel-header">
+                        <h3 class="panel-title">💎 All Wallets</h3>
+                        <input type="text" class="search-input" placeholder="Search wallets..." onkeyup="filterWallets(this.value)">
+                    </div>
+                    <div class="panel-body">
+                        <table class="data-table" id="walletsTable">
+                            <thead>
+                                <tr>
+                                    <th>Username</th>
+                                    <th>Public Key</th>
+                                    <th>Balance (GBUV)</th>
+                                    <th>Welcome Bonus</th>
+                                    <th>Security Score</th>
+                                    <th>Created</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="walletsTableBody">
+                                <tr><td colspan="7" style="text-align:center;">Loading wallets...</td></tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </section>
@@ -1895,6 +2195,325 @@
             refreshStats();
             refreshUsers();
             loadActivityLog();
+            refreshAIAgents();
+            refreshSecurity();
+            refreshWallets();
+        }
+        
+        // ==================== AI AGENTS ====================
+        async function refreshAIAgents() {
+            try {
+                const agents = window.gemBotAdminAPI ? await window.gemBotAdminAPI.getAllAIAgents() : [];
+                
+                // Update stats
+                const active = agents.filter(a => a.status === 'running').length;
+                const stopped = agents.filter(a => a.status === 'stopped').length;
+                const totalTasks = agents.reduce((sum, a) => sum + (a.tasksCompleted || 0), 0);
+                
+                document.getElementById('statTotalAgents').textContent = agents.length;
+                document.getElementById('statActiveAgents').textContent = active;
+                document.getElementById('statStoppedAgents').textContent = stopped;
+                document.getElementById('statTotalTasks').textContent = totalTasks;
+                
+                // Update table
+                const tbody = document.getElementById('agentsTableBody');
+                if (agents.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No AI agents found. Spawn a new agent to get started!</td></tr>';
+                    return;
+                }
+                
+                tbody.innerHTML = agents.map(agent => `
+                    <tr>
+                        <td><code>${agent.agentId}</code></td>
+                        <td>${agent.type}</td>
+                        <td><span class="status-badge ${agent.status === 'running' ? 'active' : 'inactive'}">${agent.status}</span></td>
+                        <td>${agent.tasksCompleted || 0}</td>
+                        <td>${agent.uptime || 'N/A'}</td>
+                        <td>${new Date(agent.lastActive).toLocaleString()}</td>
+                        <td>
+                            ${agent.status === 'running' ? 
+                                `<button class="btn-action" onclick="stopAgent('${agent.agentId}')">⏸️</button>` : 
+                                `<button class="btn-action" onclick="startAgent('${agent.agentId}')">▶️</button>`
+                            }
+                            <button class="btn-action" onclick="viewAgent('${agent.agentId}')">👁️</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                console.error('Error refreshing AI agents:', error);
+                document.getElementById('agentsTableBody').innerHTML = '<tr><td colspan="7" style="text-align:center;">Error loading agents</td></tr>';
+            }
+        }
+        
+        function filterAgents(query) {
+            const rows = document.querySelectorAll('#agentsTableBody tr');
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(query.toLowerCase()) ? '' : 'none';
+            });
+        }
+        
+        async function spawnNewAgent() {
+            const type = prompt('Enter agent type (security, wallet, academy, support, monitoring):', 'monitoring');
+            if (type && window.gemBotAdminAPI) {
+                await window.gemBotAdminAPI.spawnAgent(type);
+                await refreshAIAgents();
+                showToast(`Spawned new ${type} agent`, 'success');
+            }
+        }
+        
+        async function stopAgent(agentId) {
+            if (window.gemBotAdminAPI) {
+                await window.gemBotAdminAPI.stopAgent(agentId);
+                await refreshAIAgents();
+                showToast(`Stopped agent ${agentId}`, 'info');
+            }
+        }
+        
+        async function startAgent(agentId) {
+            if (window.gemBotAdminAPI) {
+                await window.gemBotAdminAPI.startAgent(agentId);
+                await refreshAIAgents();
+                showToast(`Started agent ${agentId}`, 'success');
+            }
+        }
+        
+        async function viewAgent(agentId) {
+            if (window.gemBotAdminAPI) {
+                const agent = await window.gemBotAdminAPI.getAgent(agentId);
+                alert(`Agent Details:\n\nID: ${agent.agentId}\nType: ${agent.type}\nStatus: ${agent.status}\nTasks: ${agent.tasksCompleted}\nSpawned: ${new Date(agent.spawned).toLocaleString()}`);
+            }
+        }
+        
+        async function stopAllAgents() {
+            if (confirm('Stop all running agents?')) {
+                const agents = window.gemBotAdminAPI ? await window.gemBotAdminAPI.getAllAIAgents() : [];
+                for (const agent of agents.filter(a => a.status === 'running')) {
+                    await window.gemBotAdminAPI.stopAgent(agent.agentId);
+                }
+                await refreshAIAgents();
+                showToast('All agents stopped', 'info');
+            }
+        }
+        
+        async function clearAllAgents() {
+            if (confirm('This will delete ALL agents. Are you sure?')) {
+                if (window.gemBotAdminAPI) {
+                    await window.gemBotAdminAPI.clearAllAgents();
+                    await refreshAIAgents();
+                    showToast('All agents cleared', 'warning');
+                }
+            }
+        }
+        
+        // ==================== SECURITY ====================
+        async function refreshSecurity() {
+            try {
+                const dashboard = window.gemBotAdminAPI ? await window.gemBotAdminAPI.getSecurityDashboard() : null;
+                
+                if (!dashboard) {
+                    console.warn('No security dashboard data available');
+                    return;
+                }
+                
+                // Update stats
+                document.getElementById('statTotalReg').textContent = dashboard.totalRegistrations || 0;
+                document.getElementById('statSafeAccounts').textContent = dashboard.safeAccounts || 0;
+                document.getElementById('statFlaggedAccounts').textContent = dashboard.flaggedAccounts || 0;
+                document.getElementById('statAvgScore').textContent = (dashboard.avgSuspicionScore || 0).toFixed(1);
+                
+                // Color code avg score
+                const scoreEl = document.getElementById('statAvgScore');
+                const score = dashboard.avgSuspicionScore || 0;
+                scoreEl.className = 'stat-value ' + (score < 30 ? 'green' : score < 70 ? 'yellow' : 'red');
+                
+                // Update table
+                const tbody = document.getElementById('securityTableBody');
+                const users = dashboard.users || [];
+                
+                if (users.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No security data available</td></tr>';
+                    return;
+                }
+                
+                tbody.innerHTML = users.map(user => `
+                    <tr>
+                        <td>${user.username}</td>
+                        <td>${user.email}</td>
+                        <td><code>${user.ipAddress || 'N/A'}</code></td>
+                        <td><span class="score-badge ${user.suspicionScore < 30 ? 'green' : user.suspicionScore < 70 ? 'yellow' : 'red'}">${user.suspicionScore}</span></td>
+                        <td><span class="status-badge ${user.isSafe ? 'active' : 'inactive'}">${user.isSafe ? '✅ Safe' : '⚠️ Flagged'}</span></td>
+                        <td>${new Date(user.registrationDate).toLocaleDateString()}</td>
+                        <td>
+                            <button class="btn-action" onclick="viewSecurityDetails('${user.username}')">👁️</button>
+                            <button class="btn-action" onclick="banUser('${user.username}')">🚫</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                console.error('Error refreshing security:', error);
+                document.getElementById('securityTableBody').innerHTML = '<tr><td colspan="7" style="text-align:center;">Error loading security data</td></tr>';
+            }
+        }
+        
+        function filterSecurity(filter) {
+            const rows = document.querySelectorAll('#securityTableBody tr');
+            rows.forEach(row => {
+                const statusCell = row.querySelector('.status-badge');
+                if (!statusCell) return;
+                
+                const isSafe = statusCell.textContent.includes('Safe');
+                const score = parseInt(row.querySelector('.score-badge')?.textContent || '0');
+                
+                let show = filter === 'all';
+                if (filter === 'safe') show = isSafe;
+                if (filter === 'flagged') show = !isSafe;
+                if (filter === 'high') show = score >= 70;
+                
+                row.style.display = show ? '' : 'none';
+            });
+        }
+        
+        async function viewSecurityDetails(username) {
+            if (window.gemBotAdminAPI) {
+                const details = await window.gemBotAdminAPI.getUserSecurityDetails(username);
+                alert(`Security Details for ${username}:\n\n${JSON.stringify(details, null, 2)}`);
+            }
+        }
+        
+        async function viewIPTracking() {
+            if (window.gemBotAdminAPI) {
+                const ipData = await window.gemBotAdminAPI.getIPTracking();
+                alert(`IP Tracking Data:\n\n${JSON.stringify(ipData, null, 2)}`);
+            }
+        }
+        
+        function exportSecurityLog() {
+            const data = document.getElementById('securityTableBody').innerText;
+            const blob = new Blob([data], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `security-log-${new Date().toISOString().split('T')[0]}.txt`;
+            a.click();
+            showToast('Security log exported', 'success');
+        }
+        
+        async function resetSecurityData() {
+            if (confirm('This will reset ALL security data. Are you absolutely sure?')) {
+                if (window.gemBotAdminAPI) {
+                    await window.gemBotAdminAPI.resetSecurityData();
+                    await refreshSecurity();
+                    showToast('Security data reset', 'warning');
+                }
+            }
+        }
+        
+        async function banUser(username) {
+            if (confirm(`Ban user ${username}?`)) {
+                if (window.gemBotAdminAPI) {
+                    await window.gemBotAdminAPI.banUser(username);
+                    await refreshSecurity();
+                    showToast(`Banned ${username}`, 'warning');
+                }
+            }
+        }
+        
+        // ==================== WALLETS ====================
+        async function refreshWallets() {
+            try {
+                const users = window.gemBotAdminAPI ? await window.gemBotAdminAPI.getAllUsers() : [];
+                
+                // Calculate stats
+                const totalWallets = users.length;
+                const totalGBUV = users.reduce((sum, u) => sum + (u.wallet?.balance || 0), 0);
+                const avgBalance = totalWallets > 0 ? totalGBUV / totalWallets : 0;
+                const bonuses = users.reduce((sum, u) => sum + (u.wallet?.welcomeBonus || 0), 0);
+                
+                document.getElementById('statTotalWallets').textContent = totalWallets;
+                document.getElementById('statTotalGBUV').textContent = totalGBUV.toFixed(2);
+                document.getElementById('statAvgBalance').textContent = avgBalance.toFixed(2);
+                document.getElementById('statBonusesGiven').textContent = bonuses.toFixed(2);
+                
+                // Update table
+                const tbody = document.getElementById('walletsTableBody');
+                
+                if (users.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No wallets found</td></tr>';
+                    return;
+                }
+                
+                tbody.innerHTML = users.map(user => {
+                    const wallet = user.wallet || {};
+                    return `
+                        <tr>
+                            <td>${user.username}</td>
+                            <td><code style="font-size:10px;">${wallet.publicKey ? wallet.publicKey.substring(0, 20) + '...' : 'N/A'}</code></td>
+                            <td><span class="balance-badge">${(wallet.balance || 0).toFixed(2)}</span></td>
+                            <td>${(wallet.welcomeBonus || 0).toFixed(2)}</td>
+                            <td><span class="score-badge ${user.securityScore < 30 ? 'green' : user.securityScore < 70 ? 'yellow' : 'red'}">${user.securityScore || 0}</span></td>
+                            <td>${wallet.createdAt ? new Date(wallet.createdAt).toLocaleDateString() : 'N/A'}</td>
+                            <td>
+                                <button class="btn-action" onclick="viewWallet('${user.username}')">👁️</button>
+                                <button class="btn-action" onclick="exportWallet('${user.username}')">📥</button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch (error) {
+                console.error('Error refreshing wallets:', error);
+                document.getElementById('walletsTableBody').innerHTML = '<tr><td colspan="7" style="text-align:center;">Error loading wallets</td></tr>';
+            }
+        }
+        
+        function filterWallets(query) {
+            const rows = document.querySelectorAll('#walletsTableBody tr');
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(query.toLowerCase()) ? '' : 'none';
+            });
+        }
+        
+        async function viewWallet(username) {
+            if (window.gemBotAdminAPI) {
+                const user = await window.gemBotAdminAPI.getUser(username);
+                const wallet = user.wallet || {};
+                alert(`Wallet Details for ${username}:\n\nPublic Key: ${wallet.publicKey || 'N/A'}\nBalance: ${wallet.balance || 0} GBUV\nWelcome Bonus: ${wallet.welcomeBonus || 0} GBUV\nCreated: ${wallet.createdAt || 'N/A'}`);
+            }
+        }
+        
+        async function createNewWallet() {
+            const username = prompt('Enter username for new wallet:');
+            if (username && window.gemBotAdminAPI) {
+                await window.gemBotAdminAPI.createWallet(username);
+                await refreshWallets();
+                showToast(`Created wallet for ${username}`, 'success');
+            }
+        }
+        
+        async function airdropGBUV() {
+            const username = prompt('Enter username for airdrop:');
+            const amount = parseFloat(prompt('Enter GBUV amount:', '100'));
+            if (username && amount && window.gemBotAdminAPI) {
+                await window.gemBotAdminAPI.airdropGBUV(username, amount);
+                await refreshWallets();
+                showToast(`Airdropped ${amount} GBUV to ${username}`, 'success');
+            }
+        }
+        
+        function exportWallet(username) {
+            alert(`Export wallet for ${username}\n\n(Feature coming soon: will generate encrypted wallet backup file)`);
+        }
+        
+        function exportWallets() {
+            const data = document.getElementById('walletsTableBody').innerText;
+            const blob = new Blob([data], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `wallets-export-${new Date().toISOString().split('T')[0]}.txt`;
+            a.click();
+            showToast('Wallets exported', 'success');
         }
         
         function showSection(sectionId) {
