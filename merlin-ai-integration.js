@@ -17,6 +17,13 @@ window.merlinAI = {
     endpoint: 'https://generativelanguage.googleapis.com/v1beta',
     isInitialized: false,
     
+    // Telemetry & Metrics
+    telemetry: {
+        sessionId: `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        metrics: [],
+        enabled: true
+    },
+    
     /**
      * Initialize Merlin AI System
      */
@@ -42,12 +49,52 @@ window.merlinAI = {
     },
     
     /**
+     * Log Telemetry Metric to Firebase
+     * @param {string} flowName - Name of the flow (e.g., "analyzeCodeFlow")
+     * @param {number} duration - Duration in milliseconds
+     * @param {boolean} success - Whether the operation succeeded
+     * @param {object} metadata - Additional metadata
+     */
+    async logTelemetry(flowName, duration, success, metadata = {}) {
+        if (!this.telemetry.enabled) return;
+        
+        const metric = {
+            sessionId: this.telemetry.sessionId,
+            flowName: flowName,
+            model: this.model,
+            duration: duration,
+            success: success,
+            timestamp: new Date().toISOString(),
+            ...metadata
+        };
+        
+        this.telemetry.metrics.push(metric);
+        
+        // Log to Firebase if available
+        try {
+            if (window.firebaseDb && window.firestoreUtils) {
+                const { collection, doc, setDoc } = window.firestoreUtils;
+                const telemetryDoc = doc(collection(window.firebaseDb, 'merlin_telemetry'));
+                await setDoc(telemetryDoc, {
+                    ...metric,
+                    serverTimestamp: window.firestoreUtils.serverTimestamp()
+                });
+                console.log(`📊 Telemetry logged: ${flowName} (${duration}ms)`);
+            }
+        } catch (error) {
+            console.warn('⚠️ Failed to log telemetry to Firebase:', error.message);
+        }
+    },
+    
+    /**
      * Core Generation Function - Calls Gemini API
      * @param {string} prompt - The prompt to send to Gemini
      * @param {object} options - Generation options (temperature, maxTokens, etc.)
      * @returns {Promise<object>} - {text, model, timestamp, error?}
      */
     async generate(prompt, options = {}) {
+        const startTime = Date.now();
+        
         try {
             const response = await fetch(
                 `${this.endpoint}/models/${this.model}:generateContent?key=${this.apiKey}`,
@@ -76,17 +123,33 @@ window.merlinAI = {
             const data = await response.json();
             
             if (data.candidates && data.candidates[0]) {
-                return {
+                const result = {
                     text: data.candidates[0].content.parts[0].text,
                     model: this.model,
                     timestamp: new Date().toISOString(),
-                    usage: data.usageMetadata
+                    usage: data.usageMetadata,
+                    duration: Date.now() - startTime
                 };
+                
+                // Log telemetry
+                await this.logTelemetry('generate', result.duration, true, {
+                    promptLength: prompt.length,
+                    responseLength: result.text.length,
+                    tokens: data.usageMetadata?.totalTokenCount || 0
+                });
+                
+                return result;
             }
             
             throw new Error('No candidates in response');
         } catch (error) {
             console.error('❌ Merlin AI Generation Error:', error);
+            
+            // Log error telemetry
+            await this.logTelemetry('generate', Date.now() - startTime, false, {
+                error: error.message
+            });
+            
             return {
                 text: '',
                 error: error.message,
@@ -102,6 +165,7 @@ window.merlinAI = {
      * @returns {Promise<object>} - {quality, suggestions, security, performance, refactorHours}
      */
     async analyzeCodeFlow(nodeData) {
+        const startTime = Date.now();
         const prompt = `You are Merlin, an expert code analyst for the GemBot repository valuation system.
 
 Analyze this code file and provide a comprehensive assessment:
@@ -149,14 +213,31 @@ Please provide your analysis in the following JSON format (no markdown, just pur
             const jsonMatch = text.match(/```json\n([\s\S]*?)\n```/) || text.match(/```\n([\s\S]*?)\n```/);
             if (jsonMatch) text = jsonMatch[1];
             
-            const parsed = JSON.parse(text);
-            return {
+            const result = {
                 ...parsed,
                 rawResponse: response.text,
                 model: response.model,
                 timestamp: response.timestamp
             };
+            
+            // Log telemetry
+            await this.logTelemetry('analyzeCodeFlow', Date.now() - startTime, true, {
+                fileName: nodeData.name,
+                language: nodeData.language,
+                quality: parsed.quality,
+                linesOfCode: nodeData.metrics?.lines || 0
+            });
+            
+            return result;
         } catch (error) {
+            console.warn('⚠️ Could not parse AI response as JSON:', response.text);
+            
+            // Log error telemetry
+            await this.logTelemetry('analyzeCodeFlow', Date.now() - startTime, false, {
+                fileName: nodeData.name,
+                error: 'Parse error'
+            });
+            
             console.warn('⚠️ Could not parse AI response as JSON:', response.text);
             // Return fallback structure
             return {
@@ -164,6 +245,7 @@ Please provide your analysis in the following JSON format (no markdown, just pur
                 qualityReason: 'Unable to parse AI response',
                 suggestions: [response.text.substring(0, 200)],
                 security: [],
+        const startTime = Date.now();
                 performance: [],
                 refactorHours: 0,
                 strengths: [],
@@ -236,6 +318,14 @@ Based on the code quality, complexity, and value calculations:
 Your overall assessment and key takeaway for the development team.`;
 
         const response = await this.generate(prompt, { temperature: 0.7, maxTokens: 2500 });
+        
+        // Log telemetry
+        await this.logTelemetry('summarizeRepositoryFlow', Date.now() - startTime, !response.error, {
+            repository: repoData.name,
+            totalValue: repoData.totalValue,
+            nodeCount: repoData.nodeCount
+        });
+        
         return response;
     },
     
@@ -246,6 +336,7 @@ Your overall assessment and key takeaway for the development team.`;
      * @returns {Promise<object>} - {text, model, timestamp}
      */
     async suggestFixFlow(issue) {
+        const startTime = Date.now();
         const prompt = `You are Merlin, a code fix specialist in the GemBot system.
 
 Analyze this issue and provide a detailed fix plan:
@@ -290,6 +381,13 @@ How will this fix improve the repository value?
 Should this be fixed now, later, or not at all?`;
 
         const response = await this.generate(prompt, { temperature: 0.6, maxTokens: 1800 });
+        
+        // Log telemetry
+        await this.logTelemetry('suggestFixFlow', Date.now() - startTime, !response.error, {
+            issueType: issue.type,
+            file: issue.file
+        });
+        
         return response;
     },
     
@@ -382,8 +480,78 @@ Should you proceed with these changes?`;
      * @returns {Promise<object>} - {text, model, timestamp}
      */
     async helloFlow(name) {
+        const startTime = Date.now();
         const prompt = `Hello! I'm ${name} from the GemBot team. You are Merlin AI, the intelligent brain behind our repository valuation system. Please introduce yourself in 2-3 sentences and explain how you help analyze code repositories.`;
-        return await this.generate(prompt);
+        const response = await this.generate(prompt);
+        
+        // Log telemetry
+        await this.logTelemetry('helloFlow', Date.now() - startTime, !response.error, {
+            userName: name
+        });
+        
+        return response;
+    },
+    
+    /**
+     * Get Telemetry Summary
+     * @returns {object} - Summary of all metrics
+     */
+    getTelemetrySummary() {
+        const metrics = this.telemetry.metrics;
+        
+        return {
+            sessionId: this.telemetry.sessionId,
+            totalCalls: metrics.length,
+            successfulCalls: metrics.filter(m => m.success).length,
+            failedCalls: metrics.filter(m => !m.success).length,
+            averageDuration: metrics.length > 0 
+                ? metrics.reduce((sum, m) => sum + m.duration, 0) / metrics.length 
+                : 0,
+            totalTokens: metrics.reduce((sum, m) => sum + (m.tokens || 0), 0),
+            flowBreakdown: this.getFlowBreakdown(metrics),
+            recentMetrics: metrics.slice(-10) // Last 10 calls
+        };
+    },
+    
+    /**
+     * Get Flow Breakdown
+     * @param {array} metrics - Array of metrics
+     * @returns {object} - Breakdown by flow
+     */
+    getFlowBreakdown(metrics) {
+        const breakdown = {};
+        
+        metrics.forEach(metric => {
+            if (!breakdown[metric.flowName]) {
+                breakdown[metric.flowName] = {
+                    count: 0,
+                    successCount: 0,
+                    failCount: 0,
+                    totalDuration: 0,
+                    avgDuration: 0
+                };
+            }
+            
+            const flow = breakdown[metric.flowName];
+            flow.count++;
+            if (metric.success) flow.successCount++;
+            else flow.failCount++;
+            flow.totalDuration += metric.duration;
+            flow.avgDuration = flow.totalDuration / flow.count;
+        });
+        
+        return breakdown;
+    },
+    
+    /**
+     * Export Telemetry Data
+     * @returns {string} - JSON string of all metrics
+     */
+    exportTelemetry() {
+        return JSON.stringify({
+            summary: this.getTelemetrySummary(),
+            rawMetrics: this.telemetry.metrics
+        }, null, 2);
     }
 };
 
