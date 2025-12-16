@@ -9,6 +9,14 @@
 
 class GemBotWalletFactory {
     constructor() {
+        // Check if Solana Web3 is loaded
+        if (typeof solanaWeb3 === 'undefined') {
+            console.warn('⚠️ Solana Web3.js not loaded yet - wallet functionality delayed');
+            this.solanaReady = false;
+            return;
+        }
+        
+        this.solanaReady = true;
         this.network = 'mainnet-beta'; // Production network
         this.rpcUrl = 'https://api.mainnet-beta.solana.com';
         this.connection = new solanaWeb3.Connection(this.rpcUrl, 'confirmed');
@@ -361,9 +369,40 @@ class GemBotWalletFactory {
             .filter(tx => tx.from === publicKey || tx.to === publicKey)
             .slice(0, limit);
     }
+    // Initialize Solana connection when library loads
+    initializeSolana() {
+        if (typeof solanaWeb3 === 'undefined') {
+            console.error('❌ Solana Web3.js still not available');
+            return false;
+        }
+        
+        this.solanaReady = true;
+        this.network = 'mainnet-beta';
+        this.rpcUrl = 'https://api.mainnet-beta.solana.com';
+        this.connection = new solanaWeb3.Connection(this.rpcUrl, 'confirmed');
+        
+        this.MASTER_WALLET = {
+            publicKey: '6HTjfgWZYMbENnMAJJFhxWR2VZDxdze3qV7zznSAsfk',
+        };
+        
+        console.log('✅ Solana Web3.js initialized for wallet factory');
+        return true;
+    }
 }
 
 // Initialize global wallet factory
 window.walletFactory = new GemBotWalletFactory();
+
+// Try to initialize Solana immediately, or wait for it to load
+if (typeof solanaWeb3 !== 'undefined') {
+    window.walletFactory.initializeSolana();
+} else {
+    console.log('⏳ Waiting for Solana Web3.js to load...');
+    window.addEventListener('load', () => {
+        if (window.walletFactory && !window.walletFactory.solanaReady) {
+            window.walletFactory.initializeSolana();
+        }
+    });
+}
 
 console.log('✅ Automated Wallet System loaded - No Phantom required!');
