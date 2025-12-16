@@ -1,18 +1,24 @@
+<script>
 /**
  * ═══════════════════════════════════════════════════════════════════════════
- * GEMBOT PROJECT INVESTMENT SYSTEM - ALL-IN-ONE INJECTION SCRIPT
+ * GEMBOT PROJECT INVESTMENT SYSTEM - HEAD INJECTION SCRIPT
  * ═══════════════════════════════════════════════════════════════════════════
  * Complete play-to-earn investment system with UI, blockchain, and gamification
  * 
- * USAGE: Add to HTML head:
- * <script src="./project-investment-all-in-one.js"></script>
+ * USAGE: Copy this ENTIRE FILE and paste into your HTML <head> section
+ * Automatically waits for Solana Web3, walletFactory, and gemBotGame to load
  * 
- * Or inject inline after Solana Web3 loads
+ * Dependencies (must load BEFORE this script):
+ * - Solana Web3.js (solanaWeb3)
+ * - automated-wallet-system.js (window.walletFactory)
+ * - gembot-farm-game.js (window.gemBotGame)
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
 (function() {
   'use strict';
+  
+  console.log('🔷 GemBot Investment System loading...');
 
   // Wait for dependencies
   function waitForDependencies(callback) {
@@ -496,3 +502,4 @@
   });
 
 })();
+</script>
