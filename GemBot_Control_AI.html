@@ -8816,13 +8816,14 @@
             // Register new user (Firebase with local fallback)
             async register(username, email, password) {
                 email = email.toLowerCase().trim();
-                if (window.firebaseInitialized && window.firebaseAuth && window.firebaseDb) {
+                if (window.firebaseInitialized && window.firebaseAuthFunctions && window.firebaseDbFunctions) {
                     try {
-                        // Create user in Firebase Auth
-                        const userCredential = await window.firebaseAuth.createUserWithEmailAndPassword(email, password);
+                        // Create user in Firebase Auth (modular SDK)
+                        const userCredential = await window.firebaseAuthFunctions.createUserWithEmailAndPassword(email, password);
                         const user = userCredential.user;
-                        // Store profile in Firestore
-                        await window.firebaseDb.collection('users').doc(user.uid).set({
+                        // Store profile in Firestore (modular SDK)
+                        const userDocRef = window.firebaseDbFunctions.doc('users', user.uid);
+                        await window.firebaseDbFunctions.setDoc(userDocRef, {
                             username,
                             email,
                             createdAt: Date.now(),
@@ -8834,6 +8835,7 @@
                                 maxGuests: 3
                             }
                         });
+                        console.log('✅ User registered in Firebase:', username);
                         // Auto-login after registration
                         return this.login(email, password);
                     } catch (error) {
@@ -8880,14 +8882,15 @@
             // Login user (Firebase with local fallback)
             async login(emailOrUsername, password) {
                 emailOrUsername = emailOrUsername.toLowerCase().trim();
-                if (window.firebaseInitialized && window.firebaseAuth && window.firebaseDb) {
+                if (window.firebaseInitialized && window.firebaseAuthFunctions && window.firebaseDbFunctions) {
                     try {
-                        // Login with Firebase Auth
-                        const userCredential = await window.firebaseAuth.signInWithEmailAndPassword(emailOrUsername, password);
+                        // Login with Firebase Auth (modular SDK)
+                        const userCredential = await window.firebaseAuthFunctions.signInWithEmailAndPassword(emailOrUsername, password);
                         const user = userCredential.user;
-                        // Get profile from Firestore
-                        const profileSnap = await window.firebaseDb.collection('users').doc(user.uid).get();
-                        if (!profileSnap.exists) throw new Error('User profile not found');
+                        // Get profile from Firestore (modular SDK)
+                        const userDocRef = window.firebaseDbFunctions.doc('users', user.uid);
+                        const profileSnap = await window.firebaseDbFunctions.getDoc(userDocRef);
+                        if (!profileSnap.exists()) throw new Error('User profile not found');
                         const profile = profileSnap.data();
                         this.currentUser = {
                             id: user.uid,
