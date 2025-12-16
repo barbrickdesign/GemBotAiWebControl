@@ -9,9 +9,16 @@
 
 class GemBotWalletFactory {
     constructor() {
+        // Solana Web3 compatibility check
+        this.solanaWeb3 = window.solanaWeb3 || window.solana;
+        if (!this.solanaWeb3 || !this.solanaWeb3.Connection) {
+            console.warn('⚠️ Solana Web3 not loaded - wallet creation unavailable');
+            return;
+        }
+        
         this.network = 'mainnet-beta'; // Production network
         this.rpcUrl = 'https://api.mainnet-beta.solana.com';
-        this.connection = new solanaWeb3.Connection(this.rpcUrl, 'confirmed');
+        this.connection = new this.solanaWeb3.Connection(this.rpcUrl, 'confirmed');
         
         // Master funding wallet (system-controlled)
         this.MASTER_WALLET = {
@@ -144,9 +151,9 @@ class GemBotWalletFactory {
     async getBalance(publicKey) {
         try {
             const balance = await this.connection.getBalance(
-                new solanaWeb3.PublicKey(publicKey)
+                new this.solanaWeb3.PublicKey(publicKey)
             );
-            return balance / solanaWeb3.LAMPORTS_PER_SOL;
+            return balance / this.solanaWeb3.LAMPORTS_PER_SOL;
         } catch (error) {
             console.error('Error getting balance:', error);
             return 0;
@@ -159,10 +166,10 @@ class GemBotWalletFactory {
     async getGBUVBalance(publicKey) {
         try {
             // Get token accounts for this wallet
-            const pubKey = new solanaWeb3.PublicKey(publicKey);
+            const pubKey = new this.solanaWeb3.PublicKey(publicKey);
             const tokenAccounts = await this.connection.getParsedTokenAccountsByOwner(
                 pubKey,
-                { mint: new solanaWeb3.PublicKey(this.GBUV_MINT) }
+                { mint: new this.solanaWeb3.PublicKey(this.GBUV_MINT) }
             );
             
             if (tokenAccounts.value.length > 0) {
@@ -197,7 +204,7 @@ class GemBotWalletFactory {
      */
     generateRecoveryPhrase(secretKey) {
         // Convert secret key to base58 string
-        const bs58 = solanaWeb3.Keypair.fromSecretKey(
+        const bs58 = this.solanaWeb3.Keypair.fromSecretKey(
             new Uint8Array(secretKey)
         ).secretKey;
         
@@ -213,7 +220,7 @@ class GemBotWalletFactory {
         try {
             // Convert recovery phrase back to secret key
             const secretKey = new Uint8Array(recoveryPhrase.split(',').map(Number));
-            const keypair = solanaWeb3.Keypair.fromSecretKey(secretKey);
+            const keypair = this.solanaWeb3.Keypair.fromSecretKey(secretKey);
             
             const wallet = {
                 username: username,
