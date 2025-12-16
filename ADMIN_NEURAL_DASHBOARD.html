@@ -3,7 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https: blob:; style-src 'self' 'unsafe-inline'; media-src 'self' blob:; connect-src 'self' blob: indexeddb: https: ws: wss: http://localhost:* https://*.firebaseio.com https://*.googleapis.com https://*.firebase.com https://*.firebaseapp.com https://api.github.com https://raw.githubusercontent.com; frame-src 'self'; object-src 'none'; img-src 'self' data: blob: https:; font-src 'self' https:;">
     <title>GemBot Admin Neural Dashboard</title>
+    
+    <!-- Firebase Modular SDK v12.6.0 -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+        import { getFirestore, collection, doc, setDoc, getDoc, getDocs, query, orderBy, limit, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-analytics.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAulZ2a1-i25LB77IuR1ScsxD1w6Wdfmg8",
+            authDomain: "gem-bot-57068.firebaseapp.com",
+            projectId: "gem-bot-57068",
+            storageBucket: "gem-bot-57068.appspot.com",
+            messagingSenderId: "536281556406",
+            appId: "1:536281556406:web:344bbfc5503caffdae0d17",
+            measurementId: "G-CPHEQZPHPZ"
+        };
+
+        // Initialize Firebase
+        window.firebaseApp = initializeApp(firebaseConfig);
+        window.firebaseAuth = getAuth(window.firebaseApp);
+        window.firebaseDb = getFirestore(window.firebaseApp);
+        window.firebaseAnalytics = getAnalytics(window.firebaseApp);
+        window.firebaseInitialized = true;
+        
+        // Export Firestore functions
+        window.firestoreUtils = {
+            collection,
+            doc,
+            setDoc,
+            getDoc,
+            getDocs,
+            query,
+            orderBy,
+            limit,
+            serverTimestamp,
+            onAuthStateChanged
+        };
+        
+        console.log('🔥 Firebase initialized for Admin Dashboard');
+    </script>
+    
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -270,8 +313,10 @@
             <button class="btn" id="runTestsBtn">🧪 Run Agent Tests</button>
             <button class="btn" id="captureScreenshotsBtn">📸 Capture Screenshots</button>
             <button class="btn" id="analyzeConnectionsBtn">🔗 Analyze Connections</button>
-            <button class="btn warn" id="exportDataBtn">💾 Export Data</button>
-            <button class="btn warn" id="importDataBtn">📥 Import Data</button>
+            <button class="btn success" id="syncToFirebaseBtn">☁️ Sync to Firebase</button>
+            <button class="btn" id="loadFromFirebaseBtn">📥 Load from Firebase</button>
+            <button class="btn warn" id="exportDataBtn">💾 Export JSON</button>
+            <button class="btn warn" id="importDataBtn">📥 Import JSON</button>
             
             <h2>🔍 Filters</h2>
             <input type="text" class="filter-input" id="searchFilter" placeholder="Search projects...">
@@ -282,12 +327,19 @@
                 <option value="testing">Testing</option>
             </select>
             
+            <h2>� Authentication</h2>
+            <div id="authStatus" style="font-size: 11px; color: #9ca3af; line-height: 1.6; margin-bottom: 10px;">
+                <div style="color: #f59e0b;">⚠️ Not authenticated</div>
+            </div>
+            <button class="btn" id="signInBtn">🔑 Sign In</button>
+            
             <h2>📊 Repository Info</h2>
             <div style="font-size: 11px; color: #9ca3af; line-height: 1.6;">
                 <div><strong>Owner:</strong> barbrickdesign</div>
                 <div><strong>Repo:</strong> GemBotAiWebControl</div>
                 <div><strong>Branch:</strong> main</div>
                 <div><strong>Last Scan:</strong> <span id="lastScan">Never</span></div>
+                <div><strong>Last Sync:</strong> <span id="lastSync">Never</span></div>
             </div>
             
             <h2>🎮 View Controls</h2>
