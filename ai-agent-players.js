@@ -208,6 +208,11 @@ class AIAgentPlayer {
             
             console.log(`🤖 ${this.name}: ${action.type}`);
             
+            // Log to live activity feed
+            if (window.liveActivityFeed && action.type !== 'idle') {
+                window.liveActivityFeed.logAgentAction(this.name, action.type.replace(/_/g, ' '));
+            }
+            
             switch (action.type) {
                 case 'deploy_machine':
                     await this.deployMachine();
@@ -247,6 +252,12 @@ class AIAgentPlayer {
             
         } catch (error) {
             console.error(`❌ ${this.name} encountered error:`, error);
+            
+            // Log error to live feed
+            if (window.liveActivityFeed) {
+                window.liveActivityFeed.logError(`${this.name}: ${error.message || error}`);
+            }
+            
             this.logError(error);
         }
     }
@@ -302,6 +313,9 @@ class AIAgentPlayer {
     async deployMachine() {
         if (this.balance.gems < 500) {
             this.logAction('deploy_failed', { reason: 'insufficient_gems' });
+            if (window.liveActivityFeed) {
+                window.liveActivityFeed.log('GAME', `${this.name} failed to deploy (needs gems)`);
+            }
             return;
         }
         
@@ -313,6 +327,11 @@ class AIAgentPlayer {
             cost: 500,
             totalMachines: this.balance.machines
         });
+        
+        // Log to activity feed
+        if (window.liveActivityFeed) {
+            window.liveActivityFeed.logGameEvent(`${this.name} deployed a machine! (Total: ${this.balance.machines})`);
+        }
         
         // Check for achievement
         if (this.balance.machines === 1) {
