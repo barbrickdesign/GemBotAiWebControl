@@ -7,6 +7,36 @@
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/dracula.min.css">
+    
+    <!-- Firebase Compat SDK (required for FirebaseUI) -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+    
+    <!-- FirebaseUI -->
+    <script src="https://www.gstatic.com/firebasejs/ui/6.1.0/firebase-ui-auth.js"></script>
+    <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/6.1.0/firebase-ui-auth.css" />
+    
+    <script>
+        // ==================== FIREBASE CONFIGURATION ====================
+        const firebaseConfig = {
+            apiKey: "AIzaSyAulZ2a1-i25LB77IuR1ScsxD1w6Wdfmg8",
+            authDomain: "gem-bot-57068.firebaseapp.com",
+            projectId: "gem-bot-57068",
+            storageBucket: "gem-bot-57068.appspot.com",
+            messagingSenderId: "536281556406",
+            appId: "1:536281556406:web:344bbfc5503caffdae0d17",
+            measurementId: "G-CPHEQZPHPZ"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        window.firebaseAuth = firebase.auth();
+        window.firebaseDb = firebase.firestore();
+        window.firebaseInitialized = true;
+        console.log('🔥 Firebase initialized for Admin Dashboard');
+    </script>
+    
     <!-- GemBot Admin API -->
     <script src="./admin-api.js"></script>
     <style>
@@ -67,6 +97,86 @@
         .login-box p {
             color: var(--text-secondary);
             margin-bottom: 30px;
+        }
+        
+        /* FirebaseUI Dark Theme Overrides */
+        .firebaseui-container {
+            background: transparent !important;
+        }
+        .firebaseui-card-content,
+        .firebaseui-card-footer {
+            background: transparent !important;
+            padding: 0 !important;
+        }
+        .firebaseui-idp-button {
+            background: var(--bg-card) !important;
+            border: 1px solid var(--border-color) !important;
+            border-radius: 8px !important;
+            margin-bottom: 10px !important;
+            transition: all 0.3s !important;
+        }
+        .firebaseui-idp-button:hover {
+            background: var(--bg-input) !important;
+            border-color: var(--accent-cyan) !important;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.2) !important;
+        }
+        .firebaseui-idp-text {
+            color: var(--text-primary) !important;
+        }
+        .firebaseui-form-actions {
+            padding: 0 !important;
+        }
+        .firebaseui-form-actions .firebaseui-id-submit {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-magenta)) !important;
+            color: var(--bg-dark) !important;
+            border-radius: 8px !important;
+            font-weight: 700 !important;
+        }
+        .firebaseui-form-actions .firebaseui-id-submit:hover {
+            box-shadow: 0 10px 30px rgba(0, 255, 255, 0.3) !important;
+        }
+        .firebaseui-form-actions .firebaseui-id-secondary-link {
+            color: var(--accent-cyan) !important;
+        }
+        .firebaseui-textfield {
+            background: var(--bg-input) !important;
+        }
+        .firebaseui-input {
+            background: var(--bg-input) !important;
+            border-color: var(--border-color) !important;
+            color: var(--text-primary) !important;
+        }
+        .firebaseui-input:focus {
+            border-color: var(--accent-cyan) !important;
+        }
+        .firebaseui-label {
+            color: var(--text-secondary) !important;
+        }
+        .firebaseui-tos,
+        .firebaseui-tos-link {
+            color: var(--text-secondary) !important;
+        }
+        .firebaseui-tos-link:hover {
+            color: var(--accent-cyan) !important;
+        }
+        .firebaseui-title {
+            color: var(--text-primary) !important;
+        }
+        .firebaseui-subtitle {
+            color: var(--text-secondary) !important;
+        }
+        .mdl-textfield__label {
+            color: var(--text-secondary) !important;
+        }
+        .mdl-textfield__input {
+            color: var(--text-primary) !important;
+            border-bottom-color: var(--border-color) !important;
+        }
+        .mdl-textfield--floating-label.is-focused .mdl-textfield__label {
+            color: var(--accent-cyan) !important;
+        }
+        .mdl-textfield--floating-label.is-focused .mdl-textfield__input {
+            border-bottom-color: var(--accent-cyan) !important;
         }
         
         .login-input {
@@ -1381,10 +1491,28 @@
     <div id="loginScreen">
         <div class="login-box">
             <h1>🔐 ADMIN ACCESS</h1>
-            <p style="color: var(--accent-cyan); font-weight: 600;">barbrickdesign@gmail.com</p>
-            <input type="password" id="adminPassword" class="login-input" placeholder="Enter GitHub Token (ghp_...)" onkeypress="if(event.key==='Enter')attemptLogin()">
-            <button class="login-btn" onclick="attemptLogin()">AUTHENTICATE</button>
-            <p class="login-error" id="loginError">❌ Invalid credentials</p>
+            <p style="color: var(--accent-cyan); font-weight: 600;">Restricted to barbrickdesign@gmail.com</p>
+            
+            <!-- FirebaseUI Auth Container -->
+            <div id="firebaseui-auth-container" style="margin: 20px 0;"></div>
+            
+            <!-- Loading indicator -->
+            <div id="auth-loader" style="text-align: center; padding: 20px; color: var(--accent-cyan);">
+                Loading sign-in options...
+            </div>
+            
+            <p class="login-error" id="loginError">❌ Access Denied - Admin only</p>
+        </div>
+    </div>
+    
+    <!-- Access Denied Screen (for non-admin users) -->
+    <div id="accessDeniedScreen" style="display: none; position: fixed; inset: 0; background: var(--bg-dark); z-index: 10001; display: none; align-items: center; justify-content: center;">
+        <div class="login-box" style="border-color: var(--accent-red);">
+            <h1 style="color: var(--accent-red);">🚫 ACCESS DENIED</h1>
+            <p style="color: var(--accent-red); font-weight: 600; margin-bottom: 20px;">This dashboard is restricted to barbrickdesign@gmail.com only.</p>
+            <p style="color: var(--text-secondary); margin-bottom: 30px;">You are logged in as: <span id="deniedUserEmail" style="color: var(--accent-cyan);"></span></p>
+            <button class="login-btn" style="background: linear-gradient(135deg, var(--accent-red), var(--accent-magenta));" onclick="adminAuthSignOut()">Sign Out & Try Again</button>
+            <a href="GemBot_Control_AI.html" style="display: block; margin-top: 15px; color: var(--accent-cyan); text-decoration: none;">← Return to GemBot Control</a>
         </div>
     </div>
     
@@ -2107,14 +2235,12 @@
     
     <script>
         // ==================== ADMIN CONFIGURATION ====================
-        // Primary admin email - full access
+        // Primary admin email - ONLY this email can access the dashboard
         const ADMIN_EMAIL = 'barbrickdesign@gmail.com';
-        
-        // SHA-256 hash of your admin password (default: 'gembot_admin_2025')
-        const ADMIN_PASSWORD_HASH = '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918'; // 'admin' for testing
         
         // Store for session
         let isAuthenticated = false;
+        let currentUser = null;
         let editor = null;
         let currentFile = 'GemBot_Control_AI.html';
         let originalFileContent = '';
@@ -2142,49 +2268,111 @@
             { name: 'README.md', category: 'docs', icon: '📝' }
         ];
         
-        // ==================== AUTHENTICATION ====================
-        async function hashPassword(password) {
-            const encoder = new TextEncoder();
-            const data = encoder.encode(password);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        // ==================== FIREBASE AUTHENTICATION ====================
+        let firebaseUI = null;
+        
+        function initFirebaseAuthUI() {
+            // FirebaseUI config - Email/Password and Google only
+            const uiConfig = {
+                callbacks: {
+                    signInSuccessWithAuthResult: (authResult, redirectUrl) => {
+                        console.log('✅ FirebaseUI sign-in success:', authResult.user.email);
+                        // Auth state listener will handle the rest
+                        return false; // Don't redirect
+                    },
+                    uiShown: () => {
+                        // Hide loader when FirebaseUI is rendered
+                        const loader = document.getElementById('auth-loader');
+                        if (loader) loader.style.display = 'none';
+                        console.log('🎨 FirebaseUI rendered');
+                    }
+                },
+                signInFlow: 'popup',
+                signInOptions: [
+                    // Email/Password
+                    {
+                        provider: firebase.auth.EmailAuthProvider.PROVIDER_ID,
+                        requireDisplayName: false
+                    },
+                    // Google
+                    {
+                        provider: firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+                        customParameters: {
+                            prompt: 'select_account'
+                        }
+                    }
+                ],
+                tosUrl: 'https://barbrickdesign.github.io/GemBotAiWebControl/terms.html',
+                privacyPolicyUrl: 'https://barbrickdesign.github.io/GemBotAiWebControl/privacy.html'
+            };
+            
+            // Initialize FirebaseUI
+            firebaseUI = new firebaseui.auth.AuthUI(firebase.auth());
+            firebaseUI.start('#firebaseui-auth-container', uiConfig);
+            console.log('🔐 FirebaseUI initialized for Admin Dashboard');
         }
         
-        async function attemptLogin() {
-            const password = document.getElementById('adminPassword').value;
-            const hash = await hashPassword(password);
-            
-            // Check against stored hash
-            const storedHash = localStorage.getItem('gembot_admin_hash') || ADMIN_PASSWORD_HASH;
-            
-            if (hash === storedHash) {
-                isAuthenticated = true;
-                sessionStorage.setItem('gembot_admin_auth', 'true');
-                document.getElementById('loginScreen').style.display = 'none';
-                document.getElementById('dashboard').style.display = 'block';
-                initializeDashboard();
-                addLog('Admin logged in', 'success');
-            } else {
-                document.getElementById('loginError').style.display = 'block';
-                setTimeout(() => {
-                    document.getElementById('loginError').style.display = 'none';
-                }, 3000);
-            }
+        function initAdminAuth() {
+            // Listen for auth state changes
+            firebase.auth().onAuthStateChanged((user) => {
+                if (user) {
+                    console.log('👤 User authenticated:', user.email);
+                    
+                    // CHECK IF USER IS THE ADMIN
+                    if (user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
+                        // ADMIN ACCESS GRANTED
+                        isAuthenticated = true;
+                        currentUser = user;
+                        
+                        document.getElementById('loginScreen').style.display = 'none';
+                        document.getElementById('accessDeniedScreen').style.display = 'none';
+                        document.getElementById('dashboard').style.display = 'block';
+                        
+                        initializeDashboard();
+                        addLog(`Admin logged in: ${user.email}`, 'success');
+                        console.log('✅ ADMIN ACCESS GRANTED:', user.email);
+                    } else {
+                        // NOT ADMIN - ACCESS DENIED
+                        isAuthenticated = false;
+                        currentUser = null;
+                        
+                        document.getElementById('loginScreen').style.display = 'none';
+                        document.getElementById('dashboard').style.display = 'none';
+                        document.getElementById('accessDeniedScreen').style.display = 'flex';
+                        document.getElementById('deniedUserEmail').textContent = user.email;
+                        
+                        console.warn('🚫 ACCESS DENIED - Not admin:', user.email);
+                        console.warn('🔐 Only ' + ADMIN_EMAIL + ' can access this dashboard');
+                    }
+                } else {
+                    // No user - show login screen
+                    isAuthenticated = false;
+                    currentUser = null;
+                    
+                    document.getElementById('loginScreen').style.display = 'flex';
+                    document.getElementById('accessDeniedScreen').style.display = 'none';
+                    document.getElementById('dashboard').style.display = 'none';
+                    
+                    // Initialize FirebaseUI for login
+                    initFirebaseAuthUI();
+                    console.log('❌ No user authenticated');
+                }
+            });
+        }
+        
+        function adminAuthSignOut() {
+            firebase.auth().signOut().then(() => {
+                console.log('✅ Signed out from admin dashboard');
+                location.reload();
+            }).catch((error) => {
+                console.error('Sign out error:', error);
+                alert('Failed to sign out: ' + error.message);
+            });
         }
         
         function logout() {
-            isAuthenticated = false;
-            sessionStorage.removeItem('gembot_admin_auth');
-            location.reload();
-        }
-        
-        function checkAuth() {
-            if (sessionStorage.getItem('gembot_admin_auth') === 'true') {
-                isAuthenticated = true;
-                document.getElementById('loginScreen').style.display = 'none';
-                document.getElementById('dashboard').style.display = 'block';
-                initializeDashboard();
+            if (confirm('Sign out of Admin Dashboard?')) {
+                adminAuthSignOut();
             }
         }
         
@@ -4069,13 +4257,9 @@
         
         // ==================== INITIALIZATION ====================
         document.addEventListener('DOMContentLoaded', () => {
-            checkAuth();
+            // Initialize Firebase Auth (replaces old checkAuth)
+            initAdminAuth();
             initSceneEditor();
-            
-            // Handle Enter key on login
-            document.getElementById('adminPassword').addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') attemptLogin();
-            });
             
             // Global keyboard shortcuts
             document.addEventListener('keydown', (e) => {
