@@ -26,8 +26,8 @@ class GemBotSolanaWallet {
         
         this.connection = new solanaWeb3.Connection(this.rpcUrl, 'confirmed');
         
-        // GBUV Token Mint Address (⚠️ UPDATE WITH YOUR ACTUAL MINT ADDRESS)
-        this.GBUV_MINT = 'YOUR_GBUV_TOKEN_MINT_ADDRESS_HERE'; // ⚠️ REQUIRED
+        // GBUV Token Mint Address - $GBUV on pump.fun
+        this.GBUV_MINT = 'DPHcbu7wJEbcrnCYjXC8vHBkM39kT9xZg4mYayvrpump'; // pump.fun token
         
         // Admin wallet address for receiving payments (⚠️ UPDATE WITH YOUR WALLET)
         this.ADMIN_WALLET = 'YOUR_ADMIN_WALLET_ADDRESS_HERE'; // ⚠️ REQUIRED

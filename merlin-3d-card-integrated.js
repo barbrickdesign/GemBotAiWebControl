@@ -760,16 +760,68 @@ class MerlinAICardIntegrated {
         this.addMessage('user', message);
         input.value = '';
 
+        // Log to activity feed
+        if (window.liveActivityFeed) {
+            window.liveActivityFeed.log('USER', `Chat: ${message.substring(0, 50)}${message.length > 50 ? '...' : ''}`);
+        }
+
         // Analyze message and guide to control if relevant
         const wasGuided = this.analyzeAndGuide(message);
 
         if (!wasGuided) {
-            // Standard response if no control was suggested
-            setTimeout(() => {
-                this.addMessage('merlin', 'I received your message: ' + message);
-                this.animateWizard({ intensity: 2, color: '#3b82f6' });
-            }, 500);
+            // Connect to actual Merlin AI system
+            if (typeof sendMessage === 'function') {
+                // Use main Merlin AI function
+                sendMessage(message).then(response => {
+                    this.addMessage('merlin', response);
+                    this.animateWizard({ intensity: 2, color: '#3b82f6' });
+                    
+                    if (window.liveActivityFeed) {
+                        window.liveActivityFeed.log('MERLIN', `Response sent`);
+                    }
+                }).catch(err => {
+                    console.error('Merlin AI error:', err);
+                    this.addMessage('merlin', 'I\'m having trouble connecting. Let me try to help anyway...');
+                });
+            } else if (window.merlin && typeof window.merlin.respond === 'function') {
+                // Alternative Merlin connection
+                const response = window.merlin.respond(message);
+                setTimeout(() => {
+                    this.addMessage('merlin', response);
+                    this.animateWizard({ intensity: 2, color: '#3b82f6' });
+                }, 500);
+            } else {
+                // Fallback intelligent response
+                setTimeout(() => {
+                    const response = this.generateIntelligentResponse(message);
+                    this.addMessage('merlin', response);
+                    this.animateWizard({ intensity: 2, color: '#3b82f6' });
+                }, 500);
+            }
         }
+    }
+
+    generateIntelligentResponse(message) {
+        const lowerMsg = message.toLowerCase();
+        
+        // Knowledge base responses
+        if (lowerMsg.includes('help') || lowerMsg.includes('?')) {
+            return 'I can help you navigate GemBot! Try asking about: faceting, gems, marketplace, controls, or game features.';
+        }
+        if (lowerMsg.includes('gem') || lowerMsg.includes('stone')) {
+            return 'Gems are precious! I can help you facet, analyze, or trade gemstones. What would you like to know?';
+        }
+        if (lowerMsg.includes('facet') || lowerMsg.includes('cut')) {
+            return 'Faceting requires precision! Flip this card to access machine controls and start your gemstone masterpiece.';
+        }
+        if (lowerMsg.includes('game') || lowerMsg.includes('play')) {
+            return 'Welcome to GemBot Farm! You can build machines, collect gems, trade, and level up. Need specific help?';
+        }
+        if (lowerMsg.includes('trade') || lowerMsg.includes('market')) {
+            return 'The marketplace is bustling with activity! You can buy, sell, and trade gems and equipment. Check the marketplace button.';
+        }
+        
+        return `Interesting question! I'm Merlin, your guide in the GemBot realm. ${message}`;
     }
 
     addMessage(sender, text) {
