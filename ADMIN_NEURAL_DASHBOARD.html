@@ -698,6 +698,8 @@
     </div>
 
     <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
+    <!-- Contribution Rewards System -->
+    <script src="./contribution-rewards-system.js"></script>
     <script>
 (function() {
     'use strict';
@@ -1224,6 +1226,34 @@
             ui.lastScan.textContent = new Date().toLocaleString();
             console.log('✅ Scan complete!');
             console.log(`📝 MD Files available for conversion: ${mdFiles.length}`);
+            
+            // 🎁 GRANT CONTRIBUTION REWARDS
+            if (window.contributionRewards) {
+                const isFirstScan = !localStorage.getItem('neural_first_scan_done');
+                const totalFiles = htmlFiles.length + mdFiles.length;
+                
+                window.contributionRewards.rewardRepoScan(
+                    `${CONFIG.OWNER}/${CONFIG.REPO}`,
+                    totalFiles,
+                    isFirstScan
+                );
+                
+                window.contributionRewards.rewardRepoScanComplete(
+                    `${CONFIG.OWNER}/${CONFIG.REPO}`,
+                    {
+                        htmlFiles: htmlFiles.length,
+                        mdFiles: mdFiles.length,
+                        nodes: state.nodes.length,
+                        connections: state.connections.length
+                    }
+                );
+                
+                if (isFirstScan) {
+                    localStorage.setItem('neural_first_scan_done', 'true');
+                }
+                
+                console.log('🎁 Contribution rewards granted for repository scan');
+            }
             
         } catch (error) {
             console.error('❌ Scan failed:', error);
