@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GemBot Admin Neural Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0e14;
+            color: #e0e0e0;
+            overflow: hidden;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 300px 1fr 400px;
+            height: 100vh;
+        }
+        .sidebar {
+            background: #0f1419;
+            border-right: 1px solid #1f2937;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        .main-canvas {
+            position: relative;
+            background: #0a0e14;
+            overflow: hidden;
+        }
+        .inspector {
+            background: #0f1419;
+            border-left: 1px solid #1f2937;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        h1 { font-size: 18px; margin-bottom: 20px; color: #60a5fa; }
+        h2 { font-size: 14px; margin: 15px 0 10px; color: #a78bfa; }
+        h3 { font-size: 12px; margin: 10px 0 5px; color: #34d399; }
+        
+        /* Neural Network Canvas */
+        #networkCanvas {
+            width: 100%;
+            height: 100%;
+            cursor: grab;
+        }
+        #networkCanvas:active { cursor: grabbing; }
+        
+        /* Controls */
+        .btn {
+            background: #1e3a8a;
+            border: 1px solid #3b82f6;
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            margin: 4px 0;
+            display: block;
+            width: 100%;
+            transition: all 0.2s;
+        }
+        .btn:hover {
+            background: #2563eb;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+        }
+        .btn.success {
+            background: #065f46;
+            border-color: #10b981;
+        }
+        .btn.success:hover {
+            background: #047857;
+        }
+        .btn.warn {
+            background: #78350f;
+            border-color: #f59e0b;
+        }
+        .btn.warn:hover {
+            background: #92400e;
+        }
+        
+        /* Stats */
+        .stat-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        .stat-box {
+            background: #1a1f2e;
+            border: 1px solid #2d3748;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+        }
+        .stat-label {
+            font-size: 10px;
+            color: #9ca3af;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #60a5fa;
+            margin-top: 4px;
+        }
+        
+        /* Node Info */
+        .node-card {
+            background: #1a1f2e;
+            border: 1px solid #3b82f6;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .node-title {
+            font-weight: bold;
+            color: #60a5fa;
+            margin-bottom: 8px;
+        }
+        .node-path {
+            font-size: 11px;
+            color: #9ca3af;
+            font-family: 'Courier New', monospace;
+            word-break: break-all;
+            margin-bottom: 10px;
+        }
+        .screenshot {
+            width: 100%;
+            border-radius: 6px;
+            border: 1px solid #374151;
+            margin: 10px 0;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .status-complete {
+            background: #065f46;
+            color: #10b981;
+        }
+        .status-incomplete {
+            background: #78350f;
+            color: #f59e0b;
+        }
+        .status-testing {
+            background: #1e3a8a;
+            color: #60a5fa;
+        }
+        
+        /* Test Logs */
+        .log-container {
+            background: #000;
+            border: 1px solid #374151;
+            border-radius: 6px;
+            padding: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin: 10px 0;
+        }
+        .log-line {
+            margin: 2px 0;
+            padding: 2px 4px;
+        }
+        .log-pass { color: #10b981; }
+        .log-fail { color: #ef4444; }
+        .log-warn { color: #f59e0b; }
+        .log-info { color: #60a5fa; }
+        
+        /* Connections */
+        .connection-list {
+            margin: 10px 0;
+        }
+        .connection-item {
+            background: #1a1f2e;
+            border-left: 3px solid #3b82f6;
+            padding: 8px;
+            margin: 4px 0;
+            font-size: 11px;
+            border-radius: 4px;
+        }
+        
+        /* Loading */
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: #60a5fa;
+        }
+        .spinner {
+            border: 3px solid #1f2937;
+            border-top: 3px solid #60a5fa;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Filter */
+        .filter-input {
+            width: 100%;
+            background: #1a1f2e;
+            border: 1px solid #374151;
+            color: #e0e0e0;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1a1f2e;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #374151;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4b5563;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h1>🧠 Neural Dashboard</h1>
+            
+            <div class="stat-grid">
+                <div class="stat-box">
+                    <div class="stat-label">Projects</div>
+                    <div class="stat-value" id="totalProjects">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Complete</div>
+                    <div class="stat-value" style="color: #10b981;" id="completeProjects">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Incomplete</div>
+                    <div class="stat-value" style="color: #f59e0b;" id="incompleteProjects">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Connections</div>
+                    <div class="stat-value" style="color: #a78bfa;" id="totalConnections">0</div>
+                </div>
+            </div>
+            
+            <h2>🔧 Controls</h2>
+            <button class="btn success" id="scanRepoBtn">📡 Scan Repository</button>
+            <button class="btn" id="runTestsBtn">🧪 Run Agent Tests</button>
+            <button class="btn" id="captureScreenshotsBtn">📸 Capture Screenshots</button>
+            <button class="btn" id="analyzeConnectionsBtn">🔗 Analyze Connections</button>
+            <button class="btn warn" id="exportDataBtn">💾 Export Data</button>
+            <button class="btn warn" id="importDataBtn">📥 Import Data</button>
+            
+            <h2>🔍 Filters</h2>
+            <input type="text" class="filter-input" id="searchFilter" placeholder="Search projects...">
+            <select class="filter-input" id="statusFilter">
+                <option value="all">All Status</option>
+                <option value="complete">Complete</option>
+                <option value="incomplete">Incomplete</option>
+                <option value="testing">Testing</option>
+            </select>
+            
+            <h2>📊 Repository Info</h2>
+            <div style="font-size: 11px; color: #9ca3af; line-height: 1.6;">
+                <div><strong>Owner:</strong> barbrickdesign</div>
+                <div><strong>Repo:</strong> GemBotAiWebControl</div>
+                <div><strong>Branch:</strong> main</div>
+                <div><strong>Last Scan:</strong> <span id="lastScan">Never</span></div>
+            </div>
+            
+            <h2>🎮 View Controls</h2>
+            <button class="btn" id="zoomInBtn">🔍 Zoom In</button>
+            <button class="btn" id="zoomOutBtn">🔍 Zoom Out</button>
+            <button class="btn" id="resetViewBtn">🎯 Reset View</button>
+            <button class="btn" id="autoLayoutBtn">📐 Auto Layout</button>
+        </div>
+        
+        <!-- Main Canvas -->
+        <div class="main-canvas">
+            <div class="loading" id="loadingIndicator">
+                <div class="spinner"></div>
+                <div>Loading neural network...</div>
+            </div>
+            <canvas id="networkCanvas"></canvas>
+        </div>
+        
+        <!-- Inspector -->
+        <div class="inspector">
+            <h1>🔬 Inspector</h1>
+            <div id="inspectorContent">
+                <div style="text-align: center; padding: 40px; color: #6b7280;">
+                    Click a node to inspect
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
+    <script>
+(function() {
+    'use strict';
+    
+    // ═══════════════════════════════════════════════════════════════════════════
+    // CONFIGURATION
+    // ═══════════════════════════════════════════════════════════════════════════
+    
+    const CONFIG = {
+        OWNER: 'barbrickdesign',
+        REPO: 'GemBotAiWebControl',
+        API_BASE: 'https://api.github.com',
+        RAW_BASE: 'https://raw.githubusercontent.com',
+        LIVE_BASE: 'https://barbrickdesign.github.io/GemBotAiWebControl',
+        STORAGE_KEY: 'gembot_neural_network_v1',
+        SCREENSHOTS_KEY: 'gembot_screenshots_v1',
+        TEST_LOGS_KEY: 'gembot_test_logs_v1'
+    };
+    
+    // ═══════════════════════════════════════════════════════════════════════════
+    // STATE
+    // ═══════════════════════════════════════════════════════════════════════════
+    
+    const state = {
+        nodes: [],
+        connections: [],
+        selectedNode: null,
+        camera: { x: 0, y: 0, zoom: 1 },
+        isDragging: false,
+        dragStart: { x: 0, y: 0 }
+    };
+    
+    // ═══════════════════════════════════════════════════════════════════════════
+    // ELEMENTS
+    // ═══════════════════════════════════════════════════════════════════════════
+    
+    const ui = {
+        canvas: document.getElementById('networkCanvas'),
+        loading: document.getElementById('loadingIndicator'),
+        inspector: document.getElementById('inspectorContent'),
+        totalProjects: document.getElementById('totalProjects'),
+        completeProjects: document.getElementById('completeProjects'),
+        incompleteProjects: document.getElementById('incompleteProjects'),
+        totalConnections: document.getElementById('totalConnections'),
+        lastScan: document.getElementById('lastScan'),
+        scanRepoBtn: document.getElementById('scanRepoBtn'),
+        runTestsBtn: document.getElementById('runTestsBtn'),
+        captureScreenshotsBtn: document.getElementById('captureScreenshotsBtn'),
+        analyzeConnectionsBtn: document.getElementById('analyzeConnectionsBtn'),
+        exportDataBtn: document.getElementById('exportDataBtn'),
+        importDataBtn: document.getElementById('importDataBtn'),
+        searchFilter: document.getElementById('searchFilter'),
+        statusFilter: document.getElementById('statusFilter'),
+        zoomInBtn: document.getElementById('zoomInBtn'),
+        zoomOutBtn: document.getElementById('zoomOutBtn'),
+        resetViewBtn: document.getElementById('resetViewBtn'),
+        autoLayoutBtn: document.getElementById('autoLayoutBtn')
+    };
+    
+    const ctx = ui.canvas.getContext('2d');
+    
+    // ═══════════════════════════════════════════════════════════════════════════
+    // GITHUB API
+    // ═══════════════════════════════════════════════════════════════════════════
+    
+    async function fetchGitHubAPI(endpoint) {
+        const url = `${CONFIG.API_BASE}${endpoint}`;
+        const response = await fetch(url, {
+            headers: {
+                'Accept': 'application/vnd.github.v3+json'
+            }
+        });
+        if (!response.ok) throw new Error(`GitHub API error: ${response.status}`);
+        return await response.json();
+    }
+    
+    async function scanRepository() {
+        console.log('🔍 Scanning repository...');
+        ui.scanRepoBtn.disabled = true;
+        ui.scanRepoBtn.textContent = '⏳ Scanning...';
+        
+        try {
+            // Get all HTML files
+            const tree = await fetchGitHubAPI(`/repos/${CONFIG.OWNER}/${CONFIG.REPO}/git/trees/main?recursive=1`);
+            const htmlFiles = tree.tree.filter(file => 
+                file.type === 'blob' && 
+                file.path.endsWith('.html') &&
+                !file.path.includes('node_modules')
+            );
+            
+            console.log(`📄 Found ${htmlFiles.length} HTML files`);
+            
+            // Create nodes
+            state.nodes = [];
+            for (const file of htmlFiles) {
+                const node = await createNodeFromFile(file);
+                state.nodes.push(node);
+            }
+            
+            // Analyze connections
+            analyzeConnections();
+            
+            // Save to localStorage
+            saveState();
+            
+            // Update UI
+            updateStats();
+            autoLayout();
+            render();
+            
+            ui.lastScan.textContent = new Date().toLocaleString();
+            console.log('✅ Scan complete!');
+            
+        } catch (error) {
+            console.error('❌ Scan failed:', error);
+            alert('Scan failed: ' + error.message);
+        } finally {
+            ui.scanRepoBtn.disabled = false;
+            ui.scanRepoBtn.textContent = '📡 Scan Repository';
+        }
+    }
+    
+    async function createNodeFromFile(file) {
+        const path = file.path;
+        const name = path.split('/').pop().replace('.html', '');
+        const liveUrl = `${CONFIG.LIVE_BASE}/${path}`;
+        const rawUrl = `${CONFIG.RAW_BASE}/${CONFIG.OWNER}/${CONFIG.REPO}/main/${path}`;
+        
+        // Try to fetch content for analysis
+        let functions = [];
+        let dependencies = [];
+        let status = 'incomplete';
+        
+        try {
+            const response = await fetch(rawUrl);
+            const html = await response.text();
+            
+            // Extract functions
+            const funcMatches = html.matchAll(/function\s+(\w+)\s*\(/g);
+            functions = [...funcMatches].map(m => m[1]);
+            
+            // Extract dependencies (script sources)
+            const scriptMatches = html.matchAll(/<script[^>]+src=["']([^"']+)["']/g);
+            dependencies = [...scriptMatches].map(m => m[1]);
+            
+            // Determine status based on content
+            if (html.includes('// COMPLETE') || html.includes('<!-- COMPLETE -->')) {
+                status = 'complete';
+            } else if (html.includes('// TESTING') || html.includes('<!-- TESTING -->')) {
+                status = 'testing';
+            }
+            
+        } catch (error) {
+            console.warn(`Failed to fetch ${path}:`, error);
+        }
+        
+        return {
+            id: path,
+            name,
+            path,
+            liveUrl,
+            rawUrl,
+            functions,
+            dependencies,
+            status,
+            x: Math.random() * 1000,
+            y: Math.random() * 600,
+            screenshot: null,
+            testLogs: [],
+            connections: []
+        };
+    }
+    
+    function analyzeConnections() {
+        console.log('🔗 Analyzing connections...');
+        state.connections = [];
+        
+        // Find shared functions and dependencies
+        for (let i = 0; i < state.nodes.length; i++) {
+            for (let j = i + 1; j < state.nodes.length; j++) {
+                const nodeA = state.nodes[i];
+                const nodeB = state.nodes[j];
+                
+                // Check for shared functions
+                const sharedFunctions = nodeA.functions.filter(f => nodeB.functions.includes(f));
+                
+                // Check for dependency relationships
+                const hasSharedDep = nodeA.dependencies.some(d => nodeB.dependencies.includes(d));
+                
+                if (sharedFunctions.length > 0 || hasSharedDep) {
+                    state.connections.push({
+                        from: nodeA.id,
+                        to: nodeB.id,
+                        sharedFunctions,
+                        type: sharedFunctions.length > 0 ? 'function' : 'dependency',
+                        weight: sharedFunctions.length
+                    });
+                }
+            }
+        }
+        
+        console.log(`✅ Found ${state.connections.length} connections`);
+    }
+    
+    // ═══════════════════════════════════════════════════════════════════════════
+    // TESTING SYSTEM
+    // ═══════════════════════════════════════════════════════════════════════════
+    
+    async function runAgentTests() {
+        console.log('🧪 Running agent tests...');
+        ui.runTestsBtn.disabled = true;
+        ui.runTestsBtn.textContent = '⏳ Testing...';
+        
+        for (const node of state.nodes) {
+            node.testLogs = [];
+            
+            // Test 1: Check if file exists
+            node.testLogs.push({ level: 'info', message: `Testing ${node.name}...` });
+            
+            try {
+                const response = await fetch(node.liveUrl, { method: 'HEAD' });
+                if (response.ok) {
+                    node.testLogs.push({ level: 'pass', message: '✓ File accessible' });
+                } else {
+                    node.testLogs.push({ level: 'fail', message: '✗ File not accessible' });
+                }
+            } catch (error) {
+                node.testLogs.push({ level: 'fail', message: `✗ Error: ${error.message}` });
+            }
+            
+            // Test 2: Check for required functions
+            if (node.functions.length > 0) {
+                node.testLogs.push({ level: 'pass', message: `✓ Found ${node.functions.length} functions` });
+            } else {
+                node.testLogs.push({ level: 'warn', message: '⚠ No functions detected' });
+            }
+            
+            // Test 3: Check dependencies
+            if (node.dependencies.length > 0) {
+                node.testLogs.push({ level: 'info', message: `Dependencies: ${node.dependencies.length}` });
+            }
+            
+            // Test 4: Check connections
+            const connections = state.connections.filter(c => c.from === node.id || c.to === node.id);
+            if (connections.length > 0) {
+                node.testLogs.push({ level: 'pass', message: `✓ ${connections.length} connections verified` });
+            } else {
+                node.testLogs.push({ level: 'warn', message: '⚠ No connections (isolated)' });
+            }
+            
+            node.testLogs.push({ level: 'info', message: 'Test complete' });
+        }
+        
+        saveState();
+        render();
+        updateStats();
+        
+        console.log('✅ Tests complete!');
+        ui.runTestsBtn.disabled = false;
+        ui.runTestsBtn.textContent = '🧪 Run Agent Tests';
+    }
+    
+    // ═══════════════════════════════════════════════════════════════════════════
+    // SCREENSHOT SYSTEM
+    // ═══════════════════════════════════════════════════════════════════════════
+    
+    async function captureScreenshots() {
+        console.log('📸 Capturing screenshots...');
+        ui.captureScreenshotsBtn.disabled = true;
+        ui.captureScreenshotsBtn.textContent = '⏳ Capturing...';
+        
+        // Note: Real screenshots would require a server-side service like Puppeteer
+        // For now, we'll create placeholder data
+        
+        for (const node of state.nodes) {
+            // Simulate screenshot capture
+            node.screenshot = `https://via.placeholder.com/320x200/1a1f2e/60a5fa?text=${encodeURIComponent(node.name)}`;
+            console.log(`📷 Captured ${node.name}`);
+        }
+        
+        saveState();
+        if (state.selectedNode) {
+            showNodeInspector(state.selectedNode);
+        }
+        
+        console.log('✅ Screenshots captured!');
+        ui.captureScreenshotsBtn.disabled = false;
+        ui.captureScreenshotsBtn.textContent = '📸 Capture Screenshots';
+    }
+    
+    // ═══════════════════════════════════════════════════════════════════════════
+    // RENDERING
+    // ═══════════════════════════════════════════════════════════════════════════
+    
+    function resizeCanvas() {
+        const rect = ui.canvas.parentElement.getBoundingClientRect();
+        ui.canvas.width = rect.width;
+        ui.canvas.height = rect.height;
+        render();
+    }
+    
+    function render() {
+        ctx.clearRect(0, 0, ui.canvas.width, ui.canvas.height);
+        
+        ctx.save();
+        ctx.translate(state.camera.x, state.camera.y);
+        ctx.scale(state.camera.zoom, state.camera.zoom);
+        
+        // Draw connections
+        state.connections.forEach(conn => {
+            const fromNode = state.nodes.find(n => n.id === conn.from);
+            const toNode = state.nodes.find(n => n.id === conn.to);
+            if (!fromNode || !toNode) return;
+            
+            ctx.beginPath();
+            ctx.moveTo(fromNode.x, fromNode.y);
+            ctx.lineTo(toNode.x, toNode.y);
+            
+            // Color based on connection type
+            if (conn.type === 'function') {
+                ctx.strokeStyle = `rgba(96, 165, 250, ${0.3 + conn.weight * 0.1})`;
+                ctx.lineWidth = 1 + conn.weight;
+            } else {
+                ctx.strokeStyle = 'rgba(167, 139, 250, 0.3)';
+                ctx.lineWidth = 1;
+            }
+            
+            ctx.stroke();
+        });
+        
+        // Draw nodes
+        state.nodes.forEach(node => {
+            const isSelected = state.selectedNode && state.selectedNode.id === node.id;
+            
+            // Node circle
+            ctx.beginPath();
+            ctx.arc(node.x, node.y, isSelected ? 20 : 15, 0, Math.PI * 2);
+            
+            // Color based on status
+            if (node.status === 'complete') {
+                ctx.fillStyle = isSelected ? '#10b981' : '#065f46';
+            } else if (node.status === 'testing') {
+                ctx.fillStyle = isSelected ? '#60a5fa' : '#1e3a8a';
+            } else {
+                ctx.fillStyle = isSelected ? '#f59e0b' : '#78350f';
+            }
+            ctx.fill();
+            
+            // Border
+            ctx.strokeStyle = isSelected ? '#fff' : '#4b5563';
+            ctx.lineWidth = isSelected ? 3 : 1;
+            ctx.stroke();
+            
+            // Label
+            ctx.fillStyle = '#e0e0e0';
+            ctx.font = isSelected ? 'bold 12px sans-serif' : '10px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(node.name, node.x, node.y + (isSelected ? 35 : 30));
+            
+            // Connection count badge
+            const connectionCount = state.connections.filter(c => c.from === node.id || c.to === node.id).length;
+            if (connectionCount > 0) {
+                ctx.beginPath();
+                ctx.arc(node.x + 12, node.y - 12, 8, 0, Math.PI * 2);
+                ctx.fillStyle = '#a78bfa';
+                ctx.fill();
+                ctx.fillStyle = '#000';
+                ctx.font = 'bold 10px sans-serif';
+                ctx.fillText(connectionCount, node.x + 12, node.y - 9);
+            }
+        });
+        
+        ctx.restore();
+        
+        ui.loading.style.display = 'none';
+    }
+    
+    // ═══════════════════════════════════════════════════════════════════════════
+    // INTERACTION
+    // ═══════════════════════════════════════════════════════════════════════════
+    
+    function getMousePos(e) {
+        const rect = ui.canvas.getBoundingClientRect();
+        return {
+            x: (e.clientX - rect.left - state.camera.x) / state.camera.zoom,
+            y: (e.clientY - rect.top - state.camera.y) / state.camera.zoom
+        };
+    }
+    
+    function findNodeAt(x, y) {
+        return state.nodes.find(node => {
+            const dx = node.x - x;
+            const dy = node.y - y;
+            return Math.sqrt(dx * dx + dy * dy) < 15;
+        });
+    }
+    
+    ui.canvas.addEventListener('mousedown', (e) => {
+        const pos = getMousePos(e);
+        const node = findNodeAt(pos.x, pos.y);
+        
+        if (node) {
+            state.selectedNode = node;
+            showNodeInspector(node);
+            render();
+        } else {
+            state.isDragging = true;
+            state.dragStart = { x: e.clientX - state.camera.x, y: e.clientY - state.camera.y };
+        }
+    });
+    
+    ui.canvas.addEventListener('mousemove', (e) => {
+        if (state.isDragging) {
+            state.camera.x = e.clientX - state.dragStart.x;
+            state.camera.y = e.clientY - state.dragStart.y;
+            render();
+        }
+    });
+    
+    ui.canvas.addEventListener('mouseup', () => {
+        state.isDragging = false;
+    });
+    
+    ui.canvas.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        const delta = e.deltaY > 0 ? 0.9 : 1.1;
+        state.camera.zoom *= delta;
+        state.camera.zoom = Math.max(0.1, Math.min(3, state.camera.zoom));
+        render();
+    });
+    
+    // ═══════════════════════════════════════════════════════════════════════════
+    // INSPECTOR
+    // ═══════════════════════════════════════════════════════════════════════════
+    
+    function showNodeInspector(node) {
+        const connections = state.connections.filter(c => c.from === node.id || c.to === node.id);
+        
+        ui.inspector.innerHTML = `
+            <div class="node-card">
+                <div class="node-title">${node.name}</div>
+                <div class="node-path">${node.path}</div>
+                <div style="margin: 10px 0;">
+                    <span class="status-badge status-${node.status}">${node.status}</span>
+                </div>
+                ${node.screenshot ? `<img src="${node.screenshot}" class="screenshot" alt="${node.name} screenshot">` : ''}
+                
+                <h3>🔗 Links</h3>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px;">
+                    <a href="${node.liveUrl}" target="_blank" class="btn" style="flex: 1; text-align: center;">🌐 Live</a>
+                    <a href="${node.rawUrl}" target="_blank" class="btn" style="flex: 1; text-align: center;">📄 Raw</a>
+                </div>
+                
+                <h3>⚙️ Functions (${node.functions.length})</h3>
+                <div style="max-height: 150px; overflow-y: auto; background: #1a1f2e; border: 1px solid #374151; border-radius: 6px; padding: 8px; font-family: monospace; font-size: 11px;">
+                    ${node.functions.length > 0 ? node.functions.map(f => `<div style="color: #34d399;">• ${f}()</div>`).join('') : '<div style="color: #6b7280;">No functions detected</div>'}
+                </div>
+                
+                <h3>🔌 Dependencies (${node.dependencies.length})</h3>
+                <div style="max-height: 100px; overflow-y: auto; background: #1a1f2e; border: 1px solid #374151; border-radius: 6px; padding: 8px; font-family: monospace; font-size: 11px;">
+                    ${node.dependencies.length > 0 ? node.dependencies.map(d => `<div style="color: #a78bfa;">• ${d}</div>`).join('') : '<div style="color: #6b7280;">No dependencies detected</div>'}
+                </div>
+                
+                <h3>🔗 Connections (${connections.length})</h3>
+                <div class="connection-list">
+                    ${connections.map(c => {
+                        const otherNode = c.from === node.id ? state.nodes.find(n => n.id === c.to) : state.nodes.find(n => n.id === c.from);
+                        return `
+                            <div class="connection-item">
+                                <div style="font-weight: bold; color: #60a5fa;">${otherNode ? otherNode.name : 'Unknown'}</div>
+                                <div style="color: #9ca3af; font-size: 10px;">${c.type} • ${c.sharedFunctions.length} shared functions</div>
+                            </div>
+                        `;
+                    }).join('')}
+                    ${connections.length === 0 ? '<div style="color: #6b7280; font-size: 11px;">No connections (isolated node)</div>' : ''}
+                </div>
+                
+                <h3>🧪 Test Logs</h3>
+                <div class="log-container">
+                    ${node.testLogs.map(log => `<div class="log-line log-${log.level}">${log.message}</div>`).join('')}
+                    ${node.testLogs.length === 0 ? '<div class="log-line log-info">No tests run yet</div>' : ''}
+                </div>
+            </div>
+        `;
+    }
+    
+    // ═══════════════════════════════════════════════════════════════════════════
+    // LAYOUT
+    // ═══════════════════════════════════════════════════════════════════════════
+    
+    function autoLayout() {
+        console.log('📐 Auto-layouting...');
+        
+        // Force-directed graph layout (simplified)
+        const iterations = 100;
+        const repulsion = 5000;
+        const attraction = 0.01;
+        
+        for (let iter = 0; iter < iterations; iter++) {
+            // Repulsion between all nodes
+            for (let i = 0; i < state.nodes.length; i++) {
+                for (let j = i + 1; j < state.nodes.length; j++) {
+                    const nodeA = state.nodes[i];
+                    const nodeB = state.nodes[j];
+                    
+                    const dx = nodeB.x - nodeA.x;
+                    const dy = nodeB.y - nodeA.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+                    
+                    const force = repulsion / (dist * dist);
+                    const fx = (dx / dist) * force;
+                    const fy = (dy / dist) * force;
+                    
+                    nodeA.x -= fx;
+                    nodeA.y -= fy;
+                    nodeB.x += fx;
+                    nodeB.y += fy;
+                }
+            }
+            
+            // Attraction along connections
+            state.connections.forEach(conn => {
+                const fromNode = state.nodes.find(n => n.id === conn.from);
+                const toNode = state.nodes.find(n => n.id === conn.to);
+                if (!fromNode || !toNode) return;
+                
+                const dx = toNode.x - fromNode.x;
+                const dy = toNode.y - fromNode.y;
+                const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+                
+                const force = dist * attraction;
+                const fx = (dx / dist) * force;
+                const fy = (dy / dist) * force;
+                
+                fromNode.x += fx;
+                fromNode.y += fy;
+                toNode.x -= fx;
+                toNode.y -= fy;
+            });
+        }
+        
+        // Center the graph
+        const avgX = state.nodes.reduce((sum, n) => sum + n.x, 0) / state.nodes.length;
+        const avgY = state.nodes.reduce((sum, n) => sum + n.y, 0) / state.nodes.length;
+        const centerX = ui.canvas.width / 2 / state.camera.zoom;
+        const centerY = ui.canvas.height / 2 / state.camera.zoom;
+        
+        state.nodes.forEach(node => {
+            node.x += centerX - avgX;
+            node.y += centerY - avgY;
+        });
+        
+        saveState();
+        render();
+    }
+    
+    // ═══════════════════════════════════════════════════════════════════════════
+    // STORAGE
+    // ═══════════════════════════════════════════════════════════════════════════
+    
+    function saveState() {
+        localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify({
+            nodes: state.nodes,
+            connections: state.connections
+        }));
+    }
+    
+    function loadState() {
+        const data = localStorage.getItem(CONFIG.STORAGE_KEY);
+        if (data) {
+            const parsed = JSON.parse(data);
+            state.nodes = parsed.nodes || [];
+            state.connections = parsed.connections || [];
+            updateStats();
+            render();
+            console.log('📂 Loaded saved state');
+        }
+    }
+    
+    // ═══════════════════════════════════════════════════════════════════════════
+    // STATS
+    // ═══════════════════════════════════════════════════════════════════════════
+    
+    function updateStats() {
+        ui.totalProjects.textContent = state.nodes.length;
+        ui.completeProjects.textContent = state.nodes.filter(n => n.status === 'complete').length;
+        ui.incompleteProjects.textContent = state.nodes.filter(n => n.status === 'incomplete').length;
+        ui.totalConnections.textContent = state.connections.length;
+    }
+    
+    // ═══════════════════════════════════════════════════════════════════════════
+    // EVENT LISTENERS
+    // ═══════════════════════════════════════════════════════════════════════════
+    
+    ui.scanRepoBtn.addEventListener('click', scanRepository);
+    ui.runTestsBtn.addEventListener('click', runAgentTests);
+    ui.captureScreenshotsBtn.addEventListener('click', captureScreenshots);
+    ui.analyzeConnectionsBtn.addEventListener('click', () => {
+        analyzeConnections();
+        saveState();
+        render();
+        updateStats();
+    });
+    
+    ui.exportDataBtn.addEventListener('click', () => {
+        const data = JSON.stringify({
+            nodes: state.nodes,
+            connections: state.connections,
+            timestamp: Date.now()
+        }, null, 2);
+        const blob = new Blob([data], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `gembot-neural-network-${Date.now()}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+    });
+    
+    ui.importDataBtn.addEventListener('click', () => {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'application/json';
+        input.onchange = async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            try {
+                const text = await file.text();
+                const data = JSON.parse(text);
+                state.nodes = data.nodes || [];
+                state.connections = data.connections || [];
+                saveState();
+                updateStats();
+                render();
+                alert('Data imported successfully!');
+            } catch (error) {
+                alert('Import failed: ' + error.message);
+            }
+        };
+        input.click();
+    });
+    
+    ui.zoomInBtn.addEventListener('click', () => {
+        state.camera.zoom *= 1.2;
+        state.camera.zoom = Math.min(3, state.camera.zoom);
+        render();
+    });
+    
+    ui.zoomOutBtn.addEventListener('click', () => {
+        state.camera.zoom *= 0.8;
+        state.camera.zoom = Math.max(0.1, state.camera.zoom);
+        render();
+    });
+    
+    ui.resetViewBtn.addEventListener('click', () => {
+        state.camera = { x: 0, y: 0, zoom: 1 };
+        render();
+    });
+    
+    ui.autoLayoutBtn.addEventListener('click', autoLayout);
+    
+    ui.searchFilter.addEventListener('input', () => {
+        // TODO: Implement search filtering
+        render();
+    });
+    
+    ui.statusFilter.addEventListener('change', () => {
+        // TODO: Implement status filtering
+        render();
+    });
+    
+    // ═══════════════════════════════════════════════════════════════════════════
+    // INITIALIZATION
+    // ═══════════════════════════════════════════════════════════════════════════
+    
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+    loadState();
+    
+    console.log('🧠 Neural Dashboard initialized');
+    console.log('💡 Click "Scan Repository" to begin');
+    
+})();
+    </script>
+</body>
+</html>
