@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔑 GemBot Universe Key - Hub</title>
+    <link rel="stylesheet" href="gembot-universe-key-launcher.css">
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="stars"></div>
+    <div class="gems-float"></div>
+    
+    <!-- Main Container -->
+    <div class="universe-key-container">
+        <!-- Header -->
+        <header class="key-header">
+            <div class="logo-container">
+                <div class="logo-glow"></div>
+                <h1 class="logo-text">
+                    <span class="gem-icon">💎</span>
+                    GEMBOT UNIVERSE KEY
+                    <span class="key-icon">🔑</span>
+                </h1>
+            </div>
+            <p class="key-id">Key ID: <span id="keyIdDisplay" class="key-id-value">Loading...</span></p>
+            <p class="wallet-address">Wallet: <span id="walletDisplay" class="wallet-value">Initializing...</span></p>
+        </header>
+        
+        <!-- Welcome Message (First Time Only) -->
+        <section class="welcome-message" id="welcomeMessage" style="display: none;">
+            <div class="welcome-card">
+                <h2>🎉 Welcome to Your GemBot Universe!</h2>
+                <p>This is your personal key to the entire GemBot ecosystem.</p>
+                <p>Let us show you around...</p>
+                <button class="btn-primary" onclick="startTour()">🚀 Start Interactive Tour</button>
+                <button class="btn-secondary" onclick="dismissWelcome()">Skip for now</button>
+            </div>
+        </section>
+        
+        <!-- Status Dashboard -->
+        <section class="status-panel">
+            <div class="status-card wallet-card">
+                <div class="status-icon">💎</div>
+                <div class="status-info">
+                    <h3>Wallet Balance</h3>
+                    <p class="status-value" id="walletBalance">1,000 GBUV</p>
+                    <p class="status-label">Initial Value</p>
+                </div>
+                <div class="status-indicator active"></div>
+            </div>
+            
+            <div class="status-card machine-card">
+                <div class="status-icon">🔗</div>
+                <div class="status-info">
+                    <h3>Machine Status</h3>
+                    <p class="status-value" id="machineStatus">Not Linked</p>
+                    <p class="status-label">Click to connect</p>
+                </div>
+                <div class="status-indicator pending"></div>
+            </div>
+            
+            <div class="status-card security-card">
+                <div class="status-icon">🛡️</div>
+                <div class="status-info">
+                    <h3>Key Status</h3>
+                    <p class="status-value" id="keyStatus">Checking...</p>
+                    <p class="status-label">Activation required</p>
+                </div>
+                <div class="status-indicator" id="securityIndicator"></div>
+            </div>
+        </section>
+        
+        <!-- Main Action Grid -->
+        <section class="action-grid">
+            <button class="action-btn tour-btn" onclick="startTour()">
+                <div class="btn-glow"></div>
+                <span class="btn-icon">🚀</span>
+                <span class="btn-label">Start Tour</span>
+                <span class="btn-desc">First time? Let us show you around</span>
+                <div class="btn-badge">Recommended</div>
+            </button>
+            
+            <button class="action-btn link-btn" onclick="linkMachine()">
+                <div class="btn-glow"></div>
+                <span class="btn-icon">🔗</span>
+                <span class="btn-label">Link Machine</span>
+                <span class="btn-desc">Connect your physical GemBot</span>
+            </button>
+            
+            <button class="action-btn wallet-btn" onclick="openWallet()">
+                <div class="btn-glow"></div>
+                <span class="btn-icon">💎</span>
+                <span class="btn-label">View Wallet</span>
+                <span class="btn-desc">Manage your GBUV balance</span>
+                <div class="btn-value">1,000 GBUV</div>
+            </button>
+            
+            <button class="action-btn deploy-btn" onclick="deployProject()">
+                <div class="btn-glow"></div>
+                <span class="btn-icon">📦</span>
+                <span class="btn-label">Deploy Project</span>
+                <span class="btn-desc">Launch full GemBot environment</span>
+            </button>
+            
+            <button class="action-btn academy-btn" onclick="openAcademy()">
+                <div class="btn-glow"></div>
+                <span class="btn-icon">🎓</span>
+                <span class="btn-label">Academy</span>
+                <span class="btn-desc">Learn and earn rewards</span>
+            </button>
+            
+            <button class="action-btn backup-btn" onclick="viewBackup()">
+                <div class="btn-glow"></div>
+                <span class="btn-icon">🗂️</span>
+                <span class="btn-label">Project Backup</span>
+                <span class="btn-desc">View complete repository</span>
+                <div class="btn-badge-sm">Full Backup</div>
+            </button>
+            
+            <button class="action-btn docs-btn" onclick="openDocs()">
+                <div class="btn-glow"></div>
+                <span class="btn-icon">📖</span>
+                <span class="btn-label">Documentation</span>
+                <span class="btn-desc">User manual and guides</span>
+            </button>
+            
+            <button class="action-btn support-btn" onclick="contactSupport()">
+                <div class="btn-glow"></div>
+                <span class="btn-icon">💬</span>
+                <span class="btn-label">Support</span>
+                <span class="btn-desc">Get help from our team</span>
+            </button>
+        </section>
+        
+        <!-- Quick Stats -->
+        <section class="quick-stats">
+            <div class="stat">
+                <span class="stat-icon">📈</span>
+                <span class="stat-label">Project Version</span>
+                <span class="stat-value" id="projectVersion">2025.12.15</span>
+            </div>
+            <div class="stat">
+                <span class="stat-icon">📅</span>
+                <span class="stat-label">Backup Date</span>
+                <span class="stat-value" id="backupDate">Dec 15, 2025</span>
+            </div>
+            <div class="stat">
+                <span class="stat-icon">⚡</span>
+                <span class="stat-label">Files Backed Up</span>
+                <span class="stat-value" id="filesCount">120+</span>
+            </div>
+        </section>
+        
+        <!-- Footer -->
+        <footer class="key-footer">
+            <div class="footer-content">
+                <p class="copyright">© 2024-2025 Ryan Barbrick / Barbrick Design</p>
+                <p class="contact">
+                    <a href="mailto:barbrickdesign@gmail.com">barbrickdesign@gmail.com</a>
+                </p>
+                <p class="signature">GBOT-RB-2025-7X9K2M4P-BARBRICK</p>
+            </div>
+            <div class="footer-links">
+                <a href="#" onclick="showWarranty()">Warranty</a>
+                <a href="#" onclick="showTerms()">Terms</a>
+                <a href="#" onclick="showPrivacy()">Privacy</a>
+            </div>
+        </footer>
+    </div>
+    
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <p class="loading-text" id="loadingText">Initializing Universe Key...</p>
+        </div>
+    </div>
+    
+    <!-- Notification Toast -->
+    <div class="notification-toast" id="notificationToast">
+        <span class="toast-icon" id="toastIcon">✅</span>
+        <span class="toast-message" id="toastMessage">Action completed</span>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="gembot-universe-key-launcher.js"></script>
+</body>
+</html>
