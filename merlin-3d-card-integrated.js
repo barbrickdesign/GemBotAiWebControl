@@ -1048,28 +1048,203 @@ class MerlinAICardIntegrated {
             messagesContainer.removeChild(messagesContainer.lastChild);
         }
     }
+    
+    // Response history to ensure no duplicates
+    responseHistory = {
+        greetings: [],
+        tips: [],
+        help: [],
+        gems: [],
+        faceting: [],
+        trading: [],
+        game: [],
+        general: [],
+        maxHistory: 100
+    };
+
+    /**
+     * Get a unique response that hasn't been used recently
+     */
+    getUniqueResponse(category, options) {
+        if (!options || options.length === 0) return null;
+        
+        const history = this.responseHistory[category] || [];
+        const available = options.filter(opt => !history.includes(opt));
+        
+        // If all options used, clear history and start fresh
+        if (available.length === 0) {
+            this.responseHistory[category] = [];
+            // Return random from full list
+            return options[Math.floor(Math.random() * options.length)];
+        }
+        
+        const chosen = available[Math.floor(Math.random() * available.length)];
+        
+        // Add to history
+        if (!this.responseHistory[category]) {
+            this.responseHistory[category] = [];
+        }
+        this.responseHistory[category].push(chosen);
+        
+        // Trim history if too long
+        if (this.responseHistory[category].length > this.responseHistory.maxHistory) {
+            this.responseHistory[category].shift();
+        }
+        
+        // Persist history to localStorage
+        this.saveResponseHistory();
+        
+        return chosen;
+    }
+    
+    saveResponseHistory() {
+        try {
+            localStorage.setItem('merlin_response_history', JSON.stringify(this.responseHistory));
+        } catch (e) {
+            console.warn('Could not save response history:', e);
+        }
+    }
+    
+    loadResponseHistory() {
+        try {
+            const saved = localStorage.getItem('merlin_response_history');
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                this.responseHistory = { ...this.responseHistory, ...parsed };
+            }
+        } catch (e) {
+            console.warn('Could not load response history:', e);
+        }
+    }
 
     generateIntelligentResponse(message) {
+        // Load response history on first call
+        if (!this._historyLoaded) {
+            this.loadResponseHistory();
+            this._historyLoaded = true;
+        }
+        
         const lowerMsg = message.toLowerCase();
         
-        // Knowledge base responses
-        if (lowerMsg.includes('help') || lowerMsg.includes('?')) {
-            return 'I can help you navigate GemBot! Try asking about: faceting, gems, marketplace, controls, or game features.';
-        }
-        if (lowerMsg.includes('gem') || lowerMsg.includes('stone')) {
-            return 'Gems are precious! I can help you facet, analyze, or trade gemstones. What would you like to know?';
-        }
-        if (lowerMsg.includes('facet') || lowerMsg.includes('cut')) {
-            return 'Faceting requires precision! Flip this card to access machine controls and start your gemstone masterpiece.';
-        }
-        if (lowerMsg.includes('game') || lowerMsg.includes('play')) {
-            return 'Welcome to GemBot Farm! You can build machines, collect gems, trade, and level up. Need specific help?';
-        }
-        if (lowerMsg.includes('trade') || lowerMsg.includes('market')) {
-            return 'The marketplace is bustling with activity! You can buy, sell, and trade gems and equipment. Check the marketplace button.';
+        // Use MerlinEnhancedResponses if available for maximum variety
+        if (window.MerlinEnhancedResponses) {
+            try {
+                // Determine context
+                const isMarketplace = /market|buy|sell|trade|price|shop/.test(lowerMsg);
+                const isGemstone = /gem|stone|diamond|ruby|sapphire|emerald|crystal|cut|facet|polish/.test(lowerMsg);
+                const isHelp = /help|how|what|where|when|why|can you|explain|guide/.test(lowerMsg);
+                const isGame = /game|play|level|xp|score|quest|achievement/.test(lowerMsg);
+                
+                if (isMarketplace) {
+                    const response = window.MerlinEnhancedResponses.answerMarketplaceQuestion(message);
+                    if (response && response !== message) return response;
+                }
+                
+                if (isGemstone) {
+                    const response = window.MerlinEnhancedResponses.answerGemstoneQuestion(message);
+                    if (response && response !== message) return response;
+                }
+                
+                if (isHelp) {
+                    const response = window.MerlinEnhancedResponses.generateTip({
+                        skillLevel: 'intermediate',
+                        currentActivity: 'general'
+                    });
+                    if (response) return response;
+                }
+                
+                if (isGame) {
+                    const response = window.MerlinEnhancedResponses.generateGameIntegration({
+                        action: 'playing'
+                    });
+                    if (response) return response;
+                }
+            } catch (e) {
+                console.warn('MerlinEnhancedResponses error:', e);
+            }
         }
         
-        return `Interesting question! I'm Merlin, your guide in the GemBot realm. ${message}`;
+        // Fallback knowledge base with unique response system
+        const responses = {
+            help: [
+                '✨ I can help you navigate GemBot! Ask me about: faceting, gems, marketplace, controls, or game features.',
+                '🧙‍♂️ Need guidance? I specialize in gemstone knowledge, machine operations, trading advice, and game strategies!',
+                '🔮 The path to mastery lies before you. Ask about: cutting techniques, gem types, trading tips, or game mechanics.',
+                '📚 My knowledge spans many realms! Gemstones, faceting, marketplace trading, crafting, and all GemBot features.',
+                '✨ How may I assist your journey? I can explain gems, cutting, trading, crafting, or guide you through any feature.',
+                '🌟 Every master was once a beginner. Ask freely about gems, techniques, the marketplace, or game mechanics!',
+                '🧠 My centuries of wisdom are at your disposal. What would you like to know about GemBot?',
+                '💫 The crystals whisper your question. I can help with gems, faceting, trading, or any adventure ahead!'
+            ],
+            gems: [
+                '💎 Gems are precious treasures! I can help you facet, analyze, or trade gemstones. What interests you?',
+                '🔮 Each gemstone holds unique properties. Ask about specific gems, cutting angles, or value assessment!',
+                '✨ The world of gems is vast! From diamonds to emeralds, each has secrets to unlock. What would you explore?',
+                '💠 Gemstones are my specialty! Would you like to learn about types, cutting techniques, or market values?',
+                '🌟 Ah, precious stones! I can teach you about hardness, clarity, color grades, or optimal cutting angles.',
+                '💎 Every gem tells a story. Ask about specific stones, their properties, or how to maximize their beauty!',
+                '🔷 From rough to brilliant! I can guide you through gem identification, grading, or cutting strategies.',
+                '✨ The gem realm is full of wonders. What aspect of gemology shall we explore together?'
+            ],
+            faceting: [
+                '✂️ Faceting requires precision! Flip this card to access machine controls and start your gemstone masterpiece.',
+                '🔧 Ready to cut? The faceting machine awaits! Crown angles, pavilion depth, and polish await your mastery.',
+                '💫 Each facet is a window to light! Let me guide you through angles, index settings, and cutting sequences.',
+                '⚙️ Precision cutting is an art! Ask about specific facet patterns, angles, or use the machine controls behind this card.',
+                '✨ The difference between good and great lies in the details. What faceting technique interests you?',
+                '🎯 A master cutter knows angles like a friend. Shall I explain crown cuts, pavilion facets, or polish techniques?',
+                '💎 From table to culet! I can guide you through standard brilliant, step cuts, or fantasy designs.',
+                '🔮 Light is the ultimate judge of your work. Let me share secrets of optimal angle selection!'
+            ],
+            trading: [
+                '🛒 The marketplace is bustling with activity! You can buy, sell, and trade gems and equipment. Check the marketplace button!',
+                '💰 Trading wisdom: Buy rough low, sell cut high! The marketplace holds many opportunities for the shrewd.',
+                '📈 Market trends favor the prepared! I can help you understand gem values, rarity ratings, and optimal selling times.',
+                '🏪 The gem marketplace connects collectors worldwide! Browse rare finds or list your finest cuts for sale.',
+                '💎 Every trade is an opportunity! Learn to spot undervalued gems and time your sales for maximum profit.',
+                '🤝 Fair trading builds reputation! The marketplace rewards honest dealers with better opportunities.',
+                '📊 Market analysis is key! I can help you track gem values, predict trends, and find the best deals.',
+                '✨ From raw finds to polished treasures - the marketplace is where value meets appreciation!'
+            ],
+            game: [
+                '🎮 Welcome to GemBot Farm! You can build machines, collect gems, trade, and level up. Need specific help?',
+                '⭐ Adventure awaits! Complete quests, earn XP, unlock achievements, and become a legendary gem crafter!',
+                '🏆 Your journey is just beginning! Build your gem empire through mining, cutting, crafting, and trading.',
+                '🎯 Daily challenges, weekly quests, and special events await! Check the Academy for tasks and rewards.',
+                '💪 Level up by completing lessons, cutting gems, and trading successfully. Each action brings mastery!',
+                '🌟 The game rewards dedication! Streaks, achievements, and milestones all contribute to your legend.',
+                '🚀 From novice to master! Unlock new machines, rare gem types, and special abilities as you progress.',
+                '✨ Every gem cut, every trade made, every lesson learned brings you closer to greatness!'
+            ],
+            general: [
+                '🧙‍♂️ Interesting question! I am Merlin, your guide in the GemBot realm. How may I enlighten your path?',
+                '🔮 The crystals reflect your curiosity! Ask me about gems, faceting, trading, or the game itself.',
+                '✨ Your question intrigues me! I have knowledge of many subjects. What would you like to explore?',
+                '💫 Ah, a seeker of knowledge! My expertise covers gemology, crafting, trading, and all things GemBot.',
+                '🌟 The wisdom of ages is at your fingertips! Ask about any aspect of the GemBot universe.',
+                '📚 Every question leads to discovery! Tell me more about what you seek to understand.',
+                '🎭 Curiosity is the spark of mastery! I am here to guide you through any challenge.',
+                '⚡ Your words reach my ears! I can assist with gems, machines, markets, or game strategies.'
+            ]
+        };
+        
+        // Determine category and get unique response
+        let category = 'general';
+        
+        if (lowerMsg.includes('help') || lowerMsg.includes('?') || lowerMsg.includes('how')) {
+            category = 'help';
+        } else if (lowerMsg.includes('gem') || lowerMsg.includes('stone') || lowerMsg.includes('crystal')) {
+            category = 'gems';
+        } else if (lowerMsg.includes('facet') || lowerMsg.includes('cut') || lowerMsg.includes('angle') || lowerMsg.includes('polish')) {
+            category = 'faceting';
+        } else if (lowerMsg.includes('trade') || lowerMsg.includes('market') || lowerMsg.includes('buy') || lowerMsg.includes('sell')) {
+            category = 'trading';
+        } else if (lowerMsg.includes('game') || lowerMsg.includes('play') || lowerMsg.includes('level') || lowerMsg.includes('xp')) {
+            category = 'game';
+        }
+        
+        return this.getUniqueResponse(category, responses[category]) || 
+               `🔮 ${message} - An intriguing thought! Ask me about gems, faceting, trading, or game features for more wisdom.`;
     }
 
     addMessage(sender, text) {
@@ -1362,20 +1537,193 @@ class MerlinAICardIntegrated {
         const allBtns = this.card.querySelectorAll('.control-btn');
         allBtns.forEach(btn => btn.classList.remove('highlighted', 'pulsing'));
         
-        // Flip back to chat
+        // Execute the action
+        this.executeControlAction(action);
+        
+        // Flip back to chat with action-specific message
         setTimeout(() => {
             if (this.state.isFlipped) {
                 this.flip();
             }
-            this.addMessage('merlin', `Executing ${action}... ✨`);
-            this.updateGemstoneColor('success');
-            this.animateWizard({ intensity: 2, color: '#10b981' });
         }, 300);
 
         // Trigger event for main system to handle
         window.dispatchEvent(new CustomEvent('merlinControlAction', {
             detail: { action, timestamp: Date.now() }
         }));
+    }
+    
+    /**
+     * Execute control actions - each button does something meaningful
+     */
+    executeControlAction(action) {
+        switch (action) {
+            // Gem Bot Farm Controls
+            case 'deploy':
+                this.addMessage('merlin', '🚀 Deploying new GemBot machine! Check your farm for the new unit.');
+                this.animateWizard({ intensity: 3, color: '#10b981' });
+                if (window.GemBotFarm) window.GemBotFarm.deployMachine();
+                if (window.GameState) window.GameState.deployMachine?.();
+                break;
+                
+            case 'monitor':
+                this.addMessage('merlin', '📊 Opening production monitor... Analyzing gem output and efficiency.');
+                this.animateWizard({ intensity: 2, color: '#3b82f6' });
+                if (window.GemBotFarm) window.GemBotFarm.showMonitor();
+                // Open monitor panel if exists
+                const monitorPanel = document.querySelector('[data-panel="production-monitor"]');
+                if (monitorPanel) monitorPanel.click();
+                break;
+                
+            case 'upgrade-automation':
+                this.addMessage('merlin', '⚡ Accessing automation upgrades... Boost your gem production rates!');
+                this.animateWizard({ intensity: 2, color: '#fbbf24' });
+                if (window.GemBotFarm) window.GemBotFarm.showUpgrades();
+                if (window.showUpgradePanel) window.showUpgradePanel();
+                break;
+            
+            // Forge Controls
+            case 'craft':
+                this.addMessage('merlin', '⚒️ Opening the Forge... What shall we craft today?');
+                this.animateWizard({ intensity: 2, color: '#f97316' });
+                if (window.openGemForge) window.openGemForge();
+                if (window.GemForge) window.GemForge.open();
+                if (window.togglePanel) window.togglePanel('gemforge-panel');
+                break;
+                
+            case 'repair':
+                this.addMessage('merlin', '🔧 Accessing repair station... Bring your damaged items here for restoration.');
+                this.animateWizard({ intensity: 2, color: '#f59e0b' });
+                if (window.GemForge) window.GemForge.showRepair();
+                break;
+                
+            case 'enhance':
+                this.addMessage('merlin', '✨ Enhancement chamber ready! Boost your gems with magical enhancements.');
+                this.animateWizard({ intensity: 3, color: '#a855f7' });
+                if (window.GemForge) window.GemForge.showEnhance();
+                break;
+            
+            // Machine Controls
+            case 'scan':
+                this.addMessage('merlin', '🔍 Scanning area for gem deposits and resources...');
+                this.animateWizard({ intensity: 2, color: '#06b6d4' });
+                if (window.scanForGems) window.scanForGems();
+                if (window.GemScanner) window.GemScanner.scan();
+                break;
+                
+            case 'connect':
+                this.addMessage('merlin', '🔗 Initiating machine connection sequence... Open Device Manager for USB setup.');
+                this.animateWizard({ intensity: 2, color: '#22c55e' });
+                if (window.connectToMachine) window.connectToMachine();
+                if (window.SerialConnection) window.SerialConnection.connect();
+                // Dispatch connection event
+                window.dispatchEvent(new CustomEvent('gembot:connect-machine'));
+                break;
+                
+            case 'analyze':
+                this.addMessage('merlin', '📊 Analyzing current gemstone... Calculating optimal cut patterns.');
+                this.animateWizard({ intensity: 2, color: '#8b5cf6' });
+                if (window.analyzeGem) window.analyzeGem();
+                if (window.GemAnalyzer) window.GemAnalyzer.analyze();
+                break;
+            
+            // Trading Controls
+            case 'marketplace':
+                this.addMessage('merlin', '🛒 Opening the marketplace... Browse gems, equipment, and rare finds!');
+                this.animateWizard({ intensity: 2, color: '#ec4899' });
+                if (window.openMarketplace) window.openMarketplace();
+                if (window.Marketplace) window.Marketplace.open();
+                if (window.togglePanel) window.togglePanel('marketplace-panel');
+                // Also try clicking marketplace button
+                const marketBtn = document.querySelector('[data-action="marketplace"], .marketplace-btn, #marketplaceBtn');
+                if (marketBtn) marketBtn.click();
+                break;
+                
+            case 'trade':
+                this.addMessage('merlin', '💰 Opening gem trading interface... Buy low, sell high!');
+                this.animateWizard({ intensity: 2, color: '#fbbf24' });
+                if (window.openTrading) window.openTrading();
+                if (window.TradingSystem) window.TradingSystem.open();
+                break;
+                
+            case 'inventory':
+                this.addMessage('merlin', '🎒 Opening your inventory... Let\'s see what treasures you\'ve collected!');
+                this.animateWizard({ intensity: 2, color: '#6366f1' });
+                if (window.openInventory) window.openInventory();
+                if (window.Inventory) window.Inventory.open();
+                if (window.togglePanel) window.togglePanel('inventory-panel');
+                // Grant view reward
+                if (window.ContributionRewardsSystem) {
+                    window.ContributionRewardsSystem.grantReward('FEATURE_USE', 1, { feature: 'inventory' });
+                }
+                break;
+            
+            // Academy Controls
+            case 'learn':
+                this.addMessage('merlin', '📖 Opening the Academy... Knowledge is the greatest treasure!');
+                this.animateWizard({ intensity: 2, color: '#14b8a6' });
+                if (window.GemBotAcademy) window.GemBotAcademy.open();
+                if (window.openAcademy) window.openAcademy();
+                if (window.togglePanel) window.togglePanel('academy-panel');
+                break;
+                
+            case 'tutorial':
+                this.addMessage('merlin', '🎓 Starting interactive tutorial... I\'ll guide you step by step.');
+                this.animateWizard({ intensity: 2, color: '#0ea5e9' });
+                if (window.GemBotAcademy) {
+                    window.GemBotAcademy.open();
+                    window.GemBotAcademy.showTab('courses');
+                }
+                if (window.startTutorial) window.startTutorial();
+                break;
+                
+            case 'guide':
+                this.addMessage('merlin', '📜 Opening the GemBot Guide... Your comprehensive reference manual.');
+                this.animateWizard({ intensity: 2, color: '#84cc16' });
+                // Open guide/help modal
+                if (window.showGuide) window.showGuide();
+                if (window.HelpSystem) window.HelpSystem.open();
+                break;
+            
+            // System Controls
+            case 'settings':
+                this.addMessage('merlin', '⚙️ Opening settings panel... Customize your GemBot experience.');
+                this.animateWizard({ intensity: 1, color: '#64748b' });
+                if (window.openSettings) window.openSettings();
+                if (window.togglePanel) window.togglePanel('settings-panel');
+                break;
+                
+            case 'help':
+                this.addMessage('merlin', '❓ How may I assist you? Ask me anything about GemBot, gems, faceting, or trading!');
+                this.animateWizard({ intensity: 2, color: '#22d3ee' });
+                this.quickAction('help');
+                break;
+                
+            case 'exit':
+                this.addMessage('merlin', '🚪 Safe travels, gem crafter! Your progress has been saved.');
+                this.animateWizard({ intensity: 1, color: '#94a3b8' });
+                // Save game state
+                if (window.saveGameState) window.saveGameState();
+                if (window.GameState) window.GameState.save?.();
+                // Minimize card
+                setTimeout(() => this.minimize(), 1500);
+                break;
+                
+            default:
+                this.addMessage('merlin', `✨ Executing ${action}... The magic is at work!`);
+                this.animateWizard({ intensity: 2, color: '#9333ea' });
+        }
+        
+        // Update gem color for visual feedback
+        this.updateGemstoneColor('success');
+        
+        // Track action for rewards
+        if (window.ContributionRewardsSystem) {
+            window.ContributionRewardsSystem.grantReward('FEATURE_USE', 1, { 
+                feature: 'merlin_control',
+                action: action
+            });
+        }
     }
 }
 
