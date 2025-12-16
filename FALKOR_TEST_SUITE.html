@@ -304,7 +304,7 @@
         async function testSecuritySystem() {
             log('Security', 'Testing anti-fraud security system...', 'info');
             
-            if (window.SecurityAntiFraudSystem) {
+            if (window.securitySystem) {
                 log('Security', 'SecurityAntiFraudSystem class found', 'pass');
                 
                 try {
@@ -323,7 +323,7 @@
                     log('Security', `Error instantiating: ${e.message}`, 'fail');
                 }
             } else {
-                log('Security', 'SecurityAntiFraudSystem not loaded', 'warn');
+                log('Security', '⚠️ securitySystem not loaded', 'warn');
             }
         }
         
@@ -331,11 +331,11 @@
         async function testWalletSystem() {
             log('Wallet', 'Testing automated wallet system...', 'info');
             
-            if (window.AutomatedWalletSystem) {
-                log('Wallet', 'AutomatedWalletSystem class found', 'pass');
+            if (typeof AutomatedWalletSystem !== 'undefined') {
+                log('Wallet', '✅ AutomatedWalletSystem class available', 'pass');
                 
                 try {
-                    const wallet = new window.AutomatedWalletSystem();
+                    const wallet = new AutomatedWalletSystem();
                     log('Wallet', 'AutomatedWalletSystem instantiated', 'pass');
                     
                     // Check Solana integration
@@ -387,10 +387,10 @@
         async function testAIAgents() {
             log('AI Agents', 'Testing AI agent system...', 'info');
             
-            if (window.AIAgentPlayer) {
-                log('AI Agents', 'AIAgentPlayer class found', 'pass');
+            if (typeof AIAgentPlayer !== 'undefined') {
+                log('AI Agents', '✅ AIAgentPlayer class available', 'success');
             } else {
-                log('AI Agents', 'AIAgentPlayer not loaded', 'warn');
+                log('AI Agents', '⚠️ AIAgentPlayer class not loaded', 'warn');
             }
             
             if (window.AIAgentManager) {
