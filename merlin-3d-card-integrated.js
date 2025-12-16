@@ -145,6 +145,17 @@ class MerlinAICardIntegrated {
                             <!-- Chat Messages -->
                             <div class="merlin-chat-messages" id="merlinMessages"></div>
                             
+                            <!-- Quick Actions Bar -->
+                            <div class="merlin-quick-actions" id="merlinQuickActions">
+                                <button class="quick-action-btn" data-action="help" title="Help">❓</button>
+                                <button class="quick-action-btn" data-action="tutorial" title="Tutorial">📚</button>
+                                <button class="quick-action-btn" data-action="tips" title="Tips">💡</button>
+                                <button class="quick-action-btn" data-action="achievement" title="Achievements">🏆</button>
+                            </div>
+                            
+                            <!-- Context Tooltips (Dynamic suggestions) -->
+                            <div class="merlin-tooltips" id="merlinTooltips"></div>
+                            
                             <!-- Chat Input -->
                             <div class="merlin-input-container">
                                 <textarea class="merlin-input" id="merlinInput" placeholder="Ask Merlin anything..." rows="2"></textarea>
@@ -156,6 +167,12 @@ class MerlinAICardIntegrated {
                             <div class="voice-status" id="merlinVoiceStatus" style="display:none;">
                                 <span class="voice-indicator">🔊</span>
                                 <span class="voice-text">Listening...</span>
+                            </div>
+                            
+                            <!-- Speaking Indicator -->
+                            <div class="merlin-speaking-indicator" id="merlinSpeakingIndicator" style="display:none;">
+                                <div class="speaking-wave"></div>
+                                <span>Merlin is speaking...</span>
                             </div>
                             
                             <!-- Card Controls -->
@@ -347,8 +364,20 @@ class MerlinAICardIntegrated {
             voiceBtn.addEventListener('click', () => this.toggleVoiceInput());
         }
         
+        // Quick action buttons
+        const quickActionBtns = this.card.querySelectorAll('.quick-action-btn');
+        quickActionBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const action = btn.getAttribute('data-action');
+                this.quickAction(action);
+            });
+        });
+        
         // Initialize voice systems
         this.initVoiceSystems();
+        
+        // Add welcome message
+        this.addWelcomeMessage();
 
         // Settings
         const gemColorPicker = this.card.querySelector('#gemColorPicker');
@@ -1051,6 +1080,155 @@ class MerlinAICardIntegrated {
         messageEl.textContent = text;
         messagesContainer.appendChild(messageEl);
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        
+        // Trigger speaking animation for merlin messages
+        if (sender === 'merlin') {
+            this.triggerSpeakingAnimation();
+        }
+    }
+    
+    addWelcomeMessage() {
+        setTimeout(() => {
+            this.addMessage('merlin', '🧙‍♂️ Greetings, adventurer! I am Merlin, your guide in the GemBot realm. Ask me anything about gems, faceting, trading, or the game!');
+        }, 500);
+    }
+    
+    // ═══════════════════════════════════════════════════════════════════════════
+    // QUICK ACTIONS & CONTEXT TOOLTIPS
+    // ═══════════════════════════════════════════════════════════════════════════
+    
+    quickAction(type) {
+        switch(type) {
+            case 'help':
+                this.addMessage('merlin', '✨ How can I help you today? Ask me about:\n• 🔮 Connecting your machine\n• 💎 Gem cutting techniques\n• 🛒 Marketplace trading\n• 🎮 Game tips and tutorials');
+                this.updateContext('help', ['guide', 'tips'], [
+                    { icon: '🔌', text: 'Connect Machine', action: 'connect' },
+                    { icon: '🎮', text: 'Game Mode', action: 'game' },
+                    { icon: '🛒', text: 'Marketplace', action: 'marketplace' }
+                ]);
+                break;
+            case 'tutorial':
+                this.addMessage('merlin', '📚 Welcome to the GemBot Academy! What would you like to learn?\n• 🔌 Machine Setup\n• 💎 Gem Cutting 101\n• 🎮 Game Mechanics');
+                this.updateContext('tutorial', ['learning', 'guide'], [
+                    { icon: '🔌', text: 'Setup Guide', action: 'connect' },
+                    { icon: '💎', text: 'Cutting Tutorial', action: 'craft' },
+                    { icon: '🎮', text: 'Game Tutorial', action: 'learn' }
+                ]);
+                break;
+            case 'tips':
+                const tips = [
+                    '💡 Use CTRL+drag to move panels around. Double-click to reset!',
+                    '💡 Higher quality gems sell for more in the marketplace!',
+                    '💡 Complete daily quests to earn bonus GBUV tokens!',
+                    '💡 Upgrade your automation to increase gem production!',
+                    '💡 Check the Neural Dashboard to see project value!'
+                ];
+                this.addMessage('system', tips[Math.floor(Math.random() * tips.length)]);
+                break;
+            case 'achievement':
+                this.addMessage('merlin', '🏆 Achievement System:\n• Level up by completing tasks\n• Earn badges for milestones\n• Unlock special gems and equipment\n• Compete on the leaderboard!');
+                if (typeof leaderboardUI !== 'undefined') {
+                    setTimeout(() => leaderboardUI.open(), 500);
+                }
+                break;
+        }
+    }
+    
+    updateContext(topic, keywords = [], suggestions = []) {
+        this.currentContext = { topic, keywords, suggestions };
+        this.renderTooltips();
+    }
+    
+    renderTooltips() {
+        const tooltipsDiv = this.card.querySelector('#merlinTooltips');
+        if (!tooltipsDiv || !this.currentContext.suggestions.length) return;
+        
+        let html = '';
+        this.currentContext.suggestions.forEach((suggestion, idx) => {
+            html += `
+                <button class="merlin-tooltip-btn" 
+                        style="animation-delay: ${idx * 0.1}s"
+                        data-tooltip-action="${suggestion.action}">
+                    ${suggestion.icon} ${suggestion.text}
+                </button>
+            `;
+        });
+        
+        tooltipsDiv.innerHTML = html;
+        
+        // Attach click handlers
+        tooltipsDiv.querySelectorAll('.merlin-tooltip-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const action = btn.getAttribute('data-tooltip-action');
+                this.executeSuggestion(action);
+            });
+        });
+    }
+    
+    executeSuggestion(action) {
+        console.log('Executing suggestion:', action);
+        
+        // Clear tooltips
+        const tooltipsDiv = this.card.querySelector('#merlinTooltips');
+        if (tooltipsDiv) tooltipsDiv.innerHTML = '';
+        
+        switch(action) {
+            case 'connect':
+                if (typeof serial !== 'undefined') serial.scanPorts();
+                this.addMessage('merlin', '🔌 Scanning for GemBot machines...');
+                break;
+            case 'marketplace':
+                if (typeof marketplaceUI !== 'undefined') marketplaceUI.open();
+                this.addMessage('merlin', '🛒 Opening the marketplace...');
+                break;
+            case 'game':
+                if (typeof openGameMode !== 'undefined') openGameMode();
+                this.addMessage('merlin', '🎮 Launching game mode...');
+                break;
+            case 'craft':
+                this.flip(); // Show controls
+                setTimeout(() => {
+                    const craftBtn = this.card.querySelector('#btn-craft');
+                    if (craftBtn) craftBtn.classList.add('highlighted');
+                }, 300);
+                break;
+            case 'learn':
+                this.flip();
+                setTimeout(() => {
+                    const learnBtn = this.card.querySelector('#btn-learn');
+                    if (learnBtn) learnBtn.classList.add('highlighted');
+                }, 300);
+                break;
+            default:
+                this.handleControlAction(action);
+        }
+    }
+    
+    triggerSpeakingAnimation() {
+        const indicator = this.card.querySelector('#merlinSpeakingIndicator');
+        const avatar = this.card.querySelector('.merlin-avatar, .card-art');
+        
+        if (indicator) {
+            indicator.style.display = 'flex';
+            setTimeout(() => {
+                indicator.style.display = 'none';
+            }, 2000);
+        }
+        
+        if (avatar) {
+            avatar.classList.add('speaking');
+            setTimeout(() => {
+                avatar.classList.remove('speaking');
+            }, 2000);
+        }
+    }
+    
+    stopSpeakingAnimation() {
+        const indicator = this.card.querySelector('#merlinSpeakingIndicator');
+        const avatar = this.card.querySelector('.merlin-avatar, .card-art');
+        
+        if (indicator) indicator.style.display = 'none';
+        if (avatar) avatar.classList.remove('speaking');
     }
 
     clearChat() {
