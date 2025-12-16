@@ -265,8 +265,12 @@
     return { path, title, liveUrl, rawUrl, tags };
   }
 
-  /* -------------------- Funding model -------------------- */
+  /* -------------------- Funding model (integrated with investment system) -------------------- */
   function getFunding(path) {
+    if (window.projectInvestmentSystem) {
+      const status = window.projectInvestmentSystem.getProjectStatus(path);
+      return { goal: 10000, invested: status.totalInvested, investorCount: status.investorCount };
+    }
     const store = JSON.parse(localStorage.getItem(FUND_KEY) || '{}');
     return store[path] || { goal: 1000, invested: 0 };
   }
@@ -403,21 +407,62 @@
 
       const pledgeInput = card.querySelector('input[data-pledge]');
       const pledgeBtn = card.querySelector('button[data-pledge-btn]');
-      pledgeBtn.addEventListener('click', () => {
+      pledgeBtn.addEventListener('click', async () => {
         const path = pledgeBtn.getAttribute('data-pledge-btn');
         const amt = Math.max(0, Number(pledgeInput.value)||0);
         if (amt <= 0) { pledgeBtn.textContent='Enter amount'; setTimeout(()=>pledgeBtn.textContent='Pledge (token-gated)',1200); return; }
-        const f = getFunding(path);
-        f.invested = Math.max(0, Number(f.invested)||0) + amt;
-        setFunding(path, f);
-        const status = card.querySelector(`*[data-funded="${path}"]`);
-        const pct = Math.max(0, Math.min(100, (f.invested / Math.max(1, f.goal))*100));
-        const bar = card.querySelector('.bar');
-        bar.style.width = pct+'%';
-        bar.className = 'bar ' + progressClass(pct);
-        status.className = f.invested>=f.goal ? 'status-funded' : 'pill warn';
-        status.textContent = Intl.NumberFormat().format(f.invested) + (f.invested>=f.goal?' • Funded':'');
-        pledgeBtn.textContent='Recorded'; setTimeout(()=>pledgeBtn.textContent='Pledge (token-gated)',1200);
+        
+        pledgeBtn.textContent='Processing...';
+        pledgeBtn.disabled = true;
+        
+        try {
+          // Get current user from session
+          const currentUser = JSON.parse(sessionStorage.getItem('gembot_session') || '{}');
+          if (!currentUser.username) {
+            throw new Error('Please log in to invest');
+          }
+          
+          // Use real investment system with blockchain transaction
+          if (window.projectInvestmentSystem) {
+            const result = await window.projectInvestmentSystem.investInProject(path, amt, currentUser.username);
+            
+            // Update UI with new funding data
+            const f = getFunding(path);
+            const status = card.querySelector(`*[data-funded="${path}"]`);
+            const pct = Math.max(0, Math.min(100, (f.invested / Math.max(1, f.goal))*100));
+            const bar = card.querySelector('.bar');
+            bar.style.width = pct+'%';
+            bar.className = 'bar ' + progressClass(pct);
+            status.className = f.invested>=f.goal ? 'status-funded' : 'pill warn';
+            status.textContent = Intl.NumberFormat().format(f.invested) + (f.invested>=f.goal?' • Funded':'');
+            
+            // Show rewards
+            pledgeBtn.textContent=`+${result.rewards.xp} XP earned!`;
+            setTimeout(()=>{ pledgeBtn.textContent='Pledge (token-gated)'; pledgeBtn.disabled = !tokenHeld; },2000);
+            
+            // Notify user
+            if (result.rewards.badges.length > 0) {
+              alert(`🏆 Investment complete!\n\nRewards:\n+${result.rewards.xp} XP\n+${result.rewards.bonusGems} Gems\nBadge: ${result.rewards.badges[0]}\n\nTx: ${result.txSignature.slice(0,8)}...`);
+            }
+          } else {
+            // Fallback to local tracking
+            const f = getFunding(path);
+            f.invested = Math.max(0, Number(f.invested)||0) + amt;
+            setFunding(path, f);
+            const status = card.querySelector(`*[data-funded="${path}"]`);
+            const pct = Math.max(0, Math.min(100, (f.invested / Math.max(1, f.goal))*100));
+            const bar = card.querySelector('.bar');
+            bar.style.width = pct+'%';
+            bar.className = 'bar ' + progressClass(pct);
+            status.className = f.invested>=f.goal ? 'status-funded' : 'pill warn';
+            status.textContent = Intl.NumberFormat().format(f.invested) + (f.invested>=f.goal?' • Funded':'');
+            pledgeBtn.textContent='Recorded'; setTimeout(()=>{ pledgeBtn.textContent='Pledge (token-gated)'; pledgeBtn.disabled = !tokenHeld; },1200);
+          }
+        } catch (error) {
+          console.error('Investment failed:', error);
+          pledgeBtn.textContent='Failed: ' + error.message;
+          setTimeout(()=>{ pledgeBtn.textContent='Pledge (token-gated)'; pledgeBtn.disabled = !tokenHeld; },3000);
+        }
       });
 
       // Enable if token verified
