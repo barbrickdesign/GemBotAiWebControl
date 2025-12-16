@@ -473,6 +473,11 @@ class AIAgentPlayer {
         
         console.log(`🏆 ${this.name} unlocked: ${title}`);
         
+        // Log to activity feed
+        if (window.liveActivityFeed) {
+            window.liveActivityFeed.logAchievement(this.name, title);
+        }
+        
         // Share if social personality
         if (this.personality === 'social' && Math.random() < 0.8) {
             setTimeout(() => this.shareAchievement(), 2000);
