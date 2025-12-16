@@ -2382,6 +2382,409 @@
         }
     }
     
+    // ═══════════════════════════════════════════════════════════════════════════
+    // GBUV INVESTMENT PORTAL
+    // ═══════════════════════════════════════════════════════════════════════════
+    
+    const INVESTMENT_TIERS = {
+        bronze: { min: 100, badge: '🥉', votePower: 1, roi: 0.03 },
+        silver: { min: 500, badge: '🥈', votePower: 3, roi: 0.04 },
+        gold: { min: 1000, badge: '🥇', votePower: 5, roi: 0.05 },
+        platinum: { min: 5000, badge: '💎', votePower: 10, roi: 0.06 },
+        diamond: { min: 10000, badge: '👑', votePower: 20, roi: 0.08 }
+    };
+    
+    /**
+     * Get user's investment portfolio
+     */
+    function getUserPortfolio() {
+        if (!state.userWallet) return null;
+        
+        const investKey = `investments_${state.currentUser.uid}`;
+        const investments = JSON.parse(localStorage.getItem(investKey) || '{}');
+        
+        let totalInvested = 0;
+        let projectCount = Object.keys(investments).length;
+        
+        for (const data of Object.values(investments)) {
+            totalInvested += data.invested || 0;
+        }
+        
+        const tier = getInvestorTier(totalInvested);
+        
+        return {
+            wallet: state.userWallet,
+            totalInvested,
+            projectCount,
+            tier,
+            tierData: INVESTMENT_TIERS[tier],
+            investments,
+            estimatedROI: totalInvested * (INVESTMENT_TIERS[tier]?.roi || 0)
+        };
+    }
+    
+    /**
+     * Get investor tier based on total investment
+     */
+    function getInvestorTier(amount) {
+        for (const [tier, data] of Object.entries(INVESTMENT_TIERS).reverse()) {
+            if (amount >= data.min) return tier;
+        }
+        return 'none';
+    }
+    
+    /**
+     * Show portfolio in inspector
+     */
+    function showPortfolio() {
+        if (!state.isAuthenticated) {
+            alert('⚠️ Please sign in to view your portfolio');
+            return;
+        }
+        
+        const portfolio = getUserPortfolio();
+        if (!portfolio) {
+            alert('⚠️ Wallet not initialized');
+            return;
+        }
+        
+        let html = '<h2>💎 GBUV Investment Portfolio</h2>';
+        
+        // Wallet Info
+        html += `<div class="node-card" style="border-color: #fbbf24;">`;
+        html += `<div class="node-title">🔑 Your Wallet</div>`;
+        html += `<div style="font-size: 11px; color: #888; word-break: break-all;">`;
+        html += `Public Key: ${portfolio.wallet.publicKey}`;
+        html += `</div>`;
+        html += `<div style="margin-top: 10px; display: flex; justify-content: space-between;">`;
+        html += `<span>💰 GBUV Balance:</span>`;
+        html += `<span style="color: #fbbf24; font-weight: bold;">${portfolio.wallet.gbuvBalance || 0}</span>`;
+        html += `</div>`;
+        html += `</div>`;
+        
+        // Investment Summary
+        html += `<div class="node-card" style="border-color: #9333ea;">`;
+        html += `<div class="node-title">${portfolio.tierData?.badge || '⭐'} ${portfolio.tier.toUpperCase()} Investor</div>`;
+        html += `<div style="margin-top: 10px;">`;
+        html += `<div>Total Invested: <strong style="color: #10b981;">${portfolio.totalInvested} GBUV</strong></div>`;
+        html += `<div>Projects: <strong>${portfolio.projectCount}</strong></div>`;
+        html += `<div>Voting Power: <strong style="color: #60a5fa;">${portfolio.tierData?.votePower || 0}</strong></div>`;
+        html += `<div>Est. Quarterly ROI: <strong style="color: #fbbf24;">${portfolio.estimatedROI.toFixed(2)} GBUV</strong></div>`;
+        html += `</div>`;
+        html += `</div>`;
+        
+        // Individual Investments
+        if (portfolio.projectCount > 0) {
+            html += '<h3>📁 Your Investments</h3>';
+            for (const [project, data] of Object.entries(portfolio.investments)) {
+                html += `<div class="node-card">`;
+                html += `<div class="node-title">📄 ${project}</div>`;
+                html += `<div>Invested: ${data.invested} GBUV</div>`;
+                html += `<div style="font-size: 10px; color: #888;">Since: ${new Date(data.firstInvestment).toLocaleDateString()}</div>`;
+                html += `</div>`;
+            }
+        }
+        
+        // Tier Progress
+        html += '<h3>📈 Tier Progress</h3>';
+        html += '<div style="padding: 10px; background: #0f1419; border-radius: 8px;">';
+        for (const [tier, data] of Object.entries(INVESTMENT_TIERS)) {
+            const isCurrentTier = tier === portfolio.tier;
+            const achieved = portfolio.totalInvested >= data.min;
+            html += `<div style="display: flex; justify-content: space-between; padding: 5px 0; ${isCurrentTier ? 'background: rgba(147,51,234,0.2); padding: 5px; border-radius: 4px;' : ''}">`;
+            html += `<span>${data.badge} ${tier.charAt(0).toUpperCase() + tier.slice(1)}</span>`;
+            html += `<span style="color: ${achieved ? '#10b981' : '#666'};">${data.min} GBUV ${achieved ? '✓' : ''}</span>`;
+            html += `</div>`;
+        }
+        html += '</div>';
+        
+        // Actions
+        html += '<div style="margin-top: 15px; display: flex; gap: 10px;">';
+        html += '<button onclick="showPayPalFunding()" class="btn success" style="flex: 1;">💳 Fund Wallet</button>';
+        html += '<button onclick="showInvestmentSelector()" class="btn" style="flex: 1;">💰 Invest</button>';
+        html += '</div>';
+        
+        ui.inspector.innerHTML = html;
+    }
+    
+    /**
+     * Show PayPal funding modal
+     */
+    function showPayPalFunding() {
+        if (!state.isAuthenticated) {
+            alert('⚠️ Please sign in first');
+            return;
+        }
+        
+        const portfolio = getUserPortfolio();
+        
+        let html = '<h2>💳 Fund Your GBUV Wallet</h2>';
+        
+        html += `<div class="node-card" style="border-color: #3b82f6;">`;
+        html += `<div class="node-title">💰 PayPal Funding</div>`;
+        html += `<p style="margin: 10px 0; color: #9ca3af;">Send PayPal payment to fund your wallet with GBUV tokens.</p>`;
+        html += `<div style="background: #0f1419; padding: 15px; border-radius: 8px; margin: 10px 0;">`;
+        html += `<div style="color: #fbbf24; font-weight: bold; font-size: 16px;">PayPal: ${PAYPAL_EMAIL}</div>`;
+        html += `<div style="font-size: 11px; color: #888; margin-top: 5px;">Include your wallet address in payment note</div>`;
+        html += `</div>`;
+        html += `</div>`;
+        
+        // Funding tiers
+        html += '<h3>💎 Funding Packages</h3>';
+        const packages = [
+            { usd: 10, gbuv: 1000, bonus: 0 },
+            { usd: 25, gbuv: 2750, bonus: 10 },
+            { usd: 50, gbuv: 6000, bonus: 20 },
+            { usd: 100, gbuv: 13000, bonus: 30 }
+        ];
+        
+        packages.forEach(pkg => {
+            html += `<div class="node-card" onclick="copyFundingInfo(${pkg.usd}, ${pkg.gbuv})" style="cursor: pointer;">`;
+            html += `<div style="display: flex; justify-content: space-between; align-items: center;">`;
+            html += `<div>`;
+            html += `<strong style="color: #10b981;">$${pkg.usd} USD</strong>`;
+            html += `<div style="font-size: 11px; color: #888;">Click to copy payment details</div>`;
+            html += `</div>`;
+            html += `<div style="text-align: right;">`;
+            html += `<div style="color: #fbbf24; font-weight: bold;">${pkg.gbuv.toLocaleString()} GBUV</div>`;
+            if (pkg.bonus > 0) {
+                html += `<div style="font-size: 11px; color: #10b981;">+${pkg.bonus}% bonus!</div>`;
+            }
+            html += `</div>`;
+            html += `</div>`;
+            html += `</div>`;
+        });
+        
+        // Manual entry
+        html += `<div class="node-card" style="margin-top: 15px;">`;
+        html += `<div class="node-title">📝 Custom Amount</div>`;
+        html += `<div style="margin-top: 10px;">`;
+        html += `<input type="number" id="customFundAmount" placeholder="Enter USD amount" style="width: 100%; padding: 10px; background: #0f1419; border: 1px solid #333; border-radius: 6px; color: white; margin-bottom: 10px;">`;
+        html += `<button onclick="processCustomFunding()" class="btn success" style="width: 100%;">💳 Generate PayPal Link</button>`;
+        html += `</div>`;
+        html += `</div>`;
+        
+        // Wallet info
+        html += `<div style="margin-top: 15px; padding: 10px; background: rgba(147, 51, 234, 0.2); border-radius: 8px; font-size: 11px;">`;
+        html += `<strong>Your Wallet:</strong><br>`;
+        html += `<span style="word-break: break-all; color: #a78bfa;">${portfolio?.wallet?.publicKey || 'Loading...'}</span>`;
+        html += `</div>`;
+        
+        // Treasury info
+        html += `<div style="margin-top: 10px; padding: 10px; background: rgba(251, 191, 36, 0.1); border-radius: 8px; font-size: 11px;">`;
+        html += `<strong>Treasury Vault:</strong><br>`;
+        html += `<span style="color: #fbbf24;">${TREASURY_VAULT}</span>`;
+        html += `<div style="margin-top: 5px; color: #888;">All investments secured by treasury vault</div>`;
+        html += `</div>`;
+        
+        ui.inspector.innerHTML = html;
+    }
+    
+    /**
+     * Copy funding info to clipboard
+     */
+    function copyFundingInfo(usd, gbuv) {
+        const portfolio = getUserPortfolio();
+        const text = `PayPal Payment: $${usd} USD to ${PAYPAL_EMAIL}\nWallet: ${portfolio?.wallet?.publicKey || 'N/A'}\nGBUV Amount: ${gbuv}\nTimestamp: ${new Date().toISOString()}`;
+        navigator.clipboard.writeText(text).then(() => {
+            alert(`✅ Copied!\n\nSend $${usd} to ${PAYPAL_EMAIL}\n\nInclude your wallet address in the payment note.\n\nYou will receive ${gbuv} GBUV after confirmation.`);
+        });
+    }
+    
+    /**
+     * Process custom funding amount
+     */
+    function processCustomFunding() {
+        const amount = parseFloat(document.getElementById('customFundAmount')?.value || 0);
+        if (amount < 5) {
+            alert('Minimum funding amount is $5 USD');
+            return;
+        }
+        
+        const gbuv = Math.floor(amount * 100 * (1 + (amount >= 50 ? 0.2 : amount >= 25 ? 0.1 : 0)));
+        copyFundingInfo(amount, gbuv);
+    }
+    
+    /**
+     * Show investment selector
+     */
+    function showInvestmentSelector() {
+        if (!state.isAuthenticated) {
+            alert('⚠️ Please sign in first');
+            return;
+        }
+        
+        const portfolio = getUserPortfolio();
+        
+        let html = '<h2>💰 Invest in Projects</h2>';
+        
+        // Balance info
+        html += `<div class="node-card" style="border-color: #10b981;">`;
+        html += `<div style="display: flex; justify-content: space-between; align-items: center;">`;
+        html += `<span>Available GBUV:</span>`;
+        html += `<strong style="color: #fbbf24; font-size: 18px;">${portfolio?.wallet?.gbuvBalance || 0}</strong>`;
+        html += `</div>`;
+        html += `</div>`;
+        
+        // Project list from scanned nodes
+        if (state.nodes.length === 0) {
+            html += `<div class="node-card" style="border-color: #f59e0b;">`;
+            html += `<p style="color: #f59e0b;">⚠️ No projects scanned yet. Please scan the repository first.</p>`;
+            html += `</div>`;
+        } else {
+            html += '<h3>📁 Available Projects</h3>';
+            html += '<div style="max-height: 400px; overflow-y: auto;">';
+            
+            // Sort by value
+            const sortedNodes = [...state.nodes].sort((a, b) => (b.value?.usdValue || 0) - (a.value?.usdValue || 0));
+            
+            sortedNodes.slice(0, 20).forEach(node => {
+                const existingInvestment = portfolio?.investments?.[node.path]?.invested || 0;
+                html += `<div class="node-card" style="cursor: pointer;" onclick="showProjectInvestment('${node.path}')">`;
+                html += `<div class="node-title">📄 ${node.name}</div>`;
+                html += `<div style="display: flex; justify-content: space-between; margin-top: 5px;">`;
+                html += `<span style="font-size: 11px; color: #888;">Value: $${(node.value?.usdValue || 0).toLocaleString()}</span>`;
+                if (existingInvestment > 0) {
+                    html += `<span style="font-size: 11px; color: #10b981;">Invested: ${existingInvestment} GBUV</span>`;
+                }
+                html += `</div>`;
+                html += `</div>`;
+            });
+            html += '</div>';
+        }
+        
+        ui.inspector.innerHTML = html;
+    }
+    
+    /**
+     * Show specific project investment form
+     */
+    function showProjectInvestment(projectPath) {
+        const portfolio = getUserPortfolio();
+        const node = state.nodes.find(n => n.path === projectPath);
+        if (!node) return;
+        
+        const existingInvestment = portfolio?.investments?.[projectPath]?.invested || 0;
+        
+        let html = `<h2>💰 Invest in ${node.name}</h2>`;
+        
+        html += `<div class="node-card">`;
+        html += `<div class="node-title">📄 ${node.name}</div>`;
+        html += `<div style="font-size: 11px; color: #888;">${node.path}</div>`;
+        html += `<div style="margin-top: 10px;">`;
+        html += `<div>Project Value: <strong style="color: #10b981;">$${(node.value?.usdValue || 0).toLocaleString()}</strong></div>`;
+        html += `<div>Status: <strong>${node.status}</strong></div>`;
+        html += `<div>Functions: <strong>${node.functions?.length || 0}</strong></div>`;
+        html += `</div>`;
+        html += `</div>`;
+        
+        if (existingInvestment > 0) {
+            html += `<div class="node-card" style="border-color: #10b981;">`;
+            html += `<div>Your existing investment: <strong style="color: #fbbf24;">${existingInvestment} GBUV</strong></div>`;
+            html += `</div>`;
+        }
+        
+        html += `<div class="node-card">`;
+        html += `<div class="node-title">💎 Investment Amount</div>`;
+        html += `<div style="margin-top: 10px;">`;
+        html += `<input type="number" id="investAmount" placeholder="Enter GBUV amount" value="100" min="10" style="width: 100%; padding: 10px; background: #0f1419; border: 1px solid #333; border-radius: 6px; color: white; margin-bottom: 10px;">`;
+        html += `<div style="display: flex; gap: 5px; margin-bottom: 10px;">`;
+        [100, 500, 1000, 5000].forEach(amt => {
+            html += `<button onclick="document.getElementById('investAmount').value=${amt}" class="btn" style="flex: 1; padding: 5px;">${amt}</button>`;
+        });
+        html += `</div>`;
+        html += `<button onclick="executeInvestment('${projectPath}')" class="btn success" style="width: 100%;">💰 Invest Now</button>`;
+        html += `</div>`;
+        html += `</div>`;
+        
+        html += `<div style="margin-top: 10px; font-size: 11px; color: #888;">`;
+        html += `Available: ${portfolio?.wallet?.gbuvBalance || 0} GBUV | Treasury: ${TREASURY_VAULT.substring(0, 12)}...`;
+        html += `</div>`;
+        
+        ui.inspector.innerHTML = html;
+    }
+    
+    /**
+     * Execute investment transaction
+     */
+    async function executeInvestment(projectPath) {
+        const amount = parseInt(document.getElementById('investAmount')?.value || 0);
+        const portfolio = getUserPortfolio();
+        
+        if (amount < 10) {
+            alert('Minimum investment is 10 GBUV');
+            return;
+        }
+        
+        if (amount > (portfolio?.wallet?.gbuvBalance || 0)) {
+            alert('Insufficient GBUV balance. Please fund your wallet first.');
+            return;
+        }
+        
+        if (!confirm(`Invest ${amount} GBUV in ${projectPath}?\n\nThis will be transferred to the treasury vault.`)) {
+            return;
+        }
+        
+        try {
+            // Record investment
+            const investKey = `investments_${state.currentUser.uid}`;
+            const investments = JSON.parse(localStorage.getItem(investKey) || '{}');
+            
+            if (!investments[projectPath]) {
+                investments[projectPath] = {
+                    invested: 0,
+                    transactions: [],
+                    firstInvestment: Date.now()
+                };
+            }
+            
+            investments[projectPath].invested += amount;
+            investments[projectPath].transactions.push({
+                amount,
+                timestamp: Date.now(),
+                type: 'investment'
+            });
+            
+            localStorage.setItem(investKey, JSON.stringify(investments));
+            
+            // Deduct from wallet balance
+            state.userWallet.gbuvBalance = (state.userWallet.gbuvBalance || 0) - amount;
+            const walletKey = `neural_wallet_${state.currentUser.uid}`;
+            localStorage.setItem(walletKey, JSON.stringify(state.userWallet));
+            
+            // Log to Firebase
+            const db = firebase.firestore();
+            await db.collection('investments').add({
+                userId: state.currentUser.uid,
+                userEmail: state.currentUser.email,
+                projectPath,
+                amount,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                treasuryVault: TREASURY_VAULT,
+                status: 'confirmed'
+            });
+            
+            alert(`✅ Successfully invested ${amount} GBUV in ${projectPath}!\n\nYour new tier: ${getInvestorTier(getUserPortfolio().totalInvested).toUpperCase()}`);
+            
+            // Refresh portfolio view
+            showPortfolio();
+            
+        } catch (error) {
+            console.error('Investment failed:', error);
+            alert('❌ Investment failed: ' + error.message);
+        }
+    }
+    
+    // Make functions available globally
+    window.showPortfolio = showPortfolio;
+    window.showPayPalFunding = showPayPalFunding;
+    window.copyFundingInfo = copyFundingInfo;
+    window.processCustomFunding = processCustomFunding;
+    window.showInvestmentSelector = showInvestmentSelector;
+    window.showProjectInvestment = showProjectInvestment;
+    window.executeInvestment = executeInvestment;
+    window.downloadConvertedHTML = downloadConvertedHTML;
+
     async function syncToFirebase() {
         if (!state.isAuthenticated) {
             alert('⚠️ Please sign in to sync to Firebase');
@@ -2835,6 +3238,11 @@
             downloadAllConvertedHTML();
         }
     });
+    
+    // GBUV Investment Controls
+    document.getElementById('viewPortfolioBtn').addEventListener('click', showPortfolio);
+    document.getElementById('fundWalletBtn').addEventListener('click', showPayPalFunding);
+    document.getElementById('investInProjectBtn').addEventListener('click', showInvestmentSelector);
     
     ui.exportDataBtn.addEventListener('click', () => {
         const data = JSON.stringify({
