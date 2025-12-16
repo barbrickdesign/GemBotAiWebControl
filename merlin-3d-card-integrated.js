@@ -148,7 +148,14 @@ class MerlinAICardIntegrated {
                             <!-- Chat Input -->
                             <div class="merlin-input-container">
                                 <textarea class="merlin-input" id="merlinInput" placeholder="Ask Merlin anything..." rows="2"></textarea>
+                                <button class="merlin-voice-btn" id="merlinVoiceBtn" title="Voice Input">🎤</button>
                                 <button class="merlin-send-btn" id="merlinSendBtn">Send</button>
+                            </div>
+                            
+                            <!-- Voice Status Indicator -->
+                            <div class="voice-status" id="merlinVoiceStatus" style="display:none;">
+                                <span class="voice-indicator">🔊</span>
+                                <span class="voice-text">Listening...</span>
                             </div>
                             
                             <!-- Card Controls -->
