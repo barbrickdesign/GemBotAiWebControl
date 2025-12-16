@@ -1858,139 +1858,92 @@
     // AUTHENTICATION UI SYSTEM
     // ═══════════════════════════════════════════════════════════════════════════
     
+    // ═══════════════════════════════════════════════════════════════════════════
+    // FIREBASE UI AUTHENTICATION
+    // ═══════════════════════════════════════════════════════════════════════════
+    
     const authUI = {
         modal: document.getElementById('authModal'),
-        loginTab: document.getElementById('loginTab'),
-        registerTab: document.getElementById('registerTab'),
-        loginForm: document.getElementById('loginForm'),
-        registerForm: document.getElementById('registerForm'),
-        authError: document.getElementById('authError'),
         authCloseBtn: document.getElementById('authCloseBtn'),
+        firebaseUI: null,
+        
+        initFirebaseUI() {
+            // FirebaseUI config
+            const uiConfig = {
+                callbacks: {
+                    signInSuccessWithAuthResult: (authResult, redirectUrl) => {
+                        console.log('✅ FirebaseUI sign-in success:', authResult.user.email);
+                        this.closeModal();
+                        return false; // Don't redirect
+                    },
+                    uiShown: () => {
+                        // Hide loader when FirebaseUI is rendered
+                        const loader = document.getElementById('auth-loader');
+                        if (loader) loader.style.display = 'none';
+                        console.log('🎨 FirebaseUI rendered');
+                    }
+                },
+                signInFlow: 'popup',
+                signInOptions: [
+                    // Email/Password
+                    {
+                        provider: firebase.auth.EmailAuthProvider.PROVIDER_ID,
+                        requireDisplayName: true
+                    },
+                    // Google
+                    {
+                        provider: firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+                        customParameters: {
+                            prompt: 'select_account'
+                        }
+                    },
+                    // GitHub
+                    firebase.auth.GithubAuthProvider.PROVIDER_ID
+                ],
+                tosUrl: 'https://barbrickdesign.github.io/GemBotAiWebControl/terms.html',
+                privacyPolicyUrl: 'https://barbrickdesign.github.io/GemBotAiWebControl/privacy.html'
+            };
+            
+            // Initialize FirebaseUI
+            this.firebaseUI = new firebaseui.auth.AuthUI(firebase.auth());
+            console.log('🔐 FirebaseUI initialized');
+            return uiConfig;
+        },
         
         openModal() {
             this.modal.classList.add('active');
-            this.clearError();
+            
+            // Show loader initially
+            const loader = document.getElementById('auth-loader');
+            if (loader) loader.style.display = 'block';
+            
+            // Start FirebaseUI
+            if (!this.firebaseUI) {
+                const config = this.initFirebaseUI();
+                this.firebaseUI.start('#firebaseui-auth-container', config);
+            } else if (this.firebaseUI.isPendingRedirect()) {
+                const config = this.initFirebaseUI();
+                this.firebaseUI.start('#firebaseui-auth-container', config);
+            } else {
+                // Reset and start again
+                this.firebaseUI.reset();
+                const config = this.initFirebaseUI();
+                this.firebaseUI.start('#firebaseui-auth-container', config);
+            }
         },
         
         closeModal() {
             this.modal.classList.remove('active');
-            this.clearForms();
-        },
-        
-        switchTab(tab) {
-            if (tab === 'login') {
-                this.loginTab.classList.add('active');
-                this.registerTab.classList.remove('active');
-                this.loginForm.classList.add('active');
-                this.registerForm.classList.remove('active');
-            } else {
-                this.registerTab.classList.add('active');
-                this.loginTab.classList.remove('active');
-                this.registerForm.classList.add('active');
-                this.loginForm.classList.remove('active');
-            }
-            this.clearError();
-        },
-        
-        showError(message) {
-            this.authError.textContent = message;
-            this.authError.classList.add('show');
-        },
-        
-        clearError() {
-            this.authError.textContent = '';
-            this.authError.classList.remove('show');
-        },
-        
-        clearForms() {
-            document.getElementById('loginEmail').value = '';
-            document.getElementById('loginPassword').value = '';
-            document.getElementById('registerName').value = '';
-            document.getElementById('registerEmail').value = '';
-            document.getElementById('registerPassword').value = '';
-            document.getElementById('registerConfirm').value = '';
-            this.clearError();
-        },
-        
-        async signInWithEmail(email, password) {
-            try {
-                const { signInWithEmailAndPassword } = window.firestoreUtils;
-                const userCredential = await signInWithEmailAndPassword(window.firebaseAuth, email, password);
-                console.log('✅ Signed in:', userCredential.user.email);
-                this.closeModal();
-                return userCredential.user;
-            } catch (error) {
-                console.error('Sign in error:', error);
-                this.showError(this.getErrorMessage(error.code));
-                throw error;
-            }
-        },
-        
-        async registerWithEmail(email, password, displayName) {
-            try {
-                const { createUserWithEmailAndPassword, updateProfile } = window.firestoreUtils;
-                const userCredential = await createUserWithEmailAndPassword(window.firebaseAuth, email, password);
-                
-                // Update display name
-                await updateProfile(userCredential.user, { displayName });
-                
-                console.log('✅ Account created:', userCredential.user.email);
-                this.closeModal();
-                return userCredential.user;
-            } catch (error) {
-                console.error('Registration error:', error);
-                this.showError(this.getErrorMessage(error.code));
-                throw error;
-            }
-        },
-        
-        async signInWithProvider(providerName) {
-            try {
-                const { signInWithPopup, GoogleAuthProvider, GithubAuthProvider } = window.firestoreUtils;
-                
-                let provider;
-                if (providerName === 'google') {
-                    provider = new GoogleAuthProvider();
-                } else if (providerName === 'github') {
-                    provider = new GithubAuthProvider();
-                }
-                
-                const result = await signInWithPopup(window.firebaseAuth, provider);
-                console.log(`✅ Signed in with ${providerName}:`, result.user.email);
-                this.closeModal();
-                return result.user;
-            } catch (error) {
-                console.error(`${providerName} sign in error:`, error);
-                this.showError(this.getErrorMessage(error.code));
-                throw error;
-            }
         },
         
         async signOut() {
             try {
-                await window.firebaseAuth.signOut();
+                await firebase.auth().signOut();
                 console.log('✅ Signed out successfully');
             } catch (error) {
                 console.error('Sign out error:', error);
                 alert('Failed to sign out: ' + error.message);
             }
-        },
-        
-        getErrorMessage(code) {
-            const errors = {
-                'auth/email-already-in-use': 'This email is already registered. Please sign in instead.',
-                'auth/invalid-email': 'Invalid email address.',
-                'auth/user-not-found': 'No account found with this email.',
-                'auth/wrong-password': 'Incorrect password.',
-                'auth/weak-password': 'Password must be at least 6 characters.',
-                'auth/popup-closed-by-user': 'Sign-in popup was closed. Please try again.',
-                'auth/cancelled-popup-request': 'Only one popup request is allowed at a time.',
-                'auth/popup-blocked': 'Sign-in popup was blocked. Please allow popups for this site.',
-                'auth/configuration-not-found': '⚠️ Firebase Auth not configured. Please enable Email/Password in Firebase Console → Authentication → Sign-in method.',
-                'auth/operation-not-allowed': '⚠️ This sign-in method is not enabled. Please enable it in Firebase Console → Authentication → Sign-in method.',
-                'auth/network-request-failed': 'Network error. Please check your internet connection.'
-            };
-            return errors[code] || `Authentication error: ${code}`;
         }
     };
     
@@ -2013,85 +1966,10 @@
         authUI.closeModal();
     });
     
-    authUI.loginTab.addEventListener('click', () => {
-        authUI.switchTab('login');
-    });
-    
-    authUI.registerTab.addEventListener('click', () => {
-        authUI.switchTab('register');
-    });
-    
-    // Login Form
-    document.getElementById('loginBtn').addEventListener('click', async () => {
-        const email = document.getElementById('loginEmail').value.trim();
-        const password = document.getElementById('loginPassword').value;
-        
-        if (!email || !password) {
-            authUI.showError('Please enter both email and password.');
-            return;
-        }
-        
-        await authUI.signInWithEmail(email, password);
-    });
-    
-    document.getElementById('googleLoginBtn').addEventListener('click', () => {
-        authUI.signInWithProvider('google');
-    });
-    
-    document.getElementById('githubLoginBtn').addEventListener('click', () => {
-        authUI.signInWithProvider('github');
-    });
-    
-    // Register Form
-    document.getElementById('registerBtn').addEventListener('click', async () => {
-        const name = document.getElementById('registerName').value.trim();
-        const email = document.getElementById('registerEmail').value.trim();
-        const password = document.getElementById('registerPassword').value;
-        const confirm = document.getElementById('registerConfirm').value;
-        
-        if (!name || !email || !password || !confirm) {
-            authUI.showError('Please fill in all fields.');
-            return;
-        }
-        
-        if (password !== confirm) {
-            authUI.showError('Passwords do not match.');
-            return;
-        }
-        
-        if (password.length < 6) {
-            authUI.showError('Password must be at least 6 characters.');
-            return;
-        }
-        
-        await authUI.registerWithEmail(email, password, name);
-    });
-    
-    document.getElementById('googleRegisterBtn').addEventListener('click', () => {
-        authUI.signInWithProvider('google');
-    });
-    
-    document.getElementById('githubRegisterBtn').addEventListener('click', () => {
-        authUI.signInWithProvider('github');
-    });
-    
     // Close modal on background click
     authUI.modal.addEventListener('click', (e) => {
         if (e.target === authUI.modal) {
             authUI.closeModal();
-        }
-    });
-    
-    // Enter key support
-    document.getElementById('loginPassword').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            document.getElementById('loginBtn').click();
-        }
-    });
-    
-    document.getElementById('registerConfirm').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            document.getElementById('registerBtn').click();
         }
     });
     
