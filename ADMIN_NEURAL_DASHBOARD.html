@@ -399,7 +399,9 @@
         selectedNode: null,
         camera: { x: 0, y: 0, zoom: 1 },
         isDragging: false,
-        dragStart: { x: 0, y: 0 }
+        dragStart: { x: 0, y: 0 },
+        currentUser: null,
+        isAuthenticated: false
     };
     
     // ═══════════════════════════════════════════════════════════════════════════
@@ -415,10 +417,15 @@
         incompleteProjects: document.getElementById('incompleteProjects'),
         totalConnections: document.getElementById('totalConnections'),
         lastScan: document.getElementById('lastScan'),
+        lastSync: document.getElementById('lastSync'),
+        authStatus: document.getElementById('authStatus'),
+        signInBtn: document.getElementById('signInBtn'),
         scanRepoBtn: document.getElementById('scanRepoBtn'),
         runTestsBtn: document.getElementById('runTestsBtn'),
         captureScreenshotsBtn: document.getElementById('captureScreenshotsBtn'),
         analyzeConnectionsBtn: document.getElementById('analyzeConnectionsBtn'),
+        syncToFirebaseBtn: document.getElementById('syncToFirebaseBtn'),
+        loadFromFirebaseBtn: document.getElementById('loadFromFirebaseBtn'),
         exportDataBtn: document.getElementById('exportDataBtn'),
         importDataBtn: document.getElementById('importDataBtn'),
         searchFilter: document.getElementById('searchFilter'),
@@ -927,13 +934,150 @@
     }
     
     // ═══════════════════════════════════════════════════════════════════════════
-    // STORAGE
+    // FIREBASE INTEGRATION
+    // ═══════════════════════════════════════════════════════════════════════════
+    
+    function waitForFirebase() {
+        return new Promise((resolve) => {
+            if (window.firebaseInitialized && window.firebaseDb && window.firestoreUtils) {
+                resolve();
+            } else {
+                const check = setInterval(() => {
+                    if (window.firebaseInitialized && window.firebaseDb && window.firestoreUtils) {
+                        clearInterval(check);
+                        resolve();
+                    }
+                }, 100);
+            }
+        });
+    }
+    
+    async function initializeAuth() {
+        await waitForFirebase();
+        
+        window.firestoreUtils.onAuthStateChanged(window.firebaseAuth, (user) => {
+            if (user) {
+                state.currentUser = user;
+                state.isAuthenticated = true;
+                ui.authStatus.innerHTML = `
+                    <div style="color: #10b981;">✓ ${user.email || 'Authenticated'}</div>
+                    <div style="font-size: 10px; color: #6b7280;">UID: ${user.uid.substring(0, 8)}...</div>
+                `;
+                ui.signInBtn.textContent = '🚪 Sign Out';
+                console.log('✅ User authenticated:', user.email);
+            } else {
+                state.currentUser = null;
+                state.isAuthenticated = false;
+                ui.authStatus.innerHTML = '<div style="color: #f59e0b;">⚠️ Not authenticated</div>';
+                ui.signInBtn.textContent = '🔑 Sign In';
+                console.log('❌ User not authenticated');
+            }
+        });
+    }
+    
+    async function syncToFirebase() {
+        if (!state.isAuthenticated) {
+            alert('⚠️ Please sign in to sync to Firebase');
+            return;
+        }
+        
+        console.log('☁️ Syncing to Firebase...');
+        ui.syncToFirebaseBtn.disabled = true;
+        ui.syncToFirebaseBtn.textContent = '⏳ Syncing...';
+        
+        try {
+            const { setDoc, doc, serverTimestamp } = window.firestoreUtils;
+            const db = window.firebaseDb;
+            
+            // Save network data
+            const networkDoc = doc(db, 'neural_networks', 'main_network');
+            await setDoc(networkDoc, {
+                nodes: state.nodes,
+                connections: state.connections,
+                updatedAt: serverTimestamp(),
+                updatedBy: state.currentUser.uid,
+                version: Date.now()
+            });
+            
+            // Save individual node details
+            for (const node of state.nodes) {
+                const nodeDoc = doc(db, 'project_nodes', node.id.replace(/\//g, '_'));
+                await setDoc(nodeDoc, {
+                    ...node,
+                    updatedAt: serverTimestamp(),
+                    updatedBy: state.currentUser.uid
+                });
+            }
+            
+            ui.lastSync.textContent = new Date().toLocaleString();
+            console.log('✅ Synced to Firebase successfully');
+            alert('✅ Data synced to Firebase!');
+            
+        } catch (error) {
+            console.error('❌ Firebase sync failed:', error);
+            alert('❌ Sync failed: ' + error.message);
+        } finally {
+            ui.syncToFirebaseBtn.disabled = false;
+            ui.syncToFirebaseBtn.textContent = '☁️ Sync to Firebase';
+        }
+    }
+    
+    async function loadFromFirebase() {
+        if (!state.isAuthenticated) {
+            alert('⚠️ Please sign in to load from Firebase');
+            return;
+        }
+        
+        console.log('📥 Loading from Firebase...');
+        ui.loadFromFirebaseBtn.disabled = true;
+        ui.loadFromFirebaseBtn.textContent = '⏳ Loading...';
+        
+        try {
+            const { getDoc, doc } = window.firestoreUtils;
+            const db = window.firebaseDb;
+            
+            // Load network data
+            const networkDoc = doc(db, 'neural_networks', 'main_network');
+            const networkSnap = await getDoc(networkDoc);
+            
+            if (networkSnap.exists()) {
+                const data = networkSnap.data();
+                state.nodes = data.nodes || [];
+                state.connections = data.connections || [];
+                
+                ui.lastSync.textContent = data.updatedAt ? 
+                    new Date(data.updatedAt.seconds * 1000).toLocaleString() : 
+                    'Unknown';
+                
+                saveState(); // Save to localStorage too
+                updateStats();
+                autoLayout();
+                render();
+                
+                console.log('✅ Loaded from Firebase successfully');
+                alert('✅ Data loaded from Firebase!');
+            } else {
+                alert('⚠️ No data found in Firebase');
+            }
+            
+        } catch (error) {
+            console.error('❌ Firebase load failed:', error);
+            alert('❌ Load failed: ' + error.message);
+        } finally {
+            ui.loadFromFirebaseBtn.disabled = false;
+            ui.loadFromFirebaseBtn.textContent = '📥 Load from Firebase';
+        }
+    }
+    
+    // ═══════════════════════════════════════════════════════════════════════════
+    // STORAGE (Local + Firebase)
     // ═══════════════════════════════════════════════════════════════════════════
     
     function saveState() {
         localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify({
             nodes: state.nodes,
-            connections: state.connections
+            connections: state.connections,
+            timestamp: Date.now()
         }));
     }
     
@@ -945,7 +1089,7 @@
             state.connections = parsed.connections || [];
             updateStats();
             render();
-            console.log('📂 Loaded saved state');
+            console.log('📂 Loaded saved state from localStorage');
         }
     }
     
@@ -964,6 +1108,17 @@
     // EVENT LISTENERS
     // ═══════════════════════════════════════════════════════════════════════════
     
+    ui.signInBtn.addEventListener('click', async () => {
+        if (state.isAuthenticated) {
+            // Sign out
+            await window.firebaseAuth.signOut();
+        } else {
+            // Redirect to main app for sign in
+            alert('🔑 Please sign in through the main GemBot Control AI application first, then return here.');
+            window.open('GemBot_Control_AI.html', '_blank');
+        }
+    });
+    
     ui.scanRepoBtn.addEventListener('click', scanRepository);
     ui.runTestsBtn.addEventListener('click', runAgentTests);
     ui.captureScreenshotsBtn.addEventListener('click', captureScreenshots);
@@ -973,6 +1128,9 @@
         render();
         updateStats();
     });
+    
+    ui.syncToFirebaseBtn.addEventListener('click', syncToFirebase);
+    ui.loadFromFirebaseBtn.addEventListener('click', loadFromFirebase);
     
     ui.exportDataBtn.addEventListener('click', () => {
         const data = JSON.stringify({
@@ -1042,6 +1200,87 @@
     });
     
     // ═══════════════════════════════════════════════════════════════════════════
+    // ENHANCED SCAN WITH FIREBASE LOGGING
+    // ═══════════════════════════════════════════════════════════════════════════
+    
+    async function logScanToFirebase(scanData) {
+        if (!state.isAuthenticated) return;
+        
+        try {
+            const { setDoc, doc, serverTimestamp } = window.firestoreUtils;
+            const db = window.firebaseDb;
+            
+            const scanId = `scan_${Date.now()}`;
+            const scanDoc = doc(db, 'repository_scans', scanId);
+            
+            await setDoc(scanDoc, {
+                ...scanData,
+                timestamp: serverTimestamp(),
+                userId: state.currentUser.uid,
+                userEmail: state.currentUser.email
+            });
+            
+            console.log('✅ Scan logged to Firebase:', scanId);
+        } catch (error) {
+            console.warn('⚠️ Failed to log scan to Firebase:', error);
+        }
+    }
+    
+    async function logTestResultsToFirebase(testResults) {
+        if (!state.isAuthenticated) return;
+        
+        try {
+            const { setDoc, doc, serverTimestamp } = window.firestoreUtils;
+            const db = window.firebaseDb;
+            
+            const testId = `test_${Date.now()}`;
+            const testDoc = doc(db, 'test_results', testId);
+            
+            await setDoc(testDoc, {
+                results: testResults,
+                timestamp: serverTimestamp(),
+                userId: state.currentUser.uid,
+                totalNodes: state.nodes.length,
+                totalConnections: state.connections.length
+            });
+            
+            console.log('✅ Test results logged to Firebase:', testId);
+        } catch (error) {
+            console.warn('⚠️ Failed to log tests to Firebase:', error);
+        }
+    }
+    
+    // Wrap original scan function
+    const originalScanRepository = scanRepository;
+    scanRepository = async function() {
+        await originalScanRepository();
+        
+        // Log scan results to Firebase
+        await logScanToFirebase({
+            totalProjects: state.nodes.length,
+            totalConnections: state.connections.length,
+            nodesList: state.nodes.map(n => ({ path: n.path, status: n.status, functions: n.functions.length }))
+        });
+    };
+    
+    // Wrap original test function
+    const originalRunAgentTests = runAgentTests;
+    runAgentTests = async function() {
+        await originalRunAgentTests();
+        
+        // Log test results to Firebase
+        const testSummary = state.nodes.map(node => ({
+            path: node.path,
+            status: node.status,
+            testsPassed: node.testLogs.filter(l => l.level === 'pass').length,
+            testsFailed: node.testLogs.filter(l => l.level === 'fail').length,
+            testsWarning: node.testLogs.filter(l => l.level === 'warn').length
+        }));
+        
+        await logTestResultsToFirebase(testSummary);
+    };
+    
+    // ═══════════════════════════════════════════════════════════════════════════
     // INITIALIZATION
     // ═══════════════════════════════════════════════════════════════════════════
     
@@ -1049,8 +1288,20 @@
     resizeCanvas();
     loadState();
     
+    // Initialize Firebase auth
+    initializeAuth().then(() => {
+        console.log('🔐 Auth system ready');
+        
+        // Auto-load from Firebase if authenticated
+        if (state.isAuthenticated && state.nodes.length === 0) {
+            console.log('📥 Auto-loading from Firebase...');
+            loadFromFirebase();
+        }
+    });
+    
     console.log('🧠 Neural Dashboard initialized');
     console.log('💡 Click "Scan Repository" to begin');
+    console.log('☁️ Firebase integration active');
     
 })();
     </script>
