@@ -239,7 +239,7 @@
     <!-- Solana & GBUV Token Integration -->
     <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@latest/lib/index.iife.min.js"></script>
     <script src="./solana-wallet-system.js"></script>
-    <script src="./gembot-automated-wallet-system.js"></script>
+    <script src="./automated-wallet-system.js"></script>
     <script src="./gbuv-distribution-trading.js"></script>
     
     <!-- Live Activity Feed - Real-time site activity display -->
@@ -360,11 +360,137 @@
                     document.getElementById('authError').textContent = 'Passwords do not match.';
                     return;
                 }
+                
+                // Show loading message
+                const registerBtn = document.getElementById('registerBtn');
+                const originalText = registerBtn.textContent;
+                registerBtn.textContent = '⚙️ Creating your wallet...';
+                registerBtn.disabled = true;
+                
                 try {
+                    // Step 1: Create Solana wallet automatically
+                    console.log('🔨 Step 1: Creating Solana wallet...');
+                    const wallet = await window.walletFactory.createUserWallet(username, email);
+                    
+                    // Step 2: Register account
+                    console.log('📝 Step 2: Registering account...');
                     await authSystem.register(username, email, password);
+                    
+                    // Step 3: Show wallet credentials
+                    console.log('✅ Registration complete!');
+                    this.showWalletCredentials(wallet);
+                    
                 } catch (err) {
                     document.getElementById('authError').textContent = err.message || 'Registration failed.';
+                    registerBtn.textContent = originalText;
+                    registerBtn.disabled = false;
                 }
+            },
+            
+            showWalletCredentials(wallet) {
+                // Show success modal with wallet info
+                const modal = document.createElement('div');
+                modal.id = 'walletCredentialsModal';
+                modal.style.cssText = `
+                    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                    background: rgba(0,0,0,0.9); z-index: 999999;
+                    display: flex; align-items: center; justify-content: center;
+                `;
+                
+                modal.innerHTML = `
+                    <div style="
+                        background: linear-gradient(135deg, #1a1f3a 0%, #2d1f3a 100%);
+                        border: 2px solid #4affff;
+                        border-radius: 15px;
+                        padding: 30px;
+                        max-width: 600px;
+                        width: 90%;
+                        color: #fff;
+                        font-family: 'Courier New', monospace;
+                        box-shadow: 0 0 30px rgba(74, 255, 255, 0.3);
+                    ">
+                        <div style="text-align: center; margin-bottom: 20px;">
+                            <div style="font-size: 48px; margin-bottom: 10px;">🎉</div>
+                            <h2 style="color: #4affff; margin: 0;">Welcome to GemBot!</h2>
+                            <p style="color: #9f7aea; margin: 10px 0;">Your Solana wallet has been created</p>
+                        </div>
+                        
+                        <div style="background: rgba(0,0,0,0.3); padding: 20px; border-radius: 10px; margin: 20px 0;">
+                            <div style="margin-bottom: 15px;">
+                                <strong style="color: #ffd700;">💰 Welcome Bonus:</strong>
+                                <span style="color: #4affff; font-size: 24px; margin-left: 10px;">100 GBUV</span>
+                            </div>
+                            <div style="margin-bottom: 15px;">
+                                <strong style="color: #ffd700;">📍 Your Wallet Address:</strong>
+                                <div style="
+                                    background: rgba(0,0,0,0.5);
+                                    padding: 10px;
+                                    border-radius: 5px;
+                                    margin-top: 5px;
+                                    font-size: 12px;
+                                    color: #4affff;
+                                    word-break: break-all;
+                                ">${wallet.publicKey}</div>
+                            </div>
+                        </div>
+                        
+                        <div style="background: rgba(255,107,107,0.2); border: 2px solid #ff6b6b; padding: 15px; border-radius: 10px; margin: 20px 0;">
+                            <div style="color: #ff6b6b; font-weight: bold; margin-bottom: 10px;">
+                                ⚠️ IMPORTANT: Save Your Recovery Key
+                            </div>
+                            <p style="font-size: 12px; margin: 10px 0; line-height: 1.6;">
+                                Your wallet is secured with this recovery key. Save it somewhere safe!
+                                If you lose it, you cannot recover your GBUV tokens.
+                            </p>
+                            <div style="
+                                background: rgba(0,0,0,0.5);
+                                padding: 10px;
+                                border-radius: 5px;
+                                margin-top: 10px;
+                                font-size: 11px;
+                                color: #fff;
+                                word-break: break-all;
+                                max-height: 100px;
+                                overflow-y: auto;
+                            ">${wallet.secretKey.join(',')}</div>
+                            <button onclick="
+                                navigator.clipboard.writeText('${wallet.secretKey.join(',')}');
+                                this.textContent = '✅ Copied!';
+                                setTimeout(() => this.textContent = '📋 Copy Recovery Key', 2000);
+                            " style="
+                                width: 100%;
+                                margin-top: 10px;
+                                padding: 10px;
+                                background: #4affff;
+                                color: #1a1f3a;
+                                border: none;
+                                border-radius: 5px;
+                                font-weight: bold;
+                                cursor: pointer;
+                                font-family: 'Courier New', monospace;
+                            ">📋 Copy Recovery Key</button>
+                        </div>
+                        
+                        <div style="text-align: center; margin-top: 20px;">
+                            <p style="font-size: 13px; color: #9f7aea; margin-bottom: 15px;">
+                                ✅ No Phantom wallet needed - everything is handled automatically!
+                            </p>
+                            <button onclick="document.getElementById('walletCredentialsModal').remove();" style="
+                                padding: 12px 30px;
+                                background: linear-gradient(135deg, #4affff 0%, #9f7aea 100%);
+                                color: #000;
+                                border: none;
+                                border-radius: 25px;
+                                font-size: 16px;
+                                font-weight: bold;
+                                cursor: pointer;
+                                font-family: 'Courier New', monospace;
+                            ">🚀 Start Exploring</button>
+                        </div>
+                    </div>
+                `;
+                
+                document.body.appendChild(modal);
             },
             async linkDevice(event) {
                 event.preventDefault();
@@ -7382,6 +7508,14 @@
 
             <!-- Register Form (hidden by default) -->
             <form id="registerForm" class="auth-form hidden" onsubmit="authUI.register(event)">
+                <div class="info-box" style="background: rgba(74, 255, 255, 0.1); border: 1px solid #4affff; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                    <strong style="color: #4affff;">🎁 Welcome Bonus: 100 GBUV Tokens!</strong><br>
+                    <span style="font-size: 12px; color: #9f7aea;">
+                        ✅ No Phantom wallet needed<br>
+                        ✅ Automatic Solana wallet creation<br>
+                        ✅ Start earning GBUV immediately
+                    </span>
+                </div>
                 <div class="auth-input-group">
                     <label for="registerUsername">Username</label>
                     <input type="text" id="registerUsername" class="auth-input" placeholder="Choose a username" required minlength="3">
@@ -7398,7 +7532,13 @@
                     <label for="registerConfirm">Confirm Password</label>
                     <input type="password" id="registerConfirm" class="auth-input" placeholder="••••••••" required>
                 </div>
-                <button type="submit" class="auth-btn" id="registerBtn">📝 Create Account</button>
+                <button type="submit" class="auth-btn" id="registerBtn">
+                    💎 Create Account + Wallet
+                </button>
+                <p style="text-align: center; font-size: 11px; color: #666; margin-top: 15px;">
+                    By registering, a Solana wallet will be created for you automatically.
+                    You'll receive your wallet credentials after registration.
+                </p>
             </form>
 
             <!-- Link Device Form (hidden by default) -->
