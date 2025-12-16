@@ -107,7 +107,16 @@ const GemBotAcademy = {
                     description: 'Learn how angles affect light return',
                     duration: '15 min',
                     xpReward: 75,
-                    content: { type: 'interactive' }
+                    content: {
+                        type: 'interactive',
+                        sections: [
+                            { type: 'text', content: 'Cutting angles are critical for light performance. The pavilion angle determines how light reflects internally, while the crown angle affects light dispersion.' },
+                            { type: 'image', src: 'angle_diagram.png', caption: 'Pavilion and crown angle relationships' },
+                            { type: 'text', content: 'For round brilliants, ideal pavilion angles range from 40.6° to 41.0°, while crown angles should be 34.3° to 35.0° for optimal brilliance.' },
+                            { type: 'quiz', question: 'What happens if the pavilion angle is too shallow?', options: ['More brilliance', 'Light leakage (fish-eye)', 'Better dispersion', 'Darker appearance'], answer: 1 },
+                            { type: 'calculator', tool: 'angle_calculator', description: 'Use this tool to calculate optimal angles for different gem types' }
+                        ]
+                    }
                 },
                 {
                     id: 'facet_sequence',
@@ -115,7 +124,49 @@ const GemBotAcademy = {
                     description: 'The proper order for cutting facets',
                     duration: '12 min',
                     xpReward: 60,
-                    content: { type: 'step_by_step' }
+                    content: {
+                        type: 'step_by_step',
+                        steps: [
+                            { step: 1, title: 'Pavilion Main Facets', description: 'Cut 8 main pavilion facets first at 41°. These establish the base structure.', image: 'step1_pavilion_mains.png' },
+                            { step: 2, title: 'Pavilion Break Facets', description: 'Add 8 break facets between the mains at 43°. These enhance light return.', image: 'step2_pavilion_breaks.png' },
+                            { step: 3, title: 'Crown Main Facets', description: 'Cut 8 crown mains at 34.5°. Work from table to girdle.', image: 'step3_crown_mains.png' },
+                            { step: 4, title: 'Crown Star Facets', description: 'Add 8 star facets around the table at 15°.', image: 'step4_stars.png' },
+                            { step: 5, title: 'Upper Girdle Facets', description: 'Complete with 16 upper girdle facets at 42°.', image: 'step5_upper_girdle.png' },
+                            { step: 6, title: 'Final Polish', description: 'Polish all facets in the same sequence for a perfect finish.', image: 'step6_polish.png' }
+                        ]
+                    }
+                },
+                {
+                    id: 'table_size',
+                    title: 'Table Size & Proportions',
+                    description: 'Understanding the impact of table percentage',
+                    duration: '10 min',
+                    xpReward: 50,
+                    content: {
+                        type: 'interactive',
+                        sections: [
+                            { type: 'text', content: 'Table size is expressed as a percentage of girdle diameter. It dramatically affects a gem\'s appearance and light performance.' },
+                            { type: 'slider', label: 'Table %', min: 50, max: 70, default: 57, callback: 'updateTablePreview' },
+                            { type: 'text', content: 'Ideal table percentages: Round Brilliant (53-58%), Princess Cut (65-75%), Emerald Cut (60-70%)' },
+                            { type: 'comparison', images: ['table_small.png', 'table_ideal.png', 'table_large.png'], labels: ['Small Table (52%)', 'Ideal Table (57%)', 'Large Table (65%)'] }
+                        ]
+                    }
+                },
+                {
+                    id: 'girdle_thickness',
+                    title: 'Girdle Thickness Control',
+                    description: 'Achieving consistent girdle thickness',
+                    duration: '8 min',
+                    xpReward: 40,
+                    content: {
+                        type: 'interactive',
+                        sections: [
+                            { type: 'text', content: 'The girdle is the widest edge of the gemstone. Proper thickness prevents chipping while maximizing carat weight.' },
+                            { type: 'quiz', question: 'What is the ideal girdle thickness range?', options: ['Extremely Thin', 'Thin to Slightly Thick', 'Very Thick', 'Variable'], answer: 1 },
+                            { type: 'video', src: 'girdle_control.mp4', duration: '3:45' },
+                            { type: 'practice', exercise: 'girdle_measurement', description: 'Practice measuring girdle thickness with the virtual caliper tool' }
+                        ]
+                    }
                 }
             ]
         },
@@ -126,7 +177,85 @@ const GemBotAcademy = {
             description: 'Perfect your finishing techniques',
             icon: '✨',
             requiredLevel: 5,
-            lessons: []
+            lessons: [
+                {
+                    id: 'polish_compounds',
+                    title: 'Polishing Compounds & Grits',
+                    description: 'Selecting the right abrasives for each material',
+                    duration: '12 min',
+                    xpReward: 60,
+                    content: {
+                        type: 'interactive',
+                        sections: [
+                            { type: 'text', content: 'Different gemstones require specific polishing compounds based on their hardness (Mohs scale) and composition.' },
+                            { type: 'table', headers: ['Gemstone', 'Mohs', 'Compound', 'Grit Progression'], rows: [
+                                ['Diamond', '10', 'Diamond powder', '1200 → 3000 → 8000 → 50,000'],
+                                ['Sapphire/Ruby', '9', 'Aluminum oxide', '600 → 1200 → 3000 → 14,000'],
+                                ['Emerald', '7.5-8', 'Cerium oxide', '400 → 800 → 1500 → 8000'],
+                                ['Quartz', '7', 'Tin oxide', '320 → 600 → 1200 → 3000']
+                            ]},
+                            { type: 'quiz', question: 'Which compound is best for polishing diamonds?', options: ['Cerium oxide', 'Aluminum oxide', 'Diamond powder', 'Tin oxide'], answer: 2 }
+                        ]
+                    }
+                },
+                {
+                    id: 'lap_speed',
+                    title: 'Lap Speed & Pressure',
+                    description: 'Optimizing speed and pressure for each stage',
+                    duration: '10 min',
+                    xpReward: 50,
+                    content: {
+                        type: 'interactive',
+                        sections: [
+                            { type: 'text', content: 'Lap speed (RPM) and dop pressure must be balanced. Too fast generates heat, too slow is inefficient. Too much pressure creates scratches, too little wastes time.' },
+                            { type: 'chart', data: { labels: ['Coarse Grind', 'Fine Grind', 'Pre-Polish', 'Final Polish'], speeds: [400, 600, 800, 1200], pressures: [8, 6, 4, 2] }, title: 'Recommended Speed & Pressure by Stage' },
+                            { type: 'video', src: 'lap_technique.mp4', duration: '4:20' },
+                            { type: 'practice', exercise: 'speed_control', description: 'Practice adjusting lap speed for different polishing stages' }
+                        ]
+                    }
+                },
+                {
+                    id: 'scratch_removal',
+                    title: 'Scratch Removal Techniques',
+                    description: 'Identifying and removing surface imperfections',
+                    duration: '15 min',
+                    xpReward: 75,
+                    content: {
+                        type: 'step_by_step',
+                        steps: [
+                            { step: 1, title: 'Identify Scratch Depth', description: 'Use 10x loupe to determine if scratches are surface-level or deep. Surface scratches appear as white lines, deep scratches look like grooves.', image: 'scratch_inspection.png' },
+                            { step: 2, title: 'Re-cut if Necessary', description: 'Deep scratches require re-cutting the facet. Drop back 2-3 grit levels and re-establish the flat surface.', image: 'recutting_facet.png' },
+                            { step: 3, title: 'Progress Through Grits', description: 'Move through grit sequence methodically: 600 → 1200 → 3000 → 8000. Inspect between each stage.', image: 'grit_progression.png' },
+                            { step: 4, title: 'Cross-Hatch Pattern', description: 'Polish in a cross-hatch pattern to ensure even material removal and prevent directional scratches.', image: 'crosshatch_pattern.png' },
+                            { step: 5, title: 'Final Inspection', description: 'Use loupe and bright light to verify all scratches are removed. Look for residual polishing compound.', image: 'final_inspection.png' }
+                        ]
+                    }
+                },
+                {
+                    id: 'achieving_mirror',
+                    title: 'Achieving Mirror Polish',
+                    description: 'The final steps to perfection',
+                    duration: '18 min',
+                    xpReward: 90,
+                    content: {
+                        type: 'interactive',
+                        sections: [
+                            { type: 'text', content: 'A true mirror polish reflects light perfectly without diffusion. This requires flawless technique and patience.' },
+                            { type: 'checklist', items: [
+                                'All scratches removed (inspect with 10x loupe)',
+                                'Lap is perfectly flat and clean',
+                                'Fresh polishing compound applied',
+                                'Consistent light pressure maintained',
+                                'Adequate coolant/lubricant used',
+                                'No hesitation marks or uneven spots'
+                            ]},
+                            { type: 'video', src: 'mirror_polish.mp4', duration: '6:30' },
+                            { type: 'comparison', images: ['polish_before.png', 'polish_after.png'], labels: ['Before Final Polish', 'Mirror Polish Achieved'] },
+                            { type: 'practice', exercise: 'final_polish', description: 'Practice achieving mirror polish on the virtual gemstone' }
+                        ]
+                    }
+                }
+            ]
         },
         
         advanced_designs: {
@@ -135,7 +264,94 @@ const GemBotAcademy = {
             description: 'Complex cuts and custom designs',
             icon: '🌟',
             requiredLevel: 10,
-            lessons: []
+            lessons: [
+                {
+                    id: 'fancy_shapes',
+                    title: 'Fancy Shape Cutting',
+                    description: 'Hearts, marquise, pear, and other specialty shapes',
+                    duration: '20 min',
+                    xpReward: 100,
+                    content: {
+                        type: 'interactive',
+                        sections: [
+                            { type: 'text', content: 'Fancy shapes require modified cutting angles and sequences to optimize light performance for non-round geometries.' },
+                            { type: 'gallery', images: [
+                                { src: 'heart_cut.png', title: 'Heart Cut', description: '59 facets, challenging symmetry' },
+                                { src: 'marquise_cut.png', title: 'Marquise Cut', description: '58 facets, elongated brilliance' },
+                                { src: 'pear_cut.png', title: 'Pear Cut', description: '58 facets, teardrop shape' },
+                                { src: 'cushion_cut.png', title: 'Cushion Cut', description: '64 facets, vintage appeal' }
+                            ]},
+                            { type: 'text', content: 'Each fancy shape has unique challenges: hearts require perfect symmetry, marquise needs careful point protection, pears must balance the head and point.' },
+                            { type: 'quiz', question: 'Which fancy shape is most prone to bow-tie effect?', options: ['Heart', 'Marquise', 'Pear', 'Cushion'], answer: 1 }
+                        ]
+                    }
+                },
+                {
+                    id: 'custom_faceting',
+                    title: 'Custom Facet Design',
+                    description: 'Creating your own unique patterns',
+                    duration: '25 min',
+                    xpReward: 125,
+                    content: {
+                        type: 'step_by_step',
+                        steps: [
+                            { step: 1, title: 'Design Planning', description: 'Sketch your design. Consider symmetry, light path, and practicality. Use faceting diagram software for precision.', image: 'design_planning.png' },
+                            { step: 2, title: 'Calculate Angles', description: 'Use optical principles to calculate pavilion and crown angles. Factor in refractive index of the material.', image: 'angle_calculation.png' },
+                            { step: 3, title: 'Index Gear Selection', description: 'Choose the correct index gear (96, 64, or 32) based on your symmetry requirements.', image: 'index_gear.png' },
+                            { step: 4, title: 'Preform Shaping', description: 'Shape the rough stone to match your design outline. Leave extra material for adjustments.', image: 'preform.png' },
+                            { step: 5, title: 'Test Cut', description: 'Cut a test stone in less valuable material to verify your design works.', image: 'test_cut.png' },
+                            { step: 6, title: 'Final Execution', description: 'Execute your design on the actual gemstone, following your proven sequence.', image: 'final_execution.png' }
+                        ]
+                    }
+                },
+                {
+                    id: 'concave_cutting',
+                    title: 'Concave Cutting Techniques',
+                    description: 'Creating inward-curved facets for dramatic effect',
+                    duration: '22 min',
+                    xpReward: 110,
+                    content: {
+                        type: 'interactive',
+                        sections: [
+                            { type: 'text', content: 'Concave cutting creates inward-curved facets that produce unique optical effects and dramatic light play. Requires specialized equipment and advanced skills.' },
+                            { type: 'video', src: 'concave_cutting.mp4', duration: '8:15' },
+                            { type: 'text', content: 'Tools needed: Ultra-thin cutting discs, concave radius laps (various radii), precision depth control, steady hand or automated CNC.' },
+                            { type: 'comparison', images: ['flat_facet.png', 'concave_facet.png'], labels: ['Standard Flat Facet', 'Concave Facet'] },
+                            { type: 'quiz', question: 'What is the main advantage of concave facets?', options: ['Faster cutting', 'Enhanced light dispersion', 'Easier to polish', 'Less material waste'], answer: 1 },
+                            { type: 'practice', exercise: 'concave_practice', description: 'Practice cutting a simple concave facet on the simulator' }
+                        ]
+                    }
+                },
+                {
+                    id: 'fantasy_cuts',
+                    title: 'Fantasy & Sculptural Cuts',
+                    description: 'Pushing boundaries with artistic designs',
+                    duration: '30 min',
+                    xpReward: 150,
+                    content: {
+                        type: 'interactive',
+                        sections: [
+                            { type: 'text', content: 'Fantasy cuts combine traditional faceting with sculptural elements, creating wearable art. These cuts prioritize visual impact over traditional brilliance metrics.' },
+                            { type: 'gallery', images: [
+                                { src: 'flower_cut.png', title: 'Flower Cut', description: 'Petals carved into pavilion' },
+                                { src: 'maltese_cross.png', title: 'Maltese Cross', description: 'Geometric pattern throughout' },
+                                { src: 'spiral_cut.png', title: 'Spiral Cut', description: 'Hypnotic rotating pattern' },
+                                { src: 'starburst.png', title: 'Starburst', description: 'Radiating light pattern' }
+                            ]},
+                            { type: 'text', content: 'Fantasy cuts require: Deep understanding of light behavior, willingness to experiment, acceptance of material loss, patience for iteration.' },
+                            { type: 'checklist', items: [
+                                'Sketch design from multiple angles',
+                                'Calculate material requirements (often 70-80% loss)',
+                                'Plan cutting sequence meticulously',
+                                'Test design in practice material',
+                                'Document process for reproduction',
+                                'Consider setting requirements'
+                            ]},
+                            { type: 'practice', exercise: 'fantasy_design', description: 'Design and cut your own fantasy gemstone' }
+                        ]
+                    }
+                }
+            ]
         }
     },
     
