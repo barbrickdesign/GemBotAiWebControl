@@ -1329,7 +1329,7 @@ const GemBotAcademy = {
     },
     
     /**
-     * Start a lesson
+     * Start a lesson - Opens full interactive lesson viewer
      */
     startLesson(courseId, lessonId) {
         const course = this.courses[courseId];
@@ -1339,13 +1339,905 @@ const GemBotAcademy = {
         
         console.log(`📖 Starting lesson: ${lesson.title}`);
         
-        // For now, just complete the lesson (full interactive content would be implemented here)
-        // In a full implementation, this would open the lesson content UI
+        // Store current lesson for tracking
+        this.currentLesson = { courseId, lessonId, startTime: Date.now(), currentSection: 0 };
         
+        // Open interactive lesson viewer
+        this.openLessonViewer(courseId, lesson);
+    }
+    
+    /**
+     * Open the interactive lesson viewer
+     */
+    openLessonViewer(courseId, lesson) {
+        const content = document.getElementById('academy-content');
+        if (!content) return;
+        
+        const lessonContent = lesson.content || { type: 'interactive', sections: [] };
+        
+        content.innerHTML = `
+            <div class="lesson-viewer">
+                <div class="lesson-header">
+                    <button class="back-btn" onclick="GemBotAcademy.exitLesson('${courseId}')">← Exit Lesson</button>
+                    <div class="lesson-title-bar">
+                        <h2>${lesson.title}</h2>
+                        <span class="lesson-duration">⏱️ ${lesson.duration}</span>
+                        <span class="lesson-reward">🎁 +${lesson.xpReward} XP</span>
+                    </div>
+                    <div class="lesson-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="lessonProgressFill" style="width: 0%"></div>
+                        </div>
+                        <span id="lessonProgressText">Section 1 of ${this.getLessonSectionCount(lesson)}</span>
+                    </div>
+                </div>
+                
+                <div class="lesson-body" id="lessonBody">
+                    ${this.renderLessonContent(lesson, 0)}
+                </div>
+                
+                <div class="lesson-nav">
+                    <button class="nav-btn" id="lessonPrevBtn" onclick="GemBotAcademy.previousSection()" disabled>
+                        ← Previous
+                    </button>
+                    <button class="nav-btn primary" id="lessonNextBtn" onclick="GemBotAcademy.nextSection()">
+                        Next →
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        this.injectLessonStyles();
+    }
+    
+    /**
+     * Get total section count for a lesson
+     */
+    getLessonSectionCount(lesson) {
+        if (lesson.content?.sections) return lesson.content.sections.length;
+        if (lesson.content?.steps) return lesson.content.steps.length;
+        if (lesson.content?.items) return lesson.content.items.length;
+        return 1;
+    }
+    
+    /**
+     * Render lesson content based on section type
+     */
+    renderLessonContent(lesson, sectionIndex) {
+        const content = lesson.content || {};
+        const totalSections = this.getLessonSectionCount(lesson);
+        
+        // Handle different content types
+        if (content.type === 'interactive' && content.sections) {
+            const section = content.sections[sectionIndex];
+            if (!section) return this.renderCompletionScreen(lesson);
+            return this.renderSection(section, sectionIndex, totalSections);
+        }
+        
+        if (content.type === 'step_by_step' && content.steps) {
+            const step = content.steps[sectionIndex];
+            if (!step) return this.renderCompletionScreen(lesson);
+            return this.renderStep(step, sectionIndex, totalSections);
+        }
+        
+        if (content.type === 'checklist' && content.items) {
+            return this.renderChecklist(content.items, sectionIndex === content.items.length);
+        }
+        
+        if (content.type === 'interactive_3d') {
+            return this.render3DContent(content, sectionIndex);
+        }
+        
+        // Default fallback
+        return `
+            <div class="section-card">
+                <div class="section-icon">📚</div>
+                <h3>${lesson.title}</h3>
+                <p>${lesson.description}</p>
+                <p class="section-note">This lesson content is being prepared...</p>
+            </div>
+        `;
+    }
+    
+    /**
+     * Render individual section based on type
+     */
+    renderSection(section, index, total) {
+        switch (section.type) {
+            case 'text':
+                return `
+                    <div class="section-card text-section">
+                        <div class="section-number">Section ${index + 1} of ${total}</div>
+                        <div class="section-content">
+                            <p>${section.content}</p>
+                        </div>
+                    </div>
+                `;
+            
+            case 'quiz':
+                return `
+                    <div class="section-card quiz-section">
+                        <div class="section-number">Quiz - Section ${index + 1}</div>
+                        <div class="quiz-icon">❓</div>
+                        <h3 class="quiz-question">${section.question}</h3>
+                        <div class="quiz-options" id="quizOptions">
+                            ${section.options.map((opt, i) => `
+                                <button class="quiz-option" data-index="${i}" onclick="GemBotAcademy.selectQuizOption(${i}, ${section.answer})">
+                                    <span class="option-letter">${String.fromCharCode(65 + i)}</span>
+                                    <span class="option-text">${opt}</span>
+                                </button>
+                            `).join('')}
+                        </div>
+                        <div class="quiz-feedback" id="quizFeedback"></div>
+                    </div>
+                `;
+            
+            case 'image':
+                return `
+                    <div class="section-card image-section">
+                        <div class="section-number">Section ${index + 1} of ${total}</div>
+                        <div class="image-placeholder">
+                            <div class="image-icon">🖼️</div>
+                            <p class="image-caption">${section.caption || 'Illustration'}</p>
+                        </div>
+                        <p class="image-note">Image: ${section.src}</p>
+                    </div>
+                `;
+            
+            case 'video':
+                return `
+                    <div class="section-card video-section">
+                        <div class="section-number">Section ${index + 1} of ${total}</div>
+                        <div class="video-placeholder">
+                            <div class="video-icon">▶️</div>
+                            <p>Video Tutorial</p>
+                            <span class="video-duration">${section.duration || 'N/A'}</span>
+                        </div>
+                        <p class="video-note">Video: ${section.src}</p>
+                    </div>
+                `;
+            
+            case 'calculator':
+            case 'slider':
+                return `
+                    <div class="section-card tool-section">
+                        <div class="section-number">Interactive Tool - Section ${index + 1}</div>
+                        <div class="tool-icon">🧮</div>
+                        <h3>${section.label || section.tool || 'Interactive Tool'}</h3>
+                        <p>${section.description || 'Use this interactive tool to explore the concept.'}</p>
+                        ${section.type === 'slider' ? `
+                            <div class="tool-slider">
+                                <input type="range" min="${section.min || 0}" max="${section.max || 100}" 
+                                       value="${section.default || 50}" 
+                                       oninput="GemBotAcademy.updateToolValue(this.value)">
+                                <span id="sliderValue">${section.default || 50}</span>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            
+            case 'gallery':
+                return `
+                    <div class="section-card gallery-section">
+                        <div class="section-number">Gallery - Section ${index + 1}</div>
+                        <div class="gallery-grid">
+                            ${(section.images || []).map(img => `
+                                <div class="gallery-item">
+                                    <div class="gallery-icon">💎</div>
+                                    <h4>${img.title || 'Image'}</h4>
+                                    <p>${img.description || ''}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            
+            case 'comparison':
+                return `
+                    <div class="section-card comparison-section">
+                        <div class="section-number">Comparison - Section ${index + 1}</div>
+                        <div class="comparison-grid">
+                            ${(section.images || []).map((img, i) => `
+                                <div class="comparison-item">
+                                    <div class="comparison-icon">${i === 0 ? '❌' : '✅'}</div>
+                                    <h4>${(section.labels || [])[i] || `Option ${i + 1}`}</h4>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            
+            case 'practice':
+                return `
+                    <div class="section-card practice-section">
+                        <div class="section-number">Practice Exercise - Section ${index + 1}</div>
+                        <div class="practice-icon">🎯</div>
+                        <h3>Practice Time!</h3>
+                        <p>${section.description || 'Complete this practice exercise to reinforce your learning.'}</p>
+                        <button class="practice-btn" onclick="GemBotAcademy.startPractice('${section.exercise}')">
+                            Start Practice
+                        </button>
+                    </div>
+                `;
+            
+            default:
+                return `
+                    <div class="section-card">
+                        <div class="section-number">Section ${index + 1} of ${total}</div>
+                        <p>${JSON.stringify(section)}</p>
+                    </div>
+                `;
+        }
+    }
+    
+    /**
+     * Render step-by-step content
+     */
+    renderStep(step, index, total) {
+        return `
+            <div class="section-card step-section">
+                <div class="step-header">
+                    <div class="step-number">Step ${step.step || index + 1} of ${total}</div>
+                    <h3>${step.title}</h3>
+                </div>
+                <div class="step-content">
+                    <div class="step-image-placeholder">
+                        <div class="step-icon">📸</div>
+                        <span>${step.image || 'Step illustration'}</span>
+                    </div>
+                    <p class="step-description">${step.description}</p>
+                </div>
+            </div>
+        `;
+    }
+    
+    /**
+     * Render checklist content
+     */
+    renderChecklist(items, isComplete) {
+        if (isComplete) {
+            return this.renderCompletionScreen({ title: 'Safety Checklist' });
+        }
+        
+        return `
+            <div class="section-card checklist-section">
+                <div class="checklist-icon">📋</div>
+                <h3>Safety Checklist</h3>
+                <div class="checklist-items">
+                    ${items.map((item, i) => `
+                        <label class="checklist-item">
+                            <input type="checkbox" id="check-${i}" onchange="GemBotAcademy.updateChecklistProgress()">
+                            <span class="checkmark"></span>
+                            <span class="checklist-text">${item}</span>
+                        </label>
+                    `).join('')}
+                </div>
+                <p class="checklist-note">Check all items to complete this lesson</p>
+            </div>
+        `;
+    }
+    
+    /**
+     * Render 3D interactive content
+     */
+    render3DContent(content, index) {
+        const hotspots = content.hotspots || [];
+        
+        return `
+            <div class="section-card interactive-3d-section">
+                <div class="model-viewer">
+                    <div class="model-placeholder">
+                        <div class="model-icon">🔮</div>
+                        <p>3D Model: ${content.model || 'CNC Machine'}</p>
+                    </div>
+                </div>
+                <div class="hotspots-list">
+                    <h4>Interactive Points:</h4>
+                    ${hotspots.map((hs, i) => `
+                        <div class="hotspot-item" onclick="GemBotAcademy.focusHotspot(${i})">
+                            <span class="hotspot-marker">${i + 1}</span>
+                            <div class="hotspot-info">
+                                <strong>${hs.label}</strong>
+                                <p>${hs.description}</p>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    }
+    
+    /**
+     * Render lesson completion screen
+     */
+    renderCompletionScreen(lesson) {
+        return `
+            <div class="section-card completion-section">
+                <div class="completion-icon">🎉</div>
+                <h2>Lesson Complete!</h2>
+                <p>You've finished: <strong>${lesson.title}</strong></p>
+                <div class="completion-rewards">
+                    <div class="reward-item">
+                        <span class="reward-icon">⭐</span>
+                        <span class="reward-value">+${lesson.xpReward || 50} XP</span>
+                    </div>
+                </div>
+                <button class="complete-btn" onclick="GemBotAcademy.finishLesson()">
+                    Claim Rewards & Continue
+                </button>
+            </div>
+        `;
+    }
+    
+    /**
+     * Handle quiz option selection
+     */
+    selectQuizOption(selectedIndex, correctIndex) {
+        const options = document.querySelectorAll('.quiz-option');
+        const feedback = document.getElementById('quizFeedback');
+        
+        options.forEach((opt, i) => {
+            opt.disabled = true;
+            if (i === correctIndex) {
+                opt.classList.add('correct');
+            } else if (i === selectedIndex && selectedIndex !== correctIndex) {
+                opt.classList.add('incorrect');
+            }
+        });
+        
+        if (selectedIndex === correctIndex) {
+            feedback.innerHTML = '<div class="feedback-correct">✅ Correct! Well done!</div>';
+            this.player.stats.perfectScores++;
+        } else {
+            feedback.innerHTML = `<div class="feedback-incorrect">❌ Not quite. The correct answer is: ${String.fromCharCode(65 + correctIndex)}</div>`;
+        }
+        
+        // Enable next button
         setTimeout(() => {
-            this.completeLesson(courseId, lessonId);
-            this.openCourse(courseId); // Refresh course view
+            const nextBtn = document.getElementById('lessonNextBtn');
+            if (nextBtn) nextBtn.disabled = false;
         }, 1000);
+    }
+    
+    /**
+     * Update checklist progress
+     */
+    updateChecklistProgress() {
+        const checkboxes = document.querySelectorAll('.checklist-item input');
+        const checked = Array.from(checkboxes).filter(cb => cb.checked).length;
+        const total = checkboxes.length;
+        
+        // Update progress bar
+        const progressFill = document.getElementById('lessonProgressFill');
+        if (progressFill) {
+            progressFill.style.width = `${(checked / total) * 100}%`;
+        }
+        
+        // If all checked, enable completion
+        if (checked === total) {
+            const nextBtn = document.getElementById('lessonNextBtn');
+            if (nextBtn) {
+                nextBtn.textContent = 'Complete Lesson ✓';
+                nextBtn.classList.add('complete');
+            }
+        }
+    }
+    
+    /**
+     * Update slider tool value
+     */
+    updateToolValue(value) {
+        const display = document.getElementById('sliderValue');
+        if (display) display.textContent = value;
+    }
+    
+    /**
+     * Focus on a hotspot in 3D view
+     */
+    focusHotspot(index) {
+        console.log(`Focusing on hotspot ${index}`);
+        this.showNotification(`🔍 Focusing on hotspot ${index + 1}`, 'info');
+    }
+    
+    /**
+     * Start practice exercise
+     */
+    startPractice(exerciseId) {
+        console.log(`Starting practice: ${exerciseId}`);
+        this.showNotification('🎯 Practice mode starting...', 'info');
+        // In full implementation, this would launch an interactive exercise
+    }
+    
+    /**
+     * Navigate to next section
+     */
+    nextSection() {
+        if (!this.currentLesson) return;
+        
+        const course = this.courses[this.currentLesson.courseId];
+        const lesson = course?.lessons.find(l => l.id === this.currentLesson.lessonId);
+        if (!lesson) return;
+        
+        this.currentLesson.currentSection++;
+        const totalSections = this.getLessonSectionCount(lesson);
+        
+        // Update progress
+        const progress = Math.min(100, ((this.currentLesson.currentSection + 1) / totalSections) * 100);
+        const progressFill = document.getElementById('lessonProgressFill');
+        const progressText = document.getElementById('lessonProgressText');
+        if (progressFill) progressFill.style.width = `${progress}%`;
+        if (progressText) progressText.textContent = `Section ${Math.min(this.currentLesson.currentSection + 1, totalSections)} of ${totalSections}`;
+        
+        // Render new content
+        const body = document.getElementById('lessonBody');
+        if (body) {
+            body.innerHTML = this.renderLessonContent(lesson, this.currentLesson.currentSection);
+        }
+        
+        // Update nav buttons
+        const prevBtn = document.getElementById('lessonPrevBtn');
+        const nextBtn = document.getElementById('lessonNextBtn');
+        if (prevBtn) prevBtn.disabled = this.currentLesson.currentSection === 0;
+        if (nextBtn && this.currentLesson.currentSection >= totalSections) {
+            nextBtn.textContent = 'Complete Lesson ✓';
+            nextBtn.onclick = () => this.finishLesson();
+        }
+    }
+    
+    /**
+     * Navigate to previous section
+     */
+    previousSection() {
+        if (!this.currentLesson || this.currentLesson.currentSection === 0) return;
+        
+        const course = this.courses[this.currentLesson.courseId];
+        const lesson = course?.lessons.find(l => l.id === this.currentLesson.lessonId);
+        if (!lesson) return;
+        
+        this.currentLesson.currentSection--;
+        const totalSections = this.getLessonSectionCount(lesson);
+        
+        // Update progress
+        const progress = ((this.currentLesson.currentSection + 1) / totalSections) * 100;
+        const progressFill = document.getElementById('lessonProgressFill');
+        const progressText = document.getElementById('lessonProgressText');
+        if (progressFill) progressFill.style.width = `${progress}%`;
+        if (progressText) progressText.textContent = `Section ${this.currentLesson.currentSection + 1} of ${totalSections}`;
+        
+        // Render new content
+        const body = document.getElementById('lessonBody');
+        if (body) {
+            body.innerHTML = this.renderLessonContent(lesson, this.currentLesson.currentSection);
+        }
+        
+        // Update nav buttons
+        const prevBtn = document.getElementById('lessonPrevBtn');
+        const nextBtn = document.getElementById('lessonNextBtn');
+        if (prevBtn) prevBtn.disabled = this.currentLesson.currentSection === 0;
+        if (nextBtn) {
+            nextBtn.textContent = 'Next →';
+            nextBtn.onclick = () => this.nextSection();
+        }
+    }
+    
+    /**
+     * Exit lesson without completing
+     */
+    exitLesson(courseId) {
+        if (confirm('Are you sure you want to exit? Your progress in this lesson will not be saved.')) {
+            this.currentLesson = null;
+            this.openCourse(courseId);
+        }
+    }
+    
+    /**
+     * Finish and complete the lesson
+     */
+    finishLesson() {
+        if (!this.currentLesson) return;
+        
+        const { courseId, lessonId, startTime } = this.currentLesson;
+        const timeSpent = Date.now() - startTime;
+        
+        console.log(`✅ Lesson completed in ${Math.round(timeSpent / 1000)}s`);
+        
+        // Complete the lesson and grant rewards
+        const result = this.completeLesson(courseId, lessonId);
+        
+        // Grant contribution rewards if system available
+        if (window.ContributionRewardsSystem) {
+            window.ContributionRewardsSystem.grantReward('LESSON_COMPLETE', 1, {
+                courseId: courseId,
+                lessonId: lessonId,
+                timeSpent: timeSpent
+            });
+        }
+        
+        // Clear current lesson and return to course
+        this.currentLesson = null;
+        this.openCourse(courseId);
+    }
+    
+    /**
+     * Inject lesson viewer styles
+     */
+    injectLessonStyles() {
+        if (document.getElementById('lesson-viewer-styles')) return;
+        
+        const styles = document.createElement('style');
+        styles.id = 'lesson-viewer-styles';
+        styles.textContent = `
+            .lesson-viewer {
+                background: linear-gradient(135deg, #1a1f3a 0%, #0d1117 100%);
+                border-radius: 16px;
+                padding: 24px;
+                min-height: 500px;
+                display: flex;
+                flex-direction: column;
+            }
+            
+            .lesson-header {
+                margin-bottom: 24px;
+            }
+            
+            .lesson-title-bar {
+                display: flex;
+                align-items: center;
+                gap: 16px;
+                margin: 16px 0;
+            }
+            
+            .lesson-title-bar h2 {
+                margin: 0;
+                color: #fff;
+                flex: 1;
+            }
+            
+            .lesson-duration, .lesson-reward {
+                background: rgba(100, 255, 218, 0.1);
+                padding: 8px 16px;
+                border-radius: 20px;
+                color: #64ffda;
+                font-size: 14px;
+            }
+            
+            .lesson-progress {
+                display: flex;
+                align-items: center;
+                gap: 16px;
+            }
+            
+            .lesson-progress .progress-bar {
+                flex: 1;
+                height: 8px;
+                background: rgba(255,255,255,0.1);
+                border-radius: 4px;
+                overflow: hidden;
+            }
+            
+            .lesson-progress .progress-fill {
+                height: 100%;
+                background: linear-gradient(90deg, #64ffda, #9f7aea);
+                transition: width 0.3s ease;
+            }
+            
+            .lesson-body {
+                flex: 1;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                padding: 24px 0;
+            }
+            
+            .section-card {
+                background: rgba(255,255,255,0.05);
+                border: 1px solid rgba(100, 255, 218, 0.2);
+                border-radius: 16px;
+                padding: 32px;
+                max-width: 700px;
+                width: 100%;
+                text-align: center;
+            }
+            
+            .section-number {
+                color: #64ffda;
+                font-size: 12px;
+                text-transform: uppercase;
+                letter-spacing: 2px;
+                margin-bottom: 16px;
+            }
+            
+            .section-content p {
+                color: #e6edf3;
+                font-size: 18px;
+                line-height: 1.8;
+            }
+            
+            .quiz-icon, .section-icon, .completion-icon, .practice-icon {
+                font-size: 48px;
+                margin-bottom: 16px;
+            }
+            
+            .quiz-question {
+                color: #fff;
+                font-size: 20px;
+                margin-bottom: 24px;
+            }
+            
+            .quiz-options {
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+            }
+            
+            .quiz-option {
+                display: flex;
+                align-items: center;
+                gap: 16px;
+                padding: 16px 20px;
+                background: rgba(255,255,255,0.05);
+                border: 2px solid rgba(255,255,255,0.1);
+                border-radius: 12px;
+                color: #fff;
+                cursor: pointer;
+                transition: all 0.2s;
+                text-align: left;
+            }
+            
+            .quiz-option:hover:not(:disabled) {
+                background: rgba(100, 255, 218, 0.1);
+                border-color: #64ffda;
+            }
+            
+            .quiz-option.correct {
+                background: rgba(16, 185, 129, 0.2);
+                border-color: #10b981;
+            }
+            
+            .quiz-option.incorrect {
+                background: rgba(239, 68, 68, 0.2);
+                border-color: #ef4444;
+            }
+            
+            .option-letter {
+                width: 32px;
+                height: 32px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: rgba(100, 255, 218, 0.2);
+                border-radius: 50%;
+                font-weight: bold;
+                color: #64ffda;
+            }
+            
+            .quiz-feedback {
+                margin-top: 16px;
+                padding: 16px;
+                border-radius: 12px;
+            }
+            
+            .feedback-correct {
+                color: #10b981;
+                font-size: 18px;
+            }
+            
+            .feedback-incorrect {
+                color: #ef4444;
+                font-size: 18px;
+            }
+            
+            .lesson-nav {
+                display: flex;
+                justify-content: space-between;
+                padding-top: 24px;
+                border-top: 1px solid rgba(255,255,255,0.1);
+            }
+            
+            .nav-btn {
+                padding: 12px 32px;
+                border-radius: 12px;
+                border: 2px solid rgba(100, 255, 218, 0.3);
+                background: transparent;
+                color: #64ffda;
+                font-size: 16px;
+                cursor: pointer;
+                transition: all 0.2s;
+            }
+            
+            .nav-btn:hover:not(:disabled) {
+                background: rgba(100, 255, 218, 0.1);
+            }
+            
+            .nav-btn:disabled {
+                opacity: 0.3;
+                cursor: not-allowed;
+            }
+            
+            .nav-btn.primary {
+                background: linear-gradient(135deg, #64ffda, #9f7aea);
+                color: #1a1f3a;
+                border: none;
+                font-weight: bold;
+            }
+            
+            .nav-btn.complete {
+                background: linear-gradient(135deg, #10b981, #064e3b);
+                animation: pulse 1.5s infinite;
+            }
+            
+            .complete-btn {
+                padding: 16px 48px;
+                background: linear-gradient(135deg, #ffd700, #ffb347);
+                border: none;
+                border-radius: 12px;
+                color: #1a1f3a;
+                font-size: 18px;
+                font-weight: bold;
+                cursor: pointer;
+                margin-top: 24px;
+                transition: transform 0.2s;
+            }
+            
+            .complete-btn:hover {
+                transform: scale(1.05);
+            }
+            
+            .completion-rewards {
+                display: flex;
+                justify-content: center;
+                gap: 24px;
+                margin: 24px 0;
+            }
+            
+            .reward-item {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                padding: 12px 24px;
+                background: rgba(255, 215, 0, 0.1);
+                border-radius: 20px;
+            }
+            
+            .reward-icon {
+                font-size: 24px;
+            }
+            
+            .reward-value {
+                color: #ffd700;
+                font-weight: bold;
+                font-size: 18px;
+            }
+            
+            /* Checklist styles */
+            .checklist-items {
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+                margin: 24px 0;
+                text-align: left;
+            }
+            
+            .checklist-item {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 12px 16px;
+                background: rgba(255,255,255,0.05);
+                border-radius: 8px;
+                cursor: pointer;
+            }
+            
+            .checklist-item input {
+                width: 20px;
+                height: 20px;
+                accent-color: #64ffda;
+            }
+            
+            .checklist-text {
+                color: #e6edf3;
+            }
+            
+            /* Step styles */
+            .step-header {
+                margin-bottom: 24px;
+            }
+            
+            .step-content {
+                display: flex;
+                flex-direction: column;
+                gap: 24px;
+            }
+            
+            .step-image-placeholder {
+                background: rgba(100, 255, 218, 0.05);
+                border: 2px dashed rgba(100, 255, 218, 0.3);
+                padding: 48px;
+                border-radius: 12px;
+            }
+            
+            .step-icon {
+                font-size: 48px;
+                margin-bottom: 8px;
+            }
+            
+            .step-description {
+                color: #e6edf3;
+                font-size: 16px;
+                line-height: 1.6;
+            }
+            
+            /* Gallery styles */
+            .gallery-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 16px;
+                margin-top: 24px;
+            }
+            
+            .gallery-item {
+                background: rgba(255,255,255,0.05);
+                padding: 16px;
+                border-radius: 12px;
+                border: 1px solid rgba(255,255,255,0.1);
+            }
+            
+            .gallery-icon {
+                font-size: 32px;
+                margin-bottom: 8px;
+            }
+            
+            /* Hotspot styles */
+            .hotspots-list {
+                margin-top: 24px;
+                text-align: left;
+            }
+            
+            .hotspot-item {
+                display: flex;
+                align-items: flex-start;
+                gap: 12px;
+                padding: 12px;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: background 0.2s;
+            }
+            
+            .hotspot-item:hover {
+                background: rgba(100, 255, 218, 0.1);
+            }
+            
+            .hotspot-marker {
+                width: 28px;
+                height: 28px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: #64ffda;
+                color: #1a1f3a;
+                border-radius: 50%;
+                font-weight: bold;
+                font-size: 12px;
+            }
+            
+            .practice-btn {
+                padding: 16px 32px;
+                background: linear-gradient(135deg, #9f7aea, #64ffda);
+                border: none;
+                border-radius: 12px;
+                color: #fff;
+                font-size: 16px;
+                font-weight: bold;
+                cursor: pointer;
+                margin-top: 24px;
+            }
+            
+            @keyframes pulse {
+                0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+                50% { box-shadow: 0 0 0 15px rgba(16, 185, 129, 0); }
+            }
+        `;
+        document.head.appendChild(styles);
     }
 };
 
