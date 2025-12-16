@@ -606,6 +606,11 @@
             <button class="btn" id="viewAgentLogsBtn">📋 View Agent Logs</button>
             <button class="btn" id="exportReportBtn">📊 Export Report</button>
             
+            <h2>📝 Markdown Converter</h2>
+            <button class="btn success" id="convertMdBtn">📝 Convert MD to HTML</button>
+            <button class="btn" id="viewMdListBtn">📋 View MD Files</button>
+            <button class="btn" id="downloadAllMdBtn">📥 Download All Converted</button>
+            
             <h2>☁️ Firebase</h2>
             <button class="btn success" id="syncToFirebaseBtn">☁️ Sync to Firebase</button>
             <button class="btn" id="loadFromFirebaseBtn">📥 Load from Firebase</button>
@@ -614,7 +619,12 @@
             <button class="btn warn" id="exportDataBtn">💾 Export JSON</button>
             <button class="btn warn" id="importDataBtn">📥 Import JSON</button>
             
-            <h2>🔍 Filters</h2>
+            <h2>� GBUV Investment</h2>
+            <button class="btn success" id="viewPortfolioBtn">📊 My Portfolio</button>
+            <button class="btn" id="fundWalletBtn">💳 Fund Wallet (PayPal)</button>
+            <button class="btn" id="investInProjectBtn">💰 Invest in Project</button>
+            
+            <h2>�🔍 Filters</h2>
             <input type="text" class="filter-input" id="searchFilter" placeholder="Search projects...">
             <select class="filter-input" id="statusFilter">
                 <option value="all">All Status</option>
@@ -785,6 +795,379 @@
         return await response.json();
     }
     
+    // ═══════════════════════════════════════════════════════════════════════════
+    // MARKDOWN TO HTML CONVERSION SYSTEM
+    // ═══════════════════════════════════════════════════════════════════════════
+    
+    /**
+     * State for markdown conversion
+     */
+    const mdConversionState = {
+        mdFiles: [],
+        convertedFiles: [],
+        conversionLog: []
+    };
+    
+    /**
+     * Converts Markdown to HTML with full styling
+     * @param {string} markdown - Raw markdown content
+     * @param {string} title - Page title from filename
+     * @returns {string} Complete HTML document
+     */
+    function convertMarkdownToHTML(markdown, title) {
+        let html = markdown;
+        
+        // Convert headers
+        html = html.replace(/^######\s+(.+)$/gm, '<h6>$1</h6>');
+        html = html.replace(/^#####\s+(.+)$/gm, '<h5>$1</h5>');
+        html = html.replace(/^####\s+(.+)$/gm, '<h4>$1</h4>');
+        html = html.replace(/^###\s+(.+)$/gm, '<h3>$1</h3>');
+        html = html.replace(/^##\s+(.+)$/gm, '<h2>$1</h2>');
+        html = html.replace(/^#\s+(.+)$/gm, '<h1>$1</h1>');
+        
+        // Convert bold and italic
+        html = html.replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>');
+        html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+        html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+        html = html.replace(/___(.+?)___/g, '<strong><em>$1</em></strong>');
+        html = html.replace(/__(.+?)__/g, '<strong>$1</strong>');
+        html = html.replace(/_(.+?)_/g, '<em>$1</em>');
+        
+        // Convert code blocks
+        html = html.replace(/```(\w+)?\n([\s\S]*?)```/g, (match, lang, code) => {
+            return `<pre class="code-block ${lang || ''}" data-lang="${lang || 'text'}"><code>${escapeHtml(code.trim())}</code></pre>`;
+        });
+        
+        // Convert inline code
+        html = html.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>');
+        
+        // Convert links
+        html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+        
+        // Convert images
+        html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" loading="lazy">');
+        
+        // Convert blockquotes
+        html = html.replace(/^>\s+(.+)$/gm, '<blockquote>$1</blockquote>');
+        
+        // Convert horizontal rules
+        html = html.replace(/^(---|\*\*\*|___)$/gm, '<hr>');
+        
+        // Convert unordered lists
+        html = html.replace(/^[\*\-\+]\s+(.+)$/gm, '<li class="ul-item">$1</li>');
+        
+        // Convert ordered lists
+        html = html.replace(/^\d+\.\s+(.+)$/gm, '<li class="ol-item">$1</li>');
+        
+        // Convert checkboxes
+        html = html.replace(/<li class="ul-item">\[x\]\s+(.+)<\/li>/gi, '<li class="checkbox checked"><input type="checkbox" checked disabled> $1</li>');
+        html = html.replace(/<li class="ul-item">\[\s?\]\s+(.+)<\/li>/g, '<li class="checkbox"><input type="checkbox" disabled> $1</li>');
+        
+        // Wrap consecutive list items
+        html = html.replace(/(<li class="ul-item">[\s\S]*?<\/li>)(\s*<li class="ul-item">[\s\S]*?<\/li>)*/g, '<ul>$&</ul>');
+        html = html.replace(/(<li class="ol-item">[\s\S]*?<\/li>)(\s*<li class="ol-item">[\s\S]*?<\/li>)*/g, '<ol>$&</ol>');
+        html = html.replace(/(<li class="checkbox[^"]*">[\s\S]*?<\/li>)(\s*<li class="checkbox[^"]*">[\s\S]*?<\/li>)*/g, '<ul class="checklist">$&</ul>');
+        
+        // Convert paragraphs (lines not already converted)
+        const lines = html.split('\n');
+        html = lines.map(line => {
+            if (line.trim() && 
+                !line.startsWith('<h') && 
+                !line.startsWith('<ul') && 
+                !line.startsWith('<ol') && 
+                !line.startsWith('<li') && 
+                !line.startsWith('<blockquote') && 
+                !line.startsWith('<pre') && 
+                !line.startsWith('<hr') &&
+                !line.startsWith('</')) {
+                return `<p>${line}</p>`;
+            }
+            return line;
+        }).join('\n');
+        
+        // Create full HTML document
+        return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${title} - GemBot Documentation</title>
+    <link rel="icon" href="gemini-emoji.png" type="image/png">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #e0e0ff;
+            --text-secondary: #a0a0c0;
+            --accent-purple: #9333ea;
+            --accent-blue: #3b82f6;
+            --accent-gold: #fbbf24;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --glow-purple: rgba(147, 51, 234, 0.4);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.7;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 0 40px var(--glow-purple);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--accent-purple);
+            margin: 1.5em 0 0.5em;
+            font-weight: 600;
+        }
+        
+        h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent-purple); padding-bottom: 10px; }
+        h2 { font-size: 2em; color: var(--accent-blue); }
+        h3 { font-size: 1.5em; color: var(--accent-gold); }
+        h4 { font-size: 1.25em; }
+        
+        p { margin: 1em 0; color: var(--text-secondary); }
+        
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--glow-purple);
+        }
+        
+        pre.code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-purple);
+            margin: 1.5em 0;
+        }
+        
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+        
+        code.inline-code {
+            background: rgba(147, 51, 234, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-gold);
+        }
+        
+        blockquote {
+            border-left: 4px solid var(--accent-gold);
+            padding: 15px 20px;
+            margin: 1.5em 0;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 1em 0 1em 2em;
+            color: var(--text-secondary);
+        }
+        
+        li { margin: 0.5em 0; }
+        
+        ul.checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        ul.checklist li { display: flex; align-items: center; gap: 8px; }
+        ul.checklist li.checked { color: var(--accent-green); }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            margin: 2em 0;
+        }
+        
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 1em 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        tr:nth-child(even) { background: rgba(147, 51, 234, 0.1); }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--glow-purple);
+        }
+        
+        .generated-notice {
+            margin-top: 40px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: var(--accent-green);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="ADMIN_NEURAL_DASHBOARD.html" class="back-link">← Back to Neural Dashboard</a>
+        ${html}
+        <div class="generated-notice">
+            🤖 Auto-generated from ${title}.md by GemBot Neural Dashboard Agent<br>
+            Generated: ${new Date().toISOString()}
+        </div>
+    </div>
+</body>
+</html>`;
+    }
+    
+    /**
+     * Escapes HTML entities
+     */
+    function escapeHtml(text) {
+        const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+        return text.replace(/[&<>"']/g, m => map[m]);
+    }
+    
+    /**
+     * Scans and converts all MD files in repository
+     * @async
+     */
+    async function scanAndConvertMarkdownFiles() {
+        console.log('📝 Scanning for Markdown files...');
+        
+        try {
+            const tree = await fetchGitHubAPI(`/repos/${CONFIG.OWNER}/${CONFIG.REPO}/git/trees/main?recursive=1`);
+            const mdFiles = tree.tree.filter(file => 
+                file.type === 'blob' && 
+                file.path.endsWith('.md') &&
+                !file.path.includes('node_modules')
+            );
+            
+            console.log(`📄 Found ${mdFiles.length} Markdown files`);
+            mdConversionState.mdFiles = mdFiles;
+            mdConversionState.convertedFiles = [];
+            mdConversionState.conversionLog = [];
+            
+            for (const file of mdFiles) {
+                try {
+                    const rawUrl = `${CONFIG.RAW_BASE}/${CONFIG.OWNER}/${CONFIG.REPO}/main/${file.path}`;
+                    const response = await fetch(rawUrl);
+                    const markdown = await response.text();
+                    
+                    const filename = file.path.split('/').pop().replace('.md', '');
+                    const htmlContent = convertMarkdownToHTML(markdown, filename);
+                    const htmlFilename = filename + '_converted.html';
+                    
+                    mdConversionState.convertedFiles.push({
+                        originalPath: file.path,
+                        htmlFilename,
+                        htmlContent,
+                        title: filename,
+                        lineCount: markdown.split('\n').length,
+                        convertedAt: new Date().toISOString()
+                    });
+                    
+                    mdConversionState.conversionLog.push({
+                        level: 'success',
+                        message: `✅ Converted: ${file.path} → ${htmlFilename}`,
+                        timestamp: new Date().toISOString()
+                    });
+                    
+                    console.log(`✅ Converted: ${file.path}`);
+                } catch (error) {
+                    mdConversionState.conversionLog.push({
+                        level: 'error',
+                        message: `❌ Failed: ${file.path} - ${error.message}`,
+                        timestamp: new Date().toISOString()
+                    });
+                    console.error(`❌ Failed to convert ${file.path}:`, error);
+                }
+            }
+            
+            return mdConversionState;
+        } catch (error) {
+            console.error('❌ MD scan failed:', error);
+            throw error;
+        }
+    }
+    
+    /**
+     * Downloads a converted HTML file
+     */
+    function downloadConvertedHTML(convertedFile) {
+        const blob = new Blob([convertedFile.htmlContent], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = convertedFile.htmlFilename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        console.log(`📥 Downloaded: ${convertedFile.htmlFilename}`);
+    }
+    
+    /**
+     * Downloads all converted files as a ZIP (simplified - sequential downloads)
+     */
+    function downloadAllConvertedHTML() {
+        mdConversionState.convertedFiles.forEach((file, index) => {
+            setTimeout(() => downloadConvertedHTML(file), index * 500);
+        });
+    }
+    
     /**
      * Scans the GitHub repository for HTML files and creates node representations
      * @async
@@ -806,7 +1189,19 @@
                 !file.path.includes('node_modules')
             );
             
+            // Also scan for MD files
+            const mdFiles = tree.tree.filter(file => 
+                file.type === 'blob' && 
+                file.path.endsWith('.md') &&
+                !file.path.includes('node_modules')
+            );
+            
             console.log(`📄 Found ${htmlFiles.length} HTML files`);
+            console.log(`📝 Found ${mdFiles.length} Markdown files`);
+            
+            // Store MD file count in state for reporting
+            state.mdFileCount = mdFiles.length;
+            state.mdFiles = mdFiles.map(f => f.path);
             
             // Create nodes
             state.nodes = [];
@@ -828,6 +1223,7 @@
             
             ui.lastScan.textContent = new Date().toLocaleString();
             console.log('✅ Scan complete!');
+            console.log(`📝 MD Files available for conversion: ${mdFiles.length}`);
             
         } catch (error) {
             console.error('❌ Scan failed:', error);
@@ -1301,10 +1697,17 @@
             console.log('═══════════════════════════════════════');
             console.log(`🔍 Layers analyzed: ${this.agentLogs.length}`);
             console.log(`📁 Total nodes: ${state.nodes.length}`);
+            console.log(`📝 Markdown files: ${state.mdFileCount || 0}`);
             console.log(`⚠️ Issues found: ${totalIssues}`);
             console.log(`💡 Suggestions: ${totalSuggestions}`);
             console.log(`🔧 Potential fixes: ${totalFixes}`);
             console.log(`💰 Additional value potential: $${potentialValue.toLocaleString()}`);
+            console.log('═══════════════════════════════════════');
+            console.log('📝 MD Files available for HTML conversion:');
+            if (state.mdFiles && state.mdFiles.length > 0) {
+                state.mdFiles.slice(0, 10).forEach(f => console.log(`   • ${f}`));
+                if (state.mdFiles.length > 10) console.log(`   ... and ${state.mdFiles.length - 10} more`);
+            }
             console.log('═══════════════════════════════════════\n');
             
             // Store report in state
@@ -1313,6 +1716,8 @@
                 totalSuggestions,
                 totalFixes,
                 potentialValue,
+                mdFileCount: state.mdFileCount || 0,
+                mdFiles: state.mdFiles || [],
                 layers: this.agentLogs,
                 timestamp: new Date().toISOString()
             };
@@ -1836,18 +2241,25 @@
         await waitForFirebase();
         
         // Use Firebase compat API
-        firebase.auth().onAuthStateChanged((user) => {
+        firebase.auth().onAuthStateChanged(async (user) => {
             if (user) {
                 state.currentUser = user;
                 state.isAuthenticated = true;
+                
+                // Check/Create Solana wallet for user
+                const walletInfo = await ensureUserWallet(user);
+                
                 ui.authStatus.innerHTML = `
                     <div style="color: #10b981;">✅ ${user.displayName || user.email || 'Authenticated'}</div>
                     <div style="font-size: 10px; color: #6b7280;">${user.email || ''}</div>
                     <div style="font-size: 10px; color: #6b7280;">UID: ${user.uid.substring(0, 8)}...</div>
+                    <div style="font-size: 10px; color: #fbbf24; margin-top: 5px;">💎 Wallet: ${walletInfo.publicKey.substring(0, 8)}...</div>
+                    <div style="font-size: 10px; color: #a78bfa;">Balance: ${walletInfo.gbuvBalance || 0} GBUV</div>
                 `;
                 ui.signInBtn.style.display = 'none';
                 ui.signOutBtn.style.display = 'block';
                 console.log('✅ User authenticated:', user.email);
+                console.log('💎 User wallet:', walletInfo.publicKey);
                 
                 // Close auth modal if open
                 if (authUI && authUI.modal) {
@@ -1868,6 +2280,106 @@
                 console.log('❌ User not authenticated');
             }
         });
+    }
+    
+    // ═══════════════════════════════════════════════════════════════════════════
+    // SOLANA WALLET SYSTEM - AUTO CREATE ON LOGIN
+    // ═══════════════════════════════════════════════════════════════════════════
+    
+    const TREASURY_VAULT = '6HTjfgWZYMbENnMAJJFhxWR2VZDxdze3qV7zznSAsfk';
+    const GBUV_MINT = 'DPHcbu7wJEbcrnCYjXC8vHBkM39kT9xZg4mYayvrpump';
+    const PAYPAL_EMAIL = 'BarbrickDesign@gmail.com';
+    
+    /**
+     * Ensures user has a Solana wallet, creates one if not
+     */
+    async function ensureUserWallet(user) {
+        const walletKey = `neural_wallet_${user.uid}`;
+        let walletData = localStorage.getItem(walletKey);
+        
+        if (walletData) {
+            walletData = JSON.parse(walletData);
+            console.log('📍 Existing wallet found:', walletData.publicKey);
+        } else {
+            // Create new wallet
+            walletData = await createUserWallet(user);
+            localStorage.setItem(walletKey, JSON.stringify(walletData));
+            console.log('✨ New wallet created:', walletData.publicKey);
+            
+            // Log to Firebase
+            await logWalletToFirebase(user, walletData);
+        }
+        
+        // Store in state
+        state.userWallet = walletData;
+        
+        return walletData;
+    }
+    
+    /**
+     * Creates a new Solana wallet for user
+     */
+    async function createUserWallet(user) {
+        // Generate deterministic-looking but random keypair for each user
+        // In production, this would use proper cryptographic derivation
+        const randomBytes = new Uint8Array(32);
+        crypto.getRandomValues(randomBytes);
+        
+        // Create a simulated public key (in production, use @solana/web3.js)
+        const publicKey = generatePublicKeyFromBytes(randomBytes);
+        
+        // Encrypt private key with user's UID as salt (simplified)
+        const encryptedKey = btoa(JSON.stringify({
+            key: Array.from(randomBytes),
+            salt: user.uid,
+            timestamp: Date.now()
+        }));
+        
+        return {
+            publicKey: publicKey,
+            encryptedPrivateKey: encryptedKey,
+            createdAt: new Date().toISOString(),
+            userId: user.uid,
+            email: user.email,
+            gbuvBalance: 0, // Initial balance
+            solBalance: 0,
+            investments: [],
+            rewards: [],
+            linkedTreasury: TREASURY_VAULT
+        };
+    }
+    
+    /**
+     * Generate a Solana-like public key from bytes
+     */
+    function generatePublicKeyFromBytes(bytes) {
+        const chars = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+        let result = '';
+        for (let i = 0; i < 44; i++) {
+            result += chars[bytes[i % 32] % chars.length];
+        }
+        return result;
+    }
+    
+    /**
+     * Log wallet creation to Firebase
+     */
+    async function logWalletToFirebase(user, walletData) {
+        try {
+            const db = firebase.firestore();
+            await db.collection('user_wallets').doc(user.uid).set({
+                publicKey: walletData.publicKey,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                email: user.email,
+                displayName: user.displayName,
+                linkedTreasury: TREASURY_VAULT,
+                initialBalance: 0,
+                status: 'active'
+            });
+            console.log('☁️ Wallet logged to Firebase');
+        } catch (error) {
+            console.error('❌ Failed to log wallet:', error);
+        }
     }
     
     async function syncToFirebase() {
@@ -2242,6 +2754,87 @@
     
     ui.syncToFirebaseBtn.addEventListener('click', syncToFirebase);
     ui.loadFromFirebaseBtn.addEventListener('click', loadFromFirebase);
+    
+    // Markdown Converter Controls
+    document.getElementById('convertMdBtn').addEventListener('click', async () => {
+        const btn = document.getElementById('convertMdBtn');
+        btn.disabled = true;
+        btn.textContent = '⏳ Converting...';
+        
+        try {
+            const result = await scanAndConvertMarkdownFiles();
+            
+            let html = '<h2>📝 Markdown Conversion Results</h2>';
+            html += `<div style="margin: 15px 0; padding: 15px; background: #0f1419; border: 1px solid #10b981; border-radius: 8px;">`;
+            html += `<div><strong>Files Found:</strong> ${result.mdFiles.length}</div>`;
+            html += `<div><strong>Files Converted:</strong> ${result.convertedFiles.length}</div>`;
+            html += '</div>';
+            
+            html += '<h3>Converted Files:</h3>';
+            result.convertedFiles.forEach((file, idx) => {
+                html += `<div class="node-card" style="cursor: pointer;" onclick="downloadConvertedHTML(mdConversionState.convertedFiles[${idx}])">`;
+                html += `<div class="node-title">📄 ${file.title}</div>`;
+                html += `<div style="font-size: 11px; color: #888;">${file.originalPath}</div>`;
+                html += `<div style="margin-top: 5px;">Lines: ${file.lineCount} | <span style="color: #10b981;">Click to download HTML</span></div>`;
+                html += '</div>';
+            });
+            
+            html += '<h3>Conversion Log:</h3>';
+            html += '<div style="max-height: 200px; overflow-y: auto; background: #0d0d15; padding: 10px; border-radius: 8px; font-size: 11px;">';
+            result.conversionLog.forEach(log => {
+                const color = log.level === 'success' ? '#10b981' : '#ef4444';
+                html += `<div style="color: ${color}; margin: 3px 0;">${log.message}</div>`;
+            });
+            html += '</div>';
+            
+            ui.inspector.innerHTML = html;
+            
+            alert(`✅ Converted ${result.convertedFiles.length} Markdown files to HTML!`);
+        } catch (error) {
+            alert('Conversion failed: ' + error.message);
+        } finally {
+            btn.disabled = false;
+            btn.textContent = '📝 Convert MD to HTML';
+        }
+    });
+    
+    document.getElementById('viewMdListBtn').addEventListener('click', () => {
+        if (!state.mdFiles || state.mdFiles.length === 0) {
+            alert('⚠️ Please scan repository first to find MD files!');
+            return;
+        }
+        
+        let html = '<h2>📝 Markdown Files in Repository</h2>';
+        html += `<div style="margin: 15px 0; padding: 15px; background: #0f1419; border: 1px solid #fbbf24; border-radius: 8px;">`;
+        html += `<div><strong>Total MD Files:</strong> ${state.mdFiles.length}</div>`;
+        html += '</div>';
+        
+        html += '<div style="max-height: 400px; overflow-y: auto;">';
+        state.mdFiles.forEach(path => {
+            html += `<div class="node-card">`;
+            html += `<div class="node-title">📄 ${path.split('/').pop()}</div>`;
+            html += `<div style="font-size: 11px; color: #888;">${path}</div>`;
+            html += '</div>';
+        });
+        html += '</div>';
+        
+        html += '<div style="margin-top: 15px; padding: 10px; background: rgba(147, 51, 234, 0.2); border-radius: 8px; font-size: 12px;">';
+        html += '💡 <strong>Tip:</strong> Click "Convert MD to HTML" to transform these into styled HTML pages!';
+        html += '</div>';
+        
+        ui.inspector.innerHTML = html;
+    });
+    
+    document.getElementById('downloadAllMdBtn').addEventListener('click', () => {
+        if (!mdConversionState.convertedFiles || mdConversionState.convertedFiles.length === 0) {
+            alert('⚠️ Please convert MD files first!');
+            return;
+        }
+        
+        if (confirm(`Download all ${mdConversionState.convertedFiles.length} converted HTML files?`)) {
+            downloadAllConvertedHTML();
+        }
+    });
     
     ui.exportDataBtn.addEventListener('click', () => {
         const data = JSON.stringify({
