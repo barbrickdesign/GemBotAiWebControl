@@ -1344,7 +1344,7 @@ const GemBotAcademy = {
         
         // Open interactive lesson viewer
         this.openLessonViewer(courseId, lesson);
-    }
+    },
     
     /**
      * Open the interactive lesson viewer
@@ -1388,7 +1388,7 @@ const GemBotAcademy = {
         `;
         
         this.injectLessonStyles();
-    }
+    },
     
     /**
      * Get total section count for a lesson
