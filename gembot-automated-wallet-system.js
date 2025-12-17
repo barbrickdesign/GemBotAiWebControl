@@ -215,25 +215,29 @@ class GemBotAutomatedWalletSystem {
         
         console.log(`🎁 Sending ${welcomeAmount} GBUV welcome bonus to ${username}...`);
         
-        // In production, this would be a real SPL token transfer
-        // For now, we'll track it in our system
-        const tx = {
-            from: this.coreWallet.publicKey.toString(),
-            to: userPublicKey,
-            amount: welcomeAmount,
-            token: 'GBUV',
-            type: 'WELCOME_BONUS',
-            timestamp: new Date().toISOString(),
-            status: 'PENDING'
-        };
-        
-        // Simulate transaction (replace with real transfer)
-        await this.simulateTransfer(tx);
-        
-        if (window.liveActivityFeed) {
-            window.liveActivityFeed.log('SYSTEM', 
-                `🎁 ${username} received ${welcomeAmount} GBUV welcome bonus!`
+        try {
+            // Use real transfer with the core wallet
+            const tx = await this.executeTransfer(
+                this.coreWallet,
+                userPublicKey,
+                welcomeAmount,
+                'WELCOME_BONUS'
             );
+            
+            if (window.liveActivityFeed) {
+                window.liveActivityFeed.log('SYSTEM', 
+                    `🎁 ${username} received ${welcomeAmount} GBUV welcome bonus!`
+                );
+            }
+            
+            return tx;
+        } catch (error) {
+            console.error(`❌ Failed to send welcome bonus to ${username}:`, error);
+            if (window.liveActivityFeed) {
+                window.liveActivityFeed.logError(
+                    `Failed to send welcome bonus to ${username}`
+                );
+            }
         }
     }
     
@@ -391,98 +395,227 @@ class GemBotAutomatedWalletSystem {
     }
     
     // ═════════════════════════════════════════════════════════════════════════
-    // TRANSACTION SIMULATION (Replace with real SPL token transfers)
+    // SPL TOKEN CONSTANTS
     // ═════════════════════════════════════════════════════════════════════════
     
-    async simulateTransfer(tx) {
-        // This simulates the transfer
-        // In production, replace with actual SPL token transfer using:
-        // - @solana/spl-token library
-        // - Token.transfer() method
-        // - Proper transaction signing
+    get TOKEN_PROGRAM_ID() {
+        return new solanaWeb3.PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA');
+    }
+    
+    get ASSOCIATED_TOKEN_PROGRAM_ID() {
+        return new solanaWeb3.PublicKey('ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL');
+    }
+    
+    get GBUV_DECIMALS() {
+        return 6; // pump.fun tokens use 6 decimals
+    }
+    
+    // ═════════════════════════════════════════════════════════════════════════
+    // ASSOCIATED TOKEN ACCOUNT MANAGEMENT
+    // ═════════════════════════════════════════════════════════════════════════
+    
+    async getAssociatedTokenAddress(ownerPublicKey) {
+        // Derive the Associated Token Account address
+        const owner = typeof ownerPublicKey === 'string' 
+            ? new solanaWeb3.PublicKey(ownerPublicKey) 
+            : ownerPublicKey;
+        const mint = new solanaWeb3.PublicKey(this.GBUV_MINT);
         
-        console.log(`📤 Simulating transfer:`);
+        const [associatedToken] = await solanaWeb3.PublicKey.findProgramAddress(
+            [
+                owner.toBuffer(),
+                this.TOKEN_PROGRAM_ID.toBuffer(),
+                mint.toBuffer()
+            ],
+            this.ASSOCIATED_TOKEN_PROGRAM_ID
+        );
+        
+        return associatedToken;
+    }
+    
+    async getOrCreateTokenAccount(ownerPublicKey, payerKeypair) {
+        const owner = typeof ownerPublicKey === 'string' 
+            ? new solanaWeb3.PublicKey(ownerPublicKey) 
+            : ownerPublicKey;
+        
+        const tokenAccountAddress = await this.getAssociatedTokenAddress(owner);
+        
+        // Check if account exists
+        const accountInfo = await this.connection.getAccountInfo(tokenAccountAddress);
+        
+        if (accountInfo === null) {
+            console.log(`📝 Creating token account for ${owner.toString().substring(0, 8)}...`);
+            
+            // Create the Associated Token Account
+            const mint = new solanaWeb3.PublicKey(this.GBUV_MINT);
+            
+            const createATAInstruction = new solanaWeb3.TransactionInstruction({
+                keys: [
+                    { pubkey: payerKeypair.publicKey, isSigner: true, isWritable: true },
+                    { pubkey: tokenAccountAddress, isSigner: false, isWritable: true },
+                    { pubkey: owner, isSigner: false, isWritable: false },
+                    { pubkey: mint, isSigner: false, isWritable: false },
+                    { pubkey: solanaWeb3.SystemProgram.programId, isSigner: false, isWritable: false },
+                    { pubkey: this.TOKEN_PROGRAM_ID, isSigner: false, isWritable: false },
+                ],
+                programId: this.ASSOCIATED_TOKEN_PROGRAM_ID,
+                data: Buffer.from([]) // No data needed for create ATA
+            });
+            
+            const transaction = new solanaWeb3.Transaction().add(createATAInstruction);
+            transaction.feePayer = payerKeypair.publicKey;
+            transaction.recentBlockhash = (await this.connection.getLatestBlockhash()).blockhash;
+            
+            const signature = await solanaWeb3.sendAndConfirmTransaction(
+                this.connection,
+                transaction,
+                [payerKeypair]
+            );
+            
+            console.log(`✅ Token account created: ${signature}`);
+        }
+        
+        return tokenAccountAddress;
+    }
+    
+    // ═════════════════════════════════════════════════════════════════════════
+    // REAL SPL TOKEN TRANSFER
+    // ═════════════════════════════════════════════════════════════════════════
+    
+    async realSPLTransfer(fromKeypair, toPublicKey, amount) {
+        console.log(`📤 Real SPL Transfer: ${amount} GBUV`);
+        console.log(`   From: ${fromKeypair.publicKey.toString().substring(0, 8)}...`);
+        console.log(`   To: ${toPublicKey.substring(0, 8)}...`);
+        
+        try {
+            // Get or create token accounts
+            const fromTokenAccount = await this.getOrCreateTokenAccount(
+                fromKeypair.publicKey, 
+                fromKeypair
+            );
+            const toTokenAccount = await this.getOrCreateTokenAccount(
+                toPublicKey, 
+                fromKeypair // Payer creates recipient's account if needed
+            );
+            
+            // Convert amount to token units (6 decimals)
+            const transferAmount = BigInt(Math.floor(amount * Math.pow(10, this.GBUV_DECIMALS)));
+            
+            // Create transfer instruction
+            const dataBuffer = Buffer.alloc(9);
+            dataBuffer.writeUInt8(3, 0); // Transfer instruction = 3
+            dataBuffer.writeBigUInt64LE(transferAmount, 1);
+            
+            const transferInstruction = new solanaWeb3.TransactionInstruction({
+                keys: [
+                    { pubkey: fromTokenAccount, isSigner: false, isWritable: true },
+                    { pubkey: toTokenAccount, isSigner: false, isWritable: true },
+                    { pubkey: fromKeypair.publicKey, isSigner: true, isWritable: false }
+                ],
+                programId: this.TOKEN_PROGRAM_ID,
+                data: dataBuffer
+            });
+            
+            // Build and send transaction
+            const transaction = new solanaWeb3.Transaction().add(transferInstruction);
+            transaction.feePayer = fromKeypair.publicKey;
+            transaction.recentBlockhash = (await this.connection.getLatestBlockhash()).blockhash;
+            
+            const signature = await solanaWeb3.sendAndConfirmTransaction(
+                this.connection,
+                transaction,
+                [fromKeypair],
+                { commitment: 'confirmed' }
+            );
+            
+            console.log(`✅ Transfer complete!`);
+            console.log(`🔗 Solscan: https://solscan.io/tx/${signature}`);
+            
+            // Store transaction record
+            const tx = {
+                from: fromKeypair.publicKey.toString(),
+                to: toPublicKey,
+                amount: amount,
+                token: 'GBUV',
+                type: 'REAL_TRANSFER',
+                timestamp: new Date().toISOString(),
+                status: 'CONFIRMED',
+                signature: signature,
+                explorer: `https://solscan.io/tx/${signature}`
+            };
+            
+            const transactions = JSON.parse(localStorage.getItem(this.STORAGE.TRANSACTIONS));
+            transactions.push(tx);
+            localStorage.setItem(this.STORAGE.TRANSACTIONS, JSON.stringify(transactions));
+            
+            return tx;
+            
+        } catch (error) {
+            console.error('❌ Transfer failed:', error);
+            
+            // Provide helpful error messages
+            if (error.message.includes('insufficient funds')) {
+                console.error('💡 Need SOL for transaction fees (~0.01 SOL)');
+            } else if (error.message.includes('0x1')) {
+                console.error('💡 Insufficient GBUV balance');
+            }
+            
+            throw error;
+        }
+    }
+    
+    // ═════════════════════════════════════════════════════════════════════════
+    // TRANSFER WRAPPER (Uses real or simulated based on funds)
+    // ═════════════════════════════════════════════════════════════════════════
+    
+    async executeTransfer(fromKeypair, toPublicKey, amount, txType = 'TRANSFER') {
+        // Check if we have SOL for fees
+        const balance = await this.connection.getBalance(fromKeypair.publicKey);
+        const solBalance = balance / solanaWeb3.LAMPORTS_PER_SOL;
+        
+        if (solBalance < 0.001) {
+            console.warn('⚠️ No SOL for fees. Recording transfer for later execution.');
+            // Record pending transfer
+            const tx = {
+                from: fromKeypair.publicKey.toString(),
+                to: toPublicKey,
+                amount: amount,
+                token: 'GBUV',
+                type: txType,
+                timestamp: new Date().toISOString(),
+                status: 'PENDING_FUNDS',
+                signature: 'PENDING_' + Date.now()
+            };
+            
+            const transactions = JSON.parse(localStorage.getItem(this.STORAGE.TRANSACTIONS));
+            transactions.push(tx);
+            localStorage.setItem(this.STORAGE.TRANSACTIONS, JSON.stringify(transactions));
+            
+            return tx;
+        }
+        
+        // Execute real transfer
+        return await this.realSPLTransfer(fromKeypair, toPublicKey, amount);
+    }
+    
+    // Legacy simulation method (for testing/offline mode)
+    async simulateTransfer(tx) {
+        console.log(`📤 [SIMULATION] Transfer:`);
         console.log(`   From: ${tx.from.substring(0, 8)}...`);
         console.log(`   To: ${tx.to.substring(0, 8)}...`);
         console.log(`   Amount: ${tx.amount} ${tx.token}`);
-        console.log(`   Type: ${tx.type}`);
         
-        // Wait a bit to simulate network delay
         await new Promise(resolve => setTimeout(resolve, 500));
         
-        // Mark as completed
-        tx.status = 'COMPLETED';
-        tx.signature = 'SIM_' + Math.random().toString(36).substring(7);
+        tx.status = 'SIMULATED';
+        tx.signature = 'SIM_' + Date.now() + '_' + Math.random().toString(36).substring(7);
         
-        // Store transaction
         const transactions = JSON.parse(localStorage.getItem(this.STORAGE.TRANSACTIONS));
         transactions.push(tx);
         localStorage.setItem(this.STORAGE.TRANSACTIONS, JSON.stringify(transactions));
         
-        console.log(`✅ Transfer simulated: ${tx.signature}`);
-        
+        console.log(`✅ [SIMULATION] Complete: ${tx.signature}`);
         return tx;
-    }
-    
-    // ═════════════════════════════════════════════════════════════════════════
-    // REAL SPL TOKEN TRANSFER (Production Implementation)
-    // ═════════════════════════════════════════════════════════════════════════
-    
-    async realSPLTransfer(fromKeypair, toPublicKey, amount) {
-        // TODO: Implement actual SPL token transfer
-        // Requires: @solana/spl-token library
-        
-        /*
-        Example implementation:
-        
-        const { Token, TOKEN_PROGRAM_ID } = require('@solana/spl-token');
-        
-        // Get token account info
-        const fromTokenAccount = await Token.getAssociatedTokenAddress(
-            ASSOCIATED_TOKEN_PROGRAM_ID,
-            TOKEN_PROGRAM_ID,
-            new solanaWeb3.PublicKey(this.GBUV_MINT),
-            fromKeypair.publicKey
-        );
-        
-        const toTokenAccount = await Token.getAssociatedTokenAddress(
-            ASSOCIATED_TOKEN_PROGRAM_ID,
-            TOKEN_PROGRAM_ID,
-            new solanaWeb3.PublicKey(this.GBUV_MINT),
-            new solanaWeb3.PublicKey(toPublicKey)
-        );
-        
-        // Create transfer instruction
-        const transaction = new solanaWeb3.Transaction().add(
-            Token.createTransferInstruction(
-                TOKEN_PROGRAM_ID,
-                fromTokenAccount,
-                toTokenAccount,
-                fromKeypair.publicKey,
-                [],
-                amount
-            )
-        );
-        
-        // Sign and send
-        const signature = await solanaWeb3.sendAndConfirmTransaction(
-            this.connection,
-            transaction,
-            [fromKeypair]
-        );
-        
-        return signature;
-        */
-        
-        console.warn('⚠️ Real SPL transfer not implemented yet. Using simulation.');
-        return this.simulateTransfer({
-            from: fromKeypair.publicKey.toString(),
-            to: toPublicKey,
-            amount: amount,
-            token: 'GBUV',
-            type: 'TRANSFER',
-            timestamp: new Date().toISOString()
-        });
     }
     
     // ═════════════════════════════════════════════════════════════════════════
