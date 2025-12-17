@@ -1398,7 +1398,7 @@ const GemBotAcademy = {
         if (lesson.content?.steps) return lesson.content.steps.length;
         if (lesson.content?.items) return lesson.content.items.length;
         return 1;
-    }
+    },
     
     /**
      * Render lesson content based on section type
@@ -1437,7 +1437,7 @@ const GemBotAcademy = {
                 <p class="section-note">This lesson content is being prepared...</p>
             </div>
         `;
-    }
+    },
     
     /**
      * Render individual section based on type
