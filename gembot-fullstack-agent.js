@@ -772,7 +772,11 @@ window.GemBotAgent = {
                 bottom: 20px;
                 right: 20px;
                 width: 350px;
-                max-height: 500px;
+                min-width: 280px;
+                max-width: 500px;
+                height: 400px;
+                min-height: 200px;
+                max-height: 600px;
                 background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
                 border: 2px solid #00d4ff;
                 border-radius: 15px;
@@ -781,6 +785,9 @@ window.GemBotAgent = {
                 z-index: 99999;
                 overflow: hidden;
                 box-shadow: 0 10px 40px rgba(0,212,255,0.3);
+                resize: both;
+                display: flex;
+                flex-direction: column;
             }
             #gembot-agent-panel .agent-header {
                 background: linear-gradient(90deg, #00d4ff, #0099ff);
@@ -796,8 +803,9 @@ window.GemBotAgent = {
             }
             #gembot-agent-panel .agent-body {
                 padding: 15px;
-                max-height: 400px;
+                flex: 1;
                 overflow-y: auto;
+                overflow-x: hidden;
             }
             #gembot-agent-panel .stat-row {
                 display: flex;

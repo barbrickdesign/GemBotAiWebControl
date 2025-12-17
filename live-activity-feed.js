@@ -63,9 +63,13 @@ class LiveActivityFeed {
         feedContainer.style.cssText = `
             position: fixed;
             bottom: 20px;
-            right: 20px;
+            left: 20px;
             width: 350px;
-            max-height: 400px;
+            min-width: 250px;
+            max-width: 500px;
+            height: 300px;
+            min-height: 150px;
+            max-height: 500px;
             background: rgba(26, 31, 58, 0.95);
             border: 2px solid rgba(74, 255, 255, 0.5);
             border-radius: 12px;
@@ -75,6 +79,9 @@ class LiveActivityFeed {
             overflow: hidden;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
             transition: all 0.3s ease;
+            resize: both;
+            display: flex;
+            flex-direction: column;
         `;
         
         // Header
@@ -109,7 +116,7 @@ class LiveActivityFeed {
         content.id = 'activity-feed-content';
         content.style.cssText = `
             padding: 10px;
-            max-height: 340px;
+            flex: 1;
             overflow-y: auto;
             overflow-x: hidden;
             font-size: 11px;
