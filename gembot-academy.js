@@ -1782,7 +1782,7 @@ const GemBotAcademy = {
             nextBtn.textContent = 'Complete Lesson ✓';
             nextBtn.onclick = () => this.finishLesson();
         }
-    }
+    },
     
     /**
      * Navigate to previous section
@@ -1818,7 +1818,7 @@ const GemBotAcademy = {
             nextBtn.textContent = 'Next →';
             nextBtn.onclick = () => this.nextSection();
         }
-    }
+    },
     
     /**
      * Exit lesson without completing
@@ -1828,7 +1828,7 @@ const GemBotAcademy = {
             this.currentLesson = null;
             this.openCourse(courseId);
         }
-    }
+    },
     
     /**
      * Finish and complete the lesson
@@ -1856,7 +1856,7 @@ const GemBotAcademy = {
         // Clear current lesson and return to course
         this.currentLesson = null;
         this.openCourse(courseId);
-    }
+    },
     
     /**
      * Inject lesson viewer styles
