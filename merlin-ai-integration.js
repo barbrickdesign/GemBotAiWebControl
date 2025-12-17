@@ -14,7 +14,7 @@ window.merlinAI = {
     // Configuration
     apiKey: 'AIzaSyCKuf5EVZ-ldHErhG3OkIw9Zz6jb_w3nMc',
     model: 'gemini-1.5-flash',
-    endpoint: 'https://generativelanguage.googleapis.com/v1beta',
+    endpoint: 'https://generativelanguage.googleapis.com/v1',  // FIXED: Changed from v1beta to v1
     isInitialized: false,
     
     // Telemetry & Metrics
