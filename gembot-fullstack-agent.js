@@ -325,36 +325,150 @@ window.GemBotAgent = {
         container.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;';
         document.body.insertBefore(container, document.body.firstChild);
         
-        // Initialize p5 instance
+        // Store reference for external access
+        const agent = this;
+        
+        // Initialize p5 instance with enhanced sine/cosine animations
         this.p5Instance = new p5((p) => {
             const particles = [];
+            const orbitingGems = [];
+            const wavePoints = [];
             const gemColors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#ffeaa7', '#dfe6e9', '#a29bfe', '#fd79a8'];
+            
+            // Sine wave parameters
+            let waveAngle = 0;
+            const waveAmplitude = 30;
+            const wavePeriod = 200;
+            
+            // Orbiting gems parameters
+            const orbitCenters = [];
             
             p.setup = () => {
                 const canvas = p.createCanvas(p.windowWidth, p.windowHeight);
                 canvas.parent('gembot-p5-container');
-                p.noStroke();
+                p.angleMode(p.DEGREES);
+                
+                // Initialize orbiting gem centers at corners
+                orbitCenters.push(
+                    { x: 100, y: 100, radius: 40, speed: 2 },
+                    { x: p.width - 100, y: 100, radius: 35, speed: -1.5 },
+                    { x: 100, y: p.height - 100, radius: 45, speed: 1.8 },
+                    { x: p.width - 100, y: p.height - 100, radius: 38, speed: -2.2 }
+                );
+                
+                // Create orbiting gems
+                orbitCenters.forEach((center, i) => {
+                    for (let j = 0; j < 3; j++) {
+                        orbitingGems.push({
+                            centerIndex: i,
+                            angle: j * 120,
+                            size: p.random(8, 15),
+                            color: gemColors[(i * 3 + j) % gemColors.length],
+                            orbitRadius: center.radius + j * 12
+                        });
+                    }
+                });
+                
+                // Initialize wave points
+                for (let x = 0; x < p.width; x += 20) {
+                    wavePoints.push({
+                        baseX: x,
+                        phase: p.random(360),
+                        amplitude: p.random(15, 40),
+                        color: gemColors[Math.floor(x / 20) % gemColors.length]
+                    });
+                }
             };
             
             p.windowResized = () => {
                 p.resizeCanvas(p.windowWidth, p.windowHeight);
+                // Update orbit centers
+                if (orbitCenters.length >= 4) {
+                    orbitCenters[1].x = p.width - 100;
+                    orbitCenters[2].y = p.height - 100;
+                    orbitCenters[3].x = p.width - 100;
+                    orbitCenters[3].y = p.height - 100;
+                }
             };
             
             p.draw = () => {
                 p.clear();
                 
-                if (!this.config.visualEffects) return;
+                if (!agent.config.visualEffects) return;
                 
+                // ═══════════════════════════════════════════════════════════
+                // SINE WAVE BOTTOM BORDER
+                // ═══════════════════════════════════════════════════════════
+                p.noFill();
+                p.strokeWeight(2);
+                
+                // Draw multiple layered sine waves
+                for (let layer = 0; layer < 3; layer++) {
+                    p.stroke(p.color(gemColors[layer] + '60'));
+                    p.beginShape();
+                    for (let x = 0; x <= p.width; x += 5) {
+                        const y = p.height - 50 + 
+                            p.sin((x / wavePeriod) * 360 + waveAngle + layer * 30) * waveAmplitude * (1 - layer * 0.2);
+                        p.vertex(x, y);
+                    }
+                    p.endShape();
+                }
+                
+                // Animate wave
+                waveAngle += 1;
+                
+                // ═══════════════════════════════════════════════════════════
+                // ORBITING GEMS (Sine/Cosine circular motion)
+                // ═══════════════════════════════════════════════════════════
+                orbitingGems.forEach(gem => {
+                    const center = orbitCenters[gem.centerIndex];
+                    
+                    // Calculate position using sine and cosine
+                    const x = center.x + p.cos(gem.angle) * gem.orbitRadius;
+                    const y = center.y + p.sin(gem.angle) * gem.orbitRadius;
+                    
+                    // Draw gem with glow
+                    p.noStroke();
+                    
+                    // Glow effect
+                    for (let g = 3; g > 0; g--) {
+                        p.fill(p.color(gem.color + Math.floor(20 / g).toString(16).padStart(2, '0')));
+                        p.ellipse(x, y, gem.size + g * 4, gem.size + g * 4);
+                    }
+                    
+                    // Core gem
+                    p.fill(gem.color);
+                    p.push();
+                    p.translate(x, y);
+                    p.rotate(gem.angle);
+                    // Diamond shape
+                    p.beginShape();
+                    p.vertex(0, -gem.size);
+                    p.vertex(gem.size * 0.6, 0);
+                    p.vertex(0, gem.size * 0.7);
+                    p.vertex(-gem.size * 0.6, 0);
+                    p.endShape(p.CLOSE);
+                    p.pop();
+                    
+                    // Update angle for orbit
+                    gem.angle += center.speed;
+                });
+                
+                // ═══════════════════════════════════════════════════════════
+                // FLOATING PARTICLES (Rising gems)
+                // ═══════════════════════════════════════════════════════════
                 // Add new particles occasionally
-                if (p.frameCount % 60 === 0 && particles.length < 50) {
+                if (p.frameCount % 90 === 0 && particles.length < 30) {
                     particles.push({
                         x: p.random(p.width),
                         y: p.height + 20,
-                        size: p.random(5, 15),
+                        size: p.random(5, 12),
                         color: p.random(gemColors),
-                        speed: p.random(0.5, 2),
-                        wobble: p.random(0.01, 0.03),
-                        alpha: p.random(50, 150)
+                        speed: p.random(0.5, 1.5),
+                        wobbleSpeed: p.random(1, 3),
+                        wobbleAmount: p.random(20, 50),
+                        phase: p.random(360),
+                        alpha: p.random(100, 200)
                     });
                 }
                 
@@ -362,33 +476,83 @@ window.GemBotAgent = {
                 for (let i = particles.length - 1; i >= 0; i--) {
                     const particle = particles[i];
                     
-                    // Move up
+                    // Move up with sine wave horizontal motion
                     particle.y -= particle.speed;
-                    particle.x += p.sin(p.frameCount * particle.wobble) * 0.5;
+                    particle.phase += particle.wobbleSpeed;
+                    const wobbleX = p.sin(particle.phase) * particle.wobbleAmount;
                     
-                    // Draw gem shape
-                    p.push();
-                    p.translate(particle.x, particle.y);
+                    // Draw gem with trail
+                    p.noStroke();
+                    
+                    // Trail effect
+                    for (let t = 5; t > 0; t--) {
+                        const trailAlpha = Math.floor(particle.alpha * (t / 10));
+                        p.fill(p.color(particle.color + trailAlpha.toString(16).padStart(2, '0')));
+                        p.ellipse(
+                            particle.x + wobbleX * (1 - t * 0.1),
+                            particle.y + t * 3,
+                            particle.size * (1 - t * 0.1)
+                        );
+                    }
+                    
+                    // Main gem
                     p.fill(p.color(particle.color + Math.floor(particle.alpha).toString(16).padStart(2, '0')));
+                    p.push();
+                    p.translate(particle.x + wobbleX, particle.y);
+                    p.rotate(particle.phase);
                     
                     // Diamond shape
                     p.beginShape();
                     p.vertex(0, -particle.size);
                     p.vertex(particle.size * 0.6, 0);
-                    p.vertex(0, particle.size * 0.8);
+                    p.vertex(0, particle.size * 0.7);
                     p.vertex(-particle.size * 0.6, 0);
                     p.endShape(p.CLOSE);
                     p.pop();
                     
-                    // Remove if off screen
-                    if (particle.y < -20) {
+                    // Fade out as they rise
+                    particle.alpha -= 0.3;
+                    
+                    // Remove if off screen or faded
+                    if (particle.y < -20 || particle.alpha <= 0) {
                         particles.splice(i, 1);
                     }
                 }
+                
+                // ═══════════════════════════════════════════════════════════
+                // PULSING CORNER INDICATORS
+                // ═══════════════════════════════════════════════════════════
+                const pulseSize = 5 + p.sin(p.frameCount * 3) * 3;
+                p.fill(p.color('#00d4ff40'));
+                p.noStroke();
+                
+                // Corner dots
+                p.ellipse(20, 20, pulseSize * 2);
+                p.ellipse(p.width - 20, 20, pulseSize * 2);
+                p.ellipse(20, p.height - 20, pulseSize * 2);
+                p.ellipse(p.width - 20, p.height - 20, pulseSize * 2);
             };
+            
+            // Listen for burst events
+            window.addEventListener('gembot-burst', (e) => {
+                const { x, y, count } = e.detail;
+                for (let i = 0; i < count; i++) {
+                    particles.push({
+                        x: x,
+                        y: y,
+                        size: p.random(8, 18),
+                        color: p.random(gemColors),
+                        speed: p.random(2, 5),
+                        wobbleSpeed: p.random(3, 8),
+                        wobbleAmount: p.random(30, 80),
+                        phase: p.random(360),
+                        alpha: 255
+                    });
+                }
+            });
         });
         
-        console.log('✨ p5.js visual effects initialized');
+        console.log('✨ p5.js sine/cosine visual effects initialized');
     },
     
     // P5 Visual Effect Methods
