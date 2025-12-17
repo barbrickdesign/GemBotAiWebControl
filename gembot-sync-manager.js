@@ -111,10 +111,18 @@ class GemBotSyncManager {
         // You can force-enable WS by setting: window.GemBotSyncForceWebSocket = true
         if (window.GemBotSyncForceWebSocket !== true) {
             const isStaticHost = window.location.protocol === 'file:';
-            const isLikelyStaticServer = true; // default safe behavior (we still attempt once below)
+            const isGitHubPages = window.location.hostname.includes('github.io');
+            const isStaticHost2 = window.location.port === '' && window.location.protocol === 'https:' && !window.location.hostname.includes('localhost');
+            
             if (isStaticHost) {
                 console.log('ℹ️ Sync Manager: file:// origin detected. Running in local-only sync mode.');
                 this.disableWebSocket('file-origin');
+                return;
+            }
+            
+            if (isGitHubPages) {
+                console.log('ℹ️ Sync Manager: GitHub Pages detected. WebSocket not supported. Using local-only sync mode.');
+                this.disableWebSocket('github-pages');
                 return;
             }
         }
@@ -175,10 +183,23 @@ class GemBotSyncManager {
     }
     
     /**
-     * Setup fallback sync without WebSocket (CORS, SSE, or polling)
+     * Setup fallback sync without WebSocket (local storage sync only for static hosts)
      */
     setupFallbackSync() {
-        // Try Server-Sent Events first
+        const isGitHubPages = window.location.hostname.includes('github.io');
+        
+        if (isGitHubPages || this._wsDisabledReason === 'github-pages') {
+            console.log('ℹ️ Running in local-only sync mode (no server connection needed)');
+            // GitHub Pages: Use localStorage events for cross-tab sync only
+            window.addEventListener('storage', (e) => {
+                if (e.key && e.key.startsWith('gembot_')) {
+                    console.log('📦 Cross-tab sync detected:', e.key);
+                }
+            });
+            return;
+        }
+        
+        // For other hosts, try Server-Sent Events first
         try {
             this.eventSource = new EventSource('/gembot-sync-events');
             this.eventSource.onmessage = (event) => {
@@ -187,9 +208,7 @@ class GemBotSyncManager {
             };
             console.log('✅ Server-Sent Events fallback connected');
         } catch (error) {
-            console.warn('⚠️ SSE fallback not available, using polling');
-            // Fallback to polling
-            this.pollInterval = setInterval(() => this.pollForUpdates(), 1000);
+            console.warn('⚠️ SSE fallback not available, using local-only sync');
         }
     }
     
