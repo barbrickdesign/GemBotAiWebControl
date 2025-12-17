@@ -148,11 +148,30 @@
   `;
   const styleEl = document.createElement('style');
   styleEl.textContent = css;
-  document.head.appendChild(styleEl);
+  
+  // Wait for document.head to be available
+  function appendStyle() {
+    if (document.head) {
+      document.head.appendChild(styleEl);
+    } else {
+      setTimeout(appendStyle, 10);
+    }
+  }
+  appendStyle();
 
   /* -------------------- UI Creation -------------------- */
-  const container = document.createElement('div');
-  container.innerHTML = `
+  let container = null;
+  let ui = null;
+  
+  function createUI() {
+    if (container) return; // Already created
+    if (!document.body) {
+      setTimeout(createUI, 10);
+      return;
+    }
+    
+    container = document.createElement('div');
+    container.innerHTML = `
     <button class="merlin-gallery-toggle" id="galleryToggle">
       💎 Project Gallery
     </button>
@@ -192,24 +211,34 @@
       </div>
     </div>
   `;
-  document.body.appendChild(container);
+    document.body.appendChild(container);
 
-  /* -------------------- Elements -------------------- */
-  const ui = {
-    toggle: container.querySelector('#galleryToggle'),
-    panel: container.querySelector('#galleryPanel'),
-    grid: container.querySelector('#projectGrid'),
-    search: container.querySelector('#searchInput'),
-    refresh: container.querySelector('#refreshBtn'),
-    close: container.querySelector('#closeGallery'),
-    totalInvested: container.querySelector('#totalInvested'),
-    projectCount: container.querySelector('#projectCount'),
-    votingPower: container.querySelector('#votingPower'),
-    badge: container.querySelector('#investorBadge')
-  };
+    /* -------------------- Elements -------------------- */
+    ui = {
+      toggle: container.querySelector('#galleryToggle'),
+      panel: container.querySelector('#galleryPanel'),
+      grid: container.querySelector('#projectGrid'),
+      search: container.querySelector('#searchInput'),
+      refresh: container.querySelector('#refreshBtn'),
+      close: container.querySelector('#closeGallery'),
+      totalInvested: container.querySelector('#totalInvested'),
+      projectCount: container.querySelector('#projectCount'),
+      votingPower: container.querySelector('#votingPower'),
+      badge: container.querySelector('#investorBadge')
+    };
 
-  ui.toggle.addEventListener('click', () => ui.panel.classList.toggle('open'));
-  ui.close.addEventListener('click', () => ui.panel.classList.remove('open'));
+    ui.toggle.addEventListener('click', () => ui.panel.classList.toggle('open'));
+    ui.close.addEventListener('click', () => ui.panel.classList.remove('open'));
+  }
+  
+  // Ensure createUI runs when DOM is ready
+  if (document.body) {
+    createUI();
+  } else if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', createUI);
+  } else {
+    setTimeout(createUI, 0);
+  }
 
   /* -------------------- Data Loading -------------------- */
   let allProjects = [];
@@ -432,6 +461,9 @@
   /* -------------------- Initialize -------------------- */
   // Load when wallet system is ready
   function init() {
+    // Ensure UI is created first
+    createUI();
+    
     if (window.projectInvestmentSystem) {
       loadProjects();
       console.log('💎 Merlin Gallery integrated with game economy');
@@ -449,8 +481,8 @@
 
   // Expose for external access
   window.merlinGallery = {
-    open: () => ui.panel.classList.add('open'),
-    close: () => ui.panel.classList.remove('open'),
+    open: () => { createUI(); if (ui?.panel) ui.panel.classList.add('open'); },
+    close: () => { if (ui?.panel) ui.panel.classList.remove('open'); },
     refresh: loadProjects,
     updatePortfolio
   };
