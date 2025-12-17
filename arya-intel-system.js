@@ -20,6 +20,90 @@ const AryaIntelSystem = {
     version: "1.0.0",
     initialized: false,
     lastUpdate: null,
+    
+    /**
+     * Show the Arya Intel System panel/modal
+     * @param {object} options - Display options
+     */
+    show(options = {}) {
+        console.log('🔬 Arya Intel System show called', options);
+        // Create or show the Arya Intel panel
+        let panel = document.getElementById('arya-intel-panel');
+        if (!panel) {
+            panel = document.createElement('div');
+            panel.id = 'arya-intel-panel';
+            panel.innerHTML = `
+                <div style="position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:10000;overflow:auto;padding:20px;">
+                    <div style="max-width:800px;margin:auto;background:linear-gradient(135deg,#1a1a2e,#0f3460);border-radius:15px;padding:20px;border:2px solid #00d4ff;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                            <h2 style="color:#00d4ff;margin:0;">🔬 Arya Intel System</h2>
+                            <button onclick="window.AryaIntelSystem.hide()" style="background:#ff4757;border:none;color:white;padding:10px 20px;border-radius:5px;cursor:pointer;">✕ Close</button>
+                        </div>
+                        <div id="arya-content" style="color:#fff;"></div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(panel);
+        }
+        panel.style.display = 'block';
+        
+        // If gemstone data provided, show analysis
+        if (options.gemstone) {
+            this.analyzeGemstone(options.gemstone);
+        } else {
+            document.getElementById('arya-content').innerHTML = `
+                <p>Welcome to the Arya Intel System!</p>
+                <p>Select a gemstone or mineral to analyze:</p>
+                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:20px;">
+                    ${Object.keys(this.slinginRockzDB?.minerals || {}).slice(0,12).map(m => 
+                        `<button onclick="window.AryaIntelSystem.analyzeGemstone('${m}')" style="background:#16213e;border:1px solid #00d4ff;color:#fff;padding:10px;border-radius:5px;cursor:pointer;">${m}</button>`
+                    ).join('')}
+                </div>
+            `;
+        }
+        return this;
+    },
+    
+    /**
+     * Hide the Arya Intel System panel
+     */
+    hide() {
+        const panel = document.getElementById('arya-intel-panel');
+        if (panel) panel.style.display = 'none';
+        return this;
+    },
+    
+    /**
+     * Analyze a gemstone and display results
+     * @param {string} gemstoneName - Name of gemstone to analyze
+     */
+    analyzeGemstone(gemstoneName) {
+        const content = document.getElementById('arya-content');
+        if (!content) return;
+        
+        const mineral = this.slinginRockzDB?.minerals?.[gemstoneName.toLowerCase()];
+        if (mineral) {
+            content.innerHTML = `
+                <h3 style="color:#ffd700;">${gemstoneName.toUpperCase()}</h3>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+                    <div>
+                        <p><strong>Chemical Formula:</strong> ${mineral.chemicalFormula || 'N/A'}</p>
+                        <p><strong>Hardness:</strong> ${mineral.mohs || 'N/A'}</p>
+                        <p><strong>Specific Gravity:</strong> ${mineral.specificGravity || 'N/A'}</p>
+                        <p><strong>Crystal System:</strong> ${mineral.crystalSystem || 'N/A'}</p>
+                    </div>
+                    <div>
+                        <p><strong>Refractive Index:</strong> ${mineral.refractiveIndex || 'N/A'}</p>
+                        <p><strong>Cleavage:</strong> ${mineral.cleavage || 'N/A'}</p>
+                        <p><strong>Transparency:</strong> ${mineral.transparency || 'N/A'}</p>
+                    </div>
+                </div>
+                <button onclick="window.AryaIntelSystem.show()" style="margin-top:20px;background:#00d4ff;border:none;color:#000;padding:10px 20px;border-radius:5px;cursor:pointer;">← Back to List</button>
+            `;
+        } else {
+            content.innerHTML = `<p>Gemstone "${gemstoneName}" not found in database.</p>`;
+        }
+    },
 
     // ==================== CONFIGURATION ====================
     config: {

@@ -41,6 +41,54 @@ window.merlinAI = {
     },
     
     /**
+     * Speak a message using text-to-speech (connects to Merlin card)
+     * @param {string} message - The message to speak
+     */
+    speak(message) {
+        console.log('🧙‍♂️ Merlin speaks:', message);
+        // Use the Merlin 3D card's speak if available
+        if (window.merlin && typeof window.merlin.speak === 'function') {
+            window.merlin.speak(message);
+        } else if (window.speechSynthesis) {
+            // Fallback to browser speech synthesis
+            const utterance = new SpeechSynthesisUtterance(message);
+            utterance.rate = 0.9;
+            utterance.pitch = 0.7;
+            // Try to find a male voice
+            const voices = window.speechSynthesis.getVoices();
+            const maleVoice = voices.find(v => 
+                v.name.toLowerCase().includes('david') ||
+                v.name.toLowerCase().includes('daniel') ||
+                v.name.toLowerCase().includes('mark')
+            );
+            if (maleVoice) utterance.voice = maleVoice;
+            window.speechSynthesis.speak(utterance);
+        }
+        // Also dispatch event for UI components
+        window.dispatchEvent(new CustomEvent('merlin-speak', { detail: { message } }));
+    },
+    
+    /**
+     * Ask Merlin AI a question
+     * @param {string} question - The question to ask
+     * @returns {Promise<string>} - The response
+     */
+    async askQuestion(question) {
+        console.log('🧙‍♂️ Question for Merlin:', question);
+        try {
+            const response = await this.generate(`You are Merlin, a wise wizard who helps with gemstones and lapidary. Answer this question: ${question}`);
+            if (response && response.text) {
+                this.speak(response.text);
+                return response.text;
+            }
+            return 'I could not process that question at this time.';
+        } catch (error) {
+            console.error('Merlin askQuestion error:', error);
+            return 'My crystal ball is cloudy. Please try again.';
+        }
+    },
+    
+    /**
      * Initialize Merlin AI System
      */
     async initialize() {
