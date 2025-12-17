@@ -171,29 +171,47 @@ window.ZIndexManager = {
                 background: rgba(0, 0, 0, 0.3);
                 border-radius: 0 0 10px 10px;
             ">
-                <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;">
                     <button id="zIndexExportCSS" style="
-                        flex: 1;
                         padding: 10px;
                         background: linear-gradient(135deg, #4affff, #9f7aea);
                         border: none;
                         border-radius: 5px;
                         color: #000;
                         cursor: pointer;
-                        font-size: 12px;
+                        font-size: 11px;
                         font-weight: bold;
                     ">📋 Export CSS</button>
                     <button id="zIndexSaveLayout" style="
-                        flex: 1;
                         padding: 10px;
                         background: linear-gradient(135deg, #ffd700, #ff8c00);
                         border: none;
                         border-radius: 5px;
                         color: #000;
                         cursor: pointer;
-                        font-size: 12px;
+                        font-size: 11px;
                         font-weight: bold;
-                    ">💾 Save Layout</button>
+                    ">💾 Save</button>
+                    <button id="zIndexLoadLayout" style="
+                        padding: 10px;
+                        background: linear-gradient(135deg, #00ff88, #00cc66);
+                        border: none;
+                        border-radius: 5px;
+                        color: #000;
+                        cursor: pointer;
+                        font-size: 11px;
+                        font-weight: bold;
+                    ">📂 Load</button>
+                    <button id="zIndexLogAll" style="
+                        padding: 10px;
+                        background: linear-gradient(135deg, #ff6b6b, #ff4444);
+                        border: none;
+                        border-radius: 5px;
+                        color: #fff;
+                        cursor: pointer;
+                        font-size: 11px;
+                        font-weight: bold;
+                    ">📜 Log All</button>
                 </div>
                 <div style="color: #9f7aea; font-size: 10px; text-align: center;">
                     Ctrl+Shift+Z to toggle | Click elements to highlight
@@ -567,6 +585,106 @@ window.ZIndexManager = {
     },
     
     /**
+     * Load saved layout and apply z-index values
+     */
+    loadLayout() {
+        const saved = localStorage.getItem('gembot_zindex_layout');
+        if (!saved) {
+            alert('⚠️ No saved layout found!');
+            return;
+        }
+        
+        try {
+            const layout = JSON.parse(saved);
+            let applied = 0;
+            let notFound = 0;
+            
+            layout.elements.forEach(savedItem => {
+                // Find matching element
+                let element = null;
+                
+                if (savedItem.id && savedItem.id !== '(no id)') {
+                    element = document.getElementById(savedItem.id);
+                } else if (savedItem.classes && savedItem.classes !== '(no class)') {
+                    const firstClass = savedItem.classes.split(' ')[0];
+                    element = document.querySelector(`.${firstClass}`);
+                } else if (savedItem.tag) {
+                    element = document.querySelector(savedItem.tag);
+                }
+                
+                if (element && savedItem.zIndex !== 'auto') {
+                    element.style.zIndex = savedItem.zIndex;
+                    element.style.position = savedItem.position || element.style.position;
+                    applied++;
+                } else {
+                    notFound++;
+                }
+            });
+            
+            this.scanElements(); // Refresh the list
+            console.log(`📂 Layout loaded: ${applied} applied, ${notFound} not found`);
+            alert(`✅ Layout loaded!\n\n${applied} elements updated\n${notFound} elements not found`);
+            
+        } catch (e) {
+            console.error('❌ Error loading layout:', e);
+            alert('❌ Error loading layout: ' + e.message);
+        }
+    },
+    
+    /**
+     * Log all elements with z-index to console
+     */
+    logAllElements() {
+        console.log('\n' + '═'.repeat(70));
+        console.log('📐 Z-INDEX MANAGER - ALL POSITIONED ELEMENTS');
+        console.log('═'.repeat(70));
+        console.log(`Timestamp: ${new Date().toLocaleString()}`);
+        console.log(`Total Elements: ${this.elements.length}`);
+        console.log('─'.repeat(70));
+        
+        // Group by z-index
+        const grouped = {};
+        this.elements.forEach(item => {
+            const z = item.zIndex.toString();
+            if (!grouped[z]) grouped[z] = [];
+            grouped[z].push(item);
+        });
+        
+        // Sort z-index keys numerically
+        const sortedKeys = Object.keys(grouped).sort((a, b) => {
+            if (a === 'auto') return 1;
+            if (b === 'auto') return -1;
+            return parseInt(b) - parseInt(a);
+        });
+        
+        sortedKeys.forEach(zIndex => {
+            console.log(`\n🔹 Z-INDEX: ${zIndex}`);
+            grouped[zIndex].forEach((item, idx) => {
+                const visibility = item.isVisible ? '✅' : '❌';
+                console.log(`   ${idx + 1}. ${visibility} <${item.tag}> id="${item.id}" class="${item.classes}"`);
+                console.log(`      Position: ${item.position} | Size: ${item.width}x${item.height} | Top: ${item.top}, Left: ${item.left}`);
+            });
+        });
+        
+        console.log('\n' + '═'.repeat(70));
+        console.log('💡 TIP: Use this data to identify overlapping elements and fix z-index issues');
+        console.log('═'.repeat(70) + '\n');
+        
+        // Also create a table view
+        console.table(this.elements.map(e => ({
+            Tag: e.tag,
+            ID: e.id,
+            Classes: e.classes.substring(0, 30) + (e.classes.length > 30 ? '...' : ''),
+            'Z-Index': e.zIndex,
+            Position: e.position,
+            Visible: e.isVisible ? 'Yes' : 'No',
+            Size: `${e.width}x${e.height}`
+        })));
+        
+        alert('📜 Full element list logged to console!\n\nPress F12 to view');
+    },
+    
+    /**
      * Attach event listeners
      */
     attachEventListeners() {
@@ -588,6 +706,16 @@ window.ZIndexManager = {
         // Save layout
         document.getElementById('zIndexSaveLayout')?.addEventListener('click', () => {
             this.saveLayout();
+        });
+        
+        // Load layout
+        document.getElementById('zIndexLoadLayout')?.addEventListener('click', () => {
+            this.loadLayout();
+        });
+        
+        // Log all elements
+        document.getElementById('zIndexLogAll')?.addEventListener('click', () => {
+            this.logAllElements();
         });
         
         // Filter input
