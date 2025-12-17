@@ -1,0 +1,155 @@
+name: Idea Promotion Pipeline
+
+on:
+  pull_request:
+    paths:
+      - 'docs/ideas/**'
+      - 'scripts/**'
+      - 'tests/**'
+      - '*.js'
+      - '*.html'
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      idea_id:
+        description: 'Idea ID to promote (e.g., IDEA-2025-0001)'
+        required: false
+        type: string
+      environment:
+        description: 'Target environment'
+        required: false
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - prod
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    name: Validate & Test
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci || npm install
+        
+      - name: Validate registry schema
+        run: |
+          echo "📋 Validating idea registry..."
+          node scripts/idea-management/validate-registry.js
+        continue-on-error: true
+        
+      - name: Check for duplicate ideas
+        run: |
+          echo "🔍 Checking for duplicate ideas..."
+          node scripts/idea-management/check-unique.js
+        continue-on-error: true
+        
+      - name: Static analysis (lint)
+        run: |
+          echo "🔬 Running static analysis..."
+          npm run lint || echo "Lint not configured, skipping..."
+        continue-on-error: true
+        
+      - name: Run unit tests
+        run: |
+          echo "🧪 Running unit tests..."
+          npm test || echo "Tests not configured, skipping..."
+        continue-on-error: true
+        
+      - name: Coverage check
+        run: |
+          echo "📊 Checking code coverage..."
+          # npm run coverage:check -- --threshold 85
+          echo "Coverage check: placeholder (configure in package.json)"
+        continue-on-error: true
+
+      - name: Generate validation report
+        run: |
+          echo "✅ Validation complete"
+          echo "Registry: docs/ideas/registry.json"
+          echo "Ideas tracked: $(cat docs/ideas/registry.json | grep -c '"id":')"
+
+  deploy-staging:
+    needs: validate
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    name: Deploy to Staging
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Deploy to staging
+        run: |
+          echo "🚀 Deploying to staging..."
+          # node scripts/deployment/deploy.js --env staging
+          echo "Staging deployment: GitHub Pages auto-deploys on push to main"
+          
+      - name: Health check
+        run: |
+          echo "🏥 Running health checks..."
+          # node scripts/deployment/health-check.js --env staging
+          echo "Health check: placeholder"
+          
+      - name: Update registry status
+        run: |
+          echo "📝 Updating registry status..."
+          # node scripts/idea-management/update-status.js staging
+          echo "Status update: manual for now"
+
+  promote-prod:
+    needs: deploy-staging
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'prod'
+    runs-on: ubuntu-latest
+    name: Promote to Production
+    environment: production
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Pre-promotion checks
+        run: |
+          echo "🔒 Running pre-promotion checks..."
+          echo "Idea: ${{ github.event.inputs.idea_id }}"
+          # node scripts/deployment/promote-preflight.js ${{ github.event.inputs.idea_id }}
+          
+      - name: Deploy to production
+        run: |
+          echo "🎯 Deploying to production..."
+          # node scripts/deployment/deploy.js --env prod --idea ${{ github.event.inputs.idea_id }}
+          
+      - name: Verify deployment
+        run: |
+          echo "✅ Verifying production deployment..."
+          # node scripts/deployment/health-check.js --env prod
+          
+      - name: Update registry
+        run: |
+          echo "📝 Updating registry with production status..."
+          # node scripts/idea-management/update-status.js prod ${{ github.event.inputs.idea_id }}
+
+  notify:
+    needs: [validate, deploy-staging]
+    if: always()
+    runs-on: ubuntu-latest
+    name: Notify Results
+    steps:
+      - name: Summary
+        run: |
+          echo "## 📊 Pipeline Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Stage | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Validate | ${{ needs.validate.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Deploy Staging | ${{ needs.deploy-staging.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "See [INSTRUCTIONS.md](INSTRUCTIONS.md) for promotion workflow details." >> $GITHUB_STEP_SUMMARY

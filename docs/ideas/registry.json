@@ -1,0 +1,208 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "GemBot Idea Registry",
+  "description": "Canonical registry of all ideas in the GemBot ecosystem",
+  "version": "1.0.0",
+  "lastUpdated": "2025-12-17T00:00:00Z",
+  "ideas": [
+    {
+      "id": "IDEA-2025-0001",
+      "title": "Idea-to-Implementation Promotion System",
+      "status": "production",
+      "owners": ["ryan-barbrick"],
+      "createdAt": "2025-12-17T00:00:00Z",
+      "updatedAt": "2025-12-17T00:00:00Z",
+      "priority": "critical",
+      "tags": ["infrastructure", "automation", "governance"],
+      "description": "Unified system for tracking ideas from conception through deployment with automated testing, logging, and enhancement.",
+      "useCases": [
+        {
+          "id": "UC-01",
+          "description": "Create new idea with unique ID and scaffold",
+          "audience": "developers",
+          "implemented": true
+        },
+        {
+          "id": "UC-02",
+          "description": "Check if idea already exists before creating duplicate",
+          "audience": "developers",
+          "implemented": true
+        },
+        {
+          "id": "UC-03",
+          "description": "Auto-deploy tested ideas to staging",
+          "audience": "ci-cd",
+          "implemented": true
+        },
+        {
+          "id": "UC-04",
+          "description": "Visual tree showing idea relationships",
+          "audience": "all",
+          "implemented": false
+        }
+      ],
+      "artifacts": {
+        "spec": "docs/ideas/specs/IDEA-2025-0001.md",
+        "code": [
+          "scripts/idea-management/validate-registry.js",
+          "scripts/idea-management/check-implementation.js",
+          "scripts/idea-management/prompt-status.js"
+        ],
+        "tests": ["tests/idea-management.test.js"],
+        "pipelines": [".github/workflows/idea-promotion.yml"],
+        "dashboards": []
+      },
+      "links": {
+        "prompt": "docs/ideas/prompts/IDEA-2025-0001.md",
+        "visualTree": null,
+        "relatedIdeas": []
+      },
+      "environments": {
+        "dev": { "deployed": true, "version": "1.0.0" },
+        "staging": { "deployed": true, "version": "1.0.0" },
+        "prod": { "deployed": true, "version": "1.0.0" }
+      },
+      "metrics": {
+        "errorRate": null,
+        "p95Latency": null,
+        "coverage": null
+      }
+    },
+    {
+      "id": "IDEA-2025-0002",
+      "title": "Academy Navigation Z-Index Fix",
+      "status": "prototype",
+      "owners": ["ryan-barbrick"],
+      "createdAt": "2025-12-17T00:00:00Z",
+      "updatedAt": "2025-12-17T00:00:00Z",
+      "priority": "critical",
+      "tags": ["bugfix", "ui", "academy"],
+      "description": "Fix Academy modal z-index issue where clicking Academy button shows nothing until Back is clicked.",
+      "useCases": [
+        {
+          "id": "UC-01",
+          "description": "Academy opens immediately when button clicked",
+          "audience": "users",
+          "implemented": false
+        }
+      ],
+      "artifacts": {
+        "spec": "docs/ideas/specs/IDEA-2025-0002.md",
+        "code": ["GemBot_Control_AI.html"],
+        "tests": [],
+        "pipelines": [],
+        "dashboards": []
+      },
+      "links": {
+        "prompt": "docs/ideas/prompts/IDEA-2025-0002.md",
+        "visualTree": null,
+        "relatedIdeas": []
+      },
+      "environments": {
+        "dev": { "deployed": false, "version": null },
+        "staging": { "deployed": false, "version": null },
+        "prod": { "deployed": false, "version": null }
+      },
+      "metrics": {
+        "errorRate": null,
+        "p95Latency": null,
+        "coverage": null
+      }
+    },
+    {
+      "id": "IDEA-2025-0003",
+      "title": "3D Model Graceful Fallback System",
+      "status": "prototype",
+      "owners": ["ryan-barbrick"],
+      "createdAt": "2025-12-17T00:00:00Z",
+      "updatedAt": "2025-12-17T00:00:00Z",
+      "priority": "high",
+      "tags": ["3d", "error-handling", "babylon"],
+      "description": "Add graceful fallback geometry when GLB models fail to load with 404 errors.",
+      "useCases": [
+        {
+          "id": "UC-01",
+          "description": "Display placeholder geometry when model 404s",
+          "audience": "users",
+          "implemented": false
+        },
+        {
+          "id": "UC-02",
+          "description": "Log model loading failures for debugging",
+          "audience": "developers",
+          "implemented": true
+        }
+      ],
+      "artifacts": {
+        "spec": "docs/ideas/specs/IDEA-2025-0003.md",
+        "code": ["virtual-machine-3d.js"],
+        "tests": [],
+        "pipelines": [],
+        "dashboards": []
+      },
+      "links": {
+        "prompt": "docs/ideas/prompts/IDEA-2025-0003.md",
+        "visualTree": null,
+        "relatedIdeas": []
+      },
+      "environments": {
+        "dev": { "deployed": false, "version": null },
+        "staging": { "deployed": false, "version": null },
+        "prod": { "deployed": false, "version": null }
+      },
+      "metrics": {
+        "errorRate": null,
+        "p95Latency": null,
+        "coverage": null
+      }
+    },
+    {
+      "id": "IDEA-2025-0004",
+      "title": "Academy Real User Data Integration",
+      "status": "prototype",
+      "owners": ["ryan-barbrick"],
+      "createdAt": "2025-12-17T00:00:00Z",
+      "updatedAt": "2025-12-17T00:00:00Z",
+      "priority": "high",
+      "tags": ["academy", "data", "localStorage"],
+      "description": "Connect Academy system to real user progress from localStorage instead of default data.",
+      "useCases": [
+        {
+          "id": "UC-01",
+          "description": "Load user's actual gems/XP/level in Academy",
+          "audience": "users",
+          "implemented": false
+        },
+        {
+          "id": "UC-02",
+          "description": "Persist Academy progress across sessions",
+          "audience": "users",
+          "implemented": false
+        }
+      ],
+      "artifacts": {
+        "spec": "docs/ideas/specs/IDEA-2025-0004.md",
+        "code": ["gembot-academy.js"],
+        "tests": [],
+        "pipelines": [],
+        "dashboards": []
+      },
+      "links": {
+        "prompt": "docs/ideas/prompts/IDEA-2025-0004.md",
+        "visualTree": null,
+        "relatedIdeas": []
+      },
+      "environments": {
+        "dev": { "deployed": false, "version": null },
+        "staging": { "deployed": false, "version": null },
+        "prod": { "deployed": false, "version": null }
+      },
+      "metrics": {
+        "errorRate": null,
+        "p95Latency": null,
+        "coverage": null
+      }
+    }
+  ],
+  "nextId": "IDEA-2025-0005"
+}

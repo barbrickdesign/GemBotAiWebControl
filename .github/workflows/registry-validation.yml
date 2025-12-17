@@ -1,0 +1,82 @@
+name: Registry Validation
+
+on:
+  pull_request:
+    paths:
+      - 'docs/ideas/registry.json'
+      - 'docs/ideas/prompts/**'
+      - 'docs/ideas/specs/**'
+  push:
+    branches: [main]
+    paths:
+      - 'docs/ideas/registry.json'
+
+jobs:
+  validate-registry:
+    runs-on: ubuntu-latest
+    name: Validate Idea Registry
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          
+      - name: Validate JSON syntax
+        run: |
+          echo "📋 Checking registry JSON syntax..."
+          if jq empty docs/ideas/registry.json 2>/dev/null; then
+            echo "✅ JSON syntax valid"
+          else
+            echo "❌ Invalid JSON syntax"
+            exit 1
+          fi
+          
+      - name: Validate schema
+        run: |
+          echo "🔍 Validating registry schema..."
+          node scripts/idea-management/validate-registry.js
+        continue-on-error: true
+          
+      - name: Check for duplicates
+        run: |
+          echo "🔍 Checking for duplicate idea IDs..."
+          DUPE_COUNT=$(jq '.ideas | group_by(.id) | map(select(length > 1)) | length' docs/ideas/registry.json)
+          if [ "$DUPE_COUNT" -gt 0 ]; then
+            echo "❌ Found $DUPE_COUNT duplicate idea IDs"
+            exit 1
+          fi
+          echo "✅ No duplicate IDs found"
+          
+      - name: Validate idea links
+        run: |
+          echo "🔗 Validating artifact links..."
+          # Check that linked files exist
+          MISSING=0
+          for PROMPT in $(jq -r '.ideas[].links.prompt // empty' docs/ideas/registry.json); do
+            if [ ! -f "$PROMPT" ]; then
+              echo "⚠️ Missing prompt: $PROMPT"
+              MISSING=$((MISSING + 1))
+            fi
+          done
+          if [ "$MISSING" -gt 0 ]; then
+            echo "⚠️ Found $MISSING missing linked files"
+          else
+            echo "✅ All linked files exist"
+          fi
+        continue-on-error: true
+          
+      - name: Generate summary
+        run: |
+          echo "## 📚 Registry Validation Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Total Ideas | $(jq '.ideas | length' docs/ideas/registry.json) |" >> $GITHUB_STEP_SUMMARY
+          echo "| In Production | $(jq '[.ideas[] | select(.status == "production")] | length' docs/ideas/registry.json) |" >> $GITHUB_STEP_SUMMARY
+          echo "| In Staging | $(jq '[.ideas[] | select(.status == "staging")] | length' docs/ideas/registry.json) |" >> $GITHUB_STEP_SUMMARY
+          echo "| In Progress | $(jq '[.ideas[] | select(.status == "prototype" or .status == "testing")] | length' docs/ideas/registry.json) |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "See [registry.json](docs/ideas/registry.json) for full details." >> $GITHUB_STEP_SUMMARY
