@@ -23154,15 +23154,16 @@
             console.log('🔐 Initializing authentication system...');
             const hasSession = authSystem.init();
             
-            // Auto-continue as guest after 3 seconds if auth overlay is still showing
+            // Auto-continue as guest after 10 seconds if auth overlay is still showing
             // This ensures the app is usable even if user doesn't interact with auth
+            // Give users enough time to click login/register buttons
             setTimeout(() => {
                 const overlay = document.getElementById('authOverlay');
                 if (overlay && overlay.style.display !== 'none' && !authSystem.currentUser) {
                     console.log('⏳ Auto-continuing as guest for immediate access...');
                     authSystem.continueAsGuest();
                 }
-            }, 3000);
+            }, 10000);
             
             setTimeout(() => {
                 // Setup voice before giving greeting

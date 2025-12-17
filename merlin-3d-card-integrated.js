@@ -483,16 +483,40 @@ class MerlinAICardIntegrated {
         if (!window.speechSynthesis) return;
         
         const voices = window.speechSynthesis.getVoices();
-        // Prefer British English or similar wizardly voices
+        
+        // PRIORITY ORDER: Prefer deep male voices for wise wizard effect
+        // 1. First try to find specifically male/deep voices
         this.selectedVoice = voices.find(v => 
-            v.name.includes('Daniel') || 
-            v.name.includes('UK') || 
-            v.name.includes('British') ||
-            v.lang === 'en-GB'
-        ) || voices.find(v => v.lang.startsWith('en')) || voices[0];
+            v.name.toLowerCase().includes('david') ||  // Microsoft David - male
+            v.name.toLowerCase().includes('daniel') || // Daniel - UK male
+            v.name.toLowerCase().includes('mark') ||   // Male voice
+            v.name.toLowerCase().includes('james') ||  // Male voice
+            v.name.toLowerCase().includes('alex') ||   // Male voice (macOS)
+            v.name.toLowerCase().includes('tom') ||    // Male voice
+            v.name.toLowerCase().includes('richard')   // Male voice
+        );
+        
+        // 2. If no specific male voice, try UK/British male
+        if (!this.selectedVoice) {
+            this.selectedVoice = voices.find(v => 
+                (v.lang === 'en-GB' || v.lang === 'en-US') && 
+                !v.name.toLowerCase().includes('female') &&
+                !v.name.toLowerCase().includes('zira') &&   // Skip Zira (female)
+                !v.name.toLowerCase().includes('cortana') && // Skip Cortana (female)
+                !v.name.toLowerCase().includes('susan') &&  // Skip Susan (female)
+                !v.name.toLowerCase().includes('hazel') &&  // Skip Hazel (female)
+                !v.name.toLowerCase().includes('linda') &&  // Skip Linda (female)
+                !v.name.toLowerCase().includes('samantha')  // Skip Samantha (female)
+            );
+        }
+        
+        // 3. Final fallback to any English voice
+        if (!this.selectedVoice) {
+            this.selectedVoice = voices.find(v => v.lang.startsWith('en')) || voices[0];
+        }
         
         if (this.selectedVoice) {
-            console.log('🔊 Merlin voice:', this.selectedVoice.name);
+            console.log('🧙 Merlin wizard voice:', this.selectedVoice.name);
         }
     }
     
@@ -530,8 +554,8 @@ class MerlinAICardIntegrated {
         
         const utterance = new SpeechSynthesisUtterance(cleanText);
         utterance.voice = this.selectedVoice;
-        utterance.rate = 1.0;
-        utterance.pitch = 0.9; // Slightly deeper for wizard effect
+        utterance.rate = 0.9;  // Slightly slower for wise wizard pacing
+        utterance.pitch = 0.7; // Deeper pitch for old wizard effect
         utterance.volume = 0.9;
         
         utterance.onstart = () => {
