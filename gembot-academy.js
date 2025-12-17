@@ -1568,7 +1568,7 @@ const GemBotAcademy = {
                     </div>
                 `;
         }
-    }
+    },
     
     /**
      * Render step-by-step content
@@ -1589,7 +1589,7 @@ const GemBotAcademy = {
                 </div>
             </div>
         `;
-    }
+    },
     
     /**
      * Render checklist content
