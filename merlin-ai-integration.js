@@ -413,7 +413,6 @@ Please provide your analysis in the following JSON format (no markdown, just pur
                 qualityReason: 'Unable to parse AI response',
                 suggestions: [response.text.substring(0, 200)],
                 security: [],
-        const startTime = Date.now();
                 performance: [],
                 refactorHours: 0,
                 strengths: [],

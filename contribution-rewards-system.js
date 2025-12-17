@@ -549,8 +549,8 @@ class ContributionRewardsSystem {
 window.contributionRewards = new ContributionRewardsSystem();
 
 // Add CSS animations
-const style = document.createElement('style');
-style.textContent = `
+const contributionRewardsStyle = document.createElement('style');
+contributionRewardsStyle.textContent = `
     @keyframes slide-in {
         from { transform: translateX(100%); opacity: 0; }
         to { transform: translateX(0); opacity: 1; }
@@ -565,7 +565,7 @@ style.textContent = `
         100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
     }
 `;
-document.head.appendChild(style);
+document.head.appendChild(contributionRewardsStyle);
 
 // Listen for reward events to show notifications
 window.addEventListener('gbuv:reward-granted', (e) => {
