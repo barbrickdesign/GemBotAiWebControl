@@ -194,6 +194,91 @@ class GemBotAutomatedWalletSystem {
     }
     
     // ═════════════════════════════════════════════════════════════════════════
+    // VAULT POOL MONITORING
+    // ═════════════════════════════════════════════════════════════════════════
+    
+    async getVaultPoolBalance() {
+        try {
+            const vaultPubkey = new solanaWeb3.PublicKey(this.VAULT_POOL_ADDRESS);
+            
+            // Get SOL balance
+            const solBalance = await this.connection.getBalance(vaultPubkey);
+            const solAmount = solBalance / solanaWeb3.LAMPORTS_PER_SOL;
+            
+            // Get GBUV balance
+            let gbuvBalance = 0;
+            try {
+                const tokenAccount = await this.getAssociatedTokenAddress(vaultPubkey);
+                const accountInfo = await this.connection.getAccountInfo(tokenAccount);
+                
+                if (accountInfo) {
+                    const data = accountInfo.data;
+                    const amountBuffer = data.slice(64, 72);
+                    const rawBalance = new DataView(amountBuffer.buffer, amountBuffer.byteOffset, 8).getBigUint64(0, true);
+                    gbuvBalance = Number(rawBalance) / Math.pow(10, this.GBUV_DECIMALS);
+                }
+            } catch (e) {
+                console.log('📝 Vault pool token account not found');
+            }
+            
+            const vaultData = {
+                address: this.VAULT_POOL_ADDRESS,
+                sol: solAmount,
+                gbuv: gbuvBalance,
+                lastUpdated: new Date().toISOString()
+            };
+            
+            localStorage.setItem(this.STORAGE.VAULT_BALANCE, JSON.stringify(vaultData));
+            
+            console.log(`🏦 Vault Pool Balance:`);
+            console.log(`   Address: ${this.VAULT_POOL_ADDRESS}`);
+            console.log(`   SOL: ${solAmount.toFixed(4)}`);
+            console.log(`   GBUV: ${gbuvBalance.toLocaleString()}`);
+            
+            return vaultData;
+        } catch (error) {
+            console.error('❌ Error checking vault pool:', error);
+            return { address: this.VAULT_POOL_ADDRESS, sol: 0, gbuv: 0 };
+        }
+    }
+    
+    getBubbleMapUrl() {
+        return this.BUBBLE_MAP_URL;
+    }
+    
+    openBubbleMap() {
+        window.open(this.BUBBLE_MAP_URL, '_blank');
+    }
+    
+    createBubbleMapEmbed(containerId) {
+        const container = document.getElementById(containerId);
+        if (!container) {
+            console.error('Container not found:', containerId);
+            return;
+        }
+        
+        container.innerHTML = `
+            <div style="position: relative; width: 100%; height: 100%; min-height: 400px;">
+                <iframe 
+                    src="${this.BUBBLE_MAP_URL}" 
+                    style="width: 100%; height: 100%; border: none; border-radius: 12px;"
+                    title="GBUV Token Bubble Map"
+                    loading="lazy"
+                ></iframe>
+                <div style="position: absolute; bottom: 10px; right: 10px;">
+                    <button onclick="window.gemBotWalletSystem.openBubbleMap()" 
+                            style="padding: 8px 16px; background: linear-gradient(135deg, #00ffff, #ff00ff); 
+                                   border: none; border-radius: 8px; color: #000; font-weight: bold; cursor: pointer;">
+                        🔗 Open Full Map
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        console.log('📊 Bubble map embedded in:', containerId);
+    }
+    
+    // ═════════════════════════════════════════════════════════════════════════
     // USER WALLET CREATION (AUTOMATIC - NO APP REQUIRED)
     // ═════════════════════════════════════════════════════════════════════════
     

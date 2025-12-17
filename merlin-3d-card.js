@@ -57,6 +57,14 @@ const MerlinAICard = {
         // Migrate existing chat to card
         this.migrateChat();
         
+        // Check admin access after a short delay (wait for Firebase auth)
+        setTimeout(() => this.checkAdminAccess(), 2000);
+        
+        // Re-check admin on auth state change
+        if (window.firebaseAuth) {
+            window.firebaseAuth.onAuthStateChanged(() => this.checkAdminAccess());
+        }
+        
         this.initialized = true;
         console.log('✅ Merlin 3D Card initialized');
     },
@@ -164,6 +172,7 @@ const MerlinAICard = {
                             <button class="quick-action-btn" onclick="MerlinAICard.quickAction('tutorial')" title="Tutorial">📚</button>
                             <button class="quick-action-btn" onclick="MerlinAICard.quickAction('tips')" title="Tips">💡</button>
                             <button class="quick-action-btn" onclick="MerlinAICard.quickAction('achievement')" title="Achievements">🏆</button>
+                            <button class="quick-action-btn admin-only-btn" id="merlinAdminBtn" onclick="MerlinAICard.openAdminDashboard()" title="Admin Dashboard" style="display: none;">🔐</button>
                         </div>
                     </div>
                     
@@ -537,6 +546,40 @@ const MerlinAICard = {
                 leaderboardUI.switchTab('achievements');
                 break;
         }
+    },
+    
+    /**
+     * Admin Dashboard Access
+     */
+    ADMIN_EMAILS: [
+        'barbrickdesign@gmail.com',
+        'ryanbarbrick@gmail.com'
+    ],
+    
+    checkAdminAccess() {
+        // Check if current user is an admin
+        const user = window.firebaseAuth?.currentUser;
+        if (user && this.ADMIN_EMAILS.includes(user.email?.toLowerCase())) {
+            const adminBtn = document.getElementById('merlinAdminBtn');
+            if (adminBtn) {
+                adminBtn.style.display = 'flex';
+                adminBtn.style.background = 'linear-gradient(135deg, #ff4444, #ff00ff)';
+            }
+            return true;
+        }
+        return false;
+    },
+    
+    openAdminDashboard() {
+        const user = window.firebaseAuth?.currentUser;
+        if (!user || !this.ADMIN_EMAILS.includes(user.email?.toLowerCase())) {
+            this.addMessage('🔐 Admin access required. Please sign in with an authorized account.', 'system');
+            return;
+        }
+        
+        // Open admin dashboard
+        window.open('./admin-dashboard.html', '_blank');
+        this.addMessage('🔓 Opening Admin Dashboard...', 'system');
     },
     
     /**
