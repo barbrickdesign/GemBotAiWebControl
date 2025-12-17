@@ -576,6 +576,56 @@ const GemBotAcademy = {
     },
     
     /**
+     * Open the Academy panel - called by Merlin card and other systems
+     */
+    open() {
+        console.log('📚 Opening GemBot Academy...');
+        
+        // Initialize if not already
+        if (!this.initialized) {
+            this.init();
+        }
+        
+        // Find or create academy panel
+        let academyPanel = document.getElementById('academy-panel');
+        
+        // If panel doesn't exist, try to create it or find container
+        if (!academyPanel) {
+            // Check if there's a panel container
+            const panelContainer = document.querySelector('.panel-container, .main-content, #main-content');
+            if (panelContainer) {
+                academyPanel = document.createElement('div');
+                academyPanel.id = 'academy-panel';
+                academyPanel.className = 'game-panel academy-panel';
+                academyPanel.innerHTML = this.renderAcademyPanel();
+                panelContainer.appendChild(academyPanel);
+            }
+        }
+        
+        // Show the panel
+        if (academyPanel) {
+            academyPanel.style.display = 'block';
+            academyPanel.classList.add('active');
+            
+            // If panel has content area, update it
+            const content = academyPanel.querySelector('#academy-content');
+            if (content) {
+                this.showTab('tasks');
+            }
+        }
+        
+        // Trigger panel via panel manager if available
+        if (window.togglePanel) {
+            window.togglePanel('academy-panel');
+        }
+        
+        // Dispatch event
+        window.dispatchEvent(new CustomEvent('academyOpened'));
+        
+        return this;
+    },
+    
+    /**
      * Load saved progress from localStorage
      * NOW INCLUDES: Real user data from gembot_wallets and gembot_farm_save
      */
