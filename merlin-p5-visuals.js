@@ -611,12 +611,9 @@ window.MerlinP5Visuals = {
     }
 };
 
-// Auto-initialize
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => MerlinP5Visuals.init());
-} else {
-    MerlinP5Visuals.init();
-}
+// DO NOT auto-initialize - only init when explicitly called
+// User must call: window.MerlinP5Visuals.init() when needed
+// This prevents chaotic background effects on page load
 
 // Add global controls
 window.merlin = window.merlin || {};
