@@ -170,14 +170,16 @@ syntaxChecks.forEach(check => {
 });
 console.log();
 
-// Test 10: Check file size matches commit
+// Test 10: Check file size is substantial
 console.log('✓ Test 10: Validating file structure...');
 const lineCount = fileContent.split('\n').length;
-if (lineCount === 583) {
-    console.log(`  ✓ Line count matches commit (583 lines)`);
+const minLines = 575; // Allow some variance for line endings
+const maxLines = 600;
+if (lineCount >= minLines && lineCount <= maxLines) {
+    console.log(`  ✓ Line count is appropriate (${lineCount} lines, expected ~583)`);
 } else {
-    console.log(`  ! Line count is ${lineCount} (expected 583)`);
-    console.log(`  (This might be due to line ending differences)`);
+    console.error(`  ✗ Line count is ${lineCount} (expected ${minLines}-${maxLines})`);
+    process.exit(1);
 }
 console.log();
 
