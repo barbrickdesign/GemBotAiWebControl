@@ -166,8 +166,7 @@ EXTENSION INSTALLATION RULES:
 - Only install extension specified by the get_project_setup_info tool. DO NOT INSTALL any other extensions.
 
 PROJECT CONTENT RULES:
-- If the user has not specified project details, assume they want a "Hello World" project as a starting point.
-- Avoid adding links of any type (URLs, files, folders, etc.) or integrations that are not explicitly required.
+- If the user has not specified project details, assume they want a professional application that is fully tested and functioning with best known methods that auto update if they have any sort of errors. Also, ensure all proper links to all proper files within the projects are included.
 - Avoid generating images, videos, or any other media files unless explicitly requested.
 - If you need to use any media assets as placeholders, let the user know that these are placeholders and should be replaced with the actual assets later.
 - Ensure all generated components serve a clear purpose within the user's requested workflow.
