@@ -289,37 +289,205 @@ class GemBotSolanaWallet {
     }
     
     /**
+     * Get or create Associated Token Account for GBUV
+     * @param {solanaWeb3.PublicKey} ownerPubKey - Owner's public key
+     * @returns {solanaWeb3.PublicKey} - Associated Token Account address
+     */
+    async getOrCreateGBUVTokenAccount(ownerPubKey, payerKeypair = null) {
+        const mintPubKey = new solanaWeb3.PublicKey(this.GBUV_MINT);
+        
+        // SPL Token constants
+        const TOKEN_PROGRAM_ID = new solanaWeb3.PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA');
+        const ASSOCIATED_TOKEN_PROGRAM_ID = new solanaWeb3.PublicKey('ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL');
+        
+        // Derive the associated token account address
+        const [ataAddress] = await solanaWeb3.PublicKey.findProgramAddress(
+            [
+                ownerPubKey.toBuffer(),
+                TOKEN_PROGRAM_ID.toBuffer(),
+                mintPubKey.toBuffer()
+            ],
+            ASSOCIATED_TOKEN_PROGRAM_ID
+        );
+        
+        // Check if account exists
+        try {
+            const accountInfo = await this.connection.getAccountInfo(ataAddress);
+            if (accountInfo) {
+                console.log(`✅ Token account exists: ${ataAddress.toString()}`);
+                return ataAddress;
+            }
+        } catch (e) {
+            // Account doesn't exist, need to create
+        }
+        
+        // If no payer provided, can't create
+        if (!payerKeypair) {
+            console.log(`⚠️ Token account doesn't exist and no payer provided`);
+            return ataAddress; // Return anyway, transaction will create it
+        }
+        
+        console.log(`📝 Creating token account for ${ownerPubKey.toString()}`);
+        
+        // Create Associated Token Account instruction
+        const createATAInstruction = new solanaWeb3.TransactionInstruction({
+            keys: [
+                { pubkey: payerKeypair.publicKey, isSigner: true, isWritable: true },
+                { pubkey: ataAddress, isSigner: false, isWritable: true },
+                { pubkey: ownerPubKey, isSigner: false, isWritable: false },
+                { pubkey: mintPubKey, isSigner: false, isWritable: false },
+                { pubkey: solanaWeb3.SystemProgram.programId, isSigner: false, isWritable: false },
+                { pubkey: TOKEN_PROGRAM_ID, isSigner: false, isWritable: false },
+            ],
+            programId: ASSOCIATED_TOKEN_PROGRAM_ID,
+            data: Buffer.from([])
+        });
+        
+        const transaction = new solanaWeb3.Transaction().add(createATAInstruction);
+        
+        try {
+            await solanaWeb3.sendAndConfirmTransaction(
+                this.connection,
+                transaction,
+                [payerKeypair]
+            );
+            console.log(`✅ Token account created: ${ataAddress.toString()}`);
+        } catch (error) {
+            console.warn(`⚠️ Could not create token account (may already exist):`, error.message);
+        }
+        
+        return ataAddress;
+    }
+    
+    /**
      * Send GBUV tokens from one wallet to another
-     * Requires @solana/spl-token library
+     * REAL SPL Token transfer on Solana mainnet
+     * Token: DPHcbu7wJEbcrnCYjXC8vHBkM39kT9xZg4mYayvrpump (pump.fun)
      */
     async sendGBUV(fromPublicKey, toPublicKey, amount) {
         try {
             console.log(`💎 Sending ${amount} GBUV from ${fromPublicKey} to ${toPublicKey}`);
-            console.log(`⚠️ Note: Requires @solana/spl-token library for full implementation`);
             
-            // Placeholder for SPL Token transfer
-            // Full implementation requires:
-            // 1. Get or create associated token accounts
-            // 2. Create transfer instruction
-            // 3. Sign and send transaction
+            // Get sender wallet with private key
+            const wallet = this.getWallet(fromPublicKey);
+            if (!wallet) {
+                throw new Error('Sender wallet not found in storage');
+            }
             
-            // Log transaction (simulated for now)
+            if (!wallet.secretKey) {
+                throw new Error('Sender wallet private key not available');
+            }
+            
+            // Create keypairs
+            const fromKeypair = solanaWeb3.Keypair.fromSecretKey(new Uint8Array(wallet.secretKey));
+            const toPubKey = new solanaWeb3.PublicKey(toPublicKey);
+            const mintPubKey = new solanaWeb3.PublicKey(this.GBUV_MINT);
+            
+            // SPL Token Program ID
+            const TOKEN_PROGRAM_ID = new solanaWeb3.PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA');
+            
+            // Get token accounts
+            const fromTokenAccount = await this.getOrCreateGBUVTokenAccount(fromKeypair.publicKey, fromKeypair);
+            const toTokenAccount = await this.getOrCreateGBUVTokenAccount(toPubKey, fromKeypair);
+            
+            // GBUV has 6 decimals (standard for pump.fun tokens)
+            const GBUV_DECIMALS = 6;
+            const transferAmount = BigInt(Math.floor(amount * Math.pow(10, GBUV_DECIMALS)));
+            
+            console.log(`📊 Transfer details:`);
+            console.log(`   From ATA: ${fromTokenAccount.toString()}`);
+            console.log(`   To ATA: ${toTokenAccount.toString()}`);
+            console.log(`   Amount: ${amount} GBUV (${transferAmount} raw)`);
+            
+            // Create transfer instruction using raw instruction data
+            // Instruction 3 = Transfer, followed by u64 amount (little-endian)
+            const dataBuffer = Buffer.alloc(9);
+            dataBuffer.writeUInt8(3, 0); // Transfer instruction
+            dataBuffer.writeBigUInt64LE(transferAmount, 1); // Amount
+            
+            const transferInstruction = new solanaWeb3.TransactionInstruction({
+                keys: [
+                    { pubkey: fromTokenAccount, isSigner: false, isWritable: true },
+                    { pubkey: toTokenAccount, isSigner: false, isWritable: true },
+                    { pubkey: fromKeypair.publicKey, isSigner: true, isWritable: false }
+                ],
+                programId: TOKEN_PROGRAM_ID,
+                data: dataBuffer
+            });
+            
+            // Build transaction
+            const transaction = new solanaWeb3.Transaction().add(transferInstruction);
+            
+            // Get recent blockhash
+            const { blockhash } = await this.connection.getLatestBlockhash();
+            transaction.recentBlockhash = blockhash;
+            transaction.feePayer = fromKeypair.publicKey;
+            
+            // Sign and send
+            console.log(`📤 Sending transaction...`);
+            const signature = await solanaWeb3.sendAndConfirmTransaction(
+                this.connection,
+                transaction,
+                [fromKeypair],
+                { commitment: 'confirmed' }
+            );
+            
+            // Log successful transaction
             this.logTransaction({
                 type: 'GBUV_TRANSFER',
                 from: fromPublicKey,
                 to: toPublicKey,
                 amount: amount,
-                signature: 'simulated_' + Date.now(),
+                signature: signature,
                 timestamp: new Date().toISOString(),
-                status: 'simulated'
+                status: 'confirmed',
+                explorer: `https://solscan.io/tx/${signature}`
             });
             
-            console.log(`⚠️ GBUV transfer simulated. Implement with @solana/spl-token for production.`);
+            console.log(`✅ GBUV transfer confirmed!`);
+            console.log(`📝 Signature: ${signature}`);
+            console.log(`🔗 Explorer: https://solscan.io/tx/${signature}`);
             
-            return 'simulated_' + Date.now();
+            // Update balances
+            await this.updateWalletBalance(fromPublicKey);
+            
+            return signature;
+            
         } catch (error) {
             console.error(`❌ Error sending GBUV:`, error);
-            throw error;
+            
+            // Log failed transaction
+            this.logTransaction({
+                type: 'GBUV_TRANSFER',
+                from: fromPublicKey,
+                to: toPublicKey,
+                amount: amount,
+                signature: null,
+                timestamp: new Date().toISOString(),
+                status: 'failed',
+                error: error.message
+            });
+            
+            // Provide helpful error messages
+            if (error.message.includes('insufficient')) {
+                throw new Error(`Insufficient balance. Make sure you have enough GBUV and SOL for fees (~0.01 SOL)`);
+            } else if (error.message.includes('not found')) {
+                throw new Error(`Wallet not found. Ensure the wallet is registered in the system.`);
+            } else {
+                throw error;
+            }
+        }
+    }
+    
+    /**
+     * Update a single wallet's balance
+     */
+    async updateWalletBalance(publicKey) {
+        const wallet = this.getWallet(publicKey);
+        if (wallet) {
+            wallet.balance = await this.getSOLBalance(publicKey);
+            wallet.gbuvBalance = await this.getGBUVBalance(publicKey);
+            this.saveWallet(wallet);
         }
     }
     
@@ -449,8 +617,9 @@ class GemBotSolanaWallet {
 // GLOBAL INSTANCE & CONVENIENCE FUNCTIONS
 // ═════════════════════════════════════════════════════════════════════════════
 
-// Initialize wallet system (use 'devnet' for testing, 'mainnet-beta' for production)
-window.solanaWallet = new GemBotSolanaWallet('devnet'); // ⚠️ Change to 'mainnet-beta' for production
+// Initialize wallet system - MAINNET for real GBUV transactions
+// GBUV Token: DPHcbu7wJEbcrnCYjXC8vHBkM39kT9xZg4mYayvrpump (pump.fun)
+window.solanaWallet = new GemBotSolanaWallet('mainnet-beta');
 
 // Convenience functions for console testing
 window.generateWallet = (label) => window.solanaWallet.generateWallet(label);
@@ -463,7 +632,7 @@ window.generateAgentWallets = (count) => window.solanaWallet.generateAgentWallet
 
 console.log(`
 ═══════════════════════════════════════════════════════════════════════════
-🔐 GEMBOT SOLANA WALLET SYSTEM LOADED
+🔐 GEMBOT SOLANA WALLET SYSTEM LOADED (MAINNET)
 ═══════════════════════════════════════════════════════════════════════════
 
 ⚠️ IMPORTANT SETUP REQUIRED:
