@@ -54,6 +54,37 @@ An interactive AI-powered learning platform with real-time control capabilities,
 
 ---
 
+## 🚀 Idea Promotion Workflow
+
+We use a unified instruction set for idea-to-implementation that ensures every promoted idea becomes a **traceable, testable, auto-enhancing, and auto-deployed artifact**.
+
+### Quick Start
+```bash
+# Create a new idea
+node scripts/idea-management/create-idea.js "Your idea title"
+
+# Check idea status
+node scripts/idea-management/prompt-status.js IDEA-2025-XXXX
+
+# Check if implementation exists
+node scripts/idea-management/check-implementation.js IDEA-2025-XXXX
+
+# Validate the registry
+node scripts/idea-management/validate-registry.js
+```
+
+### Key Resources
+| Resource | Description |
+|----------|-------------|
+| [INSTRUCTIONS.md](INSTRUCTIONS.md) | Full promotion workflow documentation |
+| [docs/ideas/registry.json](docs/ideas/registry.json) | Canonical idea registry |
+| [docs/ideas/prompts/](docs/ideas/prompts/) | Prompt binding files |
+| [.github/workflows/](https://github.com/barbrickdesign/GemBotAiWebControl/actions) | CI/CD pipelines |
+
+See **[INSTRUCTIONS.md](INSTRUCTIONS.md)** for complete details on governance, logging, error reporting, and auto-enhancement.
+
+---
+
 ## ✨ Features
 
 ### 🎓 Intelligent Learning System
