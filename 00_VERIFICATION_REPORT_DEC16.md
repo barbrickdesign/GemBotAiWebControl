@@ -50,7 +50,7 @@ After comprehensive code review and architecture analysis, **ALL major systems a
 - Stats: Total Registrations, Safe Accounts, Flagged, Avg Suspicion Score
 - Security flags table with IP tracking
 - Filters: All, Safe Only, Flagged, High Risk
-- **Data Source**: `security-anti-fraud-system.js` via `admin-api.js`
+- **Data Source**: `anti-fraud-system.js` via `admin-api.js`
 - **Functions**: `refreshSecurity()`, `viewIPTracking()`, `banUser()`
 
 #### ✅ Wallets Section (Lines 1645-1705)
@@ -172,7 +172,7 @@ After comprehensive code review and architecture analysis, **ALL major systems a
 - **Storage**: Public key in localStorage, private key encrypted
 
 #### ✅ Anti-Fraud Security
-- **File**: `security-anti-fraud-system.js` (592 lines)
+- **File**: `anti-fraud-system.js` (592 lines)
 - **6 Detection Layers**:
   1. IP Detection (ipify.org + ipapi.co)
   2. Canvas Fingerprinting

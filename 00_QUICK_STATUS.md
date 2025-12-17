@@ -91,7 +91,7 @@ TEST_UNIVERSE_KEY.html
 - `virtual-machine-3d.js` - 3D visualization (980 lines)
 
 ### Security & Wallets
-- `security-anti-fraud-system.js` - Fraud detection (592 lines)
+- `anti-fraud-system.js` - Fraud detection (592 lines)
 - `automated-wallet-system.js` - Wallet creation (370 lines)
 - `admin-api.js` - Backend API (329 lines)
 

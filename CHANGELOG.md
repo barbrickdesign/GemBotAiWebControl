@@ -145,7 +145,7 @@ All notable changes to this project will be documented in this file.
 
 ### 🆕 Added
 
-- **Anti-Fraud Security System** (`security-anti-fraud-system.js` - 592 lines):
+- **Anti-Fraud Security System** (`anti-fraud-system.js` - 592 lines):
   - 6-layer fraud detection (IP, Canvas, WebGL, Audio fingerprinting)
   - Disposable email detection
   - Bot detection via timing and behavior
