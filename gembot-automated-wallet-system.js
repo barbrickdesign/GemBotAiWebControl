@@ -140,19 +140,41 @@ class GemBotAutomatedWalletSystem {
             const solBalance = await this.connection.getBalance(this.coreWallet.publicKey);
             const solAmount = solBalance / solanaWeb3.LAMPORTS_PER_SOL;
             
-            // Get GBUV balance (simplified - real implementation needs SPL Token library)
-            // For now, we'll simulate
-            const gbuvBalance = 0; // TODO: Implement actual SPL token balance check
+            // Get GBUV balance from token account
+            let gbuvBalance = 0;
+            try {
+                const tokenAccount = await this.getAssociatedTokenAddress(this.coreWallet.publicKey);
+                const accountInfo = await this.connection.getAccountInfo(tokenAccount);
+                
+                if (accountInfo) {
+                    // Parse token account data - balance is at bytes 64-72
+                    const data = accountInfo.data;
+                    const amountBuffer = data.slice(64, 72);
+                    const rawBalance = new DataView(amountBuffer.buffer, amountBuffer.byteOffset, 8).getBigUint64(0, true);
+                    gbuvBalance = Number(rawBalance) / Math.pow(10, this.GBUV_DECIMALS);
+                }
+            } catch (tokenError) {
+                console.log('📝 No GBUV token account yet (will be created on first transfer)');
+            }
             
             console.log(`💰 Core Wallet Balance:`);
             console.log(`   SOL: ${solAmount.toFixed(4)}`);
-            console.log(`   GBUV: ${gbuvBalance}`);
+            console.log(`   GBUV: ${gbuvBalance.toLocaleString()}`);
             
             if (gbuvBalance < 1000) {
                 console.warn('⚠️ Low GBUV balance! Please fund core wallet.');
                 if (window.liveActivityFeed) {
                     window.liveActivityFeed.logError(
                         'Core wallet low on GBUV. Fund needed for operations.'
+                    );
+                }
+            }
+            
+            if (solAmount < 0.01) {
+                console.warn('⚠️ Low SOL balance! Need ~0.01 SOL for transaction fees.');
+                if (window.liveActivityFeed) {
+                    window.liveActivityFeed.logError(
+                        'Core wallet needs SOL for transaction fees.'
                     );
                 }
             }
@@ -292,19 +314,20 @@ class GemBotAutomatedWalletSystem {
     async fundAgent(agentPublicKey, agentName, amount) {
         console.log(`💰 Funding agent ${agentName} with ${amount} GBUV...`);
         
-        const tx = {
-            from: this.coreWallet.publicKey.toString(),
-            to: agentPublicKey,
-            amount: amount,
-            token: 'GBUV',
-            type: 'AGENT_FUNDING',
-            timestamp: new Date().toISOString(),
-            status: 'PENDING'
-        };
-        
-        await this.simulateTransfer(tx);
-        
-        console.log(`✅ Agent ${agentName} funded with ${amount} GBUV`);
+        try {
+            const tx = await this.executeTransfer(
+                this.coreWallet,
+                agentPublicKey,
+                amount,
+                'AGENT_FUNDING'
+            );
+            
+            console.log(`✅ Agent ${agentName} funded with ${amount} GBUV`);
+            return tx;
+        } catch (error) {
+            console.error(`❌ Failed to fund agent ${agentName}:`, error);
+            throw error;
+        }
     }
     
     // ═════════════════════════════════════════════════════════════════════════
@@ -314,27 +337,34 @@ class GemBotAutomatedWalletSystem {
     async distributeReward(recipientPublicKey, amount, reason, recipientName) {
         console.log(`💎 Distributing ${amount} GBUV to ${recipientName} (${reason})`);
         
-        const tx = {
-            from: this.coreWallet.publicKey.toString(),
-            to: recipientPublicKey,
-            amount: amount,
-            token: 'GBUV',
-            type: 'REWARD',
-            reason: reason,
-            recipient: recipientName,
-            timestamp: new Date().toISOString(),
-            status: 'PENDING'
-        };
-        
-        await this.simulateTransfer(tx);
-        
-        if (window.liveActivityFeed) {
-            window.liveActivityFeed.log('SYSTEM', 
-                `💎 ${recipientName} earned ${amount} GBUV: ${reason}`
+        try {
+            const tx = await this.executeTransfer(
+                this.coreWallet,
+                recipientPublicKey,
+                amount,
+                'REWARD'
             );
+            
+            // Add metadata
+            tx.reason = reason;
+            tx.recipient = recipientName;
+            
+            if (window.liveActivityFeed) {
+                window.liveActivityFeed.log('SYSTEM', 
+                    `💎 ${recipientName} earned ${amount} GBUV: ${reason}`
+                );
+            }
+            
+            return tx;
+        } catch (error) {
+            console.error(`❌ Failed to distribute reward to ${recipientName}:`, error);
+            if (window.liveActivityFeed) {
+                window.liveActivityFeed.logError(
+                    `Failed to distribute ${amount} GBUV to ${recipientName}`
+                );
+            }
+            throw error;
         }
-        
-        return tx;
     }
     
     async payAgentSalary(agentId) {
