@@ -18,16 +18,23 @@ class GemBotAutomatedWalletSystem {
             'confirmed'
         );
         
+        // VAULT POOL - Main treasury wallet (read-only monitoring)
+        this.VAULT_POOL_ADDRESS = '6HTjfgWZYMbENnMAJJFhxWR2VZDxdze3qV7zznSAsfk';
+        
         // Core system wallet (hot wallet for operations)
         this.coreWallet = null;
         this.GBUV_MINT = 'DPHcbu7wJEbcrnCYjXC8vHBkM39kT9xZg4mYayvrpump';
+        
+        // Bubble map for fund flow visualization
+        this.BUBBLE_MAP_URL = 'https://app.insightx.network/bubblemaps/solana/DPHcbu7wJEbcrnCYjXC8vHBkM39kT9xZg4mYayvrpump/1765937152';
         
         // Storage keys
         this.STORAGE = {
             CORE_WALLET: 'gembot_core_wallet',
             USER_WALLETS: 'gembot_user_wallets',
             AGENT_WALLETS: 'gembot_agent_wallets',
-            TRANSACTIONS: 'gembot_transactions'
+            TRANSACTIONS: 'gembot_transactions',
+            VAULT_BALANCE: 'gembot_vault_balance'
         };
         
         console.log('🤖 GemBot Automated Wallet System initialized');
