@@ -1615,7 +1615,7 @@ const GemBotAcademy = {
                 <p class="checklist-note">Check all items to complete this lesson</p>
             </div>
         `;
-    }
+    },
     
     /**
      * Render 3D interactive content
@@ -1645,7 +1645,7 @@ const GemBotAcademy = {
                 </div>
             </div>
         `;
-    }
+    },
     
     /**
      * Render lesson completion screen
@@ -1667,7 +1667,7 @@ const GemBotAcademy = {
                 </button>
             </div>
         `;
-    }
+    },
     
     /**
      * Handle quiz option selection
@@ -1697,7 +1697,7 @@ const GemBotAcademy = {
             const nextBtn = document.getElementById('lessonNextBtn');
             if (nextBtn) nextBtn.disabled = false;
         }, 1000);
-    }
+    },
     
     /**
      * Update checklist progress
@@ -1721,7 +1721,7 @@ const GemBotAcademy = {
                 nextBtn.classList.add('complete');
             }
         }
-    }
+    },
     
     /**
      * Update slider tool value
@@ -1729,7 +1729,7 @@ const GemBotAcademy = {
     updateToolValue(value) {
         const display = document.getElementById('sliderValue');
         if (display) display.textContent = value;
-    }
+    },
     
     /**
      * Focus on a hotspot in 3D view
@@ -1737,7 +1737,7 @@ const GemBotAcademy = {
     focusHotspot(index) {
         console.log(`Focusing on hotspot ${index}`);
         this.showNotification(`🔍 Focusing on hotspot ${index + 1}`, 'info');
-    }
+    },
     
     /**
      * Start practice exercise
@@ -1746,7 +1746,7 @@ const GemBotAcademy = {
         console.log(`Starting practice: ${exerciseId}`);
         this.showNotification('🎯 Practice mode starting...', 'info');
         // In full implementation, this would launch an interactive exercise
-    }
+    },
     
     /**
      * Navigate to next section
