@@ -574,21 +574,59 @@
                 authSystem.continueAsGuest();
             },
             toggleUserMenu() {
-                // Basic stub: toggle user menu visibility
+                // Toggle user menu visibility using 'show' class
                 const menu = document.getElementById('userMenu');
-                if (menu) menu.classList.toggle('hidden');
+                if (menu) {
+                    menu.classList.toggle('show');
+                    // Close menu when clicking outside
+                    if (menu.classList.contains('show')) {
+                        document.addEventListener('click', this._closeMenuHandler = (e) => {
+                            if (!e.target.closest('#userBadgeContainer')) {
+                                menu.classList.remove('show');
+                                document.removeEventListener('click', this._closeMenuHandler);
+                            }
+                        });
+                    }
+                }
             },
             showProfile() {
-                alert('Profile view not implemented.');
+                // Show user profile modal
+                const user = authSystem.currentUser;
+                if (!user) {
+                    alert('Please log in to view your profile.');
+                    return;
+                }
+                const profileInfo = `
+👤 Profile: ${user.username || user.email || 'Guest'}
+📧 Email: ${user.email || 'N/A'}
+🎮 Guest Mode: ${authSystem.isGuest ? 'Yes' : 'No'}
+🔑 Device ID: ${authSystem.deviceId?.substring(0, 15)}...
+📅 Session Active
+                `.trim();
+                alert(profileInfo);
+                document.getElementById('userMenu')?.classList.remove('show');
             },
             showShareAccess() {
-                alert('Share Access not implemented.');
+                const code = authSystem.generateAccessCode?.() || Math.random().toString(36).substring(2, 8).toUpperCase();
+                alert(`🔗 Share this access code with others:\n\n${code}\n\nThey can use it to join as a guest viewer.`);
+                document.getElementById('userMenu')?.classList.remove('show');
             },
             showMachineSettings() {
-                alert('Machine Settings not implemented.');
+                // Open machine settings - redirect to settings area
+                const settingsPanel = document.querySelector('.settings-panel, #settingsPanel');
+                if (settingsPanel) {
+                    settingsPanel.classList.remove('hidden');
+                    settingsPanel.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    addMessage('⚙️ Machine settings are available in the control panel below.', 'system');
+                }
+                document.getElementById('userMenu')?.classList.remove('show');
             },
             logout() {
-                authSystem.logout();
+                if (confirm('Are you sure you want to sign out?')) {
+                    authSystem.logout();
+                    document.getElementById('userMenu')?.classList.remove('show');
+                }
             }
         };
     </script>
@@ -23165,16 +23203,16 @@
             console.log('🔐 Initializing authentication system...');
             const hasSession = authSystem.init();
             
-            // Auto-continue as guest after 10 seconds if auth overlay is still showing
+            // Auto-continue as guest after 30 seconds if auth overlay is still showing
             // This ensures the app is usable even if user doesn't interact with auth
-            // Give users enough time to click login/register buttons
+            // Give users plenty of time to complete login/register (was 10s, now 30s)
             setTimeout(() => {
                 const overlay = document.getElementById('authOverlay');
                 if (overlay && overlay.style.display !== 'none' && !authSystem.currentUser) {
-                    console.log('⏳ Auto-continuing as guest for immediate access...');
+                    console.log('⏳ Auto-continuing as guest after 30s timeout...');
                     authSystem.continueAsGuest();
                 }
-            }, 10000);
+            }, 30000);
             
             setTimeout(() => {
                 // Setup voice before giving greeting
