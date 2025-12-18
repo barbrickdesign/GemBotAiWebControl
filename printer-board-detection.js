@@ -1,6 +1,7 @@
 /**
  * GemBot 3D Printer Board Detection & Communication System
  * Detects and communicates with various 3D printer control boards
+ * Includes parts inventory, recycling database, and NFT integration
  * 
  * Supported Firmwares:
  * - Marlin (most common - Ender, Prusa, CR-10, etc.)
@@ -9,12 +10,16 @@
  * - Smoothieware (Smoothieboard)
  * - grbl (CNC/laser cutters)
  * - TinyG (Othermill, Shapeoko)
+ * - OctoPrint (web interface)
+ * - MatterControl (MatterHackers)
+ * - PrusaSlicer Connect
+ * - Bambu Lab firmware
  * 
  * © 2024-2025 Ryan Barbrick / Barbrick Design
  */
 
 const GemBotPrinterBridge = {
-    version: '1.0.0',
+    version: '2.0.0',
     initialized: false,
     
     // Connection state
@@ -25,7 +30,10 @@ const GemBotPrinterBridge = {
         connected: false,
         boardType: null,
         firmware: null,
-        firmwareVersion: null
+        firmwareVersion: null,
+        connectionType: 'usb', // 'usb', 'wifi', 'ethernet'
+        ipAddress: null,
+        wsConnection: null
     },
     
     // Detected printer info
@@ -39,7 +47,13 @@ const GemBotPrinterBridge = {
         bedSize: { x: 0, y: 0, z: 0 },
         hotendCount: 1,
         heatedBed: false,
-        autoLevel: false
+        autoLevel: false,
+        toolchangerType: null, // 'manual', 'automatic', 'mmu2', 'mmu3', null
+        enclosure: false,
+        camera: false,
+        filamentSensor: false,
+        powerRecovery: false,
+        touchscreen: false
     },
     
     // Firmware signatures for detection
@@ -114,10 +128,358 @@ const GemBotPrinterBridge = {
         }
     },
     
-    // Board identification database
+    // Comprehensive 3D Printer Database with Parts Lists for Recycling & Inventory
+    printerDatabase: {
+        // ========== ENDER SERIES ==========
+        'Ender 3': {
+            manufacturer: 'Creality',
+            year: 2018,
+            bedSize: { x: 220, y: 220, z: 250 },
+            board: 'Creality 1.1.5',
+            firmware: 'marlin',
+            parts: {
+                hotend: { model: 'MK8', value: 15, condition: 'good' },
+                stepperMotors: { count: 4, model: 'Nema17 42-40', value: 12, condition: 'excellent' },
+                bed: { type: 'heated', size: '235x235mm', value: 25, condition: 'good' },
+                extruder: { type: 'bowden', model: 'MK8', value: 10, condition: 'good' },
+                frame: { material: 'aluminum extrusion 2040', value: 45, condition: 'excellent' },
+                psu: { specs: '24V 15A 360W', value: 20, condition: 'good' },
+                display: { type: 'LCD12864', value: 8, condition: 'fair' },
+                belts: { type: 'GT2', length: '2x 760mm, 1x 800mm', value: 5, condition: 'fair' },
+                bearings: { type: 'LM8UU', count: 12, value: 2, condition: 'good' },
+                rods: { type: '8mm chrome', length: '4x 350mm, 2x 370mm', value: 15, condition: 'good' }
+            },
+            recyclability: {
+                nftUse: 'hotend-lightsaber',
+                gemCutting: 'stepper-precision-control',
+                salvageValue: 157,
+                ecoRating: 8.5
+            },
+            commonIssues: ['bed leveling', 'hotend clog', 'belt tension', 'extruder clicking']
+        },
+        'Ender 3 V2': {
+            manufacturer: 'Creality',
+            year: 2020,
+            bedSize: { x: 220, y: 220, z: 250 },
+            board: 'Creality 4.2.2',
+            firmware: 'marlin',
+            parts: {
+                hotend: { model: 'MK8 all-metal', value: 25, condition: 'excellent' },
+                stepperMotors: { count: 4, model: 'Nema17 42-40 silent', value: 18, condition: 'excellent' },
+                bed: { type: 'heated glass', size: '235x235mm', value: 35, condition: 'excellent' },
+                extruder: { type: 'bowden upgraded', model: 'MK8', value: 15, condition: 'excellent' },
+                frame: { material: 'aluminum extrusion 2040', value: 45, condition: 'excellent' },
+                psu: { specs: '24V 15A 360W Meanwell', value: 30, condition: 'excellent' },
+                display: { type: 'Color LCD', value: 25, condition: 'excellent' },
+                belts: { type: 'GT2', length: '2x 760mm, 1x 800mm', value: 8, condition: 'good' },
+                bearings: { type: 'POM wheels', count: 12, value: 3, condition: 'excellent' },
+                toolhead: { model: 'V2 upgraded', value: 20, condition: 'excellent' }
+            },
+            recyclability: {
+                nftUse: 'hotend-premium-lightsaber',
+                gemCutting: 'silent-stepper-precision',
+                salvageValue: 224,
+                ecoRating: 9.2
+            },
+            commonIssues: ['firmware update needed', 'hotend gap', 'filament sensor']
+        },
+        'Ender 3 S1': {
+            manufacturer: 'Creality',
+            year: 2022,
+            bedSize: { x: 220, y: 220, z: 270 },
+            board: 'Creality 4.2.7',
+            firmware: 'marlin',
+            parts: {
+                hotend: { model: 'Sprite Pro direct drive', value: 45, condition: 'premium' },
+                stepperMotors: { count: 4, model: 'Nema17 TMC2208', value: 25, condition: 'premium' },
+                bed: { type: 'heated PEI spring steel', size: '235x235mm', value: 45, condition: 'premium' },
+                extruder: { type: 'direct drive dual gear', model: 'Sprite', value: 35, condition: 'premium' },
+                frame: { material: 'aluminum extrusion 2040', value: 50, condition: 'excellent' },
+                psu: { specs: '24V 20A 480W', value: 40, condition: 'excellent' },
+                display: { type: '4.3" Color Touch', value: 35, condition: 'premium' },
+                probe: { type: 'CR Touch auto-level', value: 25, condition: 'premium' },
+                filamentSensor: { type: 'runout detection', value: 10, condition: 'excellent' }
+            },
+            recyclability: {
+                nftUse: 'direct-drive-elite-lightsaber',
+                gemCutting: 'ultra-precision-control',
+                salvageValue: 310,
+                ecoRating: 9.8
+            },
+            commonIssues: ['probe calibration', 'direct drive tuning']
+        },
+
+        // ========== PRUSA SERIES ==========
+        'Prusa i3 MK3S+': {
+            manufacturer: 'Prusa Research',
+            year: 2021,
+            bedSize: { x: 250, y: 210, z: 210 },
+            board: 'Einsy RAMBo',
+            firmware: 'prusa',
+            parts: {
+                hotend: { model: 'E3D V6 clone', value: 35, condition: 'premium' },
+                stepperMotors: { count: 4, model: 'LDO Nema17', value: 30, condition: 'premium' },
+                bed: { type: 'heated magnetic steel', size: '250x210mm', value: 60, condition: 'premium' },
+                extruder: { type: 'Bondtech gears direct', model: 'Prusa', value: 50, condition: 'premium' },
+                frame: { material: 'powder-coated steel', value: 80, condition: 'premium' },
+                psu: { specs: '24V 240W', value: 35, condition: 'excellent' },
+                display: { type: 'LCD with SD', value: 15, condition: 'good' },
+                probe: { type: 'PINDA v2 inductive', value: 20, condition: 'premium' },
+                filamentSensor: { type: 'IR + mechanical', value: 15, condition: 'premium' },
+                bearings: { type: 'Misumi LM8UU', count: 8, value: 5, condition: 'premium' }
+            },
+            recyclability: {
+                nftUse: 'bondtech-precision-lightsaber',
+                gemCutting: 'professional-grade-control',
+                salvageValue: 345,
+                ecoRating: 9.5
+            },
+            commonIssues: ['PINDA height', 'first layer calibration', 'filament sensor']
+        },
+        'Prusa MINI+': {
+            manufacturer: 'Prusa Research',
+            year: 2020,
+            bedSize: { x: 180, y: 180, z: 180 },
+            board: 'Buddy',
+            firmware: 'prusa',
+            parts: {
+                hotend: { model: 'E3D V6 hotend', value: 35, condition: 'premium' },
+                stepperMotors: { count: 4, model: 'LDO Nema17', value: 25, condition: 'premium' },
+                bed: { type: 'heated magnetic', size: '180x180mm', value: 40, condition: 'premium' },
+                extruder: { type: 'Bondtech direct drive', model: 'MINI', value: 40, condition: 'premium' },
+                frame: { material: 'aluminum extrusion', value: 35, condition: 'excellent' },
+                psu: { specs: '24V 150W', value: 25, condition: 'excellent' },
+                display: { type: '3.5" Color Touch', value: 30, condition: 'premium' },
+                probe: { type: 'SuperPINDA', value: 25, condition: 'premium' },
+                wifi: { module: 'ESP32', value: 10, condition: 'excellent' }
+            },
+            recyclability: {
+                nftUse: 'compact-precision-lightsaber',
+                gemCutting: 'desktop-precision-control',
+                salvageValue: 265,
+                ecoRating: 9.3
+            },
+            commonIssues: ['wifi connectivity', 'extruder calibration']
+        },
+
+        // ========== BAMBU LAB SERIES ==========
+        'Bambu Lab X1 Carbon': {
+            manufacturer: 'Bambu Lab',
+            year: 2022,
+            bedSize: { x: 256, y: 256, z: 256 },
+            board: 'Bambu Custom ARM',
+            firmware: 'bambu',
+            parts: {
+                hotend: { model: 'All-metal 300C', value: 80, condition: 'premium' },
+                stepperMotors: { count: 4, model: 'CoreXY + Z dual', value: 60, condition: 'premium' },
+                bed: { type: 'heated textured PEI', size: '256x256mm', value: 70, condition: 'premium' },
+                extruder: { type: 'direct drive', model: 'Bambu', value: 90, condition: 'premium' },
+                frame: { material: 'carbon fiber panels', value: 150, condition: 'premium' },
+                psu: { specs: '24V 350W', value: 50, condition: 'premium' },
+                display: { type: '5" Color Touch', value: 80, condition: 'premium' },
+                lidar: { type: 'AI failure detection', value: 120, condition: 'premium' },
+                ams: { type: '4-spool changer', value: 200, condition: 'premium' },
+                camera: { type: 'HD monitoring', value: 50, condition: 'premium' },
+                filter: { type: 'HEPA + Carbon', value: 30, condition: 'excellent' }
+            },
+            recyclability: {
+                nftUse: 'carbon-fiber-elite-lightsaber',
+                gemCutting: 'ai-assisted-precision',
+                salvageValue: 990,
+                ecoRating: 9.9
+            },
+            commonIssues: ['AMS jamming', 'lidar calibration', 'filter replacement']
+        },
+
+        // ========== ULTIMAKER SERIES ==========
+        'Ultimaker S3': {
+            manufacturer: 'Ultimaker',
+            year: 2018,
+            bedSize: { x: 230, y: 190, z: 200 },
+            board: 'Ultimaker',
+            firmware: 'marlin',
+            parts: {
+                hotend: { model: 'Ultimaker dual nozzle', value: 150, condition: 'premium' },
+                stepperMotors: { count: 6, model: 'Ultimaker custom', value: 45, condition: 'premium' },
+                bed: { type: 'heated glass', size: '230x190mm', value: 60, condition: 'premium' },
+                extruder: { type: 'bowden dual', model: 'Ultimaker', value: 180, condition: 'premium' },
+                frame: { material: 'aluminum + panels', value: 120, condition: 'premium' },
+                psu: { specs: '24V 221W', value: 40, condition: 'excellent' },
+                display: { type: '3" Touch', value: 60, condition: 'premium' },
+                probe: { type: 'capacitive auto-level', value: 40, condition: 'premium' },
+                feeder: { type: 'dual Bondtech', value: 120, condition: 'premium' }
+            },
+            recyclability: {
+                nftUse: 'dual-extrusion-lightsaber',
+                gemCutting: 'professional-dual-precision',
+                salvageValue: 815,
+                ecoRating: 9.4
+            },
+            commonIssues: ['dual nozzle alignment', 'feeder maintenance']
+        },
+
+        // ========== VORON SERIES ==========
+        'Voron 2.4': {
+            manufacturer: 'Voron Design',
+            year: 2020,
+            bedSize: { x: 350, y: 350, z: 350 },
+            board: 'Spider/Octopus',
+            firmware: 'klipper',
+            parts: {
+                hotend: { model: 'Dragon/Revo', value: 60, condition: 'premium' },
+                stepperMotors: { count: 6, model: 'LDO Nema17', value: 180, condition: 'premium' },
+                bed: { type: '350x350 heated aluminum', value: 120, condition: 'premium' },
+                extruder: { type: 'Clockwork direct drive', model: 'Voron', value: 80, condition: 'premium' },
+                frame: { material: '2020 extrusion + panels', value: 200, condition: 'premium' },
+                psu: { specs: '24V 600W', value: 60, condition: 'excellent' },
+                controller: { type: 'Raspberry Pi 4', value: 80, condition: 'excellent' },
+                probe: { type: 'Klicky/Euclid', value: 30, condition: 'premium' },
+                chamber: { type: 'enclosed heated', value: 150, condition: 'premium' },
+                toolhead: { type: 'CNC aluminum', value: 100, condition: 'premium' }
+            },
+            recyclability: {
+                nftUse: 'enclosed-chamber-lightsaber',
+                gemCutting: 'high-temp-precision-control',
+                salvageValue: 1060,
+                ecoRating: 9.7
+            },
+            commonIssues: ['chamber heating', 'klipper config', 'toolhead assembly']
+        }
+    },
+
+    // ========== TOURMALINE CRYSTAL LIGHT SABER NFT SYSTEM ==========
+    lightSaberNftSystem: {
+        crystalTypes: {
+            tourmaline: {
+                varieties: {
+                    'green-tourmaline': { rarity: 'rare', power: 85, frequency: '528Hz' },
+                    'pink-tourmaline': { rarity: 'uncommon', power: 70, frequency: '639Hz' },
+                    'blue-tourmaline': { rarity: 'epic', power: 95, frequency: '741Hz' },
+                    'watermelon-tourmaline': { rarity: 'legendary', power: 100, frequency: '852Hz' },
+                    'black-tourmaline': { rarity: 'common', power: 60, frequency: '396Hz' },
+                    'chrome-tourmaline': { rarity: 'mythic', power: 120, frequency: '963Hz' }
+                },
+                properties: {
+                    hardness: 7.5,
+                    piezoelectric: true,
+                    pyroelectric: true,
+                    dichroic: true,
+                    energetic: 'protective and grounding'
+                }
+            }
+        },
+
+        nftTemplates: {
+            'hotend-lightsaber': {
+                description: 'Basic lightsaber crafted from recycled 3D printer hotend',
+                baseValue: 50,
+                components: ['hotend', 'tourmaline crystal', 'LED array', 'sound module'],
+                powerRating: 'Apprentice',
+                edition: 'Common',
+                abilities: ['basic illumination', 'sound effects']
+            },
+            'hotend-premium-lightsaber': {
+                description: 'Enhanced lightsaber with all-metal hotend core',
+                baseValue: 125,
+                components: ['all-metal hotend', 'pink tourmaline', 'RGB LED array', 'premium sound'],
+                powerRating: 'Padawan',
+                edition: 'Uncommon',
+                abilities: ['color changing', 'motion reactive sound', 'heat dissipation']
+            },
+            'direct-drive-elite-lightsaber': {
+                description: 'Elite lightsaber featuring direct drive precision mechanism',
+                baseValue: 250,
+                components: ['direct drive mechanism', 'blue tourmaline', 'neopixel blade', 'haptic feedback'],
+                powerRating: 'Knight',
+                edition: 'Rare',
+                abilities: ['precision control', 'haptic feedback', 'synchronized light/sound']
+            },
+            'bondtech-precision-lightsaber': {
+                description: 'Professional grade lightsaber with Bondtech gear precision',
+                baseValue: 400,
+                components: ['bondtech gears', 'green tourmaline', 'proffie board', 'speaker array'],
+                powerRating: 'Master',
+                edition: 'Epic',
+                abilities: ['gear-driven effects', 'programmable sequences', 'battle sounds']
+            },
+            'carbon-fiber-elite-lightsaber': {
+                description: 'Premium carbon fiber lightsaber with AI-assisted features',
+                baseValue: 800,
+                components: ['carbon fiber frame', 'watermelon tourmaline', 'AI processor', 'adaptive lighting'],
+                powerRating: 'Grand Master',
+                edition: 'Legendary',
+                abilities: ['AI battle assistance', 'adaptive lighting', 'force feedback', 'voice commands']
+            },
+            'enclosed-chamber-lightsaber': {
+                description: 'Ultimate lightsaber with heated chamber technology',
+                baseValue: 1500,
+                components: ['heated chamber', 'chrome tourmaline', 'quantum processor', 'holographic display'],
+                powerRating: 'Sith Lord / Jedi Master',
+                edition: 'Mythic',
+                abilities: ['thermal control', 'holographic interface', 'quantum entanglement', 'reality distortion']
+            }
+        },
+
+        generateNft(printerModel, condition = 'good') {
+            const printer = this.printerDatabase[printerModel];
+            if (!printer) return null;
+
+            const nftType = printer.recyclability.nftUse;
+            const template = this.nftTemplates[nftType];
+            
+            if (!template) return null;
+
+            const crystalType = this.selectCrystal(template.edition);
+            const serialNumber = this.generateSerial(printerModel, Date.now());
+            
+            return {
+                id: `GBOT-LS-${serialNumber}`,
+                name: `${template.description} #${serialNumber}`,
+                edition: template.edition,
+                rarity: crystalType.rarity,
+                powerRating: template.powerRating,
+                baseValue: template.baseValue,
+                crystal: crystalType,
+                components: template.components,
+                abilities: template.abilities,
+                sourceModel: printerModel,
+                craftedAt: new Date().toISOString(),
+                condition: condition,
+                metadata: {
+                    blockchain: 'Solana',
+                    collection: 'GemBot Lightsabers',
+                    artist: 'Ryan Barbrick / Barbrick Design',
+                    frequency: crystalType.frequency,
+                    power: crystalType.power,
+                    salvageValue: printer.recyclability.salvageValue
+                }
+            };
+        },
+
+        selectCrystal(edition) {
+            const crystals = this.crystalTypes.tourmaline.varieties;
+            switch(edition.toLowerCase()) {
+                case 'common': return crystals['black-tourmaline'];
+                case 'uncommon': return crystals['pink-tourmaline'];
+                case 'rare': return crystals['green-tourmaline'];
+                case 'epic': return crystals['blue-tourmaline'];
+                case 'legendary': return crystals['watermelon-tourmaline'];
+                case 'mythic': return crystals['chrome-tourmaline'];
+                default: return crystals['black-tourmaline'];
+            }
+        },
+
+        generateSerial(model, timestamp) {
+            const modelCode = model.replace(/\s+/g, '').substring(0, 4).toUpperCase();
+            const timeCode = timestamp.toString().slice(-6);
+            return `${modelCode}-${timeCode}`;
+        }
+    },
+
+    // ========== BOARD DETECTION DATABASE ==========
     boardDatabase: {
         'RAMPS': {
-            manufacturer: 'RepRap',
+            manufacturer: 'RepRep',
             mcu: 'ATmega2560',
             voltage: '12V/24V',
             drivers: 'A4988/DRV8825',
@@ -136,6 +498,203 @@ const GemBotPrinterBridge = {
             voltage: '12V/24V',
             drivers: 'TMC2660/5160',
             features: ['WiFi', 'web interface', 'expansion boards']
+        },
+        'Smoothieboard': {
+            manufacturer: 'Smoothie',
+            mcu: 'LPC1769',
+            voltage: '12V/24V',
+            drivers: 'A5984',
+            features: ['ethernet', 'SD card', 'modular']
+        },
+        'Einsy': {
+            manufacturer: 'Prusa Research',
+            mcu: 'ATmega2560',
+            voltage: '24V',
+            drivers: 'TMC2130',
+            features: ['silent mode', 'PINDA probe', 'removable bed']
+        },
+        'Creality': {
+            manufacturer: 'Creality',
+            mcu: 'STM32F103/GD32F303',
+            voltage: '24V',
+            drivers: 'A4988/TMC2208',
+            features: ['basic LCD', 'SD card', 'upgradeable']
+        },
+        'MKS': {
+            manufacturer: 'Makerbase',
+            mcu: 'STM32F407',
+            voltage: '12V/24V',
+            drivers: 'TMC2209',
+            features: ['WiFi module', 'TFT display', 'relay control']
+        },
+        'Archim': {
+            manufacturer: 'UltiMachine',
+            mcu: 'SAM3X8E',
+            voltage: '12V/24V',
+            drivers: 'TMC2130',
+            features: ['32-bit', 'USB host', 'expandable']
+        }
+    },
+
+    // ========== COMMUNICATION PROTOCOLS ==========
+    communicationProtocols: {
+        marlin: {
+            baudRate: 115200,
+            lineEnding: '\n',
+            commands: {
+                probe: 'M115',
+                position: 'M114',
+                temperature: 'M105',
+                home: 'G28',
+                move: 'G1 X{x} Y{y} Z{z} F{feedrate}',
+                setTemp: 'M104 S{temp}',
+                fanSpeed: 'M106 S{speed}',
+                emergencyStop: 'M112'
+            },
+            responses: {
+                ok: 'ok',
+                error: 'Error:',
+                temperature: /T:\d+\.\d+/,
+                position: /X:\d+\.\d+ Y:\d+\.\d+ Z:\d+\.\d+/
+            }
+        },
+        klipper: {
+            baudRate: 115200,
+            lineEnding: '\n',
+            apiEndpoint: '/printer/objects/query',
+            commands: {
+                probe: 'STATUS',
+                position: 'GET_POSITION', 
+                temperature: 'QUERY_ADC',
+                home: 'G28',
+                move: 'G1 X{x} Y{y} Z{z} F{feedrate}',
+                emergencyStop: 'EMERGENCY_STOP'
+            },
+            moonrakerApi: true
+        },
+        reprap: {
+            baudRate: 57600,
+            lineEnding: '\n',
+            commands: {
+                probe: 'M115',
+                position: 'M114',
+                temperature: 'M408 S0',
+                home: 'G28',
+                move: 'G1 X{x} Y{y} Z{z} F{feedrate}',
+                setTemp: 'G10 P0 S{temp}',
+                emergencyStop: 'M112'
+            }
+        },
+        grbl: {
+            baudRate: 115200,
+            lineEnding: '\n',
+            commands: {
+                probe: '$I',
+                status: '?',
+                home: '$H',
+                move: 'G1 X{x} Y{y} Z{z} F{feedrate}',
+                emergencyStop: '!'
+            }
+        }
+    },
+
+    // ========== MENU INJECTION SYSTEM ==========
+    menuInjectionSystem: {
+        detectedMenus: {},
+        
+        injectGemBotMenu(targetSystem) {
+            const gemBotMenu = {
+                title: '💎 GemBot Control',
+                icon: 'gembot-icon.png',
+                items: [
+                    { id: 'gem-cutting', label: '💎 Gem Cutting Mode', action: () => this.enableGemCuttingMode() },
+                    { id: 'precision-movement', label: '📐 Precision Movement', action: () => this.showPrecisionControls() },
+                    { id: 'crystal-alignment', label: '🔮 Crystal Alignment', action: () => this.alignCrystal() },
+                    { id: 'tourmaline-settings', label: '💠 Tourmaline Settings', action: () => this.configureTourmaline() },
+                    { id: 'nft-creation', label: '🎭 Create Lightsaber NFT', action: () => this.createLightsaberNft() },
+                    { id: 'parts-inventory', label: '📦 Parts Inventory', action: () => this.showPartsInventory() },
+                    { id: 'recycling-mode', label: '♻️ Recycling Analysis', action: () => this.analyzeForRecycling() }
+                ]
+            };
+
+            switch(targetSystem) {
+                case 'octoprint':
+                    this.injectOctoPrintMenu(gemBotMenu);
+                    break;
+                case 'klipper':
+                    this.injectKlipperMenu(gemBotMenu);
+                    break;
+                case 'prusa':
+                    this.injectPrusaMenu(gemBotMenu);
+                    break;
+                case 'bambu':
+                    this.injectBambuMenu(gemBotMenu);
+                    break;
+                default:
+                    this.injectUniversalMenu(gemBotMenu);
+            }
+        },
+
+        injectOctoPrintMenu(menu) {
+            // Inject into OctoPrint's web interface
+            const navbar = document.querySelector('#navbar');
+            if (navbar) {
+                const gemBotTab = this.createMenuElement(menu);
+                navbar.appendChild(gemBotTab);
+                console.log('🖨️ GemBot menu injected into OctoPrint');
+            }
+        },
+
+        injectKlipperMenu(menu) {
+            // Inject into Fluidd/Mainsail interface
+            const sidebar = document.querySelector('.v-navigation-drawer__content');
+            if (sidebar) {
+                const gemBotSection = this.createMenuElement(menu);
+                sidebar.appendChild(gemBotSection);
+                console.log('🖨️ GemBot menu injected into Klipper interface');
+            }
+        },
+
+        createMenuElement(menu) {
+            const element = document.createElement('div');
+            element.className = 'gembot-menu-injection';
+            element.innerHTML = `
+                <div class="gembot-menu-header">
+                    <img src="${menu.icon}" alt="GemBot" />
+                    <span>${menu.title}</span>
+                </div>
+                <ul class="gembot-menu-items">
+                    ${menu.items.map(item => `
+                        <li class="gembot-menu-item" data-action="${item.id}">
+                            <a href="#" onclick="GemBotPrinterBridge.menuInjectionSystem.handleMenuClick('${item.id}')">${item.label}</a>
+                        </li>
+                    `).join('')}
+                </ul>
+            `;
+            return element;
+        },
+
+        handleMenuClick(actionId) {
+            const menuItem = this.getMenuItem(actionId);
+            if (menuItem && menuItem.action) {
+                menuItem.action();
+            }
+        },
+
+        getMenuItem(actionId) {
+            // This would return the corresponding menu item with its action
+            const actions = {
+                'gem-cutting': { action: () => this.enableGemCuttingMode() },
+                'precision-movement': { action: () => this.showPrecisionControls() },
+                'crystal-alignment': { action: () => this.alignCrystal() },
+                'tourmaline-settings': { action: () => this.configureTourmaline() },
+                'nft-creation': { action: () => this.createLightsaberNft() },
+                'parts-inventory': { action: () => this.showPartsInventory() },
+                'recycling-mode': { action: () => this.analyzeForRecycling() }
+            };
+            return actions[actionId];
+        }
+    },
         },
         'Smoothieboard': {
             manufacturer: 'Smoothie',
