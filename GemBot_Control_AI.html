@@ -91,7 +91,7 @@
         <!-- Firebase Modular SDK v12.6.0 -->
         <script type="module">
             import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-            import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+            import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
             import { getFirestore, doc, setDoc, getDoc, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
             import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-analytics.js";
 
@@ -115,6 +115,8 @@
             window.firebaseAuthFunctions = {
                 createUserWithEmailAndPassword: (email, password) => createUserWithEmailAndPassword(window.firebaseAuth, email, password),
                 signInWithEmailAndPassword: (email, password) => signInWithEmailAndPassword(window.firebaseAuth, email, password),
+                signInWithPopup: (provider) => signInWithPopup(window.firebaseAuth, provider),
+                GoogleAuthProvider: GoogleAuthProvider,
                 signOut: () => signOut(window.firebaseAuth),
                 onAuthStateChanged: (callback) => onAuthStateChanged(window.firebaseAuth, callback)
             };
@@ -572,6 +574,34 @@
             },
             continueAsGuest() {
                 authSystem.continueAsGuest();
+            }
+
+            // Google login handler
+            async function handleGoogleLogin() {
+                const submitBtn = document.querySelector('.google-login-btn');
+                const originalText = submitBtn.innerHTML;
+                
+                try {
+                    submitBtn.innerHTML = '⏳ Signing in...';
+                    submitBtn.disabled = true;
+                    
+                    await authSystem.loginWithGoogle();
+                    
+                    // Check if admin
+                    if (authSystem.isAdmin()) {
+                        addMessage('✅ Welcome back, Admin ' + authSystem.currentUser.username + '! 👑', 'success');
+                    } else {
+                        addMessage('✅ Welcome, ' + authSystem.currentUser.username + '!', 'success');
+                    }
+                    
+                } catch (error) {
+                    console.error('Google login error:', error);
+                    addMessage('❌ ' + error.message, 'error');
+                    
+                } finally {
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                }
             },
             toggleUserMenu() {
                 // Toggle user menu visibility using 'show' class
@@ -629,6 +659,38 @@
                 }
             }
         };
+
+        // Google login handler
+        async function handleGoogleLogin() {
+            const submitBtn = document.querySelector('.google-login-btn');
+            const originalText = submitBtn.innerHTML;
+            
+            try {
+                submitBtn.innerHTML = '⏳ Signing in...';
+                submitBtn.disabled = true;
+                
+                await authSystem.loginWithGoogle();
+                
+                // Check if admin
+                if (authSystem.isAdmin()) {
+                    document.getElementById('authError').innerHTML = '<div style="color: #4affff;">✅ Welcome back, Admin ' + authSystem.currentUser.username + '! 👑</div>';
+                } else {
+                    document.getElementById('authError').innerHTML = '<div style="color: #4affff;">✅ Welcome, ' + authSystem.currentUser.username + '!</div>';
+                }
+                
+                setTimeout(() => {
+                    document.getElementById('authError').innerHTML = '';
+                }, 3000);
+                
+            } catch (error) {
+                console.error('Google login error:', error);
+                document.getElementById('authError').textContent = error.message;
+                
+            } finally {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        }
     </script>
     
     <style>
@@ -2934,6 +2996,59 @@
             opacity: 0.5;
             cursor: not-allowed;
             transform: none;
+        }
+
+        .google-login-btn {
+            padding: 14px;
+            background: linear-gradient(135deg, #4285f4 0%, #34a853 50%, #ea4335 100%);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 10px;
+            width: 100%;
+            box-shadow: 0 4px 15px rgba(66, 133, 244, 0.3);
+        }
+
+        .google-login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(66, 133, 244, 0.4);
+        }
+
+        .google-login-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .auth-divider {
+            text-align: center;
+            margin: 15px 0;
+            color: #888;
+            font-size: 12px;
+            position: relative;
+        }
+
+        .auth-divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.2);
+            z-index: 1;
+        }
+
+        .auth-divider::after {
+            content: 'or';
+            background: #16213e;
+            padding: 0 15px;
+            position: relative;
+            z-index: 2;
         }
 
         .auth-error {
@@ -7598,6 +7713,13 @@
                     <input type="password" id="loginPassword" class="auth-input" placeholder="••••••••" required>
                 </div>
                 <button type="submit" class="auth-btn" id="loginBtn">🔐 Sign In</button>
+                
+                <div class="auth-divider">or</div>
+                
+                <button type="button" class="google-login-btn" onclick="handleGoogleLogin()">
+                    🔗 Sign in with Google
+                </button>
+                
                 <p class="text-small text-muted mt-12 text-center">
                     Registered on another device? Use <strong class="text-cyan">Link Device</strong> tab
                 </p>
@@ -8180,6 +8302,11 @@
                 <button id="headerLoginBtn" class="btn-primary btn-compact" onclick="authSystem.showAuthOverlay()" title="Sign In">
                     🔐 Login
                 </button>
+                
+                <!-- Admin Hub Button (shown for admin users) -->
+                <button id="headerAdminBtn" class="btn-primary btn-compact" onclick="authSystem.accessAdminHub()" title="Admin Hub" style="display:none;">
+                    👑 Admin
+                </button>
 
                 <!-- User Badge (after login) -->
                 <div id="userBadgeContainer" class="user-badge-container hidden">
@@ -8639,6 +8766,91 @@
                 // Show auth overlay if no valid session
                 this.showAuthOverlay();
                 return false;
+            },
+
+            // Google OAuth login
+            async loginWithGoogle() {
+                try {
+                    if (!window.firebaseInitialized) {
+                        throw new Error('Firebase not initialized');
+                    }
+
+                    const provider = new window.firebaseAuthFunctions.GoogleAuthProvider();
+                    provider.addScope('email');
+                    provider.addScope('profile');
+                    
+                    const result = await window.firebaseAuthFunctions.signInWithPopup(provider);
+                    const user = result.user;
+                    
+                    // Create user profile
+                    const userProfile = {
+                        uid: user.uid,
+                        username: user.displayName || user.email.split('@')[0],
+                        email: user.email,
+                        photoURL: user.photoURL,
+                        provider: 'google',
+                        created: new Date().toISOString(),
+                        lastLogin: new Date().toISOString()
+                    };
+                    
+                    // Save to Firestore
+                    const userDoc = window.firebaseDbFunctions.doc('users', user.uid);
+                    await window.firebaseDbFunctions.setDoc(userDoc, userProfile, { merge: true });
+                    
+                    this.currentUser = userProfile;
+                    this.sessionToken = await user.getIdToken();
+                    this.isGuest = false;
+                    
+                    this.saveSession();
+                    this.hideAuthOverlay();
+                    this.updateUserUI();
+                    this.broadcastAuth('login_google', userProfile);
+                    
+                    console.log('✅ Google login successful:', userProfile.username);
+                    return userProfile;
+                    
+                } catch (error) {
+                    console.error('❌ Google login failed:', error);
+                    
+                    // Provide user-friendly error messages
+                    let errorMessage = 'Google login failed. ';
+                    if (error.code === 'auth/popup-closed-by-user') {
+                        errorMessage += 'Sign-in popup was closed.';
+                    } else if (error.code === 'auth/popup-blocked') {
+                        errorMessage += 'Sign-in popup was blocked by browser.';
+                    } else if (error.code === 'auth/network-request-failed') {
+                        errorMessage += 'Network error. Please check your internet connection.';
+                    } else {
+                        errorMessage += error.message;
+                    }
+                    
+                    throw new Error(errorMessage);
+                }
+            },
+            
+            // Check admin access
+            isAdmin() {
+                if (!this.currentUser) return false;
+                
+                const adminEmails = [
+                    'barbrickdesign@gmail.com',
+                    'ryan@barbrickdesign.com',
+                    'admin@gembot.ai'
+                ];
+                
+                return adminEmails.includes(this.currentUser.email?.toLowerCase());
+            },
+
+            // Access admin hub
+            accessAdminHub() {
+                if (!this.isAdmin()) {
+                    alert('❌ Access Denied\n\nAdmin access required.\nContact: BarbrickDesign@gmail.com');
+                    return false;
+                }
+                
+                // Redirect to admin dashboard
+                window.open('./ADMIN_NEURAL_DASHBOARD.html', '_blank');
+                return true;
             },
             
             // Set up cross-device communication
@@ -9102,6 +9314,11 @@
                 this.sessionToken = null;
                 this.isGuest = false;
                 localStorage.removeItem('gembot_session');
+                
+                // Hide admin button on logout
+                const adminBtn = document.getElementById('adminButton');
+                if (adminBtn) adminBtn.style.display = 'none';
+                
                 this.showAuthOverlay();
                 this.updateUserUI();
                 console.log('✅ Logged out');
@@ -9182,10 +9399,20 @@
                 const avatar = document.getElementById('userAvatar');
                 const name = document.getElementById('userName');
                 const loginBtn = document.getElementById('headerLoginBtn');
+                const adminBtn = document.getElementById('headerAdminBtn');
                 
                 if (this.currentUser) {
                     if (badge) badge.classList.remove('hidden');
                     if (loginBtn) loginBtn.style.display = 'none';
+                    
+                    // Show admin button for admin users
+                    if (adminBtn) {
+                        if (this.isAdmin()) {
+                            adminBtn.style.display = 'inline-block';
+                        } else {
+                            adminBtn.style.display = 'none';
+                        }
+                    }
                     if (avatar) avatar.textContent = this.currentUser.username.charAt(0).toUpperCase();
                     if (name) {
                         name.textContent = this.currentUser.username;
