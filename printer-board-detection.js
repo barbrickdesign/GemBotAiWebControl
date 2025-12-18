@@ -695,19 +695,176 @@ const GemBotPrinterBridge = {
             return actions[actionId];
         }
     },
+
+    // ========== USB COMMUNICATION SYSTEM ==========
+    usbCommunication: {
+        supportedDevices: [
+            // Arduino-based boards
+            { vendorId: 0x2341, productId: 0x0043, name: 'Arduino Uno' },
+            { vendorId: 0x2341, productId: 0x0001, name: 'Arduino Uno (Rev 1)' },
+            { vendorId: 0x2341, productId: 0x0042, name: 'Arduino Mega 2560 Rev3' },
+            { vendorId: 0x2341, productId: 0x0010, name: 'Arduino Mega 2560' },
+            
+            // FTDI chips (common in 3D printers)
+            { vendorId: 0x0403, productId: 0x6001, name: 'FTDI FT232R' },
+            { vendorId: 0x0403, productId: 0x6015, name: 'FTDI FT231X' },
+            
+            // CP210x chips (Silicon Labs)
+            { vendorId: 0x10C4, productId: 0xEA60, name: 'CP210x UART Bridge' },
+            
+            // CH340/CH341 chips (common in Chinese boards)
+            { vendorId: 0x1A86, productId: 0x7523, name: 'CH341 UART' },
+            { vendorId: 0x1A86, productId: 0x5523, name: 'CH340 UART' },
+            
+            // STM32-based boards
+            { vendorId: 0x0483, productId: 0x5740, name: 'STM32 Virtual COM Port' },
+            { vendorId: 0x0483, productId: 0x374B, name: 'STM32 DFU Mode' },
+            
+            // Prusa specific
+            { vendorId: 0x2C99, productId: 0x0002, name: 'Prusa i3 MK3' },
+            
+            // Creality specific  
+            { vendorId: 0x1D50, productId: 0x6029, name: 'Creality 3D Printer' }
+        ],
+
+        async scanForPrinters() {
+            const detectedPrinters = [];
+            
+            try {
+                // Get all serial ports
+                const ports = await navigator.serial.getPorts();
+                console.log(`🔍 Found ${ports.length} serial ports`);
+                
+                for (const port of ports) {
+                    const info = port.getInfo();
+                    const device = this.identifyDevice(info);
+                    
+                    if (device) {
+                        console.log(`🖨️ Detected: ${device.name} (VID: 0x${info.usbVendorId?.toString(16)}, PID: 0x${info.usbProductId?.toString(16)})`);
+                        
+                        // Try to connect and identify printer
+                        const printerInfo = await this.probePrinter(port, device);
+                        if (printerInfo) {
+                            detectedPrinters.push({
+                                port: port,
+                                device: device,
+                                printer: printerInfo
+                            });
+                        }
+                    }
+                }
+                
+                // Also scan for network-connected printers
+                const networkPrinters = await this.scanNetworkPrinters();
+                detectedPrinters.push(...networkPrinters);
+                
+            } catch (error) {
+                console.error('❌ Error scanning for printers:', error);
+            }
+            
+            return detectedPrinters;
         },
-        'Smoothieboard': {
-            manufacturer: 'Smoothie',
-            mcu: 'LPC1769',
-            voltage: '12V/24V',
-            drivers: 'A5984',
-            features: ['ethernet', 'SD card', 'modular']
+
+        identifyDevice(info) {
+            return this.supportedDevices.find(device => 
+                device.vendorId === info.usbVendorId && 
+                device.productId === info.usbProductId
+            );
         },
-        'Einsy': {
-            manufacturer: 'Prusa Research',
+
+        async probePrinter(port, device) {
+            try {
+                // Open the serial connection
+                await port.open({ baudRate: 115200 });
+                console.log(`🔗 Connected to ${device.name}`);
+                
+                const writer = port.writable.getWriter();
+                const reader = port.readable.getReader();
+                
+                // Send firmware identification command
+                await writer.write(new TextEncoder().encode('M115\n'));
+                
+                // Read response with timeout
+                const response = await this.readWithTimeout(reader, 5000);
+                
+                // Analyze firmware response
+                const firmwareInfo = this.analyzeFirmwareResponse(response);
+                
+                // Try to identify printer model
+                const printerModel = this.identifyPrinterModel(firmwareInfo, response);
+                
+                // Clean up connection
+                reader.releaseLock();
+                writer.releaseLock();
+                await port.close();
+                
+                return {
+                    firmware: firmwareInfo,
+                    model: printerModel,
+                    capabilities: this.detectCapabilities(response),
+                    rawResponse: response
+                };
+                
+            } catch (error) {
+                console.warn(`⚠️ Could not probe ${device.name}:`, error.message);
+                try {
+                    await port.close();
+                } catch (e) {}
+                return null;
+            }
+        }
+    },
+
+    // ========== PARTS INVENTORY SYSTEM ==========
+    partsInventory: {
+        inventory: {},
+        
+        addToInventory(printerModel, condition = 'unknown') {
+            const printer = GemBotPrinterBridge.printerDatabase[printerModel];
+            if (!printer) return false;
+            
+            const inventoryId = `INV-${Date.now()}-${printerModel.replace(/\s+/g, '')}`;
+            const analysis = this.analyzePrinterForParts(printerModel);
+            
+            this.inventory[inventoryId] = {
+                ...analysis,
+                addedAt: new Date().toISOString(),
+                condition: condition,
+                status: 'available'
+            };
+            
+            console.log(`📦 Added ${printerModel} to parts inventory (ID: ${inventoryId})`);
+            return inventoryId;
+        },
+
+        analyzePrinterForParts(printerModel) {
+            const printer = GemBotPrinterBridge.printerDatabase[printerModel];
+            if (!printer) return null;
+            
+            return {
+                model: printerModel,
+                manufacturer: printer.manufacturer,
+                totalValue: printer.recyclability.salvageValue,
+                ecoRating: printer.recyclability.ecoRating,
+                nftPotential: printer.recyclability.nftUse,
+                parts: Object.entries(printer.parts).map(([name, info]) => ({
+                    name,
+                    model: info.model,
+                    value: info.value,
+                    condition: info.condition
+                }))
+            };
+        }
+    },
+
+    // Board database continues...
+    boardDatabase: {
+        'RAMPS': {
+            manufacturer: 'RepRep',
             mcu: 'ATmega2560',
-            voltage: '24V',
-            drivers: 'TMC2130',
+            voltage: '12V/24V',
+            drivers: 'A4988/DRV8825',
+            features: ['5 stepper drivers', 'heated bed', '3 thermistors']
             features: ['silent mode', 'PINDA probe', 'removable bed']
         },
         'Creality': {
