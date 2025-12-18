@@ -262,6 +262,49 @@ const GemBotPrinterBridge = {
             commonIssues: ['wifi connectivity', 'extruder calibration']
         },
 
+        // ========== ARTILLERY SERIES ==========
+        'Artillery Sidewinder X1': {
+            manufacturer: 'Artillery',
+            year: 2020,
+            bedSize: { x: 300, y: 300, z: 400 },
+            board: 'Artillery Ruby',
+            firmware: 'marlin',
+            specs: {
+                dualZMotors: true,
+                leadScrewPitch: '8mm',
+                layerHeight: '0.1mm',
+                gemBotCompatibility: 'Excellent - Dual Z perfect for angle control'
+            },
+            gemBotConversion: {
+                feasibilityScore: 95,
+                angleControlMotors: 'Dual Z-axis steppers (NEMA 17)',
+                verticalControl: 'Y-axis stepper',
+                motorPrecision: '0.1125° angle / 0.1mm vertical',
+                estimatedConversionTime: '8-10 hours',
+                costSavings: '$3,350 vs new GemBot Trinity'
+            },
+            parts: {
+                hotend: { model: 'Volcano all-metal', value: 45, condition: 'excellent' },
+                stepperMotors: { count: 5, model: 'Dual Z NEMA17 + XY + E', value: 25, condition: 'excellent' },
+                bed: { type: 'heated glass 310x310mm', size: '310x310mm', value: 60, condition: 'excellent' },
+                extruder: { type: 'direct drive titan', model: 'Titan', value: 35, condition: 'excellent' },
+                frame: { material: 'aluminum extrusion heavy duty', value: 80, condition: 'excellent' },
+                psu: { specs: '24V 400W', value: 40, condition: 'excellent' },
+                display: { type: 'TFT35 touchscreen', value: 45, condition: 'excellent' },
+                dualZMotors: { type: 'synchronized NEMA17', value: 50, condition: 'excellent', applications: ['GemBot angle control', 'precision positioning'] },
+                leveling: { type: 'auto bed leveling', value: 25, condition: 'excellent' },
+                enclosure: { type: 'partial side panels', value: 35, condition: 'good' }
+            },
+            recyclability: {
+                nftUse: 'dual-motor-precision-lightsaber',
+                gemCutting: 'dual-stepper-angle-control',
+                salvageValue: 440,
+                ecoRating: 8.7,
+                gemBotConversionRating: 'Ideal for Trinity conversion'
+            },
+            commonIssues: ['bed warping', 'dual Z sync', 'extruder calibration']
+        },
+
         // ========== BAMBU LAB SERIES ==========
         'Bambu Lab X1 Carbon': {
             manufacturer: 'Bambu Lab',
@@ -854,6 +897,273 @@ const GemBotPrinterBridge = {
                     condition: info.condition
                 }))
             };
+        },
+
+        // GemBot Trinity Motor Conversion System
+        motorConversion: {
+            // Analyze printer for GemBot motor compatibility
+            analyzeForGemBotConversion: function(printerModel) {
+                const printer = GemBotPrinterBridge.printerDatabase[printerModel];
+                if (!printer) return null;
+                
+                const conversion = {
+                    printerModel: printerModel,
+                    manufacturer: printer.manufacturer,
+                    gemBotVersion: 'Trinity v3.0',
+                    feasibility: this.calculateFeasibility(printer),
+                    motorMapping: this.generateMotorMapping(printer),
+                    wiring: this.generateWiringPlan(printer),
+                    controllerIntegration: this.planControllerIntegration(printer),
+                    estimatedBuildTime: this.estimateBuildTime(printer),
+                    costSavings: this.calculateCostSavings(printer)
+                };
+                
+                return conversion;
+            },
+            
+            // Generate motor mapping for GemBot Trinity
+            generateMotorMapping: function(printer) {
+                return {
+                    // Use dual Z motors for precision angle control
+                    angleControl: {
+                        source: 'Z-axis dual motors',
+                        motorType: 'NEMA 17 Stepper',
+                        stepsPerRevolution: 200,
+                        microstepping: 16,
+                        totalSteps: 3200, // 200 * 16
+                        gearing: '1:1 direct drive',
+                        precision: '0.1125° per step', // 360° / 3200
+                        usage: 'High precision gem angle positioning',
+                        wiring: 'Extend Z-motor cables with jumper to GemBot angle mount'
+                    },
+                    
+                    // Y-axis becomes up/down control
+                    verticalControl: {
+                        source: 'Y-axis motor (build plate)',
+                        motorType: 'NEMA 17 Stepper',
+                        stepsPerRevolution: 200,
+                        microstepping: 16,
+                        leadScrewPitch: printer.specs?.leadScrewPitch || '8mm',
+                        precision: printer.specs?.layerHeight || '0.1mm',
+                        usage: 'Vertical positioning for gem cutting depth',
+                        wiring: 'Direct connection via existing Y-motor cables'
+                    },
+                    
+                    // X-axis removed/repurposed
+                    removedMotor: {
+                        source: 'X-axis motor (left/right)',
+                        status: 'REMOVED - Not needed for GemBot Trinity',
+                        repurpose: 'Spare motor for future upgrades or projects',
+                        value: '$25 salvage value'
+                    },
+                    
+                    // Index control stays on Arduino
+                    indexControl: {
+                        source: 'Arduino + Motor Shield (existing)',
+                        motorType: 'Custom 96-step precision stepper',
+                        stepsPerRevolution: 96,
+                        precision: '3.75° per step', // 360° / 96
+                        facetAccuracy: 'True to traditional faceting designs',
+                        usage: 'Precise gem rotation for facet cutting',
+                        connection: 'USB serial to main controller',
+                        integration: 'Parallel control with 3D printer board'
+                    }
+                };
+            },
+            
+            // Generate detailed wiring plan
+            generateWiringPlan: function(printer) {
+                return {
+                    overview: 'Convert 3D printer to GemBot Trinity gem cutting machine',
+                    
+                    step1_preparation: {
+                        title: 'Printer Preparation',
+                        actions: [
+                            'Power down and disconnect 3D printer',
+                            'Remove print head assembly (extruder/hotend)',
+                            'Remove X-axis motor and belt system',
+                            'Keep Y-axis (build plate) and dual Z-motors intact',
+                            'Preserve all motor driver connections'
+                        ]
+                    },
+                    
+                    step2_motor_remapping: {
+                        title: 'Motor Connection Remapping',
+                        connections: {
+                            'Z1_MOTOR': 'GemBot Angle Control Motor #1',
+                            'Z2_MOTOR': 'GemBot Angle Control Motor #2', 
+                            'Y_MOTOR': 'GemBot Vertical Control',
+                            'X_MOTOR': 'DISCONNECTED (removed)',
+                            'E0_MOTOR': 'DISCONNECTED (extruder removed)'
+                        },
+                        wiringExtensions: [
+                            'Extend Z1/Z2 motor cables with 2-meter jumper cables',
+                            'Route cables to GemBot angle control mount',
+                            'Ensure proper shielding for precision control'
+                        ]
+                    },
+                    
+                    step3_arduino_integration: {
+                        title: 'Arduino Index Control Integration',
+                        setup: [
+                            'Keep existing Arduino + motor shields for index control',
+                            'Connect Arduino via USB to main computer',
+                            'Run parallel serial communication:',
+                            '  - 3D printer board: Angle + Vertical control',
+                            '  - Arduino: Index motor (96-step precision)'
+                        ],
+                        motorSpecs: {
+                            type: '96-step precision stepper',
+                            stepsPerRevolution: 96,
+                            stepAngle: '3.75°',
+                            facetingCompatibility: 'Traditional gem cutting standards'
+                        }
+                    },
+                    
+                    step4_software_integration: {
+                        title: 'Software Control Integration',
+                        approach: 'Dual-controller system',
+                        implementation: [
+                            'Use Web Serial API for 3D printer board communication',
+                            'Send G-code commands for Y (vertical) and Z (angle) control',
+                            'Parallel Arduino communication for index control',
+                            'Coordinate movements through master control script'
+                        ]
+                    }
+                };
+            },
+            
+            // Plan controller integration
+            planControllerIntegration: function(printer) {
+                return {
+                    approach: 'Hybrid Control System',
+                    
+                    printerBoardControl: {
+                        device: printer.controlBoard || 'Original 3D printer mainboard',
+                        motors: ['Y-axis (vertical)', 'Dual Z-axis (angle control)'],
+                        communication: 'Web Serial API + G-code',
+                        commands: {
+                            verticalMove: 'G1 Y{position} F{feedrate}',
+                            angleControl: 'G1 Z{angle} F{feedrate}',
+                            home: 'G28 Y Z',
+                            position: 'M114 (get current position)'
+                        },
+                        advantages: [
+                            'Existing stepper drivers and power supply',
+                            'Proven motion control firmware',
+                            'Web browser integration',
+                            'No additional hardware costs'
+                        ]
+                    },
+                    
+                    arduinoIndexControl: {
+                        device: 'Arduino + Motor Shield (existing)',
+                        motor: '96-step precision stepper',
+                        communication: 'USB Serial (parallel to printer)',
+                        commands: {
+                            rotate: 'ROTATE {steps}',
+                            home: 'HOME',
+                            position: 'POS?',
+                            calibrate: 'CAL'
+                        },
+                        advantages: [
+                            'Proven index control system',
+                            'Precision 96-step motor compatibility',
+                            'Independent operation',
+                            'Faceting standard compliance'
+                        ]
+                    },
+                    
+                    masterControl: {
+                        software: 'GemBot Trinity Control Interface',
+                        coordination: 'Synchronized dual-serial communication',
+                        features: [
+                            'Unified cutting pattern programming',
+                            'Coordinated 3-axis movement',
+                            'Safety interlocks and limits',
+                            'Progress monitoring and logging'
+                        ]
+                    }
+                };
+            },
+            
+            // Calculate conversion feasibility
+            calculateFeasibility: function(printer) {
+                let score = 0;
+                let maxScore = 100;
+                
+                // Check for dual Z motors (critical for angle control)
+                if (printer.specs?.dualZMotors || printer.model.includes('Artillery') || printer.model.includes('Ender 3')) {
+                    score += 40; // Most important factor
+                }
+                
+                // Check build volume (larger is better for gem cutting)
+                const buildVol = printer.buildVolume;
+                if (buildVol && (buildVol.includes('220') || buildVol.includes('250'))) {
+                    score += 20;
+                }
+                
+                // Check for quality components
+                if (printer.type === 'FDM' && printer.manufacturer !== 'Unknown') {
+                    score += 20;
+                }
+                
+                // Check for standard stepper motors
+                const hasStandardSteppers = printer.parts && Object.values(printer.parts).some(part => 
+                    part.name && (part.name.includes('NEMA 17') || part.name.includes('Stepper'))
+                );
+                if (hasStandardSteppers) score += 20;
+                
+                return {
+                    score: score,
+                    percentage: Math.round((score / maxScore) * 100),
+                    rating: score >= 80 ? 'Excellent' : score >= 60 ? 'Good' : score >= 40 ? 'Fair' : 'Poor',
+                    recommendation: score >= 60 ? 'Highly recommended for conversion' : 
+                                  score >= 40 ? 'Suitable with modifications' : 'Consider alternative printer'
+                };
+            },
+            
+            // Estimate build time
+            estimateBuildTime: function(printer) {
+                return {
+                    disassembly: '2-3 hours',
+                    wiringModification: '3-4 hours', 
+                    softwareSetup: '1-2 hours',
+                    testing: '2-3 hours',
+                    total: '8-12 hours',
+                    complexity: 'Intermediate (requires basic electronics knowledge)',
+                    tools: [
+                        'Screwdriver set',
+                        'Wire strippers/crimpers',
+                        'Jumper cables (2-meter)',
+                        'Multimeter',
+                        'Computer with Chrome/Edge browser'
+                    ]
+                };
+            },
+            
+            // Calculate cost savings
+            calculateCostSavings: function(printer) {
+                const newGemBotCost = 3500; // Estimated new GemBot Trinity cost
+                const conversionCost = 150;  // Wire, connectors, labor
+                const printerValue = printer.recyclability?.salvageValue || 200;
+                
+                return {
+                    newGemBotCost: newGemBotCost,
+                    conversionCost: conversionCost,
+                    printerValue: printerValue,
+                    totalCost: conversionCost, // You already own the printer
+                    savings: newGemBotCost - conversionCost,
+                    savingsPercentage: Math.round(((newGemBotCost - conversionCost) / newGemBotCost) * 100),
+                    roi: 'Immediate - functional gem cutting machine',
+                    additionalBenefits: [
+                        'Sustainable recycling of electronics',
+                        'Learning experience in machine conversion',
+                        'Customizable for specific gem types',
+                        'Scalable for multiple machine builds'
+                    ]
+                };
+            }
         }
     },
 

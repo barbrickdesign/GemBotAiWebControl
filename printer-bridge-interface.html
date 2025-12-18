@@ -481,16 +481,29 @@
                     <div class="printer-card">
                         <div class="printer-header">
                             <span class="printer-name">${printer.printer.model}</span>
-                            <button onclick="createNftFromPrinter('${printer.printer.model}')" 
-                                    style="background: linear-gradient(45deg, #ffd700, #9f7aea); border: none; padding: 8px 16px; border-radius: 6px; color: #1a1f3a; font-weight: bold; cursor: pointer;">
-                                ⚔️ Create NFT
-                            </button>
+                            <div style="display: flex; gap: 8px;">
+                                <button onclick="createNftFromPrinter('${printer.printer.model}')" 
+                                        style="background: linear-gradient(45deg, #ffd700, #9f7aea); border: none; padding: 8px 16px; border-radius: 6px; color: #1a1f3a; font-weight: bold; cursor: pointer;">
+                                    ⚔️ Create NFT
+                                </button>
+                                <button onclick="analyzeForTrinityConversion('${printer.printer.model}')" 
+                                        style="background: linear-gradient(45deg, #4affff, #10b981); border: none; padding: 8px 16px; border-radius: 6px; color: #1a1f3a; font-weight: bold; cursor: pointer;">
+                                    🔧 Trinity Convert
+                                </button>
+                            </div>
                         </div>
                         <div class="printer-details">
                             <div><strong>Firmware:</strong> ${printer.printer.firmware.name} ${printer.printer.firmware.version}</div>
                             <div><strong>Board:</strong> ${printer.device.name}</div>
                             <div><strong>Manufacturer:</strong> ${printerData?.manufacturer || 'Unknown'}</div>
                             <div><strong>Salvage Value:</strong> $${printerData?.recyclability?.salvageValue || 0}</div>
+                            ${printerData?.gemBotConversion ? `
+                                <div style="grid-column: span 2; margin-top: 10px; padding: 10px; background: rgba(74, 255, 255, 0.1); border-radius: 8px; border-left: 4px solid #4affff;">
+                                    <strong>🎯 GemBot Compatibility:</strong> ${printerData.gemBotConversion.feasibilityScore}/100 
+                                    <br><small style="color: #9f7aea;">Angle Motors: ${printerData.gemBotConversion.angleControlMotors}</small>
+                                    <br><small style="color: #9f7aea;">Estimated Savings: ${printerData.gemBotConversion.costSavings}</small>
+                                </div>
+                            ` : ''}
                         </div>
                     </div>
                 `;
@@ -519,6 +532,266 @@
                 
                 setTimeout(() => success.remove(), 5000);
             }
+        }
+        
+        // Analyze for GemBot Trinity conversion
+        function analyzeForTrinityConversion(printerModel) {
+            const analysis = GemBotPrinterBridge.partsInventory.motorConversion.analyzeForGemBotConversion(printerModel);
+            
+            if (analysis) {
+                // Create modal or detailed view
+                const modal = document.createElement('div');
+                modal.style.cssText = `
+                    position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+                    background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); 
+                    z-index: 10000; display: flex; align-items: center; justify-content: center;
+                `;
+                
+                modal.innerHTML = `
+                    <div style="background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #2d1f3a 100%); 
+                                border-radius: 20px; padding: 30px; max-width: 800px; max-height: 90vh; 
+                                overflow-y: auto; border: 2px solid #4affff; color: #e6edf3;">
+                        <h2 style="color: #4affff; margin-bottom: 20px;">🔧 GemBot Trinity Conversion Analysis</h2>
+                        <h3 style="color: #ffd700;">📋 ${analysis.printerModel} → ${analysis.gemBotVersion}</h3>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
+                            <div>
+                                <h4 style="color: #9f7aea;">⚡ Feasibility Analysis</h4>
+                                <p><strong>Rating:</strong> ${analysis.feasibility.rating} (${analysis.feasibility.percentage}%)</p>
+                                <p><strong>Recommendation:</strong> ${analysis.feasibility.recommendation}</p>
+                            </div>
+                            <div>
+                                <h4 style="color: #9f7aea;">💰 Cost Analysis</h4>
+                                <p><strong>New GemBot Cost:</strong> $${analysis.costSavings.newGemBotCost}</p>
+                                <p><strong>Conversion Cost:</strong> $${analysis.costSavings.conversionCost}</p>
+                                <p><strong>Total Savings:</strong> $${analysis.costSavings.savings} (${analysis.costSavings.savingsPercentage}%)</p>
+                            </div>
+                        </div>
+                        
+                        <h4 style="color: #9f7aea;">🎛️ Motor Mapping</h4>
+                        <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; margin: 10px 0;">
+                            <p><strong>🔄 Angle Control:</strong> ${analysis.motorMapping.angleControl.source}</p>
+                            <p style="margin-left: 20px; color: #c9d1d9;">Precision: ${analysis.motorMapping.angleControl.precision}</p>
+                            
+                            <p><strong>⬆️ Vertical Control:</strong> ${analysis.motorMapping.verticalControl.source}</p>
+                            <p style="margin-left: 20px; color: #c9d1d9;">Precision: ${analysis.motorMapping.verticalControl.precision}</p>
+                            
+                            <p><strong>🎯 Index Control:</strong> ${analysis.motorMapping.indexControl.source}</p>
+                            <p style="margin-left: 20px; color: #c9d1d9;">Precision: ${analysis.motorMapping.indexControl.precision} (96-step motor)</p>
+                            
+                            <p><strong>❌ Removed:</strong> ${analysis.motorMapping.removedMotor.source}</p>
+                            <p style="margin-left: 20px; color: #f59e0b;">Repurpose: ${analysis.motorMapping.removedMotor.repurpose}</p>
+                        </div>
+                        
+                        <h4 style="color: #9f7aea;">⏱️ Build Timeline</h4>
+                        <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; margin: 10px 0;">
+                            <p><strong>Total Time:</strong> ${analysis.estimatedBuildTime.total}</p>
+                            <p><strong>Complexity:</strong> ${analysis.estimatedBuildTime.complexity}</p>
+                            <ul style="margin-left: 20px; color: #c9d1d9;">
+                                <li>Disassembly: ${analysis.estimatedBuildTime.disassembly}</li>
+                                <li>Wiring: ${analysis.estimatedBuildTime.wiringModification}</li>
+                                <li>Software: ${analysis.estimatedBuildTime.softwareSetup}</li>
+                                <li>Testing: ${analysis.estimatedBuildTime.testing}</li>
+                            </ul>
+                        </div>
+                        
+                        <div style="display: flex; gap: 15px; margin-top: 30px;">
+                            <button onclick="downloadConversionGuide('${analysis.printerModel}')" 
+                                    style="flex: 1; padding: 12px; background: linear-gradient(45deg, #4affff, #9f7aea); 
+                                    border: none; border-radius: 8px; color: #1a1f3a; font-weight: bold; cursor: pointer;">
+                                📋 Download Conversion Guide
+                            </button>
+                            <button onclick="this.parentElement.parentElement.parentElement.remove()" 
+                                    style="flex: 1; padding: 12px; background: linear-gradient(45deg, #f59e0b, #dc2626); 
+                                    border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer;">
+                                ✖️ Close
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                document.body.appendChild(modal);
+                
+                // Close on background click
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) modal.remove();
+                });
+            }
+        }
+        
+        // Download conversion guide
+        function downloadConversionGuide(printerModel) {
+            const analysis = GemBotPrinterBridge.partsInventory.motorConversion.analyzeForGemBotConversion(printerModel);
+            if (!analysis) return;
+            
+            const guide = generateConversionGuideText(analysis);
+            
+            const blob = new Blob([guide], { type: 'text/markdown' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${printerModel.replace(/\s+/g, '_')}_GemBot_Trinity_Conversion_Guide.md`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        function generateConversionGuideText(analysis) {
+            return `# GemBot Trinity Conversion Guide
+# ${analysis.printerModel} → ${analysis.gemBotVersion}
+
+## 🎯 Conversion Overview
+- **Feasibility:** ${analysis.feasibility.rating} (${analysis.feasibility.percentage}%)
+- **Estimated Time:** ${analysis.estimatedBuildTime.total}
+- **Cost Savings:** $${analysis.costSavings.savings} (${analysis.costSavings.savingsPercentage}% vs new)
+- **Complexity:** ${analysis.estimatedBuildTime.complexity}
+
+## 🎛️ Motor Mapping & Control System
+
+### 🔄 Angle Control (Dual Z-Motor System)
+- **Source:** ${analysis.motorMapping.angleControl.source}
+- **Motor Type:** ${analysis.motorMapping.angleControl.motorType}
+- **Precision:** ${analysis.motorMapping.angleControl.precision}
+- **Total Steps:** ${analysis.motorMapping.angleControl.totalSteps}
+- **Usage:** ${analysis.motorMapping.angleControl.usage}
+- **Wiring:** ${analysis.motorMapping.angleControl.wiring}
+
+### ⬆️ Vertical Control (Y-Axis Repurpose)
+- **Source:** ${analysis.motorMapping.verticalControl.source}
+- **Motor Type:** ${analysis.motorMapping.verticalControl.motorType}
+- **Lead Screw:** ${analysis.motorMapping.verticalControl.leadScrewPitch}
+- **Precision:** ${analysis.motorMapping.verticalControl.precision}
+- **Usage:** ${analysis.motorMapping.verticalControl.usage}
+- **Wiring:** ${analysis.motorMapping.verticalControl.wiring}
+
+### 🎯 Index Control (Arduino System)
+- **Source:** ${analysis.motorMapping.indexControl.source}
+- **Motor Type:** ${analysis.motorMapping.indexControl.motorType}
+- **Steps per Revolution:** ${analysis.motorMapping.indexControl.stepsPerRevolution}
+- **Precision:** ${analysis.motorMapping.indexControl.precision}
+- **Facet Accuracy:** ${analysis.motorMapping.indexControl.facetAccuracy}
+- **Connection:** ${analysis.motorMapping.indexControl.connection}
+- **Integration:** ${analysis.motorMapping.indexControl.integration}
+
+### ❌ Removed Components
+- **Source:** ${analysis.motorMapping.removedMotor.source}
+- **Status:** ${analysis.motorMapping.removedMotor.status}
+- **Repurpose:** ${analysis.motorMapping.removedMotor.repurpose}
+- **Value:** ${analysis.motorMapping.removedMotor.value}
+
+## 🔧 Step-by-Step Conversion Process
+
+### ${analysis.wiring.step1_preparation.title}
+${analysis.wiring.step1_preparation.actions.map(action => \`- \${action}\`).join('\\n')}
+
+### ${analysis.wiring.step2_motor_remapping.title}
+**Motor Connections:**
+${Object.entries(analysis.wiring.step2_motor_remapping.connections).map(([motor, purpose]) => \`- **\${motor}:** \${purpose}\`).join('\\n')}
+
+**Wiring Extensions:**
+${analysis.wiring.step2_motor_remapping.wiringExtensions.map(ext => \`- \${ext}\`).join('\\n')}
+
+### ${analysis.wiring.step3_arduino_integration.title}
+**Setup Steps:**
+${analysis.wiring.step3_arduino_integration.setup.map(step => \`- \${step}\`).join('\\n')}
+
+**Motor Specifications:**
+- **Type:** ${analysis.wiring.step3_arduino_integration.motorSpecs.type}
+- **Steps/Rev:** ${analysis.wiring.step3_arduino_integration.motorSpecs.stepsPerRevolution}
+- **Step Angle:** ${analysis.wiring.step3_arduino_integration.motorSpecs.stepAngle}
+- **Compatibility:** ${analysis.wiring.step3_arduino_integration.motorSpecs.facetingCompatibility}
+
+### ${analysis.wiring.step4_software_integration.title}
+**Approach:** ${analysis.wiring.step4_software_integration.approach}
+
+**Implementation Steps:**
+${analysis.wiring.step4_software_integration.implementation.map(step => \`- \${step}\`).join('\\n')}
+
+## 🎮 Controller Integration Details
+
+### 🖥️ 3D Printer Board Control
+- **Device:** ${analysis.controllerIntegration.printerBoardControl.device}
+- **Motors:** ${analysis.controllerIntegration.printerBoardControl.motors.join(', ')}
+- **Communication:** ${analysis.controllerIntegration.printerBoardControl.communication}
+
+**G-code Commands:**
+- **Vertical Move:** \\\`${analysis.controllerIntegration.printerBoardControl.commands.verticalMove}\\\`
+- **Angle Control:** \\\`${analysis.controllerIntegration.printerBoardControl.commands.angleControl}\\\`
+- **Homing:** \\\`${analysis.controllerIntegration.printerBoardControl.commands.home}\\\`
+- **Position Check:** \\\`${analysis.controllerIntegration.printerBoardControl.commands.position}\\\`
+
+**Advantages:**
+${analysis.controllerIntegration.printerBoardControl.advantages.map(adv => \`- \${adv}\`).join('\\n')}
+
+### 🤖 Arduino Index Control
+- **Device:** ${analysis.controllerIntegration.arduinoIndexControl.device}
+- **Motor:** ${analysis.controllerIntegration.arduinoIndexControl.motor}
+- **Communication:** ${analysis.controllerIntegration.arduinoIndexControl.communication}
+
+**Control Commands:**
+- **Rotate:** \\\`${analysis.controllerIntegration.arduinoIndexControl.commands.rotate}\\\`
+- **Home:** \\\`${analysis.controllerIntegration.arduinoIndexControl.commands.home}\\\`
+- **Position:** \\\`${analysis.controllerIntegration.arduinoIndexControl.commands.position}\\\`
+- **Calibrate:** \\\`${analysis.controllerIntegration.arduinoIndexControl.commands.calibrate}\\\`
+
+**Advantages:**
+${analysis.controllerIntegration.arduinoIndexControl.advantages.map(adv => \`- \${adv}\`).join('\\n')}
+
+### 🎛️ Master Control System
+- **Software:** ${analysis.controllerIntegration.masterControl.software}
+- **Coordination:** ${analysis.controllerIntegration.masterControl.coordination}
+
+**Features:**
+${analysis.controllerIntegration.masterControl.features.map(feature => \`- \${feature}\`).join('\\n')}
+
+## ⏱️ Timeline & Resources
+
+### Time Breakdown
+- **Disassembly:** ${analysis.estimatedBuildTime.disassembly}
+- **Wiring Modification:** ${analysis.estimatedBuildTime.wiringModification}
+- **Software Setup:** ${analysis.estimatedBuildTime.softwareSetup}
+- **Testing & Calibration:** ${analysis.estimatedBuildTime.testing}
+- **Total Time:** ${analysis.estimatedBuildTime.total}
+
+### Required Tools
+${analysis.estimatedBuildTime.tools.map(tool => \`- \${tool}\`).join('\\n')}
+
+## 💰 Cost Analysis
+
+| Item | Cost |
+|------|------|
+| New GemBot Trinity | $${analysis.costSavings.newGemBotCost} |
+| Conversion Parts/Labor | $${analysis.costSavings.conversionCost} |
+| **Total Project Cost** | **$${analysis.costSavings.totalCost}** |
+| **Total Savings** | **$${analysis.costSavings.savings} (${analysis.costSavings.savingsPercentage}%)** |
+
+### Additional Benefits
+${analysis.costSavings.additionalBenefits.map(benefit => \`- \${benefit}\`).join('\\n')}
+
+## ⚠️ Important Notes
+
+### Safety Considerations
+- Always disconnect power before working on electrical connections
+- Use proper ESD protection when handling control boards
+- Ensure all connections are secure before powering on
+- Test each motor independently before coordinated movements
+
+### Quality Assurance
+- Verify motor directions match expected movement
+- Calibrate home positions for all axes
+- Test emergency stop functionality
+- Document all wiring changes for future reference
+
+### Software Requirements
+- Chrome or Edge browser (Web Serial API support)
+- Arduino IDE for index motor programming
+- USB drivers for both printer board and Arduino
+
+---
+
+**Generated by GemBot 3D Printer Bridge System**
+**© 2024-2025 Ryan Barbrick / Barbrick Design**
+
+*For support and updates, visit the GemBot community forums.*\`;
         }
         
         // Display NFT in gallery
