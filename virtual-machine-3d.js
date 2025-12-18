@@ -134,13 +134,37 @@ class VirtualMachine3D {
             this.setupLighting();
             console.log('✅ Lighting setup');
             
-            // Try to load GLB models
+            // Try to load GLB models with graceful fallback
             try {
                 await this.loadModels();
-                console.log('✅ GLB models loaded');
+                console.log('✅ GLB models loaded successfully');
+                this.modelLoadStatus = 'loaded';
             } catch (modelError) {
-                console.warn('⚠️ GLB model loading failed, using procedural geometry:', modelError);
+                // GRACEFUL FALLBACK: Log detailed error info for debugging
+                const errorDetails = {
+                    message: modelError.message || 'Unknown error',
+                    name: modelError.name || 'Error',
+                    stack: modelError.stack?.split('\n').slice(0, 3).join('\n'),
+                    modelPath: this.useAnimatedModel ? this.modelPaths.animatedMachine : this.modelPaths.machine,
+                    timestamp: new Date().toISOString()
+                };
+                
+                console.warn('⚠️ GLB model loading failed - activating fallback geometry:', errorDetails);
+                
+                // Log to window for external debugging access
+                window.GemBot3DLoadError = errorDetails;
+                
+                // Dispatch event for UI notification
+                window.dispatchEvent(new CustomEvent('gembot3d:modelLoadFailed', { 
+                    detail: errorDetails 
+                }));
+                
+                // Create fallback geometry
                 this.createFallbackGeometry();
+                this.modelLoadStatus = 'fallback';
+                
+                // Show user-friendly indicator
+                this.showFallbackIndicator();
             }
             
             // Start render loop
@@ -519,7 +543,62 @@ class VirtualMachine3D {
         tray.material = trayMat;
         tray.position = new BABYLON.Vector3(0, 17, 0);
         
-        console.log('✅ Fallback geometry created');
+        console.log('✅ Fallback geometry created - procedural CNC machine rendered');
+    }
+    
+    /**
+     * Show visual indicator when using fallback geometry
+     */
+    showFallbackIndicator() {
+        // Find the canvas container
+        const container = this.canvasElement?.parentElement;
+        if (!container) return;
+        
+        // Create or update fallback indicator
+        let indicator = container.querySelector('.fallback-indicator');
+        if (!indicator) {
+            indicator = document.createElement('div');
+            indicator.className = 'fallback-indicator';
+            indicator.style.cssText = `
+                position: absolute;
+                bottom: 10px;
+                left: 10px;
+                background: rgba(255, 193, 7, 0.9);
+                color: #1a1f3a;
+                padding: 6px 12px;
+                border-radius: 4px;
+                font-size: 11px;
+                font-family: system-ui, sans-serif;
+                z-index: 100;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                cursor: pointer;
+                transition: opacity 0.3s;
+            `;
+            indicator.innerHTML = `
+                <span style="font-size: 14px;">⚠️</span>
+                <span>Simplified 3D View</span>
+            `;
+            indicator.title = 'GLB model could not be loaded. Using procedural geometry instead. Click to dismiss.';
+            
+            // Click to dismiss
+            indicator.onclick = () => {
+                indicator.style.opacity = '0';
+                setTimeout(() => indicator.remove(), 300);
+            };
+            
+            // Auto-fade after 10 seconds
+            setTimeout(() => {
+                if (indicator.parentElement) {
+                    indicator.style.opacity = '0.5';
+                }
+            }, 10000);
+            
+            container.appendChild(indicator);
+        }
+        
+        console.log('📢 Fallback indicator displayed to user');
     }
     
     /**

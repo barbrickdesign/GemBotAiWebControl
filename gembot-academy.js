@@ -626,12 +626,12 @@ const GemBotAcademy = {
     },
     
     /**
-     * Load saved progress from localStorage
-     * NOW INCLUDES: Real user data from gembot_wallets and gembot_farm_save
+     * Load saved progress from localStorage AND Firebase
+     * ENHANCED: Syncs from gembot_wallets, gembot_farm_save, AND Firebase Auth/Firestore
      */
     loadProgress() {
         try {
-            // 🔄 LOAD REAL USER DATA FROM GEMBOT FARM
+            // 🔄 LOAD REAL USER DATA FROM GEMBOT FARM (localStorage)
             const wallets = JSON.parse(localStorage.getItem('gembot_wallets') || '{}');
             const saveData = JSON.parse(localStorage.getItem('gembot_farm_save_0') || '{}');
             
@@ -647,7 +647,10 @@ const GemBotAcademy = {
                 });
             }
             
-            // Load academy-specific progress
+            // 🔥 FIREBASE INTEGRATION: Sync from Firebase Auth if available
+            this.syncFromFirebase();
+            
+            // Load academy-specific progress from localStorage
             const saved = localStorage.getItem('gembot_academy_progress');
             if (saved) {
                 const data = JSON.parse(saved);
@@ -695,7 +698,7 @@ const GemBotAcademy = {
                     });
                 }
                 
-                console.log('📂 Academy progress loaded');
+                console.log('📂 Academy progress loaded from localStorage');
             }
         } catch (e) {
             console.warn('Could not load academy progress:', e);
@@ -739,9 +742,119 @@ const GemBotAcademy = {
             };
             
             localStorage.setItem('gembot_academy_progress', JSON.stringify(data));
-            console.log('💾 Academy progress saved');
+            console.log('💾 Academy progress saved to localStorage');
+            
+            // 🔥 FIREBASE: Also save to Firestore if available
+            this.saveToFirebase(data);
         } catch (e) {
             console.warn('Could not save academy progress:', e);
+        }
+    },
+    
+    /**
+     * Sync player data from Firebase Auth and Firestore
+     * Integrates with existing Firebase setup in gembot-utils.js
+     */
+    async syncFromFirebase() {
+        try {
+            // Check for Firebase Auth
+            const auth = window.firebaseAuth || (window.firebase && window.firebase.auth && window.firebase.auth());
+            if (!auth) {
+                console.log('📱 Firebase Auth not available - using localStorage only');
+                return;
+            }
+            
+            const user = auth.currentUser;
+            if (!user) {
+                console.log('📱 No Firebase user signed in - using localStorage only');
+                return;
+            }
+            
+            console.log('🔥 Firebase user found:', user.email || user.uid);
+            
+            // Store user identity
+            this.firebaseUser = {
+                uid: user.uid,
+                email: user.email,
+                displayName: user.displayName
+            };
+            
+            // Try to load from Firestore
+            const db = window.firebaseDb || (window.firebase && window.firebase.firestore && window.firebase.firestore());
+            if (db && window.firestoreUtils) {
+                const { doc, getDoc } = window.firestoreUtils;
+                const userDocRef = doc(db, 'academy_progress', user.uid);
+                const userDoc = await getDoc(userDocRef);
+                
+                if (userDoc.exists()) {
+                    const cloudData = userDoc.data();
+                    console.log('☁️ Loaded Academy progress from Firebase:', cloudData);
+                    
+                    // Merge cloud data with local (prefer higher values)
+                    if (cloudData.player) {
+                        this.player.level = Math.max(this.player.level, cloudData.player.level || 1);
+                        this.player.xp = Math.max(this.player.xp, cloudData.player.xp || 0);
+                        this.player.totalXp = Math.max(this.player.totalXp, cloudData.player.totalXp || 0);
+                        this.player.streak = Math.max(this.player.streak, cloudData.player.streak || 0);
+                        
+                        // Merge stats
+                        if (cloudData.player.stats) {
+                            Object.keys(cloudData.player.stats).forEach(key => {
+                                this.player.stats[key] = Math.max(
+                                    this.player.stats[key] || 0,
+                                    cloudData.player.stats[key] || 0
+                                );
+                            });
+                        }
+                        
+                        // Merge completed lessons (union)
+                        if (cloudData.player.completedLessons) {
+                            const localLessons = new Set(this.player.completedLessons);
+                            cloudData.player.completedLessons.forEach(l => localLessons.add(l));
+                            this.player.completedLessons = Array.from(localLessons);
+                        }
+                        
+                        // Merge unlocked courses (union)
+                        if (cloudData.player.unlockedCourses) {
+                            const localCourses = new Set(this.player.unlockedCourses);
+                            cloudData.player.unlockedCourses.forEach(c => localCourses.add(c));
+                            this.player.unlockedCourses = Array.from(localCourses);
+                        }
+                    }
+                    
+                    // Dispatch sync event
+                    window.dispatchEvent(new CustomEvent('academyFirebaseSync', { 
+                        detail: { status: 'success', user: user.uid } 
+                    }));
+                }
+            }
+        } catch (error) {
+            console.warn('⚠️ Firebase sync failed (will use localStorage):', error.message);
+        }
+    },
+    
+    /**
+     * Save Academy progress to Firebase Firestore
+     */
+    async saveToFirebase(data) {
+        try {
+            if (!this.firebaseUser?.uid) return;
+            
+            const db = window.firebaseDb || (window.firebase && window.firebase.firestore && window.firebase.firestore());
+            if (!db || !window.firestoreUtils) return;
+            
+            const { doc, setDoc, serverTimestamp } = window.firestoreUtils;
+            const userDocRef = doc(db, 'academy_progress', this.firebaseUser.uid);
+            
+            await setDoc(userDocRef, {
+                ...data,
+                lastUpdated: serverTimestamp(),
+                userEmail: this.firebaseUser.email
+            }, { merge: true });
+            
+            console.log('☁️ Academy progress saved to Firebase');
+        } catch (error) {
+            console.warn('⚠️ Could not save to Firebase:', error.message);
         }
     },
     

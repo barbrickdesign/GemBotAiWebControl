@@ -24283,9 +24283,10 @@
                 if (!academyModal) {
                     academyModal = document.createElement('div');
                     academyModal.id = 'academyModal';
-                    academyModal.className = 'modal-overlay';
-                    academyModal.style.cssText = 'display:none;position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:10000;overflow:auto;padding:20px;';
+                    academyModal.className = 'modal-overlay academy-modal-overlay';
+                    academyModal.style.cssText = 'display:none;position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:100000;overflow:auto;padding:20px;';
                     document.body.appendChild(academyModal);
+                    console.log('🎓 Academy modal created with z-index 100000');
                 }
                 
                 // Render Academy content
@@ -24301,10 +24302,16 @@
                 
                 // FIX: Force modal to display immediately with highest z-index
                 academyModal.style.display = 'block';
-                academyModal.style.zIndex = '99999';
+                academyModal.style.zIndex = '100000';
+                academyModal.style.opacity = '1';
+                academyModal.style.visibility = 'visible';
                 document.body.style.overflow = 'hidden'; // Prevent background scroll
                 
-                console.log('🎓 Academy modal displayed - zIndex:', academyModal.style.zIndex);
+                // Hide any conflicting overlays temporarily
+                const rotateOverlay = document.querySelector('.rotate-device-overlay');
+                if (rotateOverlay) rotateOverlay.style.display = 'none';
+                
+                console.log('🎓 Academy modal DISPLAYED - zIndex:', academyModal.style.zIndex, 'visible:', academyModal.style.visibility);
                 
                 // Initialize Academy if not done
                 GemBotAcademy.init();

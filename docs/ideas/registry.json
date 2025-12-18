@@ -71,10 +71,10 @@
     {
       "id": "IDEA-2025-0002",
       "title": "Academy Navigation Z-Index Fix",
-      "status": "prototype",
+      "status": "production",
       "owners": ["ryan-barbrick"],
       "createdAt": "2025-12-17T00:00:00Z",
-      "updatedAt": "2025-12-17T00:00:00Z",
+      "updatedAt": "2025-12-17T12:00:00Z",
       "priority": "critical",
       "tags": ["bugfix", "ui", "academy"],
       "description": "Fix Academy modal z-index issue where clicking Academy button shows nothing until Back is clicked.",
@@ -83,7 +83,7 @@
           "id": "UC-01",
           "description": "Academy opens immediately when button clicked",
           "audience": "users",
-          "implemented": false
+          "implemented": true
         }
       ],
       "artifacts": {
@@ -99,9 +99,9 @@
         "relatedIdeas": []
       },
       "environments": {
-        "dev": { "deployed": false, "version": null },
-        "staging": { "deployed": false, "version": null },
-        "prod": { "deployed": false, "version": null }
+        "dev": { "deployed": true, "version": "1.0.0" },
+        "staging": { "deployed": true, "version": "1.0.0" },
+        "prod": { "deployed": true, "version": "1.0.0" }
       },
       "metrics": {
         "errorRate": null,
@@ -112,10 +112,10 @@
     {
       "id": "IDEA-2025-0003",
       "title": "3D Model Graceful Fallback System",
-      "status": "prototype",
+      "status": "production",
       "owners": ["ryan-barbrick"],
       "createdAt": "2025-12-17T00:00:00Z",
-      "updatedAt": "2025-12-17T00:00:00Z",
+      "updatedAt": "2025-12-17T12:00:00Z",
       "priority": "high",
       "tags": ["3d", "error-handling", "babylon"],
       "description": "Add graceful fallback geometry when GLB models fail to load with 404 errors.",
@@ -124,12 +124,18 @@
           "id": "UC-01",
           "description": "Display placeholder geometry when model 404s",
           "audience": "users",
-          "implemented": false
+          "implemented": true
         },
         {
           "id": "UC-02",
           "description": "Log model loading failures for debugging",
           "audience": "developers",
+          "implemented": true
+        },
+        {
+          "id": "UC-03",
+          "description": "Visual fallback indicator shown to users",
+          "audience": "users",
           "implemented": true
         }
       ],
@@ -146,9 +152,9 @@
         "relatedIdeas": []
       },
       "environments": {
-        "dev": { "deployed": false, "version": null },
-        "staging": { "deployed": false, "version": null },
-        "prod": { "deployed": false, "version": null }
+        "dev": { "deployed": true, "version": "1.0.0" },
+        "staging": { "deployed": true, "version": "1.0.0" },
+        "prod": { "deployed": true, "version": "1.0.0" }
       },
       "metrics": {
         "errorRate": null,
@@ -159,25 +165,31 @@
     {
       "id": "IDEA-2025-0004",
       "title": "Academy Real User Data Integration",
-      "status": "prototype",
+      "status": "production",
       "owners": ["ryan-barbrick"],
       "createdAt": "2025-12-17T00:00:00Z",
-      "updatedAt": "2025-12-17T00:00:00Z",
+      "updatedAt": "2025-12-17T12:00:00Z",
       "priority": "high",
-      "tags": ["academy", "data", "localStorage"],
-      "description": "Connect Academy system to real user progress from localStorage instead of default data.",
+      "tags": ["academy", "data", "localStorage", "firebase"],
+      "description": "Connect Academy system to real user progress from localStorage AND Firebase cloud sync.",
       "useCases": [
         {
           "id": "UC-01",
           "description": "Load user's actual gems/XP/level in Academy",
           "audience": "users",
-          "implemented": false
+          "implemented": true
         },
         {
           "id": "UC-02",
           "description": "Persist Academy progress across sessions",
           "audience": "users",
-          "implemented": false
+          "implemented": true
+        },
+        {
+          "id": "UC-03",
+          "description": "Sync progress to Firebase for cross-device access",
+          "audience": "users",
+          "implemented": true
         }
       ],
       "artifacts": {
@@ -193,9 +205,9 @@
         "relatedIdeas": []
       },
       "environments": {
-        "dev": { "deployed": false, "version": null },
-        "staging": { "deployed": false, "version": null },
-        "prod": { "deployed": false, "version": null }
+        "dev": { "deployed": true, "version": "1.0.0" },
+        "staging": { "deployed": true, "version": "1.0.0" },
+        "prod": { "deployed": true, "version": "1.0.0" }
       },
       "metrics": {
         "errorRate": null,
