@@ -2337,12 +2337,15 @@
                         </div>
                         
                         <!-- Bubble Map Embed -->
-                        <div id="bubbleMapContainer" style="width: 100%; height: 500px; border-radius: 12px; overflow: hidden; border: 1px solid var(--border-color);">
+                        <div id="bubbleMapContainer" style="width: 100%; height: 500px; border-radius: 12px; overflow: hidden; border: 1px solid var(--border-color); background: #16213e;">
                             <iframe 
+                                id="bubbleMapIframe"
                                 src="https://app.insightx.network/bubblemaps/solana/DPHcbu7wJEbcrnCYjXC8vHBkM39kT9xZg4mYayvrpump/1765937152" 
                                 style="width: 100%; height: 100%; border: none;"
                                 title="GBUV Token Bubble Map"
                                 loading="lazy"
+                                sandbox="allow-same-origin allow-scripts allow-popups"
+                                referrerpolicy="no-referrer"
                             ></iframe>
                         </div>
                         <div style="margin-top: 10px; display: flex; gap: 10px;">
@@ -3165,12 +3168,22 @@
                 }
                 
                 showToast('Testing connection...', 'info');
+                
+                // Validate token length
+                if (githubConfig.token.length < 20) {
+                    showToast('❌ Invalid GitHub token format. Please check your token.', 'error');
+                    addLog('GitHub token format appears invalid', 'error');
+                    return;
+                }
+                
                 const response = await fetch(
                     `https://api.github.com/repos/${githubConfig.owner}/${githubConfig.repo}`,
                     {
+                        method: 'GET',
                         headers: {
                             'Authorization': `token ${githubConfig.token}`,
-                            'Accept': 'application/vnd.github.v3+json'
+                            'Accept': 'application/vnd.github.v3+json',
+                            'User-Agent': 'GemBot-Admin-Dashboard'
                         }
                     }
                 );
@@ -3701,34 +3714,56 @@
                 document.getElementById('vaultSOLBalance').textContent = 'Loading...';
                 document.getElementById('vaultGBUVBalance').textContent = 'Loading...';
                 
-                // Try to get balance from Solana RPC
-                const response = await fetch('https://api.mainnet-beta.solana.com', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        jsonrpc: '2.0',
-                        id: 1,
-                        method: 'getBalance',
-                        params: [vaultAddress]
-                    })
-                });
+                // Try multiple RPC endpoints for redundancy
+                const rpcEndpoints = [
+                    'https://solana-api.projectserum.com',
+                    'https://api.mainnet-beta.solana.com'
+                ];
                 
-                const data = await response.json();
-                if (data.result?.value !== undefined) {
-                    const solBalance = data.result.value / 1e9;
-                    document.getElementById('vaultSOLBalance').textContent = solBalance.toFixed(4) + ' SOL';
-                } else {
-                    document.getElementById('vaultSOLBalance').textContent = 'N/A';
+                let balance = null;
+                let success = false;
+                
+                for (const endpoint of rpcEndpoints) {
+                    try {
+                        const response = await fetch(endpoint, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                jsonrpc: '2.0',
+                                id: 1,
+                                method: 'getBalance',
+                                params: [vaultAddress]
+                            })
+                        });
+                        
+                        if (!response.ok) continue;
+                        
+                        const data = await response.json();
+                        if (data.result?.value !== undefined) {
+                            balance = data.result.value / 1e9;
+                            success = true;
+                            break;
+                        }
+                    } catch (e) {
+                        console.warn(`RPC endpoint ${endpoint} failed:`, e.message);
+                        continue;
+                    }
                 }
                 
-                // For GBUV, we'd need to check token accounts - simplified here
+                if (success) {
+                    document.getElementById('vaultSOLBalance').textContent = balance.toFixed(4) + ' SOL';
+                } else {
+                    document.getElementById('vaultSOLBalance').textContent = 'Check Solscan';
+                }
+                
                 document.getElementById('vaultGBUVBalance').textContent = 'Check Solscan';
                 
                 addLog('Vault balance refreshed', 'info');
             } catch (error) {
                 console.error('Vault balance error:', error);
-                document.getElementById('vaultSOLBalance').textContent = 'Error';
-                document.getElementById('vaultGBUVBalance').textContent = 'Error';
+                document.getElementById('vaultSOLBalance').textContent = 'Check Solscan';
+                document.getElementById('vaultGBUVBalance').textContent = 'Check Solscan';
+                addLog('Could not refresh balance - check Solscan', 'warning');
             }
         }
         
@@ -4781,12 +4816,41 @@
             }
         }
         
+        // ==================== IFRAME ERROR HANDLING ====================
+        function setupBubbleMapErrorHandling() {
+            const iframe = document.getElementById('bubbleMapIframe');
+            if (!iframe) return;
+            
+            // Handle iframe load errors
+            iframe.addEventListener('error', function() {
+                console.warn('Bubble map iframe failed to load');
+                const container = document.getElementById('bubbleMapContainer');
+                if (container) {
+                    container.innerHTML = `
+                        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 15px;">
+                            <div style="font-size: 18px;">🗺️ Bubble Map</div>
+                            <div style="font-size: 14px; color: #888;">Could not load InsightX bubble map</div>
+                            <button class="action-btn" onclick="window.open('https://app.insightx.network/bubblemaps/solana/DPHcbu7wJEbcrnCYjXC8vHBkM39kT9xZg4mYayvrpump/1765937152', '_blank')" style="margin-top: 10px;">
+                                🔗 Open in Browser
+                            </button>
+                        </div>
+                    `;
+                }
+            });
+            
+            // Handle CSP violations
+            iframe.addEventListener('load', function() {
+                console.log('Bubble map iframe loaded successfully');
+            });
+        }
+        
         // ==================== INITIALIZATION ====================
         document.addEventListener('DOMContentLoaded', () => {
             // Initialize Firebase Auth (replaces old checkAuth)
             initAdminAuth();
             initSceneEditor();
             loadGameSettings();
+            setupBubbleMapErrorHandling();
             
             // Load vault balance on game section view
             setTimeout(() => refreshVaultBalance(), 2000);
