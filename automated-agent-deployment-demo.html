@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automated Agent Deployment System - Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 100%);
+            color: #ffffff;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            padding: 40px 0;
+            border-bottom: 2px solid #4affff;
+            margin-bottom: 40px;
+        }
+        
+        header h1 {
+            font-size: 3em;
+            background: linear-gradient(135deg, #4affff, #9f7aea);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+        
+        header p {
+            color: #9f7aea;
+            font-size: 1.2em;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid #4affff;
+            border-radius: 12px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .card h2 {
+            color: #4affff;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+        
+        .stat {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(74, 255, 255, 0.2);
+        }
+        
+        .stat:last-child {
+            border-bottom: none;
+        }
+        
+        .stat-label {
+            color: #9f7aea;
+        }
+        
+        .stat-value {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #4ade80;
+        }
+        
+        .controls {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid #9f7aea;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .controls h2 {
+            color: #9f7aea;
+            margin-bottom: 20px;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #4affff, #9f7aea);
+            color: #1a1a2e;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(74, 255, 255, 0.5);
+        }
+        
+        .btn-secondary {
+            background: rgba(74, 255, 255, 0.2);
+            color: #4affff;
+            border: 2px solid #4affff;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(74, 255, 255, 0.3);
+        }
+        
+        .btn-danger {
+            background: rgba(255, 68, 68, 0.2);
+            color: #ff4444;
+            border: 2px solid #ff4444;
+        }
+        
+        .btn-danger:hover {
+            background: rgba(255, 68, 68, 0.3);
+        }
+        
+        .visualization {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid #4ade80;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .visualization h2 {
+            color: #4ade80;
+            margin-bottom: 20px;
+        }
+        
+        #bubble-map-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 600px;
+        }
+        
+        .log {
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid #6b7280;
+            border-radius: 12px;
+            padding: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .log h2 {
+            color: #6b7280;
+            margin-bottom: 15px;
+        }
+        
+        .log-entry {
+            padding: 8px;
+            margin-bottom: 5px;
+            border-left: 3px solid;
+            padding-left: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        
+        .log-info {
+            border-left-color: #4affff;
+            color: #4affff;
+        }
+        
+        .log-success {
+            border-left-color: #4ade80;
+            color: #4ade80;
+        }
+        
+        .log-warning {
+            border-left-color: #facc15;
+            color: #facc15;
+        }
+        
+        .log-error {
+            border-left-color: #ff4444;
+            color: #ff4444;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #9f7aea;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #4affff;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+            font-size: 1em;
+        }
+        
+        .input-group input:focus {
+            outline: none;
+            border-color: #9f7aea;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 40px 0;
+            border-top: 2px solid #4affff;
+            margin-top: 40px;
+            color: #6b7280;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🤖 Automated Agent Deployment System</h1>
+            <p>Helping Developers with Intelligent Resource Sharing & Collaboration</p>
+        </header>
+        
+        <div class="dashboard">
+            <div class="card">
+                <h2>📊 System Status</h2>
+                <div class="stat">
+                    <span class="stat-label">Health</span>
+                    <span class="stat-value" id="system-health">--</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Initialized</span>
+                    <span class="stat-value" id="system-init">No</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Auto-Deploy</span>
+                    <span class="stat-value" id="auto-deploy">--</span>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2>📦 Repositories</h2>
+                <div class="stat">
+                    <span class="stat-label">Total Repos</span>
+                    <span class="stat-value" id="total-repos">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Total Files</span>
+                    <span class="stat-value" id="total-files">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Avg Health</span>
+                    <span class="stat-value" id="avg-health">0</span>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2>🤖 Agents</h2>
+                <div class="stat">
+                    <span class="stat-label">Active Agents</span>
+                    <span class="stat-value" id="active-agents">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Degraded</span>
+                    <span class="stat-value" id="degraded-agents">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Avg Health</span>
+                    <span class="stat-value" id="agent-health">0</span>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2>🌐 Network</h2>
+                <div class="stat">
+                    <span class="stat-label">Total Links</span>
+                    <span class="stat-value" id="total-links">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Link Strength</span>
+                    <span class="stat-value" id="link-strength">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Resources Shared</span>
+                    <span class="stat-value" id="resources-shared">0</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <h2>🎮 System Controls</h2>
+            
+            <div class="button-group">
+                <button class="btn-primary" onclick="initSystem()">🚀 Initialize System</button>
+                <button class="btn-secondary" onclick="addDemoRepo()">📦 Add Demo Repository</button>
+                <button class="btn-secondary" onclick="autoDiscoverLinks()">🔗 Discover Links</button>
+                <button class="btn-secondary" onclick="deployAgents()">🤖 Deploy Agents</button>
+                <button class="btn-secondary" onclick="refreshStats()">🔄 Refresh Stats</button>
+                <button class="btn-danger" onclick="shutdownSystem()">⏹️ Shutdown</button>
+            </div>
+            
+            <div class="input-group">
+                <label for="repo-owner">Repository Owner</label>
+                <input type="text" id="repo-owner" placeholder="e.g., barbrickdesign" value="barbrickdesign">
+            </div>
+            
+            <div class="input-group">
+                <label for="repo-name">Repository Name</label>
+                <input type="text" id="repo-name" placeholder="e.g., GemBotAiWebControl" value="GemBotAiWebControl">
+            </div>
+            
+            <div class="button-group">
+                <button class="btn-primary" onclick="addCustomRepo()">➕ Add Custom Repository</button>
+                <button class="btn-secondary" onclick="requestHelp()">🆘 Request Help</button>
+            </div>
+        </div>
+        
+        <div class="visualization">
+            <h2>🗺️ Repository Network Bubble Map</h2>
+            <div id="bubble-map-container">
+                <p style="color: #6b7280;">Initialize system to see visualization</p>
+            </div>
+        </div>
+        
+        <div class="log">
+            <h2>📝 System Log</h2>
+            <div id="log-container"></div>
+        </div>
+        
+        <footer>
+            <p>Created by Ryan Barbrick / Barbrick Design</p>
+            <p>© 2024-2025 All Rights Reserved</p>
+            <p>Contact: BarbrickDesign@gmail.com</p>
+        </footer>
+    </div>
+    
+    <!-- Core Scripts -->
+    <script src="repository-scanner.js"></script>
+    <script src="agent-deployment-orchestrator.js"></script>
+    <script src="repository-network-builder.js"></script>
+    <script src="bubble-map-visualizer.js"></script>
+    <script src="automated-agent-deployment-system.js"></script>
+    
+    <script>
+        // Logging functions
+        function log(message, type = 'info') {
+            const container = document.getElementById('log-container');
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            container.insertBefore(entry, container.firstChild);
+            
+            // Keep only last 50 entries
+            while (container.children.length > 50) {
+                container.removeChild(container.lastChild);
+            }
+        }
+        
+        // Initialize system
+        async function initSystem() {
+            log('Initializing Automated Agent Deployment System...', 'info');
+            try {
+                await window.aads.init({
+                    visualizerId: 'bubble-map-container'
+                });
+                log('✅ System initialized successfully', 'success');
+                refreshStats();
+            } catch (error) {
+                log(`❌ Initialization failed: ${error.message}`, 'error');
+            }
+        }
+        
+        // Add demo repository
+        async function addDemoRepo() {
+            log('Adding demo repository...', 'info');
+            try {
+                const repo = await window.aads.addRepository({
+                    owner: 'demo',
+                    name: `repo-${Date.now()}`,
+                    url: 'https://github.com/demo/repo'
+                });
+                
+                if (repo) {
+                    log(`✅ Demo repository added: ${repo.id}`, 'success');
+                    refreshStats();
+                } else {
+                    log('⚠️ Failed to add demo repository', 'warning');
+                }
+            } catch (error) {
+                log(`❌ Error adding demo repo: ${error.message}`, 'error');
+            }
+        }
+        
+        // Add custom repository
+        async function addCustomRepo() {
+            const owner = document.getElementById('repo-owner').value;
+            const name = document.getElementById('repo-name').value;
+            
+            if (!owner || !name) {
+                log('⚠️ Please enter repository owner and name', 'warning');
+                return;
+            }
+            
+            log(`Adding repository: ${owner}/${name}...`, 'info');
+            try {
+                const repo = await window.aads.addRepository({
+                    owner: owner,
+                    name: name,
+                    url: `https://github.com/${owner}/${name}`
+                });
+                
+                if (repo) {
+                    log(`✅ Repository added: ${repo.id}`, 'success');
+                    refreshStats();
+                } else {
+                    log('⚠️ Failed to add repository', 'warning');
+                }
+            } catch (error) {
+                log(`❌ Error: ${error.message}`, 'error');
+            }
+        }
+        
+        // Auto-discover links
+        async function autoDiscoverLinks() {
+            log('Discovering repository links...', 'info');
+            try {
+                await window.aads.runAutoLinking();
+                log('✅ Link discovery complete', 'success');
+                refreshStats();
+            } catch (error) {
+                log(`❌ Error discovering links: ${error.message}`, 'error');
+            }
+        }
+        
+        // Deploy agents
+        async function deployAgents() {
+            log('Deploying agents...', 'info');
+            try {
+                await window.aads.runAutoDeployment();
+                log('✅ Agent deployment complete', 'success');
+                refreshStats();
+            } catch (error) {
+                log(`❌ Error deploying agents: ${error.message}`, 'error');
+            }
+        }
+        
+        // Request help
+        async function requestHelp() {
+            const repos = window.repoScanner?.getAllRepositories() || [];
+            if (repos.length === 0) {
+                log('⚠️ No repositories available. Add a repository first.', 'warning');
+                return;
+            }
+            
+            const repoId = repos[0].id;
+            log(`Requesting help for ${repoId}...`, 'info');
+            
+            try {
+                const result = await window.aads.requestHelp(repoId, 'general');
+                if (result) {
+                    log(`✅ Help deployed: ${result.agents.length} agents, reached ${result.reached.length} repos`, 'success');
+                    refreshStats();
+                }
+            } catch (error) {
+                log(`❌ Error requesting help: ${error.message}`, 'error');
+            }
+        }
+        
+        // Refresh stats
+        function refreshStats() {
+            try {
+                const status = window.aads.getStatus();
+                const stats = window.aads.getStats();
+                
+                // System status
+                document.getElementById('system-health').textContent = status.health;
+                document.getElementById('system-init').textContent = status.initialized ? 'Yes' : 'No';
+                document.getElementById('auto-deploy').textContent = status.autoDeployEnabled ? 'On' : 'Off';
+                
+                // Repository stats
+                if (stats.repositories) {
+                    document.getElementById('total-repos').textContent = stats.repositories.totalRepositories || 0;
+                    document.getElementById('total-files').textContent = stats.repositories.totalFiles || 0;
+                    document.getElementById('avg-health').textContent = (stats.repositories.averageHealth || 0).toFixed(1);
+                }
+                
+                // Agent stats
+                if (stats.agents) {
+                    document.getElementById('active-agents').textContent = stats.agents.activeAgents || 0;
+                    document.getElementById('degraded-agents').textContent = stats.agents.degradedAgents || 0;
+                    document.getElementById('agent-health').textContent = (stats.agents.averageHealth || 0).toFixed(1);
+                }
+                
+                // Network stats
+                if (stats.network) {
+                    document.getElementById('total-links').textContent = stats.network.totalLinks || 0;
+                    document.getElementById('link-strength').textContent = (stats.network.averageLinkStrength || 0).toFixed(2);
+                    document.getElementById('resources-shared').textContent = stats.network.totalResourceShared || 0;
+                }
+                
+                log('Stats refreshed', 'info');
+            } catch (error) {
+                log(`⚠️ Error refreshing stats: ${error.message}`, 'warning');
+            }
+        }
+        
+        // Shutdown system
+        function shutdownSystem() {
+            log('Shutting down system...', 'warning');
+            try {
+                window.aads.shutdown();
+                log('✅ System shut down', 'success');
+                refreshStats();
+            } catch (error) {
+                log(`❌ Error during shutdown: ${error.message}`, 'error');
+            }
+        }
+        
+        // Auto-refresh stats every 5 seconds
+        setInterval(refreshStats, 5000);
+        
+        // Initial log
+        log('Welcome to Automated Agent Deployment System Demo', 'success');
+        log('Click "Initialize System" to begin', 'info');
+    </script>
+</body>
+</html>
