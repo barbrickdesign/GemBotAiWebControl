@@ -396,6 +396,38 @@ class PayPalUIWidget {
     }
 
     /**
+     * Show error notification
+     */
+    showError(message) {
+        const content = document.getElementById('paypal-dynamic-content');
+        if (content) {
+            content.innerHTML = `
+                <div style="text-align: center; padding: 20px;">
+                    <div style="color: #ff4444; font-size: 48px; margin-bottom: 10px;">❌</div>
+                    <h4 style="color: #ff4444; margin-bottom: 10px;">Error</h4>
+                    <p style="color: #ccc;">${message}</p>
+                </div>
+            `;
+        }
+    }
+
+    /**
+     * Show success notification
+     */
+    showSuccess(message) {
+        const content = document.getElementById('paypal-dynamic-content');
+        if (content) {
+            content.innerHTML = `
+                <div style="text-align: center; padding: 20px;">
+                    <div style="color: #00ff88; font-size: 48px; margin-bottom: 10px;">✅</div>
+                    <h4 style="color: #00ff88; margin-bottom: 10px;">Success</h4>
+                    <p style="color: #ccc;">${message}</p>
+                </div>
+            `;
+        }
+    }
+
+    /**
      * Update status display
      */
     updateStatus() {
@@ -447,12 +479,16 @@ class PayPalUIWidget {
         const formData = new FormData(form);
 
         try {
+            const invoicerEmail = this.options.invoicerEmail || 
+                                  window.PAYPAL_CONFIG?.invoicerEmail || 
+                                  'BarbrickDesign@gmail.com';
+            
             const invoice = await this.paypal.createInvoice({
                 detail: {
                     invoice_number: `INV-GEMBOT-${Date.now()}`,
                     invoice_date: new Date().toISOString().split('T')[0]
                 },
-                invoicerEmail: 'BarbrickDesign@gmail.com',
+                invoicerEmail: invoicerEmail,
                 recipients: [{
                     billing_info: {
                         email_address: formData.get('email')
@@ -485,7 +521,7 @@ class PayPalUIWidget {
                 `;
             }
         } catch (error) {
-            alert(`Error creating invoice: ${error.message}`);
+            this.showError(`Failed to create invoice: ${error.message}`);
         }
 
         return false;
@@ -546,7 +582,7 @@ class PayPalUIWidget {
                 `;
             }
         } catch (error) {
-            alert(`Error creating payment: ${error.message}`);
+            this.showError(`Failed to create payment: ${error.message}`);
         }
 
         return false;

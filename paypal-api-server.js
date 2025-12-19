@@ -24,7 +24,7 @@ app.use(express.json());
 const paypal = new PayPalIntegration({
     clientId: process.env.PAYPAL_CLIENT_ID,
     clientSecret: process.env.PAYPAL_CLIENT_SECRET,
-    sandbox: process.env.PAYPAL_SANDBOX === 'true' || true
+    sandbox: process.env.PAYPAL_SANDBOX !== 'false' // Defaults to sandbox unless explicitly set to false
 });
 
 // Health check endpoint

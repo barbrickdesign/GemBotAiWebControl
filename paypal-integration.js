@@ -23,6 +23,12 @@ class PayPalIntegration {
             ...config
         };
 
+        // Validate client ID is not a placeholder
+        if (this.config.clientId === 'YOUR_PAYPAL_CLIENT_ID' || !this.config.clientId) {
+            console.warn('⚠️ PayPal Client ID not configured. Set it via localStorage or environment variables.');
+            this.config.clientId = null;
+        }
+
         this.initialized = false;
         this.accessToken = null;
         this.tokenExpiry = null;

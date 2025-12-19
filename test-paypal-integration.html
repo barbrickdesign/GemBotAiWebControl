@@ -301,6 +301,31 @@
         let paypalInstance = null;
         let widgetInstance = null;
 
+        // Show notification
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 16px 24px;
+                background: ${type === 'success' ? '#00ff88' : type === 'error' ? '#ff4444' : '#4af'};
+                color: #000;
+                border-radius: 8px;
+                font-weight: 600;
+                z-index: 10001;
+                animation: slideIn 0.3s ease;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
         // Load saved config on page load
         window.addEventListener('load', () => {
             loadConfig();
@@ -312,7 +337,7 @@
             const sandbox = document.getElementById('sandbox').checked;
 
             if (!clientId || clientId === 'YOUR_PAYPAL_CLIENT_ID') {
-                alert('Please enter a valid Client ID');
+                showNotification('Please enter a valid Client ID', 'error');
                 return;
             }
 
@@ -322,8 +347,8 @@
             window.PAYPAL_CONFIG.clientId = clientId;
             window.PAYPAL_CONFIG.sandbox = sandbox;
 
-            alert('✅ Configuration saved! Reloading page...');
-            location.reload();
+            showNotification('✅ Configuration saved! Reloading page...', 'success');
+            setTimeout(() => location.reload(), 1000);
         }
 
         function loadConfig() {
