@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PayPal Integration Test - GemBot</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1a2e 50%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+            color: #4af;
+        }
+
+        .subtitle {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #888;
+        }
+
+        .test-section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .test-section h2 {
+            color: #4af;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        .test-item {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+
+        .test-item h3 {
+            color: #8af;
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .status.loading {
+            background: #ffa500;
+            color: #000;
+        }
+
+        .status.success {
+            background: #00ff88;
+            color: #000;
+        }
+
+        .status.error {
+            background: #ff4444;
+            color: #fff;
+        }
+
+        .status.warning {
+            background: #ffaa00;
+            color: #000;
+        }
+
+        button {
+            background: linear-gradient(135deg, #0070ba, #1546a0);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            margin-right: 10px;
+            margin-top: 10px;
+            transition: all 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 112, 186, 0.4);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .result {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            padding: 10px;
+            margin-top: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .success-msg {
+            color: #00ff88;
+        }
+
+        .error-msg {
+            color: #ff4444;
+        }
+
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .config-form {
+            background: rgba(0, 112, 186, 0.1);
+            border: 1px solid rgba(0, 112, 186, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #8af;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .info-box {
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .info-box h3 {
+            color: #0ff;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>💰 PayPal Integration Test Suite</h1>
+        <p class="subtitle">Test all PayPal AI Agent Toolkit features for GemBot</p>
+
+        <!-- Configuration -->
+        <div class="test-section">
+            <h2>⚙️ Configuration</h2>
+            <div class="config-form">
+                <div class="form-group">
+                    <label>PayPal Client ID</label>
+                    <input type="text" id="clientId" placeholder="Your Client ID from PayPal Developer Dashboard">
+                </div>
+                <div class="form-group">
+                    <label>Use Sandbox Mode</label>
+                    <input type="checkbox" id="sandbox" checked> 
+                    <span style="color: #888; font-size: 13px;">Always test in sandbox first!</span>
+                </div>
+                <button onclick="saveConfig()">💾 Save Configuration</button>
+                <button onclick="loadConfig()">🔄 Load Configuration</button>
+            </div>
+
+            <div class="info-box">
+                <h3>📝 Quick Setup:</h3>
+                <ol style="padding-left: 20px; color: #ccc; line-height: 1.8;">
+                    <li>Go to <a href="https://developer.paypal.com/dashboard/" target="_blank" style="color: #4af;">PayPal Developer Dashboard</a></li>
+                    <li>Create an app under "My Apps & Credentials"</li>
+                    <li>Copy your Client ID and paste above</li>
+                    <li>Click "Save Configuration"</li>
+                    <li>Run tests below!</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- Module Loading Tests -->
+        <div class="test-section">
+            <h2>📦 Module Loading</h2>
+            <div class="test-item">
+                <h3>PayPal SDK</h3>
+                <span class="status loading" id="sdk-status">Testing...</span>
+                <div class="result" id="sdk-result"></div>
+            </div>
+            <div class="test-item">
+                <h3>PayPal Integration Module</h3>
+                <span class="status loading" id="integration-status">Testing...</span>
+                <div class="result" id="integration-result"></div>
+            </div>
+            <div class="test-item">
+                <h3>PayPal UI Widget</h3>
+                <span class="status loading" id="widget-status">Testing...</span>
+                <div class="result" id="widget-result"></div>
+            </div>
+            <div class="test-item">
+                <h3>Merlin PayPal Integration</h3>
+                <span class="status loading" id="merlin-status">Testing...</span>
+                <div class="result" id="merlin-result"></div>
+            </div>
+        </div>
+
+        <!-- Functionality Tests -->
+        <div class="test-section">
+            <h2>🧪 Functionality Tests</h2>
+            <div class="test-item">
+                <h3>Initialize PayPal Integration</h3>
+                <button onclick="testInitialization()">Run Test</button>
+                <div class="result" id="init-result"></div>
+            </div>
+            <div class="test-item">
+                <h3>Get Access Token</h3>
+                <button onclick="testAccessToken()">Run Test</button>
+                <div class="result" id="token-result"></div>
+            </div>
+            <div class="test-item">
+                <h3>Create Test Invoice</h3>
+                <button onclick="testCreateInvoice()">Run Test</button>
+                <div class="result" id="invoice-result"></div>
+            </div>
+            <div class="test-item">
+                <h3>Create Test Order</h3>
+                <button onclick="testCreateOrder()">Run Test</button>
+                <div class="result" id="order-result"></div>
+            </div>
+        </div>
+
+        <!-- UI Tests -->
+        <div class="test-section">
+            <h2>🎨 UI Tests</h2>
+            <div class="test-item">
+                <h3>Show PayPal Widget</h3>
+                <button onclick="testWidget()">Show Widget</button>
+                <button onclick="hideWidget()">Hide Widget</button>
+                <div class="result" id="widget-test-result"></div>
+            </div>
+        </div>
+
+        <!-- PayPal Widget Container -->
+        <div id="paypal-widget-container"></div>
+    </div>
+
+    <!-- Load PayPal Integration Scripts -->
+    <script>
+        // Configuration
+        window.PAYPAL_CONFIG = {
+            clientId: localStorage.getItem('PAYPAL_CLIENT_ID') || 'YOUR_PAYPAL_CLIENT_ID',
+            sandbox: localStorage.getItem('PAYPAL_SANDBOX') !== 'false',
+            currency: 'USD'
+        };
+    </script>
+    <script src="./paypal-integration.js"></script>
+    <script src="./paypal-ui-widget.js"></script>
+    <script src="./merlin-paypal-integration.js"></script>
+
+    <script>
+        let paypalInstance = null;
+        let widgetInstance = null;
+
+        // Load saved config on page load
+        window.addEventListener('load', () => {
+            loadConfig();
+            runModuleTests();
+        });
+
+        function saveConfig() {
+            const clientId = document.getElementById('clientId').value;
+            const sandbox = document.getElementById('sandbox').checked;
+
+            if (!clientId || clientId === 'YOUR_PAYPAL_CLIENT_ID') {
+                alert('Please enter a valid Client ID');
+                return;
+            }
+
+            localStorage.setItem('PAYPAL_CLIENT_ID', clientId);
+            localStorage.setItem('PAYPAL_SANDBOX', sandbox ? 'true' : 'false');
+            
+            window.PAYPAL_CONFIG.clientId = clientId;
+            window.PAYPAL_CONFIG.sandbox = sandbox;
+
+            alert('✅ Configuration saved! Reloading page...');
+            location.reload();
+        }
+
+        function loadConfig() {
+            const clientId = localStorage.getItem('PAYPAL_CLIENT_ID') || '';
+            const sandbox = localStorage.getItem('PAYPAL_SANDBOX') !== 'false';
+
+            document.getElementById('clientId').value = clientId;
+            document.getElementById('sandbox').checked = sandbox;
+        }
+
+        function setStatus(id, status, message) {
+            const el = document.getElementById(id);
+            el.className = `status ${status}`;
+            el.textContent = status === 'success' ? '✅ Passed' : 
+                            status === 'error' ? '❌ Failed' : 
+                            status === 'warning' ? '⚠️ Warning' : 'Testing...';
+            
+            if (message) {
+                document.getElementById(id.replace('-status', '-result')).innerHTML = 
+                    `<pre class="${status === 'success' ? 'success-msg' : 'error-msg'}">${message}</pre>`;
+            }
+        }
+
+        function runModuleTests() {
+            // Test PayPal SDK
+            if (typeof paypal !== 'undefined') {
+                setStatus('sdk-status', 'success', 'PayPal SDK loaded successfully');
+            } else {
+                setStatus('sdk-status', 'warning', 'PayPal SDK not loaded (expected if Client ID not set)');
+            }
+
+            // Test PayPal Integration
+            if (typeof PayPalIntegration !== 'undefined') {
+                setStatus('integration-status', 'success', 'PayPalIntegration class available');
+            } else {
+                setStatus('integration-status', 'error', 'PayPalIntegration class not found');
+            }
+
+            // Test UI Widget
+            if (typeof PayPalUIWidget !== 'undefined') {
+                setStatus('widget-status', 'success', 'PayPalUIWidget class available');
+            } else {
+                setStatus('widget-status', 'error', 'PayPalUIWidget class not found');
+            }
+
+            // Test Merlin Integration
+            if (typeof MerlinPayPalIntegration !== 'undefined') {
+                setStatus('merlin-status', 'success', 'MerlinPayPalIntegration class available');
+            } else {
+                setStatus('merlin-status', 'error', 'MerlinPayPalIntegration class not found');
+            }
+        }
+
+        async function testInitialization() {
+            const result = document.getElementById('init-result');
+            result.innerHTML = '<pre>Initializing PayPal Integration...</pre>';
+
+            try {
+                paypalInstance = new PayPalIntegration(window.PAYPAL_CONFIG);
+                result.innerHTML = `<pre class="success-msg">✅ PayPal Integration initialized successfully!
+
+Config:
+- Client ID: ${window.PAYPAL_CONFIG.clientId.substring(0, 20)}...
+- Sandbox: ${window.PAYPAL_CONFIG.sandbox}
+- Currency: ${window.PAYPAL_CONFIG.currency}</pre>`;
+            } catch (error) {
+                result.innerHTML = `<pre class="error-msg">❌ Error: ${error.message}</pre>`;
+            }
+        }
+
+        async function testAccessToken() {
+            const result = document.getElementById('token-result');
+            
+            if (!paypalInstance) {
+                await testInitialization();
+            }
+
+            result.innerHTML = '<pre>Getting access token...</pre>';
+
+            try {
+                const token = await paypalInstance.getAccessToken();
+                result.innerHTML = `<pre class="success-msg">✅ Access token obtained successfully!
+
+Token: ${token.substring(0, 50)}...
+Expiry: ${new Date(paypalInstance.tokenExpiry).toLocaleString()}</pre>`;
+            } catch (error) {
+                result.innerHTML = `<pre class="error-msg">❌ Error: ${error.message}
+
+Common causes:
+- Invalid Client ID or Secret
+- Wrong sandbox/production mode
+- Network connectivity issues</pre>`;
+            }
+        }
+
+        async function testCreateInvoice() {
+            const result = document.getElementById('invoice-result');
+            
+            if (!paypalInstance) {
+                await testInitialization();
+            }
+
+            result.innerHTML = '<pre>Creating test invoice...</pre>';
+
+            try {
+                const invoice = await paypalInstance.createInvoice({
+                    detail: {
+                        invoice_number: `TEST-${Date.now()}`,
+                        invoice_date: new Date().toISOString().split('T')[0]
+                    },
+                    invoicerEmail: 'test@gembot.com',
+                    recipients: [{
+                        billing_info: {
+                            email_address: 'customer@example.com'
+                        }
+                    }],
+                    items: [{
+                        name: 'GemBot Test Service',
+                        quantity: '1',
+                        unit_amount: {
+                            currency_code: 'USD',
+                            value: '10.00'
+                        }
+                    }]
+                });
+
+                result.innerHTML = `<pre class="success-msg">✅ Invoice created successfully!
+
+Invoice ID: ${invoice.id}
+Status: ${invoice.status}
+Amount: $10.00</pre>`;
+            } catch (error) {
+                result.innerHTML = `<pre class="error-msg">❌ Error: ${error.message}</pre>`;
+            }
+        }
+
+        async function testCreateOrder() {
+            const result = document.getElementById('order-result');
+            
+            if (!paypalInstance) {
+                await testInitialization();
+            }
+
+            result.innerHTML = '<pre>Creating test order...</pre>';
+
+            try {
+                const order = await paypalInstance.processGemBotPayment({
+                    amount: '25.00',
+                    description: 'GemBot Test Payment'
+                });
+
+                const approveLink = order.links?.find(l => l.rel === 'approve')?.href;
+
+                result.innerHTML = `<pre class="success-msg">✅ Order created successfully!
+
+Order ID: ${order.id}
+Status: ${order.status}
+Amount: $25.00
+
+${approveLink ? `Approval Link:\n${approveLink}` : 'No approval link available'}</pre>`;
+            } catch (error) {
+                result.innerHTML = `<pre class="error-msg">❌ Error: ${error.message}</pre>`;
+            }
+        }
+
+        function testWidget() {
+            const result = document.getElementById('widget-test-result');
+            
+            try {
+                if (!widgetInstance) {
+                    widgetInstance = new PayPalUIWidget('paypal-widget-container', {
+                        position: 'bottom-right',
+                        theme: 'dark',
+                        compact: false
+                    });
+                }
+                
+                widgetInstance.togglePanel();
+                result.innerHTML = '<pre class="success-msg">✅ Widget displayed! Check bottom-right corner.</pre>';
+            } catch (error) {
+                result.innerHTML = `<pre class="error-msg">❌ Error: ${error.message}</pre>`;
+            }
+        }
+
+        function hideWidget() {
+            if (widgetInstance) {
+                widgetInstance.closePanel();
+                document.getElementById('widget-test-result').innerHTML = 
+                    '<pre>Widget hidden</pre>';
+            }
+        }
+    </script>
+</body>
+</html>
