@@ -184,14 +184,18 @@ window.MachineIntegrationHub = {
         console.log('Transaction ID:', transactionId);
         console.log('Customer Email:', customerEmail);
         
-        // In production, this would verify with PayPal API
-        // For now, we'll simulate the verification process
+        // SECURITY WARNING: This is a simulated verification process for demonstration.
+        // In production, this MUST be replaced with proper PayPal API integration.
+        // All payment verification should be performed server-side with PayPal's REST API
+        // or IPN (Instant Payment Notification) for security and reliability.
+        // DO NOT accept payments without proper server-side verification.
         
         const verification = {
             valid: false,
             amount: 0,
             recipient: '',
-            message: ''
+            message: '',
+            requiresManualVerification: true
         };
         
         // Check if transaction ID format is valid
@@ -205,10 +209,11 @@ window.MachineIntegrationHub = {
         this.licensing.licenseStatus = 'pending_verification';
         this.saveLicenseStatus();
         
-        verification.message = `Payment verification submitted. Please contact ${this.licensing.paypalEmail} with transaction ID ${transactionId} for manual verification.`;
+        verification.message = `Payment verification submitted. MANUAL VERIFICATION REQUIRED: Please contact ${this.licensing.paypalEmail} with transaction ID ${transactionId}. Ryan Barbrick will verify the PayPal payment and activate your license within 24 hours.`;
         verification.amount = this.licensing.paymentAmount;
         verification.recipient = this.licensing.paypalEmail;
         
+        console.log('⚠️ Payment requires manual verification by Ryan Barbrick');
         console.log('✅ Payment verification request submitted');
         
         return verification;

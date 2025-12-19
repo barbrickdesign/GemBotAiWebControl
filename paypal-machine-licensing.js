@@ -40,23 +40,24 @@ window.PayPalMachineLicensing = {
     /**
      * Generate a unique license key
      */
-    generateLicenseKey(customerEmail, transactionId) {
+    async generateLicenseKey(customerEmail, transactionId) {
         const timestamp = Date.now();
-        const hash = this.simpleHash(customerEmail + transactionId + timestamp);
-        return `GBMI-${hash.substr(0, 4)}-${hash.substr(4, 4)}-${hash.substr(8, 4)}`.toUpperCase();
+        const hash = await this.generateSecureHash(customerEmail + transactionId + timestamp);
+        return `GBMI-${hash.substring(0, 4)}-${hash.substring(4, 4)}-${hash.substring(8, 4)}`.toUpperCase();
     },
     
     /**
-     * Simple hash function for license key generation
+     * Cryptographic hash function for license key generation
+     * Note: In production, use server-side crypto for enhanced security
      */
-    simpleHash(str) {
-        let hash = 0;
-        for (let i = 0; i < str.length; i++) {
-            const char = str.charCodeAt(i);
-            hash = ((hash << 5) - hash) + char;
-            hash = hash & hash;
-        }
-        return Math.abs(hash).toString(36);
+    async generateSecureHash(str) {
+        // Use Web Crypto API for cryptographically secure hashing
+        const encoder = new TextEncoder();
+        const data = encoder.encode(str + Date.now() + Math.random());
+        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        return hashHex.substring(0, 12); // Use substring instead of deprecated substr
     },
     
     /**
@@ -177,18 +178,23 @@ window.PayPalMachineLicensing = {
     
     /**
      * Generate machine fingerprint
+     * Note: This is a basic fingerprint for tracking purposes only.
+     * In production, combine with server-side validation for license enforcement.
+     * Users are notified that fingerprints are for single-machine licensing.
      */
-    generateMachineFingerprint() {
+    async generateMachineFingerprint() {
         const components = [
             navigator.userAgent,
             navigator.language,
             navigator.hardwareConcurrency,
             screen.width + 'x' + screen.height,
-            new Date().getTimezoneOffset()
+            new Date().getTimezoneOffset(),
+            navigator.platform,
+            navigator.maxTouchPoints
         ];
         
-        const fingerprint = this.simpleHash(components.join('|'));
-        return `MACHINE-${fingerprint}`;
+        const fingerprint = await this.generateSecureHash(components.join('|'));
+        return `MACHINE-${fingerprint.substring(0, 12)}`;
     },
     
     // ═══════════════════════════════════════════════════════════════════════════

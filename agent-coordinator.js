@@ -275,7 +275,7 @@ window.AgentCoordinator = {
     
     broadcast(category, type, data) {
         const message = {
-            id: `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+            id: `msg_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
             category: category,
             type: type,
             data: data,
@@ -297,7 +297,7 @@ window.AgentCoordinator = {
     
     sendMessage(fromAgent, toAgent, type, data) {
         const message = {
-            id: `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+            id: `msg_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
             category: 'agent-to-agent',
             type: type,
             data: data,
