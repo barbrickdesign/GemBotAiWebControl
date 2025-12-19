@@ -143,6 +143,16 @@ See **[INSTRUCTIONS.md](INSTRUCTIONS.md)** for complete details on governance, l
 - **Game Control**: Monitor in-game activity and statistics
 - **Settings**: Configure GitHub tokens, deployment options, and system settings
 
+### 💰 PayPal Integration (NEW!)
+- **Payment Processing**: Create orders and capture payments directly through PayPal
+- **Invoice Management**: Generate, send, and track invoices
+- **Subscription Support**: Manage recurring billing and subscription plans
+- **Transaction Reporting**: View detailed payment history and analytics
+- **Merlin AI Integration**: Process payments through conversational commands
+- **Floating UI Widget**: Access PayPal features from any page
+- **Sandbox Testing**: Safe testing environment with PayPal sandbox mode
+- See [PAYPAL_INTEGRATION_GUIDE.md](PAYPAL_INTEGRATION_GUIDE.md) for complete documentation
+
 ## 🚀 Quick Start
 
 ### Local Deployment

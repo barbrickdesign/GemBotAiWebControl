@@ -193,6 +193,25 @@
     <!-- Animate.css for Enhanced Animations -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     
+    <!-- PayPal Integration Configuration -->
+    <script>
+        // PayPal Configuration - Set your credentials here or via environment
+        window.PAYPAL_CONFIG = {
+            clientId: localStorage.getItem('PAYPAL_CLIENT_ID') || 'YOUR_PAYPAL_CLIENT_ID',
+            // NEVER put clientSecret in browser - use server-side API only
+            sandbox: localStorage.getItem('PAYPAL_SANDBOX') !== 'false', // default to sandbox
+            currency: 'USD'
+        };
+        console.log('🔷 PayPal Config initialized:', {
+            sandbox: window.PAYPAL_CONFIG.sandbox,
+            hasClientId: !!window.PAYPAL_CONFIG.clientId && window.PAYPAL_CONFIG.clientId !== 'YOUR_PAYPAL_CLIENT_ID'
+        });
+    </script>
+    
+    <!-- PayPal SDK - Replace YOUR_CLIENT_ID with your actual Client ID -->
+    <script src="https://www.paypal.com/sdk/js?client-id=YOUR_PAYPAL_CLIENT_ID&currency=USD" 
+            onerror="console.warn('⚠️ PayPal SDK failed to load - payment features will be limited')"></script>
+    
     <!-- Core API & Logger -->
     <script src="./gembot-api.js"></script>
     
@@ -242,6 +261,11 @@
     <script src="./gembot-animations.js"></script>
     <link rel="stylesheet" href="./gembot-academy.css">
     <link rel="stylesheet" href="./gembot-academy-13tier.css">
+    
+    <!-- PayPal AI Agent Toolkit Integration -->
+    <script src="./paypal-integration.js"></script>
+    <script src="./paypal-ui-widget.js"></script>
+    <script src="./merlin-paypal-integration.js"></script>
     
     <!-- Merlin AI Core Integration - Gemini API Connection -->
     <script src="./merlin-ai-integration.js"></script>
@@ -23457,6 +23481,41 @@
                 merlin.isInitialized = true;
                 scenarioDetector.monitor();
                 console.log('🧙 All systems initialized - Merlin AI online with Ryan Barbrick wisdom');
+                
+                // Initialize PayPal Integration
+                setTimeout(() => {
+                    try {
+                        if (typeof PayPalUIWidget !== 'undefined') {
+                            // Create container for PayPal widget if it doesn't exist
+                            if (!document.getElementById('paypal-widget-container')) {
+                                const container = document.createElement('div');
+                                container.id = 'paypal-widget-container';
+                                document.body.appendChild(container);
+                            }
+                            
+                            // Initialize PayPal widget
+                            window.paypalWidget = new PayPalUIWidget('paypal-widget-container', {
+                                position: 'bottom-right',
+                                theme: 'dark',
+                                compact: false
+                            });
+                            console.log('💰 PayPal Integration initialized');
+                            
+                            // Initialize Merlin + PayPal integration
+                            if (typeof MerlinPayPalIntegration !== 'undefined' && window.paypalWidget?.paypal) {
+                                window.merlinPayPal = new MerlinPayPalIntegration(
+                                    window.paypalWidget.paypal,
+                                    window.merlin || {}
+                                );
+                                console.log('🧙‍♂️ Merlin PayPal Integration initialized');
+                            }
+                        } else {
+                            console.log('⏳ PayPal modules not loaded - payment features disabled');
+                        }
+                    } catch (error) {
+                        console.warn('⚠️ PayPal initialization error (non-critical):', error.message);
+                    }
+                }, 1000);
             }, 500);
         });
         

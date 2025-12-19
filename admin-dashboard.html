@@ -42,6 +42,19 @@
     
     <!-- 📐 Z-Index Manager - Debug and organize layout layers (Ctrl+Shift+Z to toggle) -->
     <script src="./z-index-manager.js"></script>
+    
+    <!-- PayPal Integration -->
+    <script>
+        window.PAYPAL_CONFIG = {
+            clientId: localStorage.getItem('PAYPAL_CLIENT_ID') || 'YOUR_PAYPAL_CLIENT_ID',
+            sandbox: localStorage.getItem('PAYPAL_SANDBOX') !== 'false',
+            currency: 'USD'
+        };
+    </script>
+    <script src="https://www.paypal.com/sdk/js?client-id=YOUR_PAYPAL_CLIENT_ID&currency=USD"></script>
+    <script src="./paypal-integration.js"></script>
+    <script src="./paypal-ui-widget.js"></script>
+    
     <style>
         :root {
             --bg-dark: #0a0a0f;
@@ -4854,6 +4867,26 @@
             
             // Load vault balance on game section view
             setTimeout(() => refreshVaultBalance(), 2000);
+            
+            // Initialize PayPal widget
+            setTimeout(() => {
+                try {
+                    if (typeof PayPalUIWidget !== 'undefined') {
+                        const container = document.createElement('div');
+                        container.id = 'paypal-widget-container';
+                        document.body.appendChild(container);
+                        
+                        window.paypalWidget = new PayPalUIWidget('paypal-widget-container', {
+                            position: 'bottom-left',
+                            theme: 'dark',
+                            compact: false
+                        });
+                        console.log('💰 Admin PayPal Integration initialized');
+                    }
+                } catch (error) {
+                    console.warn('⚠️ PayPal initialization warning:', error.message);
+                }
+            }, 1500);
             
             // Global keyboard shortcuts
             document.addEventListener('keydown', (e) => {
