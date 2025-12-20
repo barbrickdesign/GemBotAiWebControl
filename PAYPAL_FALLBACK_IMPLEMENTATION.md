@@ -133,6 +133,22 @@ console.log('Status:', status);
 
 ## Testing
 
+### Test Page
+
+A dedicated test page is available: **test-paypal-fallback.html**
+
+This page provides:
+- Real-time SDK status monitoring
+- Event log viewer
+- Interactive testing buttons
+- Multiple test scenarios
+
+Open `test-paypal-fallback.html` in a browser to:
+1. Monitor SDK loading in real-time
+2. View detailed event logs
+3. Test different scenarios by commenting/uncommenting script tags
+4. Verify PayPal API availability
+
 ### Test Primary SDK Success
 1. Load a page with valid primary PayPal client-id
 2. Check console for: "✅ PayPal SDK loaded successfully"

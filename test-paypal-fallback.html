@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PayPal SDK Fallback Test | Barbrick Design</title>
+    
+    <!-- 
+    ═══════════════════════════════════════════════════════════════════════════════
+    PAYPAL SDK FALLBACK TEST PAGE
+    ═══════════════════════════════════════════════════════════════════════════════
+    
+    This page demonstrates and tests the PayPal SDK fallback mechanism.
+    
+    Test Scenarios:
+    1. No Primary SDK (fallback should load automatically)
+    2. Primary SDK with invalid client-id (fallback should activate)
+    3. Primary SDK working (fallback should not load)
+    
+    Owner: Ryan Barbrick / Barbrick Design
+    Contact: BarbrickDesign@gmail.com
+    © 2024-2025 Ryan Barbrick. All Rights Reserved.
+    ═══════════════════════════════════════════════════════════════════════════════
+    -->
+    
+    <!-- UNCOMMENT ONE OF THE FOLLOWING TO TEST DIFFERENT SCENARIOS -->
+    
+    <!-- Scenario 1: No Primary SDK (fallback will load automatically) -->
+    <!-- Leave all commented for this test -->
+    
+    <!-- Scenario 2: Invalid Primary SDK (fallback will activate after timeout) -->
+    <!-- <script src="https://www.paypal.com/sdk/js?client-id=INVALID_CLIENT_ID&currency=USD"></script> -->
+    
+    <!-- Scenario 3: Valid Primary SDK (comment out to test fallback) -->
+    <!-- <script src="https://www.paypal.com/sdk/js?client-id=production&currency=USD"></script> -->
+    
+    <!-- PayPal SDK Loader with Fallback (ALWAYS INCLUDE THIS) -->
+    <script src="./paypal-sdk-loader.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f0f1e 0%, #1a1a2e 50%, #16213e 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            color: #fff;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        header h1 {
+            font-size: 2.5em;
+            color: #4af;
+            margin-bottom: 10px;
+        }
+        
+        header p {
+            color: #888;
+            font-size: 1.1em;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(74, 170, 255, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .card h2 {
+            color: #4af;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+        
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .status-item {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .status-label {
+            color: #888;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+        
+        .status-value {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        
+        .status-value.true {
+            color: #2ecc71;
+        }
+        
+        .status-value.false {
+            color: #e74c3c;
+        }
+        
+        .status-value.loading {
+            color: #f39c12;
+        }
+        
+        .log-box {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(74, 170, 255, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        
+        .log-entry {
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+        
+        .log-time {
+            color: #888;
+            margin-right: 10px;
+        }
+        
+        .log-success {
+            color: #2ecc71;
+        }
+        
+        .log-error {
+            color: #e74c3c;
+        }
+        
+        .log-warning {
+            color: #f39c12;
+        }
+        
+        .log-info {
+            color: #4af;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #4af, #06f);
+            border: none;
+            border-radius: 10px;
+            padding: 12px 25px;
+            color: #fff;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(74, 170, 255, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .scenario-box {
+            background: rgba(255, 200, 0, 0.1);
+            border: 2px solid rgba(255, 200, 0, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .scenario-box h3 {
+            color: #fc0;
+            margin-bottom: 15px;
+        }
+        
+        .scenario-box ol {
+            margin-left: 20px;
+            line-height: 1.8;
+        }
+        
+        .scenario-box code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 2px 8px;
+            border-radius: 4px;
+            color: #4af;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>💳 PayPal SDK Fallback Test</h1>
+            <p>Testing automatic PayPal SDK loading with fallback</p>
+        </header>
+        
+        <div class="scenario-box">
+            <h3>📋 Test Scenarios</h3>
+            <ol>
+                <li><strong>No Primary SDK</strong> - Fallback loads automatically</li>
+                <li><strong>Invalid Primary SDK</strong> - Fallback activates after timeout</li>
+                <li><strong>Valid Primary SDK</strong> - Fallback doesn't load</li>
+            </ol>
+            <p style="margin-top: 15px; color: #888;">
+                Edit the HTML <code>&lt;head&gt;</code> section to uncomment different scenario script tags.
+            </p>
+        </div>
+        
+        <div class="card">
+            <h2>📊 SDK Status</h2>
+            <div class="status-grid" id="statusGrid">
+                <div class="status-item">
+                    <div class="status-label">SDK Ready</div>
+                    <div class="status-value" id="statusReady">Checking...</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">Primary Loaded</div>
+                    <div class="status-value" id="statusPrimary">Checking...</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">Fallback Loaded</div>
+                    <div class="status-value" id="statusFallback">Checking...</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">Loading</div>
+                    <div class="status-value" id="statusLoading">Checking...</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">PayPal Object</div>
+                    <div class="status-value" id="statusPayPal">Checking...</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">Error</div>
+                    <div class="status-value" id="statusError">None</div>
+                </div>
+            </div>
+            
+            <div class="button-group">
+                <button onclick="refreshStatus()">🔄 Refresh Status</button>
+                <button onclick="testPayPal()">🧪 Test PayPal API</button>
+                <button onclick="clearLogs()">🗑️ Clear Logs</button>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>📝 Event Log</h2>
+            <div class="log-box" id="logBox">
+                <div class="log-entry log-info">
+                    <span class="log-time">[Init]</span>
+                    Waiting for PayPal SDK events...
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Event logging
+        const logBox = document.getElementById('logBox');
+        
+        function addLog(message, type = 'info') {
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-${type}`;
+            
+            const time = new Date().toLocaleTimeString();
+            entry.innerHTML = `<span class="log-time">[${time}]</span>${message}`;
+            
+            logBox.appendChild(entry);
+            logBox.scrollTop = logBox.scrollHeight;
+        }
+        
+        function clearLogs() {
+            logBox.innerHTML = '<div class="log-entry log-info"><span class="log-time">[Cleared]</span>Log cleared</div>';
+        }
+        
+        // Status update
+        function updateStatus() {
+            if (!window.PayPalSDKLoader) {
+                addLog('❌ PayPalSDKLoader not found!', 'error');
+                return;
+            }
+            
+            const status = window.PayPalSDKLoader.getStatus();
+            
+            document.getElementById('statusReady').textContent = status.ready ? 'Yes' : 'No';
+            document.getElementById('statusReady').className = `status-value ${status.ready}`;
+            
+            document.getElementById('statusPrimary').textContent = status.primaryLoaded ? 'Yes' : 'No';
+            document.getElementById('statusPrimary').className = `status-value ${status.primaryLoaded}`;
+            
+            document.getElementById('statusFallback').textContent = status.fallbackLoaded ? 'Yes' : 'No';
+            document.getElementById('statusFallback').className = `status-value ${status.fallbackLoaded}`;
+            
+            document.getElementById('statusLoading').textContent = status.loading ? 'Yes' : 'No';
+            document.getElementById('statusLoading').className = `status-value ${status.loading ? 'loading' : 'false'}`;
+            
+            document.getElementById('statusPayPal').textContent = window.paypal ? 'Available' : 'Not Available';
+            document.getElementById('statusPayPal').className = `status-value ${!!window.paypal}`;
+            
+            document.getElementById('statusError').textContent = status.error || 'None';
+            document.getElementById('statusError').className = status.error ? 'status-value false' : 'status-value true';
+        }
+        
+        function refreshStatus() {
+            updateStatus();
+            addLog('Status refreshed', 'info');
+        }
+        
+        // Test PayPal API
+        function testPayPal() {
+            if (!window.paypal) {
+                addLog('❌ PayPal SDK not available', 'error');
+                return;
+            }
+            
+            addLog('✅ PayPal SDK is available', 'success');
+            addLog(`Version: ${window.paypal.version || 'Unknown'}`, 'info');
+            
+            // Check available methods
+            const methods = ['Buttons', 'FUNDING', 'getFundingSources'];
+            methods.forEach(method => {
+                if (window.paypal[method]) {
+                    addLog(`✓ paypal.${method} available`, 'success');
+                } else {
+                    addLog(`✗ paypal.${method} not available`, 'warning');
+                }
+            });
+        }
+        
+        // Listen for PayPal SDK events
+        window.addEventListener('paypal-sdk-ready', (event) => {
+            addLog('🎉 PayPal SDK Ready!', 'success');
+            
+            if (event.detail.isPrimary) {
+                addLog('Primary SDK loaded successfully', 'success');
+            }
+            
+            if (event.detail.isFallback) {
+                addLog('Fallback SDK loaded successfully', 'success');
+            }
+            
+            updateStatus();
+        });
+        
+        window.addEventListener('paypal-sdk-error', (event) => {
+            addLog(`❌ PayPal SDK Error: ${event.detail.error}`, 'error');
+            updateStatus();
+        });
+        
+        // Initial status check
+        setTimeout(() => {
+            updateStatus();
+            addLog('Initial status check complete', 'info');
+        }, 1000);
+        
+        // Periodic status updates
+        setInterval(updateStatus, 5000);
+        
+        // Log page load
+        addLog('Test page loaded', 'info');
+        addLog('Monitoring PayPal SDK loading...', 'info');
+    </script>
+</body>
+</html>
