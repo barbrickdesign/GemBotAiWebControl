@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PayPal SDK Test - GemBot</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            margin: 0;
+        }
+        .test-container {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        h2 {
+            color: #764ba2;
+            font-size: 1.2em;
+            margin-top: 30px;
+            border-bottom: 2px solid #764ba2;
+            padding-bottom: 10px;
+        }
+        .status {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .log-entry {
+            padding: 8px;
+            margin: 5px 0;
+            border-left: 4px solid #667eea;
+            background: #f8f9fa;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px 5px;
+            transition: transform 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+        }
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .config-display {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 0.9em;
+            overflow-x: auto;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 PayPal SDK Integration Test</h1>
+        <p style="text-align: center; color: #666;">Testing PayPal configuration with fallback mechanism</p>
+
+        <h2>📋 Configuration Status</h2>
+        <div id="config-status"></div>
+
+        <h2>🔄 SDK Loading Test</h2>
+        <div id="sdk-status"></div>
+        <div style="text-align: center;">
+            <button onclick="testPrimarySDK()">Test Primary SDK</button>
+            <button onclick="testFallbackSDK()">Test Fallback SDK</button>
+            <button onclick="testAutoFallback()">Test Auto-Fallback</button>
+        </div>
+
+        <h2>📊 Test Results</h2>
+        <div id="test-results"></div>
+
+        <h2>📝 Test Log</h2>
+        <div id="test-log"></div>
+    </div>
+
+    <!-- Load PayPal Config -->
+    <script src="paypal-config.js"></script>
+
+    <script>
+        let testLog = [];
+        
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            testLog.push({ timestamp, message, type });
+            updateLog();
+        }
+
+        function updateLog() {
+            const logDiv = document.getElementById('test-log');
+            logDiv.innerHTML = testLog.map(entry => 
+                `<div class="log-entry">[${entry.timestamp}] ${entry.message}</div>`
+            ).join('');
+        }
+
+        function showStatus(elementId, message, type) {
+            const el = document.getElementById(elementId);
+            el.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+
+        function displayConfig() {
+            if (!window.PayPalConfig) {
+                showStatus('config-status', '❌ PayPalConfig not loaded!', 'error');
+                log('PayPalConfig not found', 'error');
+                return;
+            }
+
+            const config = window.PayPalConfig;
+            const html = `
+                <div class="config-display">
+                    <strong>Primary Client ID:</strong><br>
+                    ${config.primaryClientId.substring(0, 30)}...<br><br>
+                    <strong>Fallback Client ID:</strong><br>
+                    ${config.fallbackClientId.substring(0, 30)}...<br><br>
+                    <strong>PayPal Email:</strong> ${config.paypalEmail}<br>
+                    <strong>Currency:</strong> ${config.currency}<br>
+                    <strong>Version:</strong> ${config.version}
+                </div>
+            `;
+            document.getElementById('config-status').innerHTML = html;
+            log('Configuration loaded successfully', 'success');
+        }
+
+        function testPrimarySDK() {
+            log('Testing Primary SDK...', 'info');
+            showStatus('sdk-status', '⏳ Loading Primary SDK...', 'warning');
+            
+            const script = document.createElement('script');
+            script.src = window.PayPalConfig.getPrimarySDKUrl();
+            
+            script.onload = () => {
+                log('✅ Primary SDK loaded successfully', 'success');
+                showStatus('sdk-status', '✅ Primary SDK loaded successfully!', 'success');
+                showStatus('test-results', `
+                    <div class="status success">
+                        ✅ Primary SDK Test: PASSED<br>
+                        PayPal object available: ${typeof window.paypal !== 'undefined'}<br>
+                        SDK URL: ${window.PayPalConfig.getPrimarySDKUrl().substring(0, 80)}...
+                    </div>
+                `, '');
+            };
+            
+            script.onerror = () => {
+                log('❌ Primary SDK failed to load', 'error');
+                showStatus('sdk-status', '❌ Primary SDK failed to load', 'error');
+                showStatus('test-results', `
+                    <div class="status error">
+                        ❌ Primary SDK Test: FAILED<br>
+                        Check console for details
+                    </div>
+                `, '');
+            };
+            
+            document.head.appendChild(script);
+        }
+
+        function testFallbackSDK() {
+            log('Testing Fallback SDK...', 'info');
+            showStatus('sdk-status', '⏳ Loading Fallback SDK...', 'warning');
+            
+            // Remove any existing PayPal SDK
+            delete window.paypal;
+            const existingScripts = document.querySelectorAll('script[src*="paypal.com/sdk"]');
+            existingScripts.forEach(s => s.remove());
+            
+            const script = document.createElement('script');
+            script.src = window.PayPalConfig.getFallbackSDKUrl();
+            
+            script.onload = () => {
+                log('✅ Fallback SDK loaded successfully', 'success');
+                showStatus('sdk-status', '✅ Fallback SDK loaded successfully!', 'success');
+                showStatus('test-results', `
+                    <div class="status success">
+                        ✅ Fallback SDK Test: PASSED<br>
+                        PayPal object available: ${typeof window.paypal !== 'undefined'}<br>
+                        SDK URL: ${window.PayPalConfig.getFallbackSDKUrl().substring(0, 80)}...
+                    </div>
+                `, '');
+            };
+            
+            script.onerror = () => {
+                log('❌ Fallback SDK failed to load', 'error');
+                showStatus('sdk-status', '❌ Fallback SDK failed to load', 'error');
+                showStatus('test-results', `
+                    <div class="status error">
+                        ❌ Fallback SDK Test: FAILED<br>
+                        Check console for details
+                    </div>
+                `, '');
+            };
+            
+            document.head.appendChild(script);
+        }
+
+        function testAutoFallback() {
+            log('Testing Auto-Fallback mechanism...', 'info');
+            showStatus('sdk-status', '⏳ Testing Auto-Fallback...', 'warning');
+            
+            // Remove any existing PayPal SDK
+            delete window.paypal;
+            const existingScripts = document.querySelectorAll('script[src*="paypal.com/sdk"]');
+            existingScripts.forEach(s => s.remove());
+            
+            window.PayPalConfig.loadSDK(
+                () => {
+                    log('✅ SDK loaded with auto-fallback', 'success');
+                    showStatus('sdk-status', '✅ Auto-Fallback Test: SDK loaded successfully!', 'success');
+                    showStatus('test-results', `
+                        <div class="status success">
+                            ✅ Auto-Fallback Test: PASSED<br>
+                            PayPal object available: ${typeof window.paypal !== 'undefined'}<br>
+                            The SDK loaded (either primary or fallback worked)
+                        </div>
+                    `, '');
+                },
+                () => {
+                    log('❌ Auto-Fallback failed - both SDKs failed', 'error');
+                    showStatus('sdk-status', '❌ Auto-Fallback Test: Both SDKs failed', 'error');
+                    showStatus('test-results', `
+                        <div class="status error">
+                            ❌ Auto-Fallback Test: FAILED<br>
+                            Neither primary nor fallback SDK loaded successfully
+                        </div>
+                    `, '');
+                }
+            );
+        }
+
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', () => {
+            log('Test page loaded', 'info');
+            displayConfig();
+            
+            // Check if PayPal is already loaded
+            if (window.paypal) {
+                log('PayPal SDK already loaded on page', 'success');
+                showStatus('sdk-status', '✅ PayPal SDK is already loaded', 'success');
+            } else {
+                log('PayPal SDK not loaded yet', 'info');
+                showStatus('sdk-status', '⏳ PayPal SDK not loaded. Use buttons above to test.', 'info');
+            }
+        });
+    </script>
+</body>
+</html>
