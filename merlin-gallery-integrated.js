@@ -145,6 +145,177 @@
     .badge-gold { background:linear-gradient(135deg,#ffd700,#ffaa00); color:#000; }
     .badge-platinum { background:linear-gradient(135deg,#e5e4e2,#d4d4d4); color:#000; }
     .badge-diamond { background:linear-gradient(135deg,#b9f2ff,#69c6ff); color:#000; }
+    
+    /* ==================== MOBILE RESPONSIVE STYLES ==================== */
+    @media (max-width: 768px) {
+      /* Make toggle button more accessible on mobile */
+      .merlin-gallery-toggle {
+        bottom: 60px; right: 12px;
+        padding: 12px 16px; font-size: 13px;
+        min-width: 44px; min-height: 44px;
+      }
+      
+      /* Full screen panel on mobile */
+      .merlin-gallery-panel {
+        top: 0; left: 0; right: 0; bottom: 0;
+        transform: translateX(0) scale(0);
+        width: 100%; height: 100%;
+        border-radius: 0;
+        max-width: 100vw; max-height: 100vh;
+      }
+      
+      .merlin-gallery-panel.open {
+        transform: translateX(0) scale(1);
+      }
+      
+      /* Header adjustments */
+      .gallery-header {
+        padding: 16px 12px;
+        flex-direction: column;
+        gap: 12px;
+        border-radius: 0;
+      }
+      
+      .gallery-title {
+        font-size: 18px;
+      }
+      
+      .gallery-subtitle {
+        font-size: 11px;
+      }
+      
+      /* Controls wrap and fill width */
+      .gallery-controls {
+        width: 100%;
+        flex-direction: column;
+        gap: 8px;
+      }
+      
+      .gallery-input,
+      .gallery-btn {
+        width: 100%;
+        min-height: 44px;
+        font-size: 14px;
+      }
+      
+      /* Make close button prominent and touch-friendly */
+      #closeGallery {
+        order: -1;
+        background: #ff4444;
+        border: 2px solid #ff6666;
+        font-size: 16px;
+        padding: 14px;
+        font-weight: 900;
+        min-height: 50px;
+      }
+      
+      /* Body takes remaining space */
+      .gallery-body {
+        height: auto;
+        flex: 1;
+        padding: 12px;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+      
+      /* Single column grid on mobile */
+      .gallery-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        padding: 0;
+      }
+      
+      /* Cards fill width */
+      .project-card {
+        width: 100%;
+      }
+      
+      /* Adjust preview height */
+      .project-preview {
+        height: 160px;
+      }
+      
+      .project-preview iframe {
+        transform: scale(0.225);
+      }
+      
+      /* Adjust stats layout */
+      .project-stats {
+        gap: 8px;
+      }
+      
+      .stat-box {
+        padding: 10px 8px;
+      }
+      
+      /* Touch-friendly inputs */
+      .invest-input,
+      .invest-btn {
+        min-height: 44px;
+        font-size: 14px;
+      }
+      
+      /* Footer adjustments */
+      .gallery-footer {
+        padding: 12px;
+        flex-direction: column;
+        gap: 12px;
+        border-radius: 0;
+      }
+      
+      .user-portfolio {
+        width: 100%;
+        justify-content: space-around;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+      
+      .portfolio-stat {
+        text-align: center;
+      }
+      
+      .portfolio-value {
+        font-size: 16px;
+      }
+      
+      .investor-badge {
+        width: 100%;
+        text-align: center;
+        padding: 10px 14px;
+        font-size: 12px;
+      }
+    }
+    
+    /* Extra small devices (phones in portrait) */
+    @media (max-width: 480px) {
+      .gallery-title {
+        font-size: 16px;
+      }
+      
+      .gallery-subtitle {
+        font-size: 10px;
+      }
+      
+      .project-preview {
+        height: 140px;
+      }
+      
+      .project-preview iframe {
+        transform: scale(0.2);
+      }
+      
+      .project-name {
+        font-size: 14px;
+      }
+      
+      .user-portfolio {
+        gap: 8px;
+      }
+      
+      .portfolio-value {
+        font-size: 14px;
+      }
+    }
   `;
   const styleEl = document.createElement('style');
   styleEl.textContent = css;
