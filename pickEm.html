@@ -95,19 +95,23 @@
         /* Tier Selection */
         .tier-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
             margin: 20px 0;
+            max-height: 600px;
+            overflow-y: auto;
+            padding: 10px;
         }
         
         .tier-card {
             border: 3px solid #e0e0e0;
             border-radius: 10px;
-            padding: 20px;
+            padding: 15px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
             position: relative;
+            min-height: 180px;
         }
         
         .tier-card:hover {
@@ -122,28 +126,28 @@
         }
         
         .tier-card .tier-name {
-            font-size: 1.5em;
+            font-size: 1.3em;
             font-weight: bold;
             color: #667eea;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
         
         .tier-card .tier-price {
-            font-size: 2em;
+            font-size: 1.6em;
             font-weight: bold;
             color: #333;
-            margin: 10px 0;
+            margin: 8px 0;
         }
         
         .tier-card .tier-features {
             text-align: left;
-            margin-top: 15px;
-            font-size: 0.9em;
+            margin-top: 10px;
+            font-size: 0.85em;
             color: #666;
         }
         
         .tier-card .tier-features li {
-            margin: 5px 0;
+            margin: 3px 0;
             list-style: none;
         }
         
@@ -404,8 +408,9 @@
                 <h2>🎯 Select Your Tier</h2>
                 
                 <div class="tier-grid">
-                    <div class="tier-card" data-tier="basic" data-price="5">
-                        <div class="tier-name">Basic</div>
+                    <!-- Tier 1: Starter -->
+                    <div class="tier-card" data-tier="tier1" data-price="5">
+                        <div class="tier-name">Starter</div>
                         <div class="tier-price">$5</div>
                         <ul class="tier-features">
                             <li>5 number sets</li>
@@ -414,31 +419,236 @@
                         </ul>
                     </div>
                     
-                    <div class="tier-card" data-tier="standard" data-price="15">
+                    <!-- Tier 2: Basic -->
+                    <div class="tier-card" data-tier="tier2" data-price="15">
                         <div class="tier-badge">POPULAR</div>
-                        <div class="tier-name">Standard</div>
+                        <div class="tier-name">Basic</div>
                         <div class="tier-price">$15</div>
                         <ul class="tier-features">
-                            <li>20 number sets</li>
-                            <li>Advanced algorithm</li>
+                            <li>15 number sets</li>
+                            <li>Enhanced algorithm</li>
                             <li>Pattern analysis</li>
-                            <li>Historical trends</li>
                             <li>Hot/cold numbers</li>
                         </ul>
                     </div>
                     
-                    <div class="tier-card" data-tier="premium" data-price="30">
-                        <div class="tier-badge">BEST VALUE</div>
-                        <div class="tier-name">Premium</div>
+                    <!-- Tier 3: Standard -->
+                    <div class="tier-card" data-tier="tier3" data-price="30">
+                        <div class="tier-name">Standard</div>
                         <div class="tier-price">$30</div>
+                        <ul class="tier-features">
+                            <li>30 number sets</li>
+                            <li>Advanced algorithm</li>
+                            <li>Deep pattern analysis</li>
+                            <li>Historical trends</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Tier 4: Plus -->
+                    <div class="tier-card" data-tier="tier4" data-price="50">
+                        <div class="tier-name">Plus</div>
+                        <div class="tier-price">$50</div>
                         <ul class="tier-features">
                             <li>50 number sets</li>
                             <li>AI-powered algorithm</li>
-                            <li>Deep pattern analysis</li>
-                            <li>Historical trends</li>
-                            <li>Hot/cold numbers</li>
                             <li>Frequency analysis</li>
                             <li>Priority support</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Tier 5: Premium -->
+                    <div class="tier-card" data-tier="tier5" data-price="100">
+                        <div class="tier-badge">BEST VALUE</div>
+                        <div class="tier-name">Premium</div>
+                        <div class="tier-price">$100</div>
+                        <ul class="tier-features">
+                            <li>100 number sets</li>
+                            <li>AI-powered algorithm</li>
+                            <li>All analysis features</li>
+                            <li>Priority support</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Tier 6: Professional -->
+                    <div class="tier-card" data-tier="tier6" data-price="150">
+                        <div class="tier-name">Professional</div>
+                        <div class="tier-price">$150</div>
+                        <ul class="tier-features">
+                            <li>150 number sets</li>
+                            <li>Pro AI algorithm</li>
+                            <li>Advanced analytics</li>
+                            <li>24/7 support</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Tier 7: Elite -->
+                    <div class="tier-card" data-tier="tier7" data-price="250">
+                        <div class="tier-name">Elite</div>
+                        <div class="tier-price">$250</div>
+                        <ul class="tier-features">
+                            <li>250 number sets</li>
+                            <li>Elite AI algorithm</li>
+                            <li>Predictive modeling</li>
+                            <li>Dedicated support</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Tier 8: Executive -->
+                    <div class="tier-card" data-tier="tier8" data-price="350">
+                        <div class="tier-name">Executive</div>
+                        <div class="tier-price">$350</div>
+                        <ul class="tier-features">
+                            <li>350 number sets</li>
+                            <li>Executive AI algorithm</li>
+                            <li>Machine learning</li>
+                            <li>VIP support</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Tier 9: Master -->
+                    <div class="tier-card" data-tier="tier9" data-price="500">
+                        <div class="tier-badge">HIGH ROLLER</div>
+                        <div class="tier-name">Master</div>
+                        <div class="tier-price">$500</div>
+                        <ul class="tier-features">
+                            <li>500 number sets</li>
+                            <li>Master AI algorithm</li>
+                            <li>Neural network analysis</li>
+                            <li>Concierge support</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Tier 10: Platinum -->
+                    <div class="tier-card" data-tier="tier10" data-price="750">
+                        <div class="tier-name">Platinum</div>
+                        <div class="tier-price">$750</div>
+                        <ul class="tier-features">
+                            <li>750 number sets</li>
+                            <li>Platinum AI algorithm</li>
+                            <li>Quantum analysis</li>
+                            <li>Personal advisor</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Tier 11: Diamond -->
+                    <div class="tier-card" data-tier="tier11" data-price="1000">
+                        <div class="tier-name">Diamond</div>
+                        <div class="tier-price">$1,000</div>
+                        <ul class="tier-features">
+                            <li>1,000 number sets</li>
+                            <li>Diamond AI algorithm</li>
+                            <li>Multi-dimensional analysis</li>
+                            <li>24/7 personal advisor</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Tier 12: Sapphire -->
+                    <div class="tier-card" data-tier="tier12" data-price="1500">
+                        <div class="tier-name">Sapphire</div>
+                        <div class="tier-price">$1,500</div>
+                        <ul class="tier-features">
+                            <li>1,500 number sets</li>
+                            <li>Sapphire AI algorithm</li>
+                            <li>Strategic modeling</li>
+                            <li>Luxury support</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Tier 13: Ruby -->
+                    <div class="tier-card" data-tier="tier13" data-price="2000">
+                        <div class="tier-name">Ruby</div>
+                        <div class="tier-price">$2,000</div>
+                        <ul class="tier-features">
+                            <li>2,000 number sets</li>
+                            <li>Ruby AI algorithm</li>
+                            <li>Expert system analysis</li>
+                            <li>White glove service</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Tier 14: Emerald -->
+                    <div class="tier-card" data-tier="tier14" data-price="2500">
+                        <div class="tier-name">Emerald</div>
+                        <div class="tier-price">$2,500</div>
+                        <ul class="tier-features">
+                            <li>2,500 number sets</li>
+                            <li>Emerald AI algorithm</li>
+                            <li>Ensemble learning</li>
+                            <li>Premium concierge</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Tier 15: Legendary -->
+                    <div class="tier-card" data-tier="tier15" data-price="3500">
+                        <div class="tier-badge">ULTRA EXCLUSIVE</div>
+                        <div class="tier-name">Legendary</div>
+                        <div class="tier-price">$3,500</div>
+                        <ul class="tier-features">
+                            <li>3,500 number sets</li>
+                            <li>Legendary AI algorithm</li>
+                            <li>Deep learning networks</li>
+                            <li>Elite concierge team</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Tier 16: Mythic -->
+                    <div class="tier-card" data-tier="tier16" data-price="5000">
+                        <div class="tier-name">Mythic</div>
+                        <div class="tier-price">$5,000</div>
+                        <ul class="tier-features">
+                            <li>5,000 number sets</li>
+                            <li>Mythic AI algorithm</li>
+                            <li>Advanced deep learning</li>
+                            <li>Personal research team</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Tier 17: Titan -->
+                    <div class="tier-card" data-tier="tier17" data-price="6500">
+                        <div class="tier-name">Titan</div>
+                        <div class="tier-price">$6,500</div>
+                        <ul class="tier-features">
+                            <li>6,500 number sets</li>
+                            <li>Titan AI algorithm</li>
+                            <li>Cognitive computing</li>
+                            <li>Dedicated analyst team</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Tier 18: Apex -->
+                    <div class="tier-card" data-tier="tier18" data-price="8000">
+                        <div class="tier-name">Apex</div>
+                        <div class="tier-price">$8,000</div>
+                        <ul class="tier-features">
+                            <li>8,000 number sets</li>
+                            <li>Apex AI algorithm</li>
+                            <li>Supercomputer analysis</li>
+                            <li>Full service team</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Tier 19: Supreme -->
+                    <div class="tier-card" data-tier="tier19" data-price="9000">
+                        <div class="tier-name">Supreme</div>
+                        <div class="tier-price">$9,000</div>
+                        <ul class="tier-features">
+                            <li>9,000 number sets</li>
+                            <li>Supreme AI algorithm</li>
+                            <li>Ultimate optimization</li>
+                            <li>Private research lab</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Tier 20: Ultimate -->
+                    <div class="tier-card" data-tier="tier20" data-price="10000">
+                        <div class="tier-badge">ULTIMATE</div>
+                        <div class="tier-name">Ultimate</div>
+                        <div class="tier-price">$10,000</div>
+                        <ul class="tier-features">
+                            <li>10,000 number sets</li>
+                            <li>Ultimate AI algorithm</li>
+                            <li>Unlimited analysis</li>
+                            <li>Personal AI scientist</li>
                         </ul>
                     </div>
                 </div>
@@ -665,9 +875,26 @@
             
             // Calculate sets based on tier
             const setsMap = {
-                'basic': 5,
-                'standard': 20,
-                'premium': 50
+                'tier1': 5,
+                'tier2': 15,
+                'tier3': 30,
+                'tier4': 50,
+                'tier5': 100,
+                'tier6': 150,
+                'tier7': 250,
+                'tier8': 350,
+                'tier9': 500,
+                'tier10': 750,
+                'tier11': 1000,
+                'tier12': 1500,
+                'tier13': 2000,
+                'tier14': 2500,
+                'tier15': 3500,
+                'tier16': 5000,
+                'tier17': 6500,
+                'tier18': 8000,
+                'tier19': 9000,
+                'tier20': 10000
             };
             
             setsRemaining = setsMap[paymentData.tier] || 5;
