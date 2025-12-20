@@ -51,16 +51,40 @@ window.PickEmAlgorithm = {
     init() {
         console.log('🧠 PickEm Algorithm initializing...');
         
-        // Initialize frequency map
-        for (let i = 1; i <= 69; i++) {
-            this.historicalData.frequencyMap[i] = Math.floor(Math.random() * 100) + 50;
-        }
+        // Initialize frequency map with realistic lottery frequency patterns
+        // NOTE: This uses simulated frequency data. In production, replace with actual
+        // historical lottery data from your jurisdiction's lottery API.
+        this.initializeFrequencyData();
         
         // Load saved algorithm data
         this.loadAlgorithmData();
         
         console.log('✅ PickEm Algorithm ready');
+        console.log('⚠️ Using simulated frequency data - Replace with actual lottery data in production');
         return this;
+    },
+    
+    /**
+     * Initialize frequency data with realistic patterns
+     * NOTE: Replace this with actual historical lottery data in production
+     */
+    initializeFrequencyData() {
+        // Create a more realistic distribution based on lottery statistics
+        // Some numbers tend to appear more frequently in lotteries
+        const hotFrequency = 120;
+        const normalFrequency = 80;
+        const coldFrequency = 50;
+        
+        for (let i = 1; i <= 69; i++) {
+            // Assign frequency based on whether number is in hot/cold lists
+            if (this.historicalData.hotNumbers.includes(i)) {
+                this.historicalData.frequencyMap[i] = hotFrequency + Math.floor(Math.random() * 30);
+            } else if (this.historicalData.coldNumbers.includes(i)) {
+                this.historicalData.frequencyMap[i] = coldFrequency + Math.floor(Math.random() * 20);
+            } else {
+                this.historicalData.frequencyMap[i] = normalFrequency + Math.floor(Math.random() * 25);
+            }
+        }
     },
     
     /**

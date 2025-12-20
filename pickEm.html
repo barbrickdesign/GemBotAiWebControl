@@ -5,7 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PickEm AI - Lottery Number Generator | Barbrick Design</title>
     
-    <!-- PayPal SDK -->
+    <!-- 
+    ═══════════════════════════════════════════════════════════════════════════════
+    PICKEM AI - DEMO VERSION
+    ═══════════════════════════════════════════════════════════════════════════════
+    This is a demonstration version with simulated payment processing.
+    
+    BEFORE PRODUCTION DEPLOYMENT:
+    1. Replace PayPal client-id with your actual PayPal Business account ID
+    2. Implement actual PayPal payment processing (see PICKEM_README.md)
+    3. Replace demo data with real lottery statistics
+    4. Add server-side payment verification
+    5. Implement proper error handling and logging
+    
+    Owner: Ryan Barbrick / Barbrick Design
+    Contact: BarbrickDesign@gmail.com
+    Copyright: © 2024-2025 Ryan Barbrick. All Rights Reserved.
+    ═══════════════════════════════════════════════════════════════════════════════
+    -->
+    
+    <!-- PayPal SDK - Replace 'production' with your actual client ID -->
     <script src="https://www.paypal.com/sdk/js?client-id=production&currency=USD&disable-funding=credit,card"></script>
     
     <style>
@@ -600,25 +619,38 @@
             paypalInfo.style.color = '#666';
             paypalInfo.innerHTML = 'Payment to: <strong>BarbrickDesign@gmail.com</strong>';
             container.appendChild(paypalInfo);
+            
+            // Add demo warning
+            const demoWarning = document.createElement('p');
+            demoWarning.style.textAlign = 'center';
+            demoWarning.style.marginTop = '5px';
+            demoWarning.style.fontSize = '0.8em';
+            demoWarning.style.color = '#ff6b6b';
+            demoWarning.style.fontWeight = 'bold';
+            demoWarning.textContent = '⚠️ DEMO MODE - No actual payment processed';
+            container.appendChild(demoWarning);
         }
         
-        // Process Payment (Placeholder - will integrate with actual PayPal)
+        // Process Payment (DEMO MODE - Replace with actual PayPal integration)
         function processPayment() {
             if (!currentTier) {
                 alert('Please select a tier first!');
                 return;
             }
             
-            // Simulate payment processing
+            // DEMO MODE WARNING
             const confirmed = confirm(
-                `Process payment of $${currentPrice} for ${currentTier.toUpperCase()} tier?\n\n` +
-                `This will be sent to BarbrickDesign@gmail.com via PayPal.\n\n` +
-                `Click OK to continue to PayPal...`
+                `⚠️ DEMO MODE - No actual payment will be processed ⚠️\n\n` +
+                `This is a demonstration of the payment flow.\n` +
+                `Tier: ${currentTier.toUpperCase()} - $${currentPrice}\n` +
+                `Payment would go to: BarbrickDesign@gmail.com\n\n` +
+                `In production, this would redirect to PayPal for actual payment.\n\n` +
+                `Click OK to continue demo...`
             );
             
             if (confirmed) {
-                // In production, this would redirect to PayPal
-                // For demo purposes, we'll simulate a successful payment
+                // PRODUCTION NOTE: Replace this entire function with actual PayPal SDK integration
+                // See PICKEM_README.md for PayPal integration instructions
                 handlePaymentSuccess({
                     tier: currentTier,
                     amount: currentPrice,

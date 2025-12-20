@@ -51,14 +51,18 @@ window.PickEmAnalytics = {
     
     /**
      * Initialize with demo data for new installations
+     * NOTE: This is demonstration data. In production, start with empty stats.
      */
     initializeDemoData() {
-        // Simulate existing user base
+        console.log('⚠️ Initializing with DEMO DATA for demonstration purposes');
+        
+        // Simulate existing user base (DEMO DATA)
         this.analyticsData = {
             totalUsers: 1247,
             totalGenerations: 8932,
             totalWinners: 423,
             totalPrizeMoney: 2847650,
+            isDemoData: true,  // Flag to indicate this is demo data
             tierPerformance: {
                 basic: { 
                     winRate: 12.5, 

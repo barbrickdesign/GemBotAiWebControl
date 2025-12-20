@@ -48,14 +48,19 @@ window.PickEmTracker = {
     },
     
     /**
-     * Initialize user ID
+     * Initialize user ID with cryptographically secure random
      */
     initializeUserId() {
         let userId = localStorage.getItem('pickEm_userId');
         
         if (!userId) {
-            // Generate unique user ID
-            userId = 'USER-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+            // Generate unique user ID using crypto API for security
+            if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+                userId = 'USER-' + crypto.randomUUID();
+            } else {
+                // Fallback for older browsers
+                userId = 'USER-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+            }
             localStorage.setItem('pickEm_userId', userId);
         }
         
