@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PickEm AI - Lottery Number Generator | Barbrick Design</title>
+    
+    <!-- 
+    ═══════════════════════════════════════════════════════════════════════════════
+    PICKEM AI - DEMO VERSION
+    ═══════════════════════════════════════════════════════════════════════════════
+    This is a demonstration version with simulated payment processing.
+    
+    BEFORE PRODUCTION DEPLOYMENT:
+    1. Replace PayPal client-id with your actual PayPal Business account ID
+    2. Implement actual PayPal payment processing (see PICKEM_README.md)
+    3. Replace demo data with real lottery statistics
+    4. Add server-side payment verification
+    5. Implement proper error handling and logging
+    
+    Owner: Ryan Barbrick / Barbrick Design
+    Contact: BarbrickDesign@gmail.com
+    Copyright: © 2024-2025 Ryan Barbrick. All Rights Reserved.
+    ═══════════════════════════════════════════════════════════════════════════════
+    -->
+    
+    <!-- PayPal SDK - Replace 'production' with your actual client ID -->
+    <script src="https://www.paypal.com/sdk/js?client-id=production&currency=USD&disable-funding=credit,card"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+        
+        header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        /* Tier Selection */
+        .tier-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .tier-card {
+            border: 3px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .tier-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .tier-card.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .tier-card .tier-name {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .tier-card .tier-price {
+            font-size: 2em;
+            font-weight: bold;
+            color: #333;
+            margin: 10px 0;
+        }
+        
+        .tier-card .tier-features {
+            text-align: left;
+            margin-top: 15px;
+            font-size: 0.9em;
+            color: #666;
+        }
+        
+        .tier-card .tier-features li {
+            margin: 5px 0;
+            list-style: none;
+        }
+        
+        .tier-card .tier-features li:before {
+            content: "✓ ";
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        .tier-badge {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: #ff6b6b;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+        
+        /* Number Display */
+        .numbers-display {
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .numbers-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .number-ball {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            animation: pop 0.5s ease;
+        }
+        
+        @keyframes pop {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .powerball {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+        }
+        
+        /* Buttons */
+        .btn {
+            padding: 15px 30px;
+            font-size: 1.1em;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin: 10px 0;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #56ab2f, #a8e063);
+            color: white;
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        #paypal-button-container {
+            margin: 20px 0;
+            min-height: 50px;
+        }
+        
+        /* Stats Dashboard */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #667eea15, #764ba215);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .stat-label {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        /* Drawing History */
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        .history-table th {
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        .history-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .history-table tr:hover {
+            background: #f5f5f5;
+        }
+        
+        .win-badge {
+            background: #56ab2f;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 5px;
+            font-size: 0.8em;
+        }
+        
+        .loss-badge {
+            background: #ff6b6b;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 5px;
+            font-size: 0.8em;
+        }
+        
+        /* Algorithm Info */
+        .algorithm-info {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .algorithm-info h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        /* Success Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            max-width: 500px;
+            text-align: center;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .modal-content h2 {
+            color: #56ab2f;
+            margin-bottom: 20px;
+        }
+        
+        /* Social Proof */
+        .social-proof {
+            background: linear-gradient(135deg, #56ab2f15, #a8e06315);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .social-proof h3 {
+            color: #56ab2f;
+            margin-bottom: 15px;
+        }
+        
+        .testimonial {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        footer {
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+            padding: 20px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎰 PickEm AI</h1>
+            <p>Intelligent Lottery Number Generation System</p>
+            <p style="font-size: 0.9em; margin-top: 10px;">By Ryan Barbrick | Barbrick Design</p>
+        </header>
+        
+        <div class="main-content">
+            <!-- Left Column: Purchase & Generation -->
+            <div class="card">
+                <h2>🎯 Select Your Tier</h2>
+                
+                <div class="tier-grid">
+                    <div class="tier-card" data-tier="basic" data-price="5">
+                        <div class="tier-name">Basic</div>
+                        <div class="tier-price">$5</div>
+                        <ul class="tier-features">
+                            <li>5 number sets</li>
+                            <li>Basic algorithm</li>
+                            <li>Pattern analysis</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="tier-card" data-tier="standard" data-price="15">
+                        <div class="tier-badge">POPULAR</div>
+                        <div class="tier-name">Standard</div>
+                        <div class="tier-price">$15</div>
+                        <ul class="tier-features">
+                            <li>20 number sets</li>
+                            <li>Advanced algorithm</li>
+                            <li>Pattern analysis</li>
+                            <li>Historical trends</li>
+                            <li>Hot/cold numbers</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="tier-card" data-tier="premium" data-price="30">
+                        <div class="tier-badge">BEST VALUE</div>
+                        <div class="tier-name">Premium</div>
+                        <div class="tier-price">$30</div>
+                        <ul class="tier-features">
+                            <li>50 number sets</li>
+                            <li>AI-powered algorithm</li>
+                            <li>Deep pattern analysis</li>
+                            <li>Historical trends</li>
+                            <li>Hot/cold numbers</li>
+                            <li>Frequency analysis</li>
+                            <li>Priority support</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="algorithm-info">
+                    <h3>🧠 How Our Algorithm Works</h3>
+                    <p>Our AI-powered system analyzes historical lottery data, identifies patterns, and uses advanced statistical methods to generate optimized number combinations. Each tier unlocks more sophisticated analysis capabilities.</p>
+                </div>
+                
+                <div id="paypal-button-container"></div>
+                
+                <div class="numbers-display" id="numbersDisplay" style="display: none;">
+                    <h3>Your Lucky Numbers</h3>
+                    <div class="numbers-container" id="numbersContainer"></div>
+                    <button class="btn btn-primary" onclick="generateNewSet()">Generate New Set</button>
+                    <button class="btn btn-success" onclick="logWin()">I Won! 🎉</button>
+                    <button class="btn" onclick="logLoss()" style="background: #6c757d; color: white;">Didn't Win</button>
+                </div>
+            </div>
+            
+            <!-- Right Column: Stats & History -->
+            <div class="card">
+                <h2>📊 Your Dashboard</h2>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalInvested">$0</div>
+                        <div class="stat-label">Total Invested</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalWon">$0</div>
+                        <div class="stat-label">Total Won</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="winRate">0%</div>
+                        <div class="stat-label">Win Rate</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="roi">0%</div>
+                        <div class="stat-label">ROI</div>
+                    </div>
+                </div>
+                
+                <div class="social-proof">
+                    <h3>🌟 Community Success</h3>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="totalUsers">0</div>
+                            <div class="stat-label">Total Users</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="totalWinners">0</div>
+                            <div class="stat-label">Winners</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="communityWinRate">0%</div>
+                            <div class="stat-label">Success Rate</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="totalPrizesMoney">$0</div>
+                            <div class="stat-label">Prizes Won</div>
+                        </div>
+                    </div>
+                    
+                    <div class="testimonial">
+                        <p><strong>Sarah M.</strong> - Won $50,000 using Standard tier!</p>
+                        <p style="font-size: 0.9em; color: #666; margin-top: 5px;">"The algorithm actually works! I couldn't believe it when my numbers hit!"</p>
+                    </div>
+                </div>
+                
+                <h3 style="margin-top: 30px;">📋 Drawing History</h3>
+                <div style="max-height: 400px; overflow-y: auto;">
+                    <table class="history-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Numbers</th>
+                                <th>Tier</th>
+                                <th>Result</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyTableBody">
+                            <tr>
+                                <td colspan="4" style="text-align: center; padding: 40px; color: #999;">
+                                    No drawings yet. Purchase a tier to get started!
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p><strong>PickEm AI</strong> - Intelligent Lottery Number Generator</p>
+            <p>Created by Ryan Barbrick | © 2024-2025 Barbrick Design. All Rights Reserved.</p>
+            <p>Contact: <a href="mailto:BarbrickDesign@gmail.com" style="color: white;">BarbrickDesign@gmail.com</a></p>
+            <p style="font-size: 0.8em; margin-top: 10px; opacity: 0.8;">
+                Disclaimer: This is an entertainment tool. Lottery results are random. Past performance does not guarantee future results.
+                Please gamble responsibly.
+            </p>
+        </footer>
+    </div>
+    
+    <!-- Success Modal -->
+    <div class="modal" id="successModal">
+        <div class="modal-content">
+            <h2>🎉 Payment Successful!</h2>
+            <p>Your payment has been processed successfully.</p>
+            <p>Click "Generate Numbers" to get your lucky picks!</p>
+            <button class="btn btn-primary" onclick="closeModal()">Got it!</button>
+        </div>
+    </div>
+    
+    <script src="pickEm-algorithm.js"></script>
+    <script src="pickEm-tracker.js"></script>
+    <script src="pickEm-analytics.js"></script>
+    <script>
+        // State Management
+        let currentTier = null;
+        let currentPrice = 0;
+        let setsRemaining = 0;
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeTierSelection();
+            loadUserData();
+            loadCommunityStats();
+            initializePayPal();
+        });
+        
+        // Tier Selection
+        function initializeTierSelection() {
+            const tierCards = document.querySelectorAll('.tier-card');
+            tierCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    // Remove previous selection
+                    tierCards.forEach(c => c.classList.remove('selected'));
+                    
+                    // Select this card
+                    this.classList.add('selected');
+                    currentTier = this.dataset.tier;
+                    currentPrice = parseFloat(this.dataset.price);
+                    
+                    // Reinitialize PayPal with new price
+                    initializePayPal();
+                });
+            });
+        }
+        
+        // PayPal Integration
+        function initializePayPal() {
+            const container = document.getElementById('paypal-button-container');
+            
+            if (!currentTier) {
+                container.innerHTML = '<p style="text-align: center; color: #999;">Please select a tier above</p>';
+                return;
+            }
+            
+            // Clear existing buttons
+            container.innerHTML = '';
+            
+            // Note: In production, you'll need a PayPal Business account client ID
+            // For now, this is a placeholder that shows the payment structure
+            
+            // Create manual payment button as fallback
+            const paymentButton = document.createElement('button');
+            paymentButton.className = 'btn btn-primary';
+            paymentButton.innerHTML = `💳 Pay $${currentPrice} with PayPal`;
+            paymentButton.onclick = processPayment;
+            container.appendChild(paymentButton);
+            
+            // Add PayPal info
+            const paypalInfo = document.createElement('p');
+            paypalInfo.style.textAlign = 'center';
+            paypalInfo.style.marginTop = '10px';
+            paypalInfo.style.fontSize = '0.9em';
+            paypalInfo.style.color = '#666';
+            paypalInfo.innerHTML = 'Payment to: <strong>BarbrickDesign@gmail.com</strong>';
+            container.appendChild(paypalInfo);
+            
+            // Add demo warning
+            const demoWarning = document.createElement('p');
+            demoWarning.style.textAlign = 'center';
+            demoWarning.style.marginTop = '5px';
+            demoWarning.style.fontSize = '0.8em';
+            demoWarning.style.color = '#ff6b6b';
+            demoWarning.style.fontWeight = 'bold';
+            demoWarning.textContent = '⚠️ DEMO MODE - No actual payment processed';
+            container.appendChild(demoWarning);
+        }
+        
+        // Process Payment (DEMO MODE - Replace with actual PayPal integration)
+        function processPayment() {
+            if (!currentTier) {
+                alert('Please select a tier first!');
+                return;
+            }
+            
+            // DEMO MODE WARNING
+            const confirmed = confirm(
+                `⚠️ DEMO MODE - No actual payment will be processed ⚠️\n\n` +
+                `This is a demonstration of the payment flow.\n` +
+                `Tier: ${currentTier.toUpperCase()} - $${currentPrice}\n` +
+                `Payment would go to: BarbrickDesign@gmail.com\n\n` +
+                `In production, this would redirect to PayPal for actual payment.\n\n` +
+                `Click OK to continue demo...`
+            );
+            
+            if (confirmed) {
+                // PRODUCTION NOTE: Replace this entire function with actual PayPal SDK integration
+                // See PICKEM_README.md for PayPal integration instructions
+                handlePaymentSuccess({
+                    tier: currentTier,
+                    amount: currentPrice,
+                    transactionId: 'DEMO-' + Date.now()
+                });
+            }
+        }
+        
+        // Handle Successful Payment
+        function handlePaymentSuccess(paymentData) {
+            console.log('💰 Payment successful:', paymentData);
+            
+            // Calculate sets based on tier
+            const setsMap = {
+                'basic': 5,
+                'standard': 20,
+                'premium': 50
+            };
+            
+            setsRemaining = setsMap[paymentData.tier] || 5;
+            
+            // Save purchase to tracker
+            if (window.PickEmTracker) {
+                window.PickEmTracker.logPurchase(paymentData);
+            }
+            
+            // Update stats
+            updateUserStats();
+            
+            // Show success modal
+            document.getElementById('successModal').classList.add('active');
+            
+            // Show number generation section
+            document.getElementById('numbersDisplay').style.display = 'block';
+            
+            // Generate first set automatically
+            setTimeout(() => {
+                generateNewSet();
+            }, 1000);
+        }
+        
+        // Generate Numbers
+        function generateNewSet() {
+            if (setsRemaining <= 0) {
+                alert('You have used all your number sets! Please purchase another tier to continue.');
+                return;
+            }
+            
+            // Use algorithm to generate numbers
+            let numbers;
+            if (window.PickEmAlgorithm) {
+                numbers = window.PickEmAlgorithm.generate(currentTier);
+            } else {
+                // Fallback: Generate random numbers
+                numbers = generateRandomNumbers();
+            }
+            
+            displayNumbers(numbers);
+            setsRemaining--;
+            
+            // Save to tracker
+            if (window.PickEmTracker) {
+                window.PickEmTracker.logGeneration({
+                    numbers: numbers,
+                    tier: currentTier,
+                    timestamp: new Date().toISOString()
+                });
+            }
+            
+            // Update analytics
+            if (window.PickEmAnalytics) {
+                window.PickEmAnalytics.trackGeneration(currentTier);
+            }
+        }
+        
+        // Generate Random Numbers (Fallback)
+        function generateRandomNumbers() {
+            const numbers = [];
+            const used = new Set();
+            
+            // Generate 5 main numbers (1-69)
+            while (numbers.length < 5) {
+                const num = Math.floor(Math.random() * 69) + 1;
+                if (!used.has(num)) {
+                    numbers.push(num);
+                    used.add(num);
+                }
+            }
+            
+            // Sort main numbers
+            numbers.sort((a, b) => a - b);
+            
+            // Add powerball (1-26)
+            const powerball = Math.floor(Math.random() * 26) + 1;
+            numbers.push(powerball);
+            
+            return numbers;
+        }
+        
+        // Display Numbers
+        function displayNumbers(numbers) {
+            const container = document.getElementById('numbersContainer');
+            container.innerHTML = '';
+            
+            numbers.forEach((num, index) => {
+                const ball = document.createElement('div');
+                ball.className = 'number-ball';
+                if (index === numbers.length - 1) {
+                    ball.classList.add('powerball');
+                }
+                ball.textContent = num;
+                ball.style.animationDelay = `${index * 0.1}s`;
+                container.appendChild(ball);
+            });
+        }
+        
+        // Log Win
+        function logWin() {
+            const amount = prompt('Congratulations! 🎉 How much did you win? Enter amount (e.g., 100):');
+            if (amount && !isNaN(amount)) {
+                const winAmount = parseFloat(amount);
+                if (window.PickEmTracker) {
+                    window.PickEmTracker.logResult({
+                        result: 'win',
+                        amount: winAmount,
+                        tier: currentTier,
+                        timestamp: new Date().toISOString()
+                    });
+                }
+                updateUserStats();
+                updateCommunityStats();
+                alert(`Amazing! $${winAmount} has been added to your winning total! 🎊`);
+            }
+        }
+        
+        // Log Loss
+        function logLoss() {
+            if (window.PickEmTracker) {
+                window.PickEmTracker.logResult({
+                    result: 'loss',
+                    amount: 0,
+                    tier: currentTier,
+                    timestamp: new Date().toISOString()
+                });
+            }
+            updateUserStats();
+            alert('Better luck next time! Generate more numbers to increase your chances! 🍀');
+        }
+        
+        // Load User Data
+        function loadUserData() {
+            if (window.PickEmTracker) {
+                const stats = window.PickEmTracker.getUserStats();
+                updateStatsDisplay(stats);
+                updateHistoryTable();
+            }
+        }
+        
+        // Update User Stats
+        function updateUserStats() {
+            if (window.PickEmTracker) {
+                const stats = window.PickEmTracker.getUserStats();
+                updateStatsDisplay(stats);
+                updateHistoryTable();
+            }
+        }
+        
+        // Update Stats Display
+        function updateStatsDisplay(stats) {
+            document.getElementById('totalInvested').textContent = `$${stats.totalInvested.toFixed(2)}`;
+            document.getElementById('totalWon').textContent = `$${stats.totalWon.toFixed(2)}`;
+            document.getElementById('winRate').textContent = `${stats.winRate.toFixed(1)}%`;
+            document.getElementById('roi').textContent = `${stats.roi.toFixed(1)}%`;
+        }
+        
+        // Update History Table
+        function updateHistoryTable() {
+            if (!window.PickEmTracker) return;
+            
+            const history = window.PickEmTracker.getHistory();
+            const tbody = document.getElementById('historyTableBody');
+            
+            if (history.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 40px; color: #999;">No drawings yet. Purchase a tier to get started!</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = history.slice(-10).reverse().map(entry => {
+                const date = new Date(entry.timestamp).toLocaleDateString();
+                const numbers = entry.numbers.join(', ');
+                const badge = entry.result === 'win' 
+                    ? `<span class="win-badge">WIN $${entry.amount}</span>` 
+                    : '<span class="loss-badge">LOSS</span>';
+                
+                return `
+                    <tr>
+                        <td>${date}</td>
+                        <td>${numbers}</td>
+                        <td>${entry.tier.toUpperCase()}</td>
+                        <td>${badge}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+        
+        // Load Community Stats
+        function loadCommunityStats() {
+            if (window.PickEmAnalytics) {
+                const stats = window.PickEmAnalytics.getCommunityStats();
+                updateCommunityDisplay(stats);
+            }
+        }
+        
+        // Update Community Stats
+        function updateCommunityStats() {
+            if (window.PickEmAnalytics) {
+                window.PickEmAnalytics.updateCommunityStats();
+                const stats = window.PickEmAnalytics.getCommunityStats();
+                updateCommunityDisplay(stats);
+            }
+        }
+        
+        // Update Community Display
+        function updateCommunityDisplay(stats) {
+            document.getElementById('totalUsers').textContent = stats.totalUsers;
+            document.getElementById('totalWinners').textContent = stats.totalWinners;
+            document.getElementById('communityWinRate').textContent = `${stats.winRate.toFixed(1)}%`;
+            document.getElementById('totalPrizesMoney').textContent = `$${stats.totalPrizeMoney.toLocaleString()}`;
+        }
+        
+        // Close Modal
+        function closeModal() {
+            document.getElementById('successModal').classList.remove('active');
+        }
+    </script>
+</body>
+</html>
