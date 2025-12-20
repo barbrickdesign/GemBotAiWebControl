@@ -6,6 +6,11 @@
  * Handles $4200 machine licensing payments via PayPal
  * Contact: BarbrickDesign@gmail.com for payment and activation
  * 
+ * PayPal SDK:
+ * - Primary SDK should be loaded via script tag in HTML
+ * - Fallback SDK automatically loaded by paypal-sdk-loader.js if primary fails
+ * - Fallback uses: client-id=BAA32_1anJHhKp_wVIq_c2tVlfMCZOyrmeFbSdiofVqklIassmUhRkm4k7E9HX0GX60_IJGxXfqLA11lWg
+ * 
  * Payment Process:
  * 1. Customer sends $4200 to BarbrickDesign@gmail.com via PayPal
  * 2. Customer receives transaction ID
