@@ -5,6 +5,13 @@
  * Allows users to purchase GBUV tokens using PayPal (credit cards, Apple Pay, etc.)
  * Payment goes to: barbrickdesign@gmail.com
  * 
+ * NOTE: This file uses the centralized PayPal configuration from paypal-config.js
+ * Include paypal-config.js before this file for proper PayPal SDK loading.
+ * 
+ * PayPal Client IDs are managed in paypal-config.js:
+ * - Primary: Ae5p9t_umXWYHWQuvxEiIb_DNYJUMQgC0NFCjPkIGnliAVW-0lOJRQw3niXh8NIkEkB0HaNbfMFkbSkZ
+ * - Fallback: BAA32_1anJHhKp_wVIq_c2tVlfMCZOyrmeFbSdiofVqklIassmUhRkm4k7E9HX0GX60_IJGxXfqLA11lWg
+ * 
  * OWNER: Ryan Barbrick / Barbrick Design
  * CONTACT: BarbrickDesign@gmail.com
  * SIGNATURE: GBOT-RB-2025-7X9K2M4P-BARBRICK
