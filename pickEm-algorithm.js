@@ -95,18 +95,18 @@ window.PickEmAlgorithm = {
         
         let numbers;
         
-        switch(tier) {
-            case 'basic':
-                numbers = this.generateBasic();
-                break;
-            case 'standard':
-                numbers = this.generateStandard();
-                break;
-            case 'premium':
-                numbers = this.generatePremium();
-                break;
-            default:
-                numbers = this.generateBasic();
+        // Map tiers to algorithm complexity levels
+        // Tiers 1-3: Basic algorithm
+        // Tiers 4-7: Standard algorithm
+        // Tiers 8+: Premium algorithm with increasing sophistication
+        
+        if (tier === 'tier1' || tier === 'tier2' || tier === 'tier3' || tier === 'basic') {
+            numbers = this.generateBasic();
+        } else if (tier === 'tier4' || tier === 'tier5' || tier === 'tier6' || tier === 'tier7' || tier === 'standard') {
+            numbers = this.generateStandard();
+        } else {
+            // Premium algorithm for tier8 and above
+            numbers = this.generatePremium();
         }
         
         // Log generation for algorithm learning

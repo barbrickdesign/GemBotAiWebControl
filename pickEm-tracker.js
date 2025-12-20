@@ -122,6 +122,27 @@ window.PickEmTracker = {
      */
     getSetsForTier(tier) {
         const setsMap = {
+            'tier1': 5,
+            'tier2': 15,
+            'tier3': 30,
+            'tier4': 50,
+            'tier5': 100,
+            'tier6': 150,
+            'tier7': 250,
+            'tier8': 350,
+            'tier9': 500,
+            'tier10': 750,
+            'tier11': 1000,
+            'tier12': 1500,
+            'tier13': 2000,
+            'tier14': 2500,
+            'tier15': 3500,
+            'tier16': 5000,
+            'tier17': 6500,
+            'tier18': 8000,
+            'tier19': 9000,
+            'tier20': 10000,
+            // Legacy tier names for backward compatibility
             'basic': 5,
             'standard': 20,
             'premium': 50
@@ -262,6 +283,27 @@ window.PickEmTracker = {
      */
     getTierStats() {
         const tierStats = {
+            tier1: { purchases: 0, wins: 0, losses: 0, totalWon: 0, totalInvested: 0 },
+            tier2: { purchases: 0, wins: 0, losses: 0, totalWon: 0, totalInvested: 0 },
+            tier3: { purchases: 0, wins: 0, losses: 0, totalWon: 0, totalInvested: 0 },
+            tier4: { purchases: 0, wins: 0, losses: 0, totalWon: 0, totalInvested: 0 },
+            tier5: { purchases: 0, wins: 0, losses: 0, totalWon: 0, totalInvested: 0 },
+            tier6: { purchases: 0, wins: 0, losses: 0, totalWon: 0, totalInvested: 0 },
+            tier7: { purchases: 0, wins: 0, losses: 0, totalWon: 0, totalInvested: 0 },
+            tier8: { purchases: 0, wins: 0, losses: 0, totalWon: 0, totalInvested: 0 },
+            tier9: { purchases: 0, wins: 0, losses: 0, totalWon: 0, totalInvested: 0 },
+            tier10: { purchases: 0, wins: 0, losses: 0, totalWon: 0, totalInvested: 0 },
+            tier11: { purchases: 0, wins: 0, losses: 0, totalWon: 0, totalInvested: 0 },
+            tier12: { purchases: 0, wins: 0, losses: 0, totalWon: 0, totalInvested: 0 },
+            tier13: { purchases: 0, wins: 0, losses: 0, totalWon: 0, totalInvested: 0 },
+            tier14: { purchases: 0, wins: 0, losses: 0, totalWon: 0, totalInvested: 0 },
+            tier15: { purchases: 0, wins: 0, losses: 0, totalWon: 0, totalInvested: 0 },
+            tier16: { purchases: 0, wins: 0, losses: 0, totalWon: 0, totalInvested: 0 },
+            tier17: { purchases: 0, wins: 0, losses: 0, totalWon: 0, totalInvested: 0 },
+            tier18: { purchases: 0, wins: 0, losses: 0, totalWon: 0, totalInvested: 0 },
+            tier19: { purchases: 0, wins: 0, losses: 0, totalWon: 0, totalInvested: 0 },
+            tier20: { purchases: 0, wins: 0, losses: 0, totalWon: 0, totalInvested: 0 },
+            // Legacy tier names for backward compatibility
             basic: { purchases: 0, wins: 0, losses: 0, totalWon: 0, totalInvested: 0 },
             standard: { purchases: 0, wins: 0, losses: 0, totalWon: 0, totalInvested: 0 },
             premium: { purchases: 0, wins: 0, losses: 0, totalWon: 0, totalInvested: 0 }
@@ -378,6 +420,11 @@ window.PickEmTracker = {
             totalPrizeMoney: 0,
             winners: [],
             tierPurchases: {
+                tier1: 0, tier2: 0, tier3: 0, tier4: 0, tier5: 0,
+                tier6: 0, tier7: 0, tier8: 0, tier9: 0, tier10: 0,
+                tier11: 0, tier12: 0, tier13: 0, tier14: 0, tier15: 0,
+                tier16: 0, tier17: 0, tier18: 0, tier19: 0, tier20: 0,
+                // Legacy tier names for backward compatibility
                 basic: 0,
                 standard: 0,
                 premium: 0
