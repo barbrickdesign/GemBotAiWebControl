@@ -78,56 +78,77 @@ window.PayPalConfig = {
         return `https://www.paypal.com/sdk/js?${params.toString()}`;
     },
     
+    // Loading state
+    _loadingState: null,
+    
     /**
      * Load PayPal SDK with automatic fallback
      * @param {Function} onSuccess - Called when SDK loads successfully
      * @param {Function} onError - Called if both primary and fallback fail
+     * @returns {Promise} Promise that resolves when SDK loads
      */
     loadSDK(onSuccess, onError) {
+        // Return existing promise if already loading
+        if (this._loadingState) {
+            console.log('💳 PayPal SDK already loading, returning existing promise...');
+            return this._loadingState;
+        }
+        
         console.log('💳 Loading PayPal SDK...');
         
         // Check if PayPal is already loaded
         if (window.paypal) {
             console.log('✅ PayPal SDK already loaded');
             if (onSuccess) onSuccess();
-            return;
+            return Promise.resolve();
         }
         
-        // Try loading primary SDK
-        const primaryScript = document.createElement('script');
-        primaryScript.src = this.getPrimarySDKUrl();
-        
-        let fallbackAttempted = false;
-        
-        primaryScript.onload = () => {
-            console.log('✅ PayPal SDK loaded (primary)');
-            if (onSuccess) onSuccess();
-        };
-        
-        primaryScript.onerror = () => {
-            if (fallbackAttempted) return;
+        // Create promise for loading state
+        this._loadingState = new Promise((resolve, reject) => {
+            // Try loading primary SDK
+            const primaryScript = document.createElement('script');
+            primaryScript.src = this.getPrimarySDKUrl();
             
-            console.warn('⚠️ Primary PayPal SDK failed, trying fallback...');
-            fallbackAttempted = true;
+            let fallbackAttempted = false;
             
-            // Try fallback SDK
-            const fallbackScript = document.createElement('script');
-            fallbackScript.src = this.getFallbackSDKUrl();
-            
-            fallbackScript.onload = () => {
-                console.log('✅ PayPal SDK loaded (fallback)');
+            primaryScript.onload = () => {
+                console.log('✅ PayPal SDK loaded (primary)');
+                this._loadingState = null;
                 if (onSuccess) onSuccess();
+                resolve();
             };
             
-            fallbackScript.onerror = () => {
-                console.error('❌ Both PayPal SDK primary and fallback failed to load');
-                if (onError) onError();
+            primaryScript.onerror = () => {
+                if (fallbackAttempted) return;
+                
+                console.warn('⚠️ Primary PayPal SDK failed, trying fallback...');
+                fallbackAttempted = true;
+                
+                // Try fallback SDK
+                const fallbackScript = document.createElement('script');
+                fallbackScript.src = this.getFallbackSDKUrl();
+                
+                fallbackScript.onload = () => {
+                    console.log('✅ PayPal SDK loaded (fallback)');
+                    this._loadingState = null;
+                    if (onSuccess) onSuccess();
+                    resolve();
+                };
+                
+                fallbackScript.onerror = () => {
+                    console.error('❌ Both PayPal SDK primary and fallback failed to load');
+                    this._loadingState = null;
+                    if (onError) onError();
+                    reject(new Error('Failed to load PayPal SDK'));
+                };
+                
+                document.head.appendChild(fallbackScript);
             };
             
-            document.head.appendChild(fallbackScript);
-        };
+            document.head.appendChild(primaryScript);
+        });
         
-        document.head.appendChild(primaryScript);
+        return this._loadingState;
     },
     
     /**
@@ -136,8 +157,9 @@ window.PayPalConfig = {
      * @param {string} note - Optional note
      */
     createPayPalMeLink(amount, note = '') {
-        const email = this.paypalEmail.replace('@gmail.com', '');
-        return `https://paypal.me/${email}/${amount}USD`;
+        // Extract username from email (everything before @)
+        const username = this.paypalEmail.split('@')[0];
+        return `https://paypal.me/${username}/${amount}USD`;
     },
     
     /**
