@@ -70,7 +70,7 @@ const stats = window.aads.getStats();
 
 ---
 
-## 📊 Current Status (Last Updated: December 19, 2025)
+## 📊 Current Status (Last Updated: December 20, 2025)
 
 ### ✅ Working Features
 | Feature | Status | Notes |
@@ -86,6 +86,7 @@ const stats = window.aads.getStats();
 | Console Logging | ✅ Working | Debug output visible in F12 console |
 | GemBot Farm Game | ✅ Working | Access via profile menu → 🎮 GemBot Farm |
 | **Automated Agent Deployment System** | ✅ **NEW** | Full agent deployment and repository networking system |
+| **PayPal Integration** | ✅ **NEW** | Primary + fallback client IDs with automatic failover |
 
 ### ⚠️ Known Issues / Expected Warnings
 | Feature | Status | Notes |
@@ -191,6 +192,24 @@ See **[INSTRUCTIONS.md](INSTRUCTIONS.md)** for complete details on governance, l
 - **User Management**: View and manage all registered users
 - **Game Control**: Monitor in-game activity and statistics
 - **Settings**: Configure GitHub tokens, deployment options, and system settings
+
+### 💳 PayPal Integration
+- **Centralized Configuration**: All PayPal settings managed in `paypal-config.js`
+- **Primary Client ID**: Production PayPal SDK with standard funding sources
+- **Fallback Support**: Automatic fallback to secondary client ID if primary fails
+- **Venmo & Hosted Buttons**: Fallback includes Venmo support and hosted button components
+- **Multiple Integrations**: PickEm lottery system, GBUV wallet top-up, marketplace donations
+- **Machine Licensing**: $4200 machine integration licensing via PayPal
+- **Test Infrastructure**: Interactive test page (`paypal-test.html`) for verification
+- **Documentation**: See [PAYPAL_INTEGRATION.md](PAYPAL_INTEGRATION.md) for complete guide
+
+**Files:**
+- `paypal-config.js` - Centralized configuration
+- `pickEm.html` - Lottery payment integration  
+- `gbuv-paypal-topup.js` - GBUV token purchases
+- `paypal-machine-licensing.js` - Machine licensing system
+- `PAYPAL_INTEGRATION.md` - Complete documentation
+- `paypal-test.html` - Testing interface
 
 ## 🚀 Quick Start
 

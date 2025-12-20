@@ -18,7 +18,8 @@ class GemBotMarketplaceEnhanced {
         this.advancedCuts = this.loadAdvancedCuts();
         this.earthArtHub = null;
         this.paypalConfig = {
-            clientId: 'YOUR_PAYPAL_CLIENT_ID',
+            // Use centralized PayPal config from paypal-config.js
+            clientId: window.PayPalConfig ? window.PayPalConfig.primaryClientId : 'Ae5p9t_umXWYHWQuvxEiIb_DNYJUMQgC0NFCjPkIGnliAVW-0lOJRQw3niXh8NIkEkB0HaNbfMFkbSkZ',
             donationEmail: 'BarbrickDesign@gmail.com',
             minDonation: 1.00, // $1 minimum
             currency: 'USD'

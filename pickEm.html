@@ -7,16 +7,17 @@
     
     <!-- 
     ═══════════════════════════════════════════════════════════════════════════════
-    PICKEM AI - DEMO VERSION
+    PICKEM AI - PRODUCTION VERSION
     ═══════════════════════════════════════════════════════════════════════════════
-    This is a demonstration version with simulated payment processing.
+    PayPal Integration Configured:
+    - Primary Client ID: Ae5p9t_umXWYHWQuvxEiIb...NIkEkB0HaNbfMFkbSkZ
+    - Fallback Client ID: BAA32_1anJHhKp_wVIq_c...60_IJGxXfqLA11lWg
+    - Fallback includes hosted-buttons component and Venmo funding
     
-    BEFORE PRODUCTION DEPLOYMENT:
-    1. Replace PayPal client-id with your actual PayPal Business account ID
-    2. Implement actual PayPal payment processing (see PICKEM_README.md)
-    3. Replace demo data with real lottery statistics
-    4. Add server-side payment verification
-    5. Implement proper error handling and logging
+    ADDITIONAL PRODUCTION TASKS:
+    1. Implement server-side payment verification
+    2. Replace demo data with real lottery statistics
+    3. Implement proper error handling and logging
     
     Owner: Ryan Barbrick / Barbrick Design
     Contact: BarbrickDesign@gmail.com
@@ -24,8 +25,40 @@
     ═══════════════════════════════════════════════════════════════════════════════
     -->
     
-    <!-- PayPal SDK - Replace 'production' with your actual client ID -->
-    <script src="https://www.paypal.com/sdk/js?client-id=production&currency=USD&disable-funding=credit,card"></script>
+    <!-- PayPal SDK - Production Client ID -->
+    <script src="https://www.paypal.com/sdk/js?client-id=Ae5p9t_umXWYHWQuvxEiIb_DNYJUMQgC0NFCjPkIGnliAVW-0lOJRQw3niXh8NIkEkB0HaNbfMFkbSkZ&currency=USD&disable-funding=credit,card" 
+            onload="console.log('✅ Primary PayPal SDK loaded')"
+            onerror="loadPayPalFallback()"></script>
+    
+    <!-- PayPal SDK Fallback - For when API is not working -->
+    <script>
+        // Fallback PayPal SDK loader with alternate client-id
+        let paypalFallbackAttempted = false;
+        
+        function loadPayPalFallback() {
+            if (paypalFallbackAttempted) return;
+            paypalFallbackAttempted = true;
+            
+            console.warn('⚠️ Primary PayPal SDK failed to load, attempting fallback...');
+            const fallbackScript = document.createElement('script');
+            fallbackScript.src = 'https://www.paypal.com/sdk/js?client-id=BAA32_1anJHhKp_wVIq_c2tVlfMCZOyrmeFbSdiofVqklIassmUhRkm4k7E9HX0GX60_IJGxXfqLA11lWg&components=hosted-buttons&enable-funding=venmo&currency=USD';
+            fallbackScript.onload = function() {
+                console.log('✅ Fallback PayPal SDK loaded successfully');
+            };
+            fallbackScript.onerror = function() {
+                console.error('❌ PayPal SDK fallback also failed to load');
+            };
+            document.head.appendChild(fallbackScript);
+        }
+        
+        // Also check after a delay in case primary is just slow
+        setTimeout(function() {
+            if (!window.paypal && !paypalFallbackAttempted) {
+                console.warn('⚠️ Primary PayPal SDK timeout, loading fallback...');
+                loadPayPalFallback();
+            }
+        }, 5000);
+    </script>
     
     <style>
         * {

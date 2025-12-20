@@ -30,7 +30,10 @@ const GemBotGameMaster = {
         // Payment integration (conceptual)
         paymentProviders: {
             stripe: { enabled: false, publicKey: "" },
-            paypal: { enabled: false, clientId: "" }
+            paypal: { 
+                enabled: true, 
+                clientId: window.PayPalConfig ? window.PayPalConfig.primaryClientId : "Ae5p9t_umXWYHWQuvxEiIb_DNYJUMQgC0NFCjPkIGnliAVW-0lOJRQw3niXh8NIkEkB0HaNbfMFkbSkZ"
+            }
         },
         
         // Pricing tiers for STL files
